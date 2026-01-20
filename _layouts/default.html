@@ -1,17 +1,13 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
-<link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}">
+<head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>{{ page.title }}</title>
+  <title>{{ page.title | default: site.title }}</title>
 
-  <!-- Minima CSS -->
-  <link rel="stylesheet" href="/assets/main.css">
-
-  <!-- Custom CSS -->
-  <link rel="stylesheet" href="/assets/css/custom.css">
+  <link rel="stylesheet" href="{{ '/assets/main.css' | relative_url }}">
+  <link rel="stylesheet" href="{{ '/assets/css/custom.css' | relative_url }}">
 </head>
 
 <body>

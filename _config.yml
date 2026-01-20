@@ -53,3 +53,7 @@ plugins:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
+# Exclude specific files that should not be processed into the site
+exclude:
+  - index.html
