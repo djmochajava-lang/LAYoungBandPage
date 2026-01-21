@@ -2,86 +2,245 @@
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/20/2026 01:51:37
+LAST MODIFIED: 01/20/2026 22:44:18
 ================================================================================
 
-/* Custom styles for L.A. Young site */
-/* HERO SECTION */
+/* assets/css/custom.css */
+
+/* SOPHISTICATED BANNER STYLES */
 .hero {
   position: relative;
-  height: 90vh;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  overflow: hidden;
 }
 
-
-.hero-overlay {
+/* Animated gradient overlay */
+.hero::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(230, 57, 70, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(138, 43, 226, 0.08) 0%, transparent 50%);
+  animation: gradientShift 15s ease infinite;
+  z-index: 1;
+}
+
+@keyframes gradientShift {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+/* Elegant decorative elements */
+.ornament {
+  position: absolute;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  z-index: 2;
 }
 
+.ornament-line {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+  height: 1px;
+}
+
+.ornament-line.top {
+  top: 20%;
+  left: 10%;
+  right: 10%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.ornament-line.bottom {
+  bottom: 20%;
+  left: 10%;
+  right: 10%;
+  animation: shimmer 3s ease-in-out infinite 1.5s;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* Floating musical notes */
+.note {
+  position: absolute;
+  color: rgba(255, 215, 0, 0.15);
+  font-size: 2rem;
+  animation: float 20s infinite;
+  pointer-events: none;
+}
+
+.note:nth-child(1) { left: 10%; top: 30%; animation-delay: 0s; }
+.note:nth-child(2) { left: 85%; top: 60%; animation-delay: 4s; }
+.note:nth-child(3) { left: 15%; top: 70%; animation-delay: 8s; }
+.note:nth-child(4) { left: 90%; top: 25%; animation-delay: 12s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.15; }
+  50% { transform: translateY(-30px) rotate(10deg); opacity: 0.3; }
+}
+
+.hero-overlay {
+  display: none; /* Not needed with gradient background */
+}
+
+/* Content container */
 .hero-content {
   position: relative;
-  z-index: 2;
-  color: white;
+  z-index: 10;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  padding-top: 20vh;
-}
-
-.hero-content h1 {
-  font-size: 4rem;
-  margin-bottom: 0.5rem;
-}
-
-.tagline {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-}
-
-.subline {
-  font-size: 1.2rem;
-  max-width: 700px;
-  margin: 0 auto 2rem auto;
-}
-
-.epk-button {
-  display: inline-block;
-  padding: 12px 28px;
-  background: #e63946;
+  padding: 2rem;
   color: white;
-  text-decoration: none;
-  font-size: 1.2rem;
-  border-radius: 6px;
-  transition: background 0.3s ease;
 }
 
-.epk-button:hover {
-  background: #c71c30;
+/* Artist name */
+.hero-content h1 {
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: #ffffff;
+  text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  margin-bottom: 1rem;
+  animation: fadeInUp 1.5s ease-out;
+  font-family: 'Didot', 'Bodoni MT', 'Playfair Display', serif;
 }
 
-/* EPK BUTTON IN TOP RIGHT */
+.hero-content h1 .first {
+  display: block;
+  font-size: 0.5em;
+  letter-spacing: 0.3em;
+  color: rgba(255, 215, 0, 0.9);
+  font-weight: 400;
+}
+
+/* Tagline */
+.tagline {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  margin-bottom: 2rem;
+  animation: fadeInUp 1.5s ease-out 0.3s both;
+  font-style: italic;
+}
+
+/* Decorative divider */
+.divider {
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  margin: 2rem 0;
+  animation: fadeInUp 1.5s ease-out 0.6s both;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: 'â™¦';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ffd700;
+  font-size: 0.8rem;
+}
+
+.divider::before { left: -20px; }
+.divider::after { right: -20px; }
+
+/* Description */
+.subline {
+  max-width: 700px;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  margin-bottom: 3rem;
+  animation: fadeInUp 1.5s ease-out 0.9s both;
+  font-family: 'Georgia', serif;
+}
+
+/* EPK BUTTON - FIXED TOP RIGHT */
 .epk-button {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 10px 20px;
-  background: #e63946;
+  top: 30px;
+  right: 30px;
+  padding: 12px 30px;
+  background: rgba(230, 57, 70, 0.9);
   color: white;
   text-decoration: none;
-  font-size: 1rem;
-  border-radius: 6px;
-  z-index: 3;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  transition: all 0.4s ease;
+  z-index: 20;
+  font-family: 'Georgia', serif;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  animation: fadeIn 2s ease-out 1.2s both;
 }
 
 .epk-button:hover {
-  background: #c71c30;
+  background: rgba(230, 57, 70, 1);
+  border-color: rgba(255, 215, 0, 0.8);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  transform: translateY(-2px);
 }
 
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-content h1 {
+    letter-spacing: 0.1em;
+  }
+
+  .tagline {
+    letter-spacing: 0.1em;
+  }
+
+  .epk-button {
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
+
+  .ornament-line {
+    display: none;
+  }
+}
 
 
 
@@ -99,86 +258,245 @@ Place your site images in this folder.
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/20/2026 01:51:37
+LAST MODIFIED: 01/20/2026 22:44:18
 ================================================================================
 
-/* Custom styles for L.A. Young site */
-/* HERO SECTION */
+/* assets/css/custom.css */
+
+/* SOPHISTICATED BANNER STYLES */
 .hero {
   position: relative;
-  height: 90vh;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  overflow: hidden;
 }
 
-
-.hero-overlay {
+/* Animated gradient overlay */
+.hero::before {
+  content: '';
   position: absolute;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(230, 57, 70, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 20%, rgba(138, 43, 226, 0.08) 0%, transparent 50%);
+  animation: gradientShift 15s ease infinite;
+  z-index: 1;
+}
+
+@keyframes gradientShift {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+/* Elegant decorative elements */
+.ornament {
+  position: absolute;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  z-index: 2;
 }
 
+.ornament-line {
+  position: absolute;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+  height: 1px;
+}
+
+.ornament-line.top {
+  top: 20%;
+  left: 10%;
+  right: 10%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+.ornament-line.bottom {
+  bottom: 20%;
+  left: 10%;
+  right: 10%;
+  animation: shimmer 3s ease-in-out infinite 1.5s;
+}
+
+@keyframes shimmer {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+/* Floating musical notes */
+.note {
+  position: absolute;
+  color: rgba(255, 215, 0, 0.15);
+  font-size: 2rem;
+  animation: float 20s infinite;
+  pointer-events: none;
+}
+
+.note:nth-child(1) { left: 10%; top: 30%; animation-delay: 0s; }
+.note:nth-child(2) { left: 85%; top: 60%; animation-delay: 4s; }
+.note:nth-child(3) { left: 15%; top: 70%; animation-delay: 8s; }
+.note:nth-child(4) { left: 90%; top: 25%; animation-delay: 12s; }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.15; }
+  50% { transform: translateY(-30px) rotate(10deg); opacity: 0.3; }
+}
+
+.hero-overlay {
+  display: none; /* Not needed with gradient background */
+}
+
+/* Content container */
 .hero-content {
   position: relative;
-  z-index: 2;
-  color: white;
+  z-index: 10;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  padding-top: 20vh;
-}
-
-.hero-content h1 {
-  font-size: 4rem;
-  margin-bottom: 0.5rem;
-}
-
-.tagline {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-}
-
-.subline {
-  font-size: 1.2rem;
-  max-width: 700px;
-  margin: 0 auto 2rem auto;
-}
-
-.epk-button {
-  display: inline-block;
-  padding: 12px 28px;
-  background: #e63946;
+  padding: 2rem;
   color: white;
-  text-decoration: none;
-  font-size: 1.2rem;
-  border-radius: 6px;
-  transition: background 0.3s ease;
 }
 
-.epk-button:hover {
-  background: #c71c30;
+/* Artist name */
+.hero-content h1 {
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: #ffffff;
+  text-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+  margin-bottom: 1rem;
+  animation: fadeInUp 1.5s ease-out;
+  font-family: 'Didot', 'Bodoni MT', 'Playfair Display', serif;
 }
 
-/* EPK BUTTON IN TOP RIGHT */
+.hero-content h1 .first {
+  display: block;
+  font-size: 0.5em;
+  letter-spacing: 0.3em;
+  color: rgba(255, 215, 0, 0.9);
+  font-weight: 400;
+}
+
+/* Tagline */
+.tagline {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  color: #ffd700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+  margin-bottom: 2rem;
+  animation: fadeInUp 1.5s ease-out 0.3s both;
+  font-style: italic;
+}
+
+/* Decorative divider */
+.divider {
+  width: 200px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  margin: 2rem 0;
+  animation: fadeInUp 1.5s ease-out 0.6s both;
+  position: relative;
+}
+
+.divider::before,
+.divider::after {
+  content: 'â™¦';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ffd700;
+  font-size: 0.8rem;
+}
+
+.divider::before { left: -20px; }
+.divider::after { right: -20px; }
+
+/* Description */
+.subline {
+  max-width: 700px;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 300;
+  letter-spacing: 0.05em;
+  margin-bottom: 3rem;
+  animation: fadeInUp 1.5s ease-out 0.9s both;
+  font-family: 'Georgia', serif;
+}
+
+/* EPK BUTTON - FIXED TOP RIGHT */
 .epk-button {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  padding: 10px 20px;
-  background: #e63946;
+  top: 30px;
+  right: 30px;
+  padding: 12px 30px;
+  background: rgba(230, 57, 70, 0.9);
   color: white;
   text-decoration: none;
-  font-size: 1rem;
-  border-radius: 6px;
-  z-index: 3;
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  transition: all 0.4s ease;
+  z-index: 20;
+  font-family: 'Georgia', serif;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+  animation: fadeIn 2s ease-out 1.2s both;
 }
 
 .epk-button:hover {
-  background: #c71c30;
+  background: rgba(230, 57, 70, 1);
+  border-color: rgba(255, 215, 0, 0.8);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+  transform: translateY(-2px);
 }
 
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero-content h1 {
+    letter-spacing: 0.1em;
+  }
+
+  .tagline {
+    letter-spacing: 0.1em;
+  }
+
+  .epk-button {
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    font-size: 0.85rem;
+  }
+
+  .ornament-line {
+    display: none;
+  }
+}
 
 
 
@@ -196,7 +514,7 @@ Place your site images in this folder.
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/20/2026 02:30:12
+LAST MODIFIED: 01/20/2026 22:49:51
 ================================================================================
 
 /**
@@ -854,8 +1172,10 @@ table td {
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/20/2026 02:30:12
+LAST MODIFIED: 01/20/2026 22:49:51
 ================================================================================
+
+<!-- _layouts/default.html -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -865,8 +1185,8 @@ LAST MODIFIED: 01/20/2026 02:30:12
 
   <title>Welcome to Jekyll!</title>
 
-  <link rel="stylesheet" href="/assets/main.css">
-  <link rel="stylesheet" href="/assets/css/custom.css">
+  <link rel="stylesheet" href="/LAYoungBandPage/assets/main.css">
+  <link rel="stylesheet" href="/LAYoungBandPage/assets/css/custom.css">
 </head>
 
 <body>
@@ -899,7 +1219,7 @@ LAST MODIFIED: 01/20/2026 02:30:12
 <p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyllâ€™s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>
 
 
-  </div><a class="u-url" href="/jekyll/update/2026/01/19/welcome-to-jekyll.html" hidden></a>
+  </div><a class="u-url" href="/LAYoungBandPage/jekyll/update/2026/01/19/welcome-to-jekyll.html" hidden></a>
 </article>
 
 </body>
@@ -911,116 +1231,10 @@ LAST MODIFIED: 01/20/2026 02:30:12
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/20/2026 02:30:12
+LAST MODIFIED: 01/20/2026 22:24:32
 ================================================================================
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>Your awesome title</title>
-
-  <link rel="stylesheet" href="/assets/main.css">
-  <link rel="stylesheet" href="/assets/css/custom.css">
-</head>
-
-<body>
-  <article class="post">
-
-  <header class="post-header">
-    <h1 class="post-title"></h1>
-  </header>
-
-  <div class="post-content">
-    <style type="text/css" media="screen">
-  .container {
-    margin: 10px auto;
-    max-width: 600px;
-    text-align: center;
-  }
-  h1 {
-    margin: 30px 0;
-    font-size: 4em;
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-</style>
-
-<div class="container">
-  <h1>404</h1>
-
-  <p><strong>Page not found :(</strong></p>
-  <p>The requested page could not be found.</p>
-</div>
-
-  </div>
-
-</article>
-
-</body>
-</html>
-
-
-
-
-
-================================================================================
-FILE: 
-LAST MODIFIED: 01/20/2026 02:30:12
-================================================================================
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>L.A. Young â€” Soul in Full Color</title>
-
-  <link rel="stylesheet" href="/assets/main.css">
-  <link rel="stylesheet" href="/assets/css/custom.css">
-</head>
-
-<body>
-  <section class="hero" style="background-image: url('/assets/images/hero.jpg');">
-  <div class="hero-overlay"></div>
-  <div class="hero-content">
-    <h1>L.A. Young</h1>
-    <p class="tagline">Soul in Full Color</p>
-
-    <p class="subline">
-      A powerhouse soul singer blending jazz, blues, funk, hipâ€‘hop, and country into a live experience you feel in your bones.
-    </p>
-
-    <a href="https://www.layoungepk.com" class="epk-button" target="_blank"> For Venues: View EPK</a>
-  </div>
-</section>
-
-</body>
-</html>
-
-
-
-
-
-================================================================================
-FILE: 
-LAST MODIFIED: 01/19/2026 22:20:48
-================================================================================
-
-# LAYoungBandPage
-
-
-
-
-
-================================================================================
-FILE: 
-LAST MODIFIED: 01/19/2026 23:34:56
-================================================================================
-
+<!-- 404.html -->
 ---
 permalink: /404.html
 layout: page
@@ -1053,36 +1267,56 @@ layout: page
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/20/2026 00:32:27
+LAST MODIFIED: 01/20/2026 22:48:40
 ================================================================================
 
+<!-- index.md -->
 ---
 layout: default
-title: "L.A. Young — Soul in Full Color"
+title: "L.A. Young â€” Soul in Full Color"
 ---
 
 <section class="hero">
-  <div class="hero-overlay"></div>
+  <!-- Ornamental elements -->
+  <div class="ornament">
+    <div class="ornament-line top"></div>
+    <div class="ornament-line bottom"></div>
+    <div class="note">â™ª</div>
+    <div class="note">â™«</div>
+    <div class="note">â™ª</div>
+    <div class="note">â™«</div>
+  </div>
+
+  <!-- EPK Button -->
+  <a href="https://www.layoungepk.com" class="epk-button" target="_blank">View EPK</a>
+
+  <!-- Main content -->
   <div class="hero-content">
-    <h1>L.A. Young</h1>
+    <h1>
+      <span class="first">L.A.</span>
+      YOUNG
+    </h1>
+    
     <p class="tagline">Soul in Full Color</p>
-
+    
+    <div class="divider"></div>
+    
     <p class="subline">
-      A powerhouse soul singer blending jazz, blues, funk, hip‑hop, and country into a live experience you feel in your bones.
+      A powerhouse soul singer blending jazz, blues, funk, hipâ€‘hop, and country 
+      into a live experience you feel in your bones.
     </p>
-
-    <a href="/epk" class="epk-button">For Venues: View EPK</a>
   </div>
 </section>
 
 
 
 
-
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/19/2026 22:20:48
+LAST MODIFIED: 01/20/2026 22:24:32
 ================================================================================
+
+<!-- README.md -->
 
 # LAYoungBandPage
 
@@ -1092,68 +1326,132 @@ LAST MODIFIED: 01/19/2026 22:20:48
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/20/2026 02:15:27
+LAST MODIFIED: 01/20/2026 22:24:32
 ================================================================================
 
+<!-- 404.html -->
+---
+permalink: /404.html
+layout: page
+---
+
+<style type="text/css" media="screen">
+  .container {
+    margin: 10px auto;
+    max-width: 600px;
+    text-align: center;
+  }
+  h1 {
+    margin: 30px 0;
+    font-size: 4em;
+    line-height: 1;
+    letter-spacing: -1px;
+  }
+</style>
+
+<div class="container">
+  <h1>404</h1>
+
+  <p><strong>Page not found :(</strong></p>
+  <p>The requested page could not be found.</p>
+</div>
+
+
+
+
+
+================================================================================
+FILE: 
+LAST MODIFIED: 01/20/2026 22:48:40
+================================================================================
+
+<!-- index.md -->
+---
+layout: default
+title: "L.A. Young â€” Soul in Full Color"
+---
+
+<section class="hero">
+  <!-- Ornamental elements -->
+  <div class="ornament">
+    <div class="ornament-line top"></div>
+    <div class="ornament-line bottom"></div>
+    <div class="note">â™ª</div>
+    <div class="note">â™«</div>
+    <div class="note">â™ª</div>
+    <div class="note">â™«</div>
+  </div>
+
+  <!-- EPK Button -->
+  <a href="https://www.layoungepk.com" class="epk-button" target="_blank">View EPK</a>
+
+  <!-- Main content -->
+  <div class="hero-content">
+    <h1>
+      <span class="first">L.A.</span>
+      YOUNG
+    </h1>
+    
+    <p class="tagline">Soul in Full Color</p>
+    
+    <div class="divider"></div>
+    
+    <p class="subline">
+      A powerhouse soul singer blending jazz, blues, funk, hipâ€‘hop, and country 
+      into a live experience you feel in your bones.
+    </p>
+  </div>
+</section>
+
+
+
+
+================================================================================
+FILE: 
+LAST MODIFIED: 01/20/2026 22:24:32
+================================================================================
+
+<!-- README.md -->
+
+# LAYoungBandPage
+
+
+
+
+
+================================================================================
+FILE: 
+LAST MODIFIED: 01/20/2026 22:49:12
+================================================================================
+
+# _config.yml
+
 # Welcome to Jekyll!
-#
 # This config file is meant for settings that affect your whole blog, values
 # which you are expected to set up once and rarely edit after that. If you find
 # yourself editing this file very often, consider using Jekyll's data files
 # feature for the data you need to update frequently.
-#
-# For technical reasons, this file is *NOT* reloaded automatically when you use
-# 'bundle exec jekyll serve'. If you change this file, please restart the server process.
-#
-# If you need help with YAML syntax, here are some quick references for you:
-# https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
-# https://learnxinyminutes.com/docs/yaml/
-#
-# Site settings
-# These are used to personalize your new site. If you look in the HTML files,
-# you will see them accessed via {{ site.title }}, {{ site.email }}, and so on.
-# You can create any custom variable you would like, and they will be accessible
-# in the templates via {{ site.myvariable }}.
 
-title: Your awesome title
+# Site settings
+title: L.A. Young - Soul in Full Color
 email: your-email@example.com
-description: >- # this means to ignore newlines until "baseurl:"
-  Write an awesome description for your new site here. You can edit this
-  line in _config.yml. It will appear in your document head meta (for
-  Google search results) and in your feed.xml site description.
-baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+description: >-
+  Soul singer blending jazz, blues, funk, hip-hop, and country.
+baseurl: "/LAYoungBandPage"
+url: "https://djmochajava-lang.github.io"
 twitter_username: jekyllrb
-github_username:  jekyll
+github_username: jekyll
 
 # Build settings
 theme: minima
 plugins:
   - jekyll-feed
 
-# Exclude from processing.
-# The following items will not be processed, by default.
-# Any item listed under the `exclude:` key here will be automatically added to
-# the internal "default list".
-#
-# Excluded items can be processed by explicitly listing the directories or
-# their entries' file path in the `include:` list.
-#
-# exclude:
-#   - .sass-cache/
-#   - .jekyll-cache/
-#   - gemfiles/
-#   - Gemfile
-#   - Gemfile.lock
-#   - node_modules/
-#   - vendor/bundle/
-#   - vendor/cache/
-#   - vendor/gems/
-#   - vendor/ruby/
+# Suppress SASS deprecation warnings
+sass:
+  quiet_deps: true
 
-# Exclude specific files that should not be processed into the site
-exclude:
-  - index.html
+# Exclude from processing
 
 
 

@@ -1,30 +1,22 @@
 # _config.yml
-
-# Welcome to Jekyll!
-# This config file is meant for settings that affect your whole blog, values
-# which you are expected to set up once and rarely edit after that. If you find
-# yourself editing this file very often, consider using Jekyll's data files
-# feature for the data you need to update frequently.
-
-# Site settings
 title: L.A. Young - Soul in Full Color
-email: your-email@example.com
-description: >-
-  Soul singer blending jazz, blues, funk, hip-hop, and country.
+description: Soul singer blending jazz, blues, funk, hip-hop, and country
 baseurl: "/LAYoungBandPage"
 url: "https://djmochajava-lang.github.io"
-twitter_username: jekyllrb
-github_username: jekyll
 
-# Build settings
-theme: minima
+# Build settings - NO THEME
 plugins:
   - jekyll-feed
 
-# Suppress SASS deprecation warnings
+# Suppress warnings
 sass:
   quiet_deps: true
+  style: compressed
 
-# Exclude from processing
+# Exclude
 exclude:
-  - index.html
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - add-path-comments.ps1
+  - dump-project-code.ps1
