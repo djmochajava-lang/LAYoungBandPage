@@ -1,0 +1,24 @@
+/* css/style.css */
+
+/* === MAIN STYLESHEET === */
+/* Imports all modular CSS files */
+
+@import url('base.css');           /* Reset, variables, typography */
+@import url('components.css');     /* Reusable components (buttons, forms, cards) */
+@import url('layout.css');         /* Header, footer, navigation */
+@import url('sections.css');       /* Page sections */
+@import url('animations.css');     /* Animations and transitions */
+
+/* 
+ * File Organization:
+ * - base.css: Core styles, CSS variables, reset
+ * - components.css: Buttons, forms, cards, badges, etc.
+ * - layout.css: Navigation, header, footer
+ * - sections.css: Hero, music, videos, gallery, tour, etc.
+ * - animations.css: All keyframe animations and transitions
+ * 
+ * To add new pages:
+ * 1. Use existing components from components.css
+ * 2. Add page-specific sections to sections.css
+ * 3. Reuse layout.css for consistent header/footer
+ */
