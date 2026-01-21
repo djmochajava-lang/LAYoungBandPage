@@ -8,7 +8,6 @@
   background-repeat: no-repeat;
 }
 
-
 .hero-overlay {
   position: absolute;
   top: 0;
@@ -42,22 +41,7 @@
   margin: 0 auto 2rem auto;
 }
 
-.epk-button {
-  display: inline-block;
-  padding: 12px 28px;
-  background: #e63946;
-  color: white;
-  text-decoration: none;
-  font-size: 1.2rem;
-  border-radius: 6px;
-  transition: background 0.3s ease;
-}
-
-.epk-button:hover {
-  background: #c71c30;
-}
-
-/* EPK BUTTON IN TOP RIGHT */
+/* EPK BUTTON - FIXED TOP RIGHT */
 .epk-button {
   position: absolute;
   top: 20px;
@@ -69,8 +53,27 @@
   font-size: 1rem;
   border-radius: 6px;
   z-index: 3;
+  transition: background 0.3s ease;
 }
 
 .epk-button:hover {
   background: #c71c30;
+}
+
+/* Mobile responsiveness */
+@media screen and (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+  .tagline {
+    font-size: 1.3rem;
+  }
+  .subline {
+    font-size: 1rem;
+    padding: 0 20px;
+  }
+  .epk-button {
+    font-size: 0.85rem;
+    padding: 8px 16px;
+  }
 }
