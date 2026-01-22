@@ -879,6 +879,431 @@ body:not(.page-loading) .loading-spinner {
 
 ================================================================================
 FILE: 
+LAST MODIFIED: 01/21/2026 23:10:18
+================================================================================
+
+/* css/pages.css */
+
+/* === PAGE-SPECIFIC STYLES === */
+
+/* === BIO PAGE === */
+.bio-section {
+  background: linear-gradient(
+    180deg,
+    var(--color-bg-dark) 0%,
+    var(--color-bg-navy) 100%
+  );
+}
+
+.bio-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.bio-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.bio-text {
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+
+.lead-text {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  font-weight: 300;
+  margin-bottom: var(--spacing-md);
+  line-height: 1.9;
+}
+
+.bio-text p {
+  margin-bottom: var(--spacing-md);
+}
+
+.bio-text strong {
+  color: var(--color-primary);
+}
+
+.bio-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.subsection-title {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+  letter-spacing: 0.1em;
+}
+
+.signature-performance,
+.performances-section,
+.accolades-section {
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+}
+
+.highlight-text {
+  font-size: var(--font-size-md);
+  color: var(--color-primary);
+  font-style: italic;
+}
+
+.intro-text {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Band Grid */
+.band-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+  margin: var(--spacing-lg) 0;
+}
+
+.band-member {
+  text-align: center;
+  padding: var(--spacing-md);
+}
+
+.band-member h4 {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.band-member .role {
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.band-member .bio-snippet {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Performance List */
+.performance-list {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.performance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: var(--border-gold-light);
+}
+
+.performance-item:last-child {
+  border-bottom: none;
+}
+
+.performance-item .venue {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.performance-item .location {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Accolades Grid */
+.accolades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.accolade-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: var(--border-gold-light);
+  padding: var(--spacing-md);
+  text-align: center;
+  transition: all var(--transition-base);
+}
+
+.accolade-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--color-primary);
+  transform: translateY(-5px);
+}
+
+.accolade-item .badge {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: var(--spacing-sm);
+}
+
+.accolade-item p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+/* Bio CTA */
+.bio-cta {
+  text-align: center;
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: var(--border-gold);
+}
+
+.bio-cta h3 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.bio-cta p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
+}
+
+.cta-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* === MERCH PAGE === */
+.merch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.merch-item {
+  text-align: center;
+}
+
+.merch-item h4 {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  margin: var(--spacing-sm) 0;
+}
+
+.merch-item .price {
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+  font-weight: bold;
+  margin-bottom: var(--spacing-sm);
+}
+
+.shopify-link,
+.shipping-info {
+  text-align: center;
+  margin-top: var(--spacing-lg);
+}
+
+.shipping-info h4 {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+/* === TOUR PAGE === */
+.past-venues {
+  text-align: center;
+  margin-top: var(--spacing-lg);
+}
+
+.past-venues h3 {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.venue-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.venue-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: var(--border-gold-light);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  border-radius: 20px;
+}
+
+.booking-cta {
+  text-align: center;
+  margin: var(--spacing-lg) 0;
+}
+
+.booking-cta h3 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.booking-cta p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
+}
+
+/* === CONTACT PAGE === */
+.contact-form-section {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.contact-form-section h3 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.contact-form-section p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-lg);
+}
+
+.contact-form {
+  text-align: left;
+}
+
+.contact-details {
+  margin: var(--spacing-md) 0;
+  text-align: left;
+}
+
+.contact-details p {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-secondary);
+}
+
+.contact-details a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.contact-details a:hover {
+  text-decoration: underline;
+}
+
+/* === MUSIC PAGE === */
+.featured-track {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.featured-track h3 {
+  font-size: var(--font-size-2xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.track-description {
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin-bottom: var(--spacing-md);
+}
+
+.streaming-links {
+  text-align: center;
+  margin-top: var(--spacing-xl);
+}
+
+.streaming-links h3 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.streaming-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* === VIDEOS PAGE === */
+.youtube-subscribe {
+  text-align: center;
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: var(--border-gold);
+}
+
+.youtube-subscribe h3 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.youtube-subscribe p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
+}
+
+/* === GALLERY PAGE === */
+.gallery-note {
+  text-align: center;
+  margin-top: var(--spacing-lg);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .bio-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .band-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .accolades-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .merch-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+  }
+
+  .streaming-buttons {
+    flex-direction: column;
+  }
+
+  .venue-list {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+
+
+
+
+================================================================================
+FILE: 
 LAST MODIFIED: 01/21/2026 01:33:34
 ================================================================================
 
@@ -1341,271 +1766,6 @@ LAST MODIFIED: 01/21/2026 00:16:38
  * 2. Add page-specific sections to sections.css
  * 3. Reuse layout.css for consistent header/footer
  */
-
-
-
-
-================================================================================
-FILE: 
-LAST MODIFIED: 01/21/2026 22:22:37
-================================================================================
-
-// js/js/mobile-detect.js
-
-/**
- * Mobile Detection & Optimization Module
- * Detects device type and applies mobile-specific optimizations
- */
-
-const MobileDetect = {
-  isMobile: false,
-  isTablet: false,
-  isDesktop: true,
-  isTouchDevice: false,
-  deviceType: 'desktop',
-
-  /**
-   * Initialize mobile detection
-   */
-  init() {
-    this.detectDevice();
-    this.applyDeviceClasses();
-    this.setupMobileOptimizations();
-    this.setupTouchEvents();
-    console.log(`âœ… Mobile detect initialized - Device: ${this.deviceType}`);
-  },
-
-  /**
-   * Detect device type
-   */
-  detectDevice() {
-    const ua = navigator.userAgent;
-
-    // Check if touch device
-    this.isTouchDevice =
-      'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
-    // Detect mobile
-    this.isMobile =
-      /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-
-    // Detect tablet
-    this.isTablet = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua);
-
-    // Determine device type
-    if (this.isTablet) {
-      this.deviceType = 'tablet';
-      this.isDesktop = false;
-    } else if (this.isMobile) {
-      this.deviceType = 'mobile';
-      this.isDesktop = false;
-    } else {
-      this.deviceType = 'desktop';
-      this.isDesktop = true;
-    }
-  },
-
-  /**
-   * Apply device-specific CSS classes
-   */
-  applyDeviceClasses() {
-    const body = document.body;
-
-    body.classList.add(`device-${this.deviceType}`);
-
-    if (this.isTouchDevice) {
-      body.classList.add('touch-device');
-    } else {
-      body.classList.add('no-touch');
-    }
-
-    if (this.isMobile || this.isTablet) {
-      body.classList.add('mobile-device');
-    }
-  },
-
-  /**
-   * Setup mobile-specific optimizations
-   */
-  setupMobileOptimizations() {
-    if (this.isMobile) {
-      // Disable hover effects on mobile
-      this.disableHoverOnMobile();
-
-      // Optimize animations for mobile
-      this.optimizeAnimations();
-
-      // Add mobile-specific viewport handling
-      this.setupMobileViewport();
-
-      // Prevent zoom on input focus
-      this.preventZoomOnFocus();
-    }
-  },
-
-  /**
-   * Disable hover effects on mobile
-   */
-  disableHoverOnMobile() {
-    const style = document.createElement('style');
-    style.textContent = `
-      @media (hover: none) {
-        .hover-lift:hover,
-        .hover-glow:hover,
-        .hover-scale:hover {
-          transform: none;
-          box-shadow: none;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-  },
-
-  /**
-   * Optimize animations for mobile
-   */
-  optimizeAnimations() {
-    // Reduce motion if user prefers
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.body.classList.add('reduce-motion');
-    }
-  },
-
-  /**
-   * Setup mobile viewport handling
-   */
-  setupMobileViewport() {
-    // Handle viewport height changes (keyboard opening/closing)
-    let vh = window.innerHeight * 0.01;
-    document.documentElement.style.setProperty('--vh', `${vh}px`);
-
-    window.addEventListener('resize', () => {
-      vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    });
-  },
-
-  /**
-   * Prevent zoom on input focus (iOS)
-   */
-  preventZoomOnFocus() {
-    const inputs = document.querySelectorAll('input, textarea, select');
-    inputs.forEach((input) => {
-      if (!input.style.fontSize || parseFloat(input.style.fontSize) < 16) {
-        input.style.fontSize = '16px';
-      }
-    });
-  },
-
-  /**
-   * Setup touch-specific event handlers
-   */
-  setupTouchEvents() {
-    if (this.isTouchDevice) {
-      // Add touch-friendly tap events
-      this.setupTapEvents();
-
-      // Prevent 300ms click delay
-      this.preventClickDelay();
-    }
-  },
-
-  /**
-   * Setup tap events for better touch responsiveness
-   */
-  setupTapEvents() {
-    let touchStartX = 0;
-    let touchStartY = 0;
-
-    document.addEventListener(
-      'touchstart',
-      (e) => {
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-      },
-      { passive: true },
-    );
-
-    document.addEventListener(
-      'touchend',
-      (e) => {
-        const touchEndX = e.changedTouches[0].clientX;
-        const touchEndY = e.changedTouches[0].clientY;
-
-        const deltaX = Math.abs(touchEndX - touchStartX);
-        const deltaY = Math.abs(touchEndY - touchStartY);
-
-        // If movement is minimal, treat as tap
-        if (deltaX < 10 && deltaY < 10) {
-          const target = e.target;
-          target.classList.add('tap-highlight');
-          setTimeout(() => target.classList.remove('tap-highlight'), 300);
-        }
-      },
-      { passive: true },
-    );
-  },
-
-  /**
-   * Prevent 300ms click delay on mobile
-   */
-  preventClickDelay() {
-    // Modern browsers handle this automatically with viewport meta tag
-    // This is a fallback for older devices
-    const meta = document.querySelector('meta[name="viewport"]');
-    if (!meta) {
-      const newMeta = document.createElement('meta');
-      newMeta.name = 'viewport';
-      newMeta.content = 'width=device-width, initial-scale=1, user-scalable=no';
-      document.head.appendChild(newMeta);
-    }
-  },
-
-  /**
-   * Check if device is in landscape mode
-   */
-  isLandscape() {
-    return window.innerWidth > window.innerHeight;
-  },
-
-  /**
-   * Check if device is in portrait mode
-   */
-  isPortrait() {
-    return window.innerHeight > window.innerWidth;
-  },
-
-  /**
-   * Get device info
-   */
-  getDeviceInfo() {
-    return {
-      type: this.deviceType,
-      isMobile: this.isMobile,
-      isTablet: this.isTablet,
-      isDesktop: this.isDesktop,
-      isTouchDevice: this.isTouchDevice,
-      orientation: this.isLandscape() ? 'landscape' : 'portrait',
-      screenWidth: window.innerWidth,
-      screenHeight: window.innerHeight,
-    };
-  },
-};
-
-// Auto-initialize if not using module system
-if (typeof module === 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => MobileDetect.init());
-  } else {
-    MobileDetect.init();
-  }
-}
-
-// Export for module use
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = MobileDetect;
-}
-
 
 
 
@@ -3225,7 +3385,272 @@ if (typeof module !== 'undefined' && module.exports) {
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/21/2026 00:35:04
+LAST MODIFIED: 01/21/2026 22:48:46
+================================================================================
+
+// js/mobile-detect.js
+
+/**
+ * Mobile Detection & Optimization Module
+ * Detects device type and applies mobile-specific optimizations
+ */
+
+const MobileDetect = {
+  isMobile: false,
+  isTablet: false,
+  isDesktop: true,
+  isTouchDevice: false,
+  deviceType: 'desktop',
+
+  /**
+   * Initialize mobile detection
+   */
+  init() {
+    this.detectDevice();
+    this.applyDeviceClasses();
+    this.setupMobileOptimizations();
+    this.setupTouchEvents();
+    console.log(`âœ… Mobile detect initialized - Device: ${this.deviceType}`);
+  },
+
+  /**
+   * Detect device type
+   */
+  detectDevice() {
+    const ua = navigator.userAgent;
+
+    // Check if touch device
+    this.isTouchDevice =
+      'ontouchstart' in window || navigator.maxTouchPoints > 0;
+
+    // Detect mobile
+    this.isMobile =
+      /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+
+    // Detect tablet
+    this.isTablet = /(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua);
+
+    // Determine device type
+    if (this.isTablet) {
+      this.deviceType = 'tablet';
+      this.isDesktop = false;
+    } else if (this.isMobile) {
+      this.deviceType = 'mobile';
+      this.isDesktop = false;
+    } else {
+      this.deviceType = 'desktop';
+      this.isDesktop = true;
+    }
+  },
+
+  /**
+   * Apply device-specific CSS classes
+   */
+  applyDeviceClasses() {
+    const body = document.body;
+
+    body.classList.add(`device-${this.deviceType}`);
+
+    if (this.isTouchDevice) {
+      body.classList.add('touch-device');
+    } else {
+      body.classList.add('no-touch');
+    }
+
+    if (this.isMobile || this.isTablet) {
+      body.classList.add('mobile-device');
+    }
+  },
+
+  /**
+   * Setup mobile-specific optimizations
+   */
+  setupMobileOptimizations() {
+    if (this.isMobile) {
+      // Disable hover effects on mobile
+      this.disableHoverOnMobile();
+
+      // Optimize animations for mobile
+      this.optimizeAnimations();
+
+      // Add mobile-specific viewport handling
+      this.setupMobileViewport();
+
+      // Prevent zoom on input focus
+      this.preventZoomOnFocus();
+    }
+  },
+
+  /**
+   * Disable hover effects on mobile
+   */
+  disableHoverOnMobile() {
+    const style = document.createElement('style');
+    style.textContent = `
+      @media (hover: none) {
+        .hover-lift:hover,
+        .hover-glow:hover,
+        .hover-scale:hover {
+          transform: none;
+          box-shadow: none;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  },
+
+  /**
+   * Optimize animations for mobile
+   */
+  optimizeAnimations() {
+    // Reduce motion if user prefers
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.body.classList.add('reduce-motion');
+    }
+  },
+
+  /**
+   * Setup mobile viewport handling
+   */
+  setupMobileViewport() {
+    // Handle viewport height changes (keyboard opening/closing)
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+    window.addEventListener('resize', () => {
+      vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    });
+  },
+
+  /**
+   * Prevent zoom on input focus (iOS)
+   */
+  preventZoomOnFocus() {
+    const inputs = document.querySelectorAll('input, textarea, select');
+    inputs.forEach((input) => {
+      if (!input.style.fontSize || parseFloat(input.style.fontSize) < 16) {
+        input.style.fontSize = '16px';
+      }
+    });
+  },
+
+  /**
+   * Setup touch-specific event handlers
+   */
+  setupTouchEvents() {
+    if (this.isTouchDevice) {
+      // Add touch-friendly tap events
+      this.setupTapEvents();
+
+      // Prevent 300ms click delay
+      this.preventClickDelay();
+    }
+  },
+
+  /**
+   * Setup tap events for better touch responsiveness
+   */
+  setupTapEvents() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    document.addEventListener(
+      'touchstart',
+      (e) => {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      },
+      { passive: true },
+    );
+
+    document.addEventListener(
+      'touchend',
+      (e) => {
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+
+        const deltaX = Math.abs(touchEndX - touchStartX);
+        const deltaY = Math.abs(touchEndY - touchStartY);
+
+        // If movement is minimal, treat as tap
+        if (deltaX < 10 && deltaY < 10) {
+          const target = e.target;
+          target.classList.add('tap-highlight');
+          setTimeout(() => target.classList.remove('tap-highlight'), 300);
+        }
+      },
+      { passive: true },
+    );
+  },
+
+  /**
+   * Prevent 300ms click delay on mobile
+   */
+  preventClickDelay() {
+    // Modern browsers handle this automatically with viewport meta tag
+    // This is a fallback for older devices
+    const meta = document.querySelector('meta[name="viewport"]');
+    if (!meta) {
+      const newMeta = document.createElement('meta');
+      newMeta.name = 'viewport';
+      newMeta.content = 'width=device-width, initial-scale=1, user-scalable=no';
+      document.head.appendChild(newMeta);
+    }
+  },
+
+  /**
+   * Check if device is in landscape mode
+   */
+  isLandscape() {
+    return window.innerWidth > window.innerHeight;
+  },
+
+  /**
+   * Check if device is in portrait mode
+   */
+  isPortrait() {
+    return window.innerHeight > window.innerWidth;
+  },
+
+  /**
+   * Get device info
+   */
+  getDeviceInfo() {
+    return {
+      type: this.deviceType,
+      isMobile: this.isMobile,
+      isTablet: this.isTablet,
+      isDesktop: this.isDesktop,
+      isTouchDevice: this.isTouchDevice,
+      orientation: this.isLandscape() ? 'landscape' : 'portrait',
+      screenWidth: window.innerWidth,
+      screenHeight: window.innerHeight,
+    };
+  },
+};
+
+// Auto-initialize if not using module system
+if (typeof module === 'undefined') {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => MobileDetect.init());
+  } else {
+    MobileDetect.init();
+  }
+}
+
+// Export for module use
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = MobileDetect;
+}
+
+
+
+
+
+================================================================================
+FILE: 
+LAST MODIFIED: 01/22/2026 00:02:23
 ================================================================================
 
 // js/navigation.js
@@ -3259,10 +3684,13 @@ const Navigation = {
     }
 
     // Toggle menu
-    menuToggle.addEventListener('click', () => {
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent event bubbling
       menuToggle.classList.toggle('active');
       mainNav.classList.toggle('active');
       document.body.classList.toggle('menu-open');
+
+      console.log('Menu toggled:', mainNav.classList.contains('active'));
     });
 
     // Close menu when clicking nav links
@@ -4310,6 +4738,487 @@ if (typeof module !== 'undefined' && module.exports) {
 
 ================================================================================
 FILE: 
+LAST MODIFIED: 01/21/2026 22:27:24
+================================================================================
+
+<!-- pages/bio.html -->
+
+<section class="section bio-section" id="bio">
+  <div class="container">
+    <h2 class="section-title">The Story</h2>
+    <p class="section-subtitle">From Steel Mill to Soul Power</p>
+
+    <div class="bio-content">
+      <!-- Hero Bio -->
+      <div class="bio-hero scroll-reveal">
+        <div class="bio-text">
+          <p class="lead-text">
+            L.A. Young's voice carries the weight of Ohio's steel mills and the
+            fire of funk, soul, and blues. As the first female crane operator in
+            the steel industry at age 18, she learned early that breaking
+            barriers requires strength, grit, and an unshakeable spirit.
+          </p>
+
+          <p>
+            Growing up in 1980s Ohioâ€”the epicenter of Funk fusionâ€”L.A. was
+            shaped by legends like the Staple Singers, absorbing Blues, R&B,
+            Funk, and Soul into her DNA. Her voice has been compared to
+            <strong>Chaka Khan meets Phyllis Hyman</strong>â€”a powerhouse blend
+            of raw emotion and technical mastery.
+          </p>
+
+          <p>
+            From performing at
+            <strong>President Clinton's second inauguration</strong> to opening
+            for <strong>Frederick Anthony Jackson</strong> and recording with
+            jazz legends <strong>Pieces of A Dream</strong>, L.A. has proven she
+            belongs on any stage.
+          </p>
+
+          <p>
+            Now working with legendary producer <strong>Norman Connors</strong>,
+            L.A. Young is crafting a sound that honors the past while pushing
+            soul music into the future. Her chart-topping single
+            <strong>"No One Can Love You More"</strong> hit #1 on UK FM radio,
+            with multiple top 5 hits following.
+          </p>
+        </div>
+
+        <div class="bio-image">
+          <div class="placeholder-image">
+            <p>[L.A. Young Portrait]</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Signature Performance -->
+      <div class="signature-performance scroll-reveal delay-2">
+        <h3 class="subsection-title">The Phyllis Hyman Experience</h3>
+        <p>
+          L.A. Young's tribute to Phyllis Hyman isn't just a performanceâ€”it's a
+          spiritual connection. Having studied Hyman's voice, phrasing, and
+          emotional depth, L.A. brings "Ms. Phyllis" back to life with stunning
+          authenticity and reverence.
+        </p>
+        <p class="highlight-text">
+          This signature show has become a must-see experience for soul music
+          lovers across the country.
+        </p>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- The Band -->
+      <div class="band-section scroll-reveal delay-3">
+        <h3 class="subsection-title">The Unusual Suspects</h3>
+        <p class="intro-text">
+          L.A. Young performs with some of the finest musicians in the business:
+        </p>
+
+        <div class="band-grid">
+          <div class="band-member card">
+            <h4>Eugene Chapman</h4>
+            <p class="role">Saxophone</p>
+            <p class="bio-snippet">Performed with P-Funk and The Temptations</p>
+          </div>
+
+          <div class="band-member card">
+            <h4>Kevin Robinson</h4>
+            <p class="role">Lead Guitar</p>
+            <p class="bio-snippet">MD Entertainment Hall of Fame 2017</p>
+          </div>
+
+          <div class="band-member card">
+            <h4>Moe Daniels</h4>
+            <p class="role">Keyboardist / Music Director</p>
+            <p class="bio-snippet">Masterful arranger and musical backbone</p>
+          </div>
+
+          <div class="band-member card">
+            <h4>Dave Krug</h4>
+            <p class="role">Saxophone</p>
+            <p class="bio-snippet">Soulful horn arrangements</p>
+          </div>
+
+          <div class="band-member card">
+            <h4>Kevin Walker</h4>
+            <p class="role">Bass</p>
+            <p class="bio-snippet">Groove foundation</p>
+          </div>
+
+          <div class="band-member card">
+            <h4>Morgan Cotton</h4>
+            <p class="role">Drums</p>
+            <p class="bio-snippet">Powerhouse rhythm section</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Notable Performances -->
+      <div class="performances-section scroll-reveal delay-4">
+        <h3 class="subsection-title">Notable Performances</h3>
+
+        <div class="performance-list">
+          <div class="performance-item">
+            <span class="venue">Blues Alley</span>
+            <span class="location">Washington, DC</span>
+          </div>
+
+          <div class="performance-item">
+            <span class="venue">City Winery DC</span>
+            <span class="location">Washington, DC</span>
+          </div>
+
+          <div class="performance-item">
+            <span class="venue">Lexington Market</span>
+            <span class="location"
+              >Baltimore (Monthly residency 2013-2015)</span
+            >
+          </div>
+
+          <div class="performance-item">
+            <span class="venue">African American Cultural Festival</span>
+            <span class="location">Baltimore</span>
+          </div>
+
+          <div class="performance-item">
+            <span class="venue">Safeway Feast of Sharing</span>
+            <span class="location">Community performances</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Accolades -->
+      <div class="accolades-section scroll-reveal delay-5">
+        <h3 class="subsection-title">Accolades & Achievements</h3>
+
+        <div class="accolades-grid">
+          <div class="accolade-item">
+            <span class="badge">ðŸ€</span>
+            <p>Woman's Basketball Hall of Fame Inductee</p>
+          </div>
+
+          <div class="accolade-item">
+            <span class="badge">ðŸŽµ</span>
+            <p>#1 UK FM Radio - "No One Can Love You More"</p>
+          </div>
+
+          <div class="accolade-item">
+            <span class="badge">â­</span>
+            <p>President Clinton's Second Inauguration Performer</p>
+          </div>
+
+          <div class="accolade-item">
+            <span class="badge">ðŸŽ¤</span>
+            <p>Opened for Frederick Anthony Jackson</p>
+          </div>
+
+          <div class="accolade-item">
+            <span class="badge">ðŸŽ¹</span>
+            <p>Recorded with Pieces of A Dream (Jazz Legends)</p>
+          </div>
+
+          <div class="accolade-item">
+            <span class="badge">ðŸŽ¼</span>
+            <p>Working with Norman Connors (Legendary Producer)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="bio-cta scroll-reveal delay-6">
+        <h3>Experience L.A. Young Live</h3>
+        <p>Book this unforgettable experience for your venue or event</p>
+        <div class="cta-buttons">
+          <a href="#contact" class="btn btn-primary btn-large">Book Now</a>
+          <a
+            href="https://www.layoungepk.com"
+            class="btn btn-secondary btn-large"
+            target="_blank"
+            >View Full EPK</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+================================================================================
+FILE: 
+LAST MODIFIED: 01/21/2026 23:29:37
+================================================================================
+
+<!-- pages/contact.html -->
+
+<section class="section contact-section" id="contact">
+  <div class="container">
+    <h2 class="section-title">Connect</h2>
+    <p class="section-subtitle">Let's Make Music Together</p>
+
+    <div class="contact-content">
+      <!-- Email Signup -->
+      <div class="email-signup scroll-reveal">
+        <h3>Join the Soul Fam</h3>
+        <p>Get exclusive updates, tour announcements, and new music first</p>
+
+        <form id="signup-form" class="signup-form">
+          <input
+            type="email"
+            class="form-input"
+            placeholder="Your email address"
+            required
+            aria-label="Email address"
+          />
+          <button type="submit" class="btn btn-primary submit-btn">
+            Subscribe
+          </button>
+        </form>
+      </div>
+
+      <!-- Social Links -->
+      <div class="social-links scroll-reveal delay-1">
+        <h3>Follow the Journey</h3>
+        <p>Stay connected on social media</p>
+
+        <div class="social-icons">
+          <a href="#" class="social-icon" target="_blank" aria-label="Facebook">
+            FB
+          </a>
+          <a
+            href="#"
+            class="social-icon"
+            target="_blank"
+            aria-label="Instagram"
+          >
+            IG
+          </a>
+          <a href="#" class="social-icon" target="_blank" aria-label="Twitter">
+            TW
+          </a>
+          <a href="#" class="social-icon" target="_blank" aria-label="YouTube">
+            YT
+          </a>
+          <a href="#" class="social-icon" target="_blank" aria-label="Spotify">
+            SP
+          </a>
+        </div>
+      </div>
+
+      <!-- Booking Info -->
+      <div class="booking-info scroll-reveal delay-2">
+        <h3>Booking Inquiries</h3>
+        <p>For booking and business inquiries, contact:</p>
+
+        <div class="contact-details">
+          <p>
+            <strong>Management:</strong><br />
+            Gold Bottom Entertainment LLC
+          </p>
+          <p>
+            <strong>Email:</strong><br />
+            <a href="mailto:booking@goldbottoment.com">
+              booking@goldbottoment.com
+            </a>
+          </p>
+          <p>
+            <strong>EPK:</strong><br />
+            <a href="https://www.layoungepk.com" target="_blank">
+              www.layoungepk.com
+            </a>
+          </p>
+        </div>
+
+        <a
+          href="https://www.layoungepk.com"
+          class="btn btn-secondary"
+          target="_blank"
+        >
+          View Full EPK
+        </a>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Contact Form -->
+    <div class="contact-form-section scroll-reveal delay-3">
+      <h3>Send a Message</h3>
+      <p>Have a question? Drop us a line</p>
+
+      <form id="contact-form" class="contact-form">
+        <div class="form-group">
+          <label for="contact-name" class="form-label">Name</label>
+          <input
+            type="text"
+            id="contact-name"
+            name="name"
+            class="form-input"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="contact-email" class="form-label">Email</label>
+          <input
+            type="email"
+            id="contact-email"
+            name="email"
+            class="form-input"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="contact-subject" class="form-label">Subject</label>
+          <input
+            type="text"
+            id="contact-subject"
+            name="subject"
+            class="form-input"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="contact-message" class="form-label">Message</label>
+          <textarea
+            id="contact-message"
+            name="message"
+            class="form-textarea"
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-large">
+          Send Message
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+================================================================================
+FILE: 
+LAST MODIFIED: 01/21/2026 23:22:01
+================================================================================
+
+<!-- pages/gallery.html -->
+
+<section class="section gallery-section" id="gallery">
+  <div class="container">
+    <h2 class="section-title">Gallery</h2>
+    <p class="section-subtitle">Moments in Color</p>
+
+    <div class="gallery-content">
+      <!-- Gallery Grid -->
+      <div class="gallery-grid">
+        <!-- Image 1 -->
+        <div class="gallery-item scroll-reveal" data-caption="Live Performance">
+          <div class="placeholder-image">
+            <p>[Gallery Image 1]</p>
+          </div>
+        </div>
+
+        <!-- Image 2 -->
+        <div class="gallery-item scroll-reveal delay-1" data-caption="On Stage">
+          <div class="placeholder-image">
+            <p>[Gallery Image 2]</p>
+          </div>
+        </div>
+
+        <!-- Image 3 -->
+        <div class="gallery-item scroll-reveal delay-2" data-caption="The Band">
+          <div class="placeholder-image">
+            <p>[Gallery Image 3]</p>
+          </div>
+        </div>
+
+        <!-- Image 4 -->
+        <div
+          class="gallery-item scroll-reveal delay-3"
+          data-caption="Blues Alley"
+        >
+          <div class="placeholder-image">
+            <p>[Gallery Image 4]</p>
+          </div>
+        </div>
+
+        <!-- Image 5 -->
+        <div
+          class="gallery-item scroll-reveal delay-4"
+          data-caption="City Winery"
+        >
+          <div class="placeholder-image">
+            <p>[Gallery Image 5]</p>
+          </div>
+        </div>
+
+        <!-- Image 6 -->
+        <div
+          class="gallery-item scroll-reveal delay-5"
+          data-caption="Behind the Scenes"
+        >
+          <div class="placeholder-image">
+            <p>[Gallery Image 6]</p>
+          </div>
+        </div>
+
+        <!-- Image 7 -->
+        <div
+          class="gallery-item scroll-reveal delay-6"
+          data-caption="Studio Session"
+        >
+          <div class="placeholder-image">
+            <p>[Gallery Image 7]</p>
+          </div>
+        </div>
+
+        <!-- Image 8 -->
+        <div class="gallery-item scroll-reveal delay-9" data-caption="Portrait">
+          <div class="placeholder-image">
+            <p>[Gallery Image 8]</p>
+          </div>
+        </div>
+
+        <!-- Image 9 -->
+        <div
+          class="gallery-item scroll-reveal delay-12"
+          data-caption="Live Show"
+        >
+          <div class="placeholder-image">
+            <p>[Gallery Image 9]</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gallery Note -->
+      <div class="gallery-note scroll-reveal">
+        <p class="text-muted">Click any image to view in full screen</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+================================================================================
+FILE: 
 LAST MODIFIED: 01/21/2026 21:51:16
 ================================================================================
 
@@ -4341,7 +5250,544 @@ LAST MODIFIED: 01/21/2026 21:51:16
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/21/2026 21:50:34
+LAST MODIFIED: 01/21/2026 22:32:24
+================================================================================
+
+<!-- pages/merch.html -->
+
+<section class="section merch-section" id="merch">
+  <div class="container">
+    <h2 class="section-title">Merchandise</h2>
+    <p class="section-subtitle">Wear the Soul</p>
+
+    <div class="merch-content">
+      <!-- Merch Preview -->
+      <div class="merch-preview scroll-reveal">
+        <h3>Official L.A. Young Merch</h3>
+        <p>
+          Show your support with exclusive merchandise. All items ship
+          worldwide.
+        </p>
+
+        <div class="merch-grid">
+          <!-- Merch Item 1 -->
+          <div class="merch-item card">
+            <div class="placeholder-image">
+              <p>[T-Shirt]</p>
+            </div>
+            <h4>Soul in Full Color Tee</h4>
+            <p class="price">$25.00</p>
+            <a href="#" class="btn btn-primary btn-small">Shop Now</a>
+          </div>
+
+          <!-- Merch Item 2 -->
+          <div class="merch-item card">
+            <div class="placeholder-image">
+              <p>[Hoodie]</p>
+            </div>
+            <h4>L.A. Young Hoodie</h4>
+            <p class="price">$45.00</p>
+            <a href="#" class="btn btn-primary btn-small">Shop Now</a>
+          </div>
+
+          <!-- Merch Item 3 -->
+          <div class="merch-item card">
+            <div class="placeholder-image">
+              <p>[Poster]</p>
+            </div>
+            <h4>Concert Poster</h4>
+            <p class="price">$15.00</p>
+            <a href="#" class="btn btn-primary btn-small">Shop Now</a>
+          </div>
+
+          <!-- Merch Item 4 -->
+          <div class="merch-item card">
+            <div class="placeholder-image">
+              <p>[Hat]</p>
+            </div>
+            <h4>Signature Cap</h4>
+            <p class="price">$20.00</p>
+            <a href="#" class="btn btn-primary btn-small">Shop Now</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Shopify Link -->
+      <div class="shopify-link scroll-reveal delay-2">
+        <h3>Visit the Official Store</h3>
+        <p>Browse the complete collection on Shopify</p>
+        <a href="#" class="btn btn-primary btn-large" target="_blank">
+          Shop All Merchandise
+        </a>
+      </div>
+
+      <!-- Shipping Info -->
+      <div class="shipping-info scroll-reveal delay-3">
+        <h4>Shipping & Returns</h4>
+        <p class="text-muted">
+          Free shipping on orders over $50 â€¢ Worldwide delivery â€¢ 30-day returns
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+================================================================================
+FILE: 
+LAST MODIFIED: 01/21/2026 23:29:41
+================================================================================
+
+<!-- pages/music.html -->
+
+<section class="section music-section" id="music">
+  <div class="container">
+    <h2 class="section-title">Music</h2>
+    <p class="section-subtitle">Soul in Full Color</p>
+
+    <div class="music-content">
+      <!-- Featured Track -->
+      <div class="featured-track scroll-reveal">
+        <h3>"No One Can Love You More"</h3>
+        <p class="track-description">
+          Chart-topping single - #1 on UK FM Radio
+        </p>
+
+        <div class="placeholder-player">
+          <p>[Spotify/SoundCloud Player]</p>
+          <p class="placeholder-text">
+            Embed Spotify or SoundCloud player here
+          </p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Music Grid -->
+      <div class="music-grid">
+        <!-- Track 1 -->
+        <div class="music-player scroll-reveal delay-1">
+          <h3>Original Tracks</h3>
+          <div class="placeholder-player">
+            <p>[Music Player 1]</p>
+            <p class="placeholder-text">
+              Working with Norman Connors on new material
+            </p>
+          </div>
+        </div>
+
+        <!-- Track 2 -->
+        <div class="music-player scroll-reveal delay-2">
+          <h3>Live Performances</h3>
+          <div class="placeholder-player">
+            <p>[Music Player 2]</p>
+            <p class="placeholder-text">
+              The Phyllis Hyman Experience recordings
+            </p>
+          </div>
+        </div>
+
+        <!-- Track 3 -->
+        <div class="music-player scroll-reveal delay-3">
+          <h3>Collaborations</h3>
+          <div class="placeholder-player">
+            <p>[Music Player 3]</p>
+            <p class="placeholder-text">
+              Featuring Pieces of A Dream and The Unusual Suspects
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Streaming Links -->
+      <div class="streaming-links scroll-reveal delay-4">
+        <h3>Listen Everywhere</h3>
+        <div class="streaming-buttons">
+          <a href="#" class="btn btn-secondary" target="_blank">Spotify</a>
+          <a href="#" class="btn btn-secondary" target="_blank">Apple Music</a>
+          <a href="#" class="btn btn-secondary" target="_blank">SoundCloud</a>
+          <a href="#" class="btn btn-secondary" target="_blank"
+            >YouTube Music</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+================================================================================
+FILE: 
+LAST MODIFIED: 01/21/2026 23:23:24
+================================================================================
+
+<!-- pages/tour.html -->
+
+<section class="section tour-section" id="tour">
+  <div class="container">
+    <h2 class="section-title">Tour Dates</h2>
+    <p class="section-subtitle">See L.A. Young Live</p>
+
+    <div class="tour-content">
+      <!-- Tour List -->
+      <div class="tour-list">
+        <!-- Tour Date 1 -->
+        <div class="tour-item scroll-reveal">
+          <div class="tour-date">
+            <span class="month">FEB</span>
+            <span class="day">14</span>
+          </div>
+          <div class="tour-info">
+            <h3>Blues Alley</h3>
+            <p>Washington, DC â€¢ 8:00 PM</p>
+          </div>
+          <a href="#" class="tour-ticket-btn">Tickets</a>
+        </div>
+
+        <!-- Tour Date 2 -->
+        <div class="tour-item scroll-reveal delay-1">
+          <div class="tour-date">
+            <span class="month">MAR</span>
+            <span class="day">7</span>
+          </div>
+          <div class="tour-info">
+            <h3>City Winery</h3>
+            <p>Washington, DC â€¢ 7:30 PM</p>
+          </div>
+          <a href="#" class="tour-ticket-btn">Tickets</a>
+        </div>
+
+        <!-- Tour Date 3 -->
+        <div class="tour-item scroll-reveal delay-2">
+          <div class="tour-date">
+            <span class="month">MAR</span>
+            <span class="day">21</span>
+          </div>
+          <div class="tour-info">
+            <h3>The Phyllis Hyman Experience</h3>
+            <p>Baltimore, MD â€¢ 8:00 PM</p>
+          </div>
+          <a href="#" class="tour-ticket-btn">Tickets</a>
+        </div>
+
+        <!-- Tour Date 4 -->
+        <div class="tour-item scroll-reveal delay-3">
+          <div class="tour-date">
+            <span class="month">APR</span>
+            <span class="day">12</span>
+          </div>
+          <div class="tour-info">
+            <h3>Soul Night</h3>
+            <p>Philadelphia, PA â€¢ 9:00 PM</p>
+          </div>
+          <a href="#" class="tour-ticket-btn">Tickets</a>
+        </div>
+
+        <!-- Tour Date 5 -->
+        <div class="tour-item scroll-reveal delay-4">
+          <div class="tour-date">
+            <span class="month">MAY</span>
+            <span class="day">5</span>
+          </div>
+          <div class="tour-info">
+            <h3>African American Cultural Festival</h3>
+            <p>Baltimore, MD â€¢ 6:00 PM</p>
+          </div>
+          <a href="#" class="tour-ticket-btn">Free Entry</a>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Booking CTA -->
+      <div class="booking-cta scroll-reveal delay-5">
+        <h3>Book L.A. Young for Your Venue</h3>
+        <p>
+          Available for concerts, festivals, corporate events, and private
+          performances
+        </p>
+        <div class="cta-buttons">
+          <a href="#contact" class="btn btn-primary btn-large">
+            Request Booking
+          </a>
+          <a
+            href="https://www.layoungepk.com"
+            class="btn btn-secondary btn-large"
+            target="_blank"
+          >
+            View EPK
+          </a>
+        </div>
+      </div>
+
+      <!-- Past Venues -->
+      <div class="past-venues scroll-reveal delay-6">
+        <h3>Past Venues Include:</h3>
+        <div class="venue-list">
+          <span class="venue-badge">Blues Alley, DC</span>
+          <span class="venue-badge">City Winery DC</span>
+          <span class="venue-badge">Lexington Market, Baltimore</span>
+          <span class="venue-badge">African American Cultural Festival</span>
+          <span class="venue-badge">Safeway Feast of Sharing</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+================================================================================
+FILE: 
+LAST MODIFIED: 01/21/2026 23:23:48
+================================================================================
+
+<!-- pages/videos.html -->
+
+<section class="section videos-section" id="videos">
+  <div class="container">
+    <h2 class="section-title">Videos</h2>
+    <p class="section-subtitle">Experience the Live Performance</p>
+
+    <div class="videos-content">
+      <!-- Video Grid -->
+      <div class="video-grid">
+        <!-- Video 1 -->
+        <div class="video-item scroll-reveal">
+          <div class="placeholder-video">
+            <p>[Video Player 1]</p>
+            <p class="placeholder-text">The Phyllis Hyman Experience</p>
+          </div>
+        </div>
+
+        <!-- Video 2 -->
+        <div class="video-item scroll-reveal delay-1">
+          <div class="placeholder-video">
+            <p>[Video Player 2]</p>
+            <p class="placeholder-text">Live at Blues Alley</p>
+          </div>
+        </div>
+
+        <!-- Video 3 -->
+        <div class="video-item scroll-reveal delay-2">
+          <div class="placeholder-video">
+            <p>[Video Player 3]</p>
+            <p class="placeholder-text">City Winery Performance</p>
+          </div>
+        </div>
+
+        <!-- Video 4 -->
+        <div class="video-item scroll-reveal delay-3">
+          <div class="placeholder-video">
+            <p>[Video Player 4]</p>
+            <p class="placeholder-text">Behind the Scenes</p>
+          </div>
+        </div>
+
+        <!-- Video 5 -->
+        <div class="video-item scroll-reveal delay-4">
+          <div class="placeholder-video">
+            <p>[Video Player 5]</p>
+            <p class="placeholder-text">Studio Sessions</p>
+          </div>
+        </div>
+
+        <!-- Video 6 -->
+        <div class="video-item scroll-reveal delay-5">
+          <div class="placeholder-video">
+            <p>[Video Player 6]</p>
+            <p class="placeholder-text">Interviews</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- YouTube Subscribe -->
+      <div class="youtube-subscribe scroll-reveal delay-6">
+        <h3>Stay Updated</h3>
+        <p>Subscribe to the YouTube channel for new videos and performances</p>
+        <a href="#" class="btn btn-primary btn-large" target="_blank">
+          Subscribe on YouTube
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+================================================================================
+FILE: 
+LAST MODIFIED: 01/21/2026 22:48:46
+================================================================================
+
+<!-- contact.html -->
+
+<section class="section contact-section" id="contact">
+  <div class="container">
+    <h2 class="section-title">Connect</h2>
+    <p class="section-subtitle">Let's Make Music Together</p>
+
+    <div class="contact-content">
+      <!-- Email Signup -->
+      <div class="email-signup scroll-reveal">
+        <h3>Join the Soul Fam</h3>
+        <p>Get exclusive updates, tour announcements, and new music first</p>
+
+        <form id="signup-form" class="signup-form">
+          <input
+            type="email"
+            class="form-input"
+            placeholder="Your email address"
+            required
+            aria-label="Email address"
+          />
+          <button type="submit" class="btn btn-primary submit-btn">
+            Subscribe
+          </button>
+        </form>
+      </div>
+
+      <!-- Social Links -->
+      <div class="social-links scroll-reveal delay-1">
+        <h3>Follow the Journey</h3>
+        <p>Stay connected on social media</p>
+
+        <div class="social-icons">
+          <a href="#" class="social-icon" target="_blank" aria-label="Facebook">
+            FB
+          </a>
+          <a
+            href="#"
+            class="social-icon"
+            target="_blank"
+            aria-label="Instagram"
+          >
+            IG
+          </a>
+          <a href="#" class="social-icon" target="_blank" aria-label="Twitter">
+            TW
+          </a>
+          <a href="#" class="social-icon" target="_blank" aria-label="YouTube">
+            YT
+          </a>
+          <a href="#" class="social-icon" target="_blank" aria-label="Spotify">
+            SP
+          </a>
+        </div>
+      </div>
+
+      <!-- Booking Info -->
+      <div class="booking-info scroll-reveal delay-2">
+        <h3>Booking Inquiries</h3>
+        <p>For booking and business inquiries, contact:</p>
+
+        <div class="contact-details">
+          <p>
+            <strong>Management:</strong><br />
+            Gold Bottom Entertainment LLC
+          </p>
+          <p>
+            <strong>Email:</strong><br />
+            <a href="mailto:booking@goldbottoment.com">
+              booking@goldbottoment.com
+            </a>
+          </p>
+          <p>
+            <strong>EPK:</strong><br />
+            <a href="https://www.layoungepk.com" target="_blank">
+              www.layoungepk.com
+            </a>
+          </p>
+        </div>
+
+        <a
+          href="https://www.layoungepk.com"
+          class="btn btn-secondary"
+          target="_blank"
+        >
+          View Full EPK
+        </a>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Contact Form -->
+    <div class="contact-form-section scroll-reveal delay-3">
+      <h3>Send a Message</h3>
+      <p>Have a question? Drop us a line</p>
+
+      <form id="contact-form" class="contact-form">
+        <div class="form-group">
+          <label for="contact-name" class="form-label">Name</label>
+          <input
+            type="text"
+            id="contact-name"
+            name="name"
+            class="form-input"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="contact-email" class="form-label">Email</label>
+          <input
+            type="email"
+            id="contact-email"
+            name="email"
+            class="form-input"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="contact-subject" class="form-label">Subject</label>
+          <input
+            type="text"
+            id="contact-subject"
+            name="subject"
+            class="form-input"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="contact-message" class="form-label">Message</label>
+          <textarea
+            id="contact-message"
+            name="message"
+            class="form-textarea"
+            required
+          ></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-large">
+          Send Message
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+================================================================================
+FILE: 
+LAST MODIFIED: 01/22/2026 00:02:48
 ================================================================================
 
 <!-- index.html -->
@@ -4374,6 +5820,7 @@ LAST MODIFIED: 01/21/2026 21:50:34
     <link rel="stylesheet" href="css/components.css" />
     <link rel="stylesheet" href="css/layout.css" />
     <link rel="stylesheet" href="css/sections.css" />
+    <link rel="stylesheet" href="css/pages.css" />
     <link rel="stylesheet" href="css/animations.css" />
 
     <!-- Fonts -->
@@ -4388,7 +5835,18 @@ LAST MODIFIED: 01/21/2026 21:50:34
     <!-- Top Navigation Banner -->
     <header class="top-banner">
       <div class="banner-content">
-        <h1 class="site-title">L.A. YOUNG</h1>
+        <!-- Left: Site Title -->
+        <div class="site-title-wrapper">
+          <h1 class="site-title">
+            L.A. YOUNG
+            <span style="font-size: 0.4em; display: block; color: gold">
+              Soul in Full Color
+            </span>
+          </h1>
+          <h1 class="band-page-text" style="font-size: 1.8rem">
+            <a href="#home" class="band-page-text">BAND PAGE</a>
+          </h1>
+        </div>
 
         <!-- Mobile Menu Toggle -->
         <button class="menu-toggle" aria-label="Toggle menu">
@@ -4416,11 +5874,7 @@ LAST MODIFIED: 01/21/2026 21:50:34
 
     <!-- Main Content Container -->
     <main id="app-container" class="page-content">
-      <!-- Pages load here dynamically -->
-      <div class="loading-spinner">
-        <div class="spinner"></div>
-        <p>Loading...</p>
-      </div>
+      <!-- Pages load here dynamically via router.js -->
     </main>
 
     <!-- Footer -->
@@ -4445,7 +5899,7 @@ LAST MODIFIED: 01/21/2026 21:50:34
     <script src="js/forms.js"></script>
     <script src="js/gallery.js"></script>
     <script src="js/media-player.js"></script>
-    <script src="js/app.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>
 

@@ -10,7 +10,10 @@ const Navigation = {
    * Initialize all navigation features
    */
   init() {
-    this.initMobileMenu();
+    // Delay mobile menu init to ensure DOM is ready
+    setTimeout(() => {
+      this.initMobileMenu();
+    }, 200);
     this.initSmoothScroll();
     this.initActiveNav();
     console.log('✅ Navigation initialized');
@@ -29,14 +32,26 @@ const Navigation = {
     }
 
     // Toggle menu
-    menuToggle.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent event bubbling
-      menuToggle.classList.toggle('active');
-      mainNav.classList.toggle('active');
-      document.body.classList.toggle('menu-open');
+    const toggleMenu = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-      console.log('Menu toggled:', mainNav.classList.contains('active'));
-    });
+      const isActive = mainNav.classList.contains('active');
+
+      if (isActive) {
+        menuToggle.classList.remove('active');
+        mainNav.classList.remove('active');
+        document.body.classList.remove('menu-open');
+      } else {
+        menuToggle.classList.add('active');
+        mainNav.classList.add('active');
+        document.body.classList.add('menu-open');
+      }
+    };
+
+    // Add both click and touchstart for mobile support
+    menuToggle.addEventListener('click', toggleMenu);
+    menuToggle.addEventListener('touchstart', toggleMenu, { passive: false });
 
     // Close menu when clicking nav links
     const navLinks = mainNav.querySelectorAll('a');
@@ -48,12 +63,14 @@ const Navigation = {
       });
     });
 
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
-        menuToggle.classList.remove('active');
-        mainNav.classList.remove('active');
-        document.body.classList.remove('menu-open');
+    // Close menu when clicking backdrop
+    document.body.addEventListener('click', (e) => {
+      if (document.body.classList.contains('menu-open')) {
+        if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
+          menuToggle.classList.remove('active');
+          mainNav.classList.remove('active');
+          document.body.classList.remove('menu-open');
+        }
       }
     });
   },

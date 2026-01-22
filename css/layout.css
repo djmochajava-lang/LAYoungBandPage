@@ -11,6 +11,7 @@
   border-bottom: 2px solid rgba(255, 215, 0, 0.3);
   z-index: var(--z-fixed);
   padding: var(--spacing-sm) var(--spacing-md);
+  overflow: visible !important;
 }
 
 .banner-content {
@@ -20,6 +21,7 @@
   justify-content: space-between;
   align-items: center;
   gap: var(--spacing-md);
+  overflow: visible !important;
 }
 
 .site-title {
@@ -128,6 +130,18 @@
 
 /* Mobile Navigation */
 @media (max-width: 768px) {
+  .site-title-wrapper {
+    flex-direction: column;
+    gap: 0.2rem;
+    align-items: stretch;
+    white-space: initial;
+  }
+
+  .site-title,
+  .band-page-text {
+    white-space: normal;
+  }
+
   .menu-toggle {
     display: flex;
     order: 2;
@@ -135,27 +149,40 @@
   }
 
   .main-nav {
-    display: none;
     position: fixed;
     top: 80px;
-    left: 0;
-    width: 100%;
+    left: -100%;
+    width: 280px;
+    height: calc(100vh - 80px);
     background: var(--color-bg-dark);
     flex-direction: column;
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) 0;
     gap: 0;
-    z-index: 1000;
-    border-top: var(--border-gold);
+    z-index: 10000;
+    border-right: var(--border-gold);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.5);
+    transition: left 0.3s ease;
+    overflow-y: auto;
+    display: flex;
   }
 
   .main-nav.active {
-    display: flex;
+    left: 0;
   }
 
   .main-nav a {
     padding: var(--spacing-sm) var(--spacing-md);
     border-bottom: var(--border-gold-light);
     font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: all var(--transition-base);
+  }
+
+  .main-nav a:hover {
+    background: rgba(255, 215, 0, 0.1);
+    color: var(--color-primary);
+    padding-left: calc(var(--spacing-md) + 10px);
   }
 
   .main-nav a:last-child {
@@ -168,6 +195,24 @@
 
   body.menu-open {
     overflow: hidden;
+  }
+
+  /* Backdrop overlay when menu is open */
+  body.menu-open::before {
+    content: '';
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 100%;
+    height: calc(100vh - 80px);
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 }
 
@@ -259,16 +304,8 @@
   }
 
   .main-nav {
-    display: none;
-    width: 100%;
+    width: 280px;
     order: 4;
-    flex-direction: column;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) 0;
-  }
-
-  .main-nav.active {
-    display: flex;
   }
 
   .main-nav a::after {
@@ -283,15 +320,6 @@
     flex-direction: column;
     font-size: 0.75rem;
   }
-}
-.banner-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 var(--spacing-md);
-  gap: var(--spacing-md);
 }
 
 /* Site Title Wrapper - Left side */
