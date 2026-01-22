@@ -1,0 +1,415 @@
+/* css/pages.css */
+
+/* === PAGE-SPECIFIC STYLES === */
+
+/* === BIO PAGE === */
+.bio-section {
+  background: linear-gradient(
+    180deg,
+    var(--color-bg-dark) 0%,
+    var(--color-bg-navy) 100%
+  );
+}
+
+.bio-content {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.bio-hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-xl);
+}
+
+.bio-text {
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+
+.lead-text {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  font-weight: 300;
+  margin-bottom: var(--spacing-md);
+  line-height: 1.9;
+}
+
+.bio-text p {
+  margin-bottom: var(--spacing-md);
+}
+
+.bio-text strong {
+  color: var(--color-primary);
+}
+
+.bio-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.subsection-title {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: var(--spacing-md);
+  letter-spacing: 0.1em;
+}
+
+.signature-performance,
+.performances-section,
+.accolades-section {
+  margin-bottom: var(--spacing-xl);
+  text-align: center;
+}
+
+.highlight-text {
+  font-size: var(--font-size-md);
+  color: var(--color-primary);
+  font-style: italic;
+}
+
+.intro-text {
+  font-size: var(--font-size-md);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Band Grid */
+.band-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--spacing-md);
+  margin: var(--spacing-lg) 0;
+}
+
+.band-member {
+  text-align: center;
+  padding: var(--spacing-md);
+}
+
+.band-member h4 {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+.band-member .role {
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.band-member .bio-snippet {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Performance List */
+.performance-list {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.performance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: var(--border-gold-light);
+}
+
+.performance-item:last-child {
+  border-bottom: none;
+}
+
+.performance-item .venue {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.performance-item .location {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+/* Accolades Grid */
+.accolades-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.accolade-item {
+  background: rgba(255, 255, 255, 0.03);
+  border: var(--border-gold-light);
+  padding: var(--spacing-md);
+  text-align: center;
+  transition: all var(--transition-base);
+}
+
+.accolade-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--color-primary);
+  transform: translateY(-5px);
+}
+
+.accolade-item .badge {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: var(--spacing-sm);
+}
+
+.accolade-item p {
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+}
+
+/* Bio CTA */
+.bio-cta {
+  text-align: center;
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: var(--border-gold);
+}
+
+.bio-cta h3 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.bio-cta p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
+}
+
+.cta-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* === MERCH PAGE === */
+.merch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.merch-item {
+  text-align: center;
+}
+
+.merch-item h4 {
+  font-size: var(--font-size-md);
+  color: var(--color-text-primary);
+  margin: var(--spacing-sm) 0;
+}
+
+.merch-item .price {
+  font-size: var(--font-size-lg);
+  color: var(--color-primary);
+  font-weight: bold;
+  margin-bottom: var(--spacing-sm);
+}
+
+.shopify-link,
+.shipping-info {
+  text-align: center;
+  margin-top: var(--spacing-lg);
+}
+
+.shipping-info h4 {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-xs);
+}
+
+/* === TOUR PAGE === */
+.past-venues {
+  text-align: center;
+  margin-top: var(--spacing-lg);
+}
+
+.past-venues h3 {
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.venue-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  justify-content: center;
+}
+
+.venue-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: var(--border-gold-light);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  border-radius: 20px;
+}
+
+.booking-cta {
+  text-align: center;
+  margin: var(--spacing-lg) 0;
+}
+
+.booking-cta h3 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.booking-cta p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
+}
+
+/* === CONTACT PAGE === */
+.contact-form-section {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.contact-form-section h3 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.contact-form-section p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-lg);
+}
+
+.contact-form {
+  text-align: left;
+}
+
+.contact-details {
+  margin: var(--spacing-md) 0;
+  text-align: left;
+}
+
+.contact-details p {
+  margin-bottom: var(--spacing-md);
+  color: var(--color-text-secondary);
+}
+
+.contact-details a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.contact-details a:hover {
+  text-decoration: underline;
+}
+
+/* === MUSIC PAGE === */
+.featured-track {
+  text-align: center;
+  margin-bottom: var(--spacing-xl);
+}
+
+.featured-track h3 {
+  font-size: var(--font-size-2xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.track-description {
+  color: var(--color-text-muted);
+  font-style: italic;
+  margin-bottom: var(--spacing-md);
+}
+
+.streaming-links {
+  text-align: center;
+  margin-top: var(--spacing-xl);
+}
+
+.streaming-links h3 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.streaming-buttons {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* === VIDEOS PAGE === */
+.youtube-subscribe {
+  text-align: center;
+  margin-top: var(--spacing-xl);
+  padding: var(--spacing-lg) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: var(--border-gold);
+}
+
+.youtube-subscribe h3 {
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.youtube-subscribe p {
+  color: var(--color-text-muted);
+  margin-bottom: var(--spacing-md);
+}
+
+/* === GALLERY PAGE === */
+.gallery-note {
+  text-align: center;
+  margin-top: var(--spacing-lg);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .bio-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .band-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .accolades-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .merch-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+  }
+
+  .streaming-buttons {
+    flex-direction: column;
+  }
+
+  .venue-list {
+    flex-direction: column;
+    align-items: center;
+  }
+}
