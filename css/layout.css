@@ -137,15 +137,16 @@
   .main-nav {
     display: none;
     position: fixed;
-    top: 80px;
+    top: 80px; /* Adjust if your header height is different */
     left: 0;
     width: 100%;
-    background: var(--color-bg-dark);
+    background: rgba(10, 10, 10, 0.98); /* Solid dark background */
     flex-direction: column;
-    padding: var(--spacing-md);
+    padding: 0;
     gap: 0;
     z-index: 1000;
     border-top: var(--border-gold);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   }
 
   .main-nav.active {
@@ -153,21 +154,48 @@
   }
 
   .main-nav a {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: 1rem 1.5rem; /* Comfortable touch target */
     border-bottom: var(--border-gold-light);
-    font-size: var(--font-size-md);
+    font-size: 1rem; /* Normal size, not huge */
+    text-align: left; /* Align left instead of center */
+    color: var(--color-text-primary);
+    transition: all var(--transition-base);
+  }
+
+  .main-nav a:hover,
+  .main-nav a.active {
+    background: rgba(255, 215, 0, 0.1);
+    color: var(--color-primary);
+    padding-left: 2rem; /* Indent on hover */
   }
 
   .main-nav a:last-child {
     border-bottom: none;
   }
 
+  /* Hide EPK button on mobile */
   .epk-button {
-    display: none; /* Hide on mobile or move to menu */
+    display: none;
   }
 
+  /* Prevent body scroll when menu is open */
   body.menu-open {
     overflow: hidden;
+  }
+
+  /* Adjust banner content for mobile */
+  .banner-content {
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .site-title-wrapper {
+    order: 1;
+    flex: 1;
+  }
+
+  .menu-toggle {
+    order: 2;
   }
 }
 
