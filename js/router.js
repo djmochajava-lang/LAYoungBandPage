@@ -17,7 +17,7 @@ const Router = {
     contact: 'pages/contact.html',
   },
 
-  currentPage: 'home',
+  currentPage: null,
   defaultPage: 'home',
 
   /**
@@ -59,15 +59,15 @@ const Router = {
   /**
    * Navigate to a page
    */
-  async navigateTo(pageName) {
+  async navigateTo(pageName, forceLoad = false) {
     // Validate page exists
     if (!this.routes[pageName]) {
       console.warn(`Page "${pageName}" not found, loading default`);
       pageName = this.defaultPage;
     }
 
-    // Don't reload if already on this page
-    if (pageName === this.currentPage) {
+    // Don't reload if already on this page (unless forced)
+    if (pageName === this.currentPage && !forceLoad) {
       return;
     }
 
@@ -110,9 +110,9 @@ const Router = {
     const hash = window.location.hash.substring(1);
     const initialPage = hash && this.routes[hash] ? hash : this.defaultPage;
 
-    // Load initial page immediately
+    // Force load initial page (even if currentPage matches)
     setTimeout(() => {
-      this.navigateTo(initialPage);
+      this.navigateTo(initialPage, true); // true = force load
     }, 100);
   },
 
