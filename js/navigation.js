@@ -29,10 +29,13 @@ const Navigation = {
     }
 
     // Toggle menu
-    menuToggle.addEventListener('click', () => {
+    menuToggle.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent event bubbling
       menuToggle.classList.toggle('active');
       mainNav.classList.toggle('active');
       document.body.classList.toggle('menu-open');
+
+      console.log('Menu toggled:', mainNav.classList.contains('active'));
     });
 
     // Close menu when clicking nav links
