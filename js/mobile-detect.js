@@ -1,4 +1,4 @@
-// js/js/mobile-detect.js
+// js/mobile-detect.js
 
 /**
  * Mobile Detection & Optimization Module

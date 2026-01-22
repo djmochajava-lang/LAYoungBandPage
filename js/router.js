@@ -110,8 +110,10 @@ const Router = {
     const hash = window.location.hash.substring(1);
     const initialPage = hash && this.routes[hash] ? hash : this.defaultPage;
 
-    // Load initial page
-    this.navigateTo(initialPage);
+    // Load initial page immediately
+    setTimeout(() => {
+      this.navigateTo(initialPage);
+    }, 100);
   },
 
   /**
