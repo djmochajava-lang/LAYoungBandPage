@@ -12,10 +12,23 @@
       name="keywords"
       content="L.A. Young, soul singer, jazz, blues, funk, hip-hop, country, live music, Gold Bottom Ent"
     />
+
+    <!-- PWA Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="theme-color" content="#1a1a2e" />
+
     <title>L.A. Young - Soul in Full Color</title>
 
-    <!-- Stylesheet -->
-    <link rel="stylesheet" href="css/style.css" />
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/components.css" />
+    <link rel="stylesheet" href="css/layout.css" />
+    <link rel="stylesheet" href="css/sections.css" />
+    <link rel="stylesheet" href="css/animations.css" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -29,238 +42,41 @@
     <!-- Top Navigation Banner -->
     <header class="top-banner">
       <div class="banner-content">
-        <h1 class="site-title">L.A. YOUNG BAND PAGE</h1>
+        <h1 class="site-title">L.A. YOUNG</h1>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="menu-toggle" aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
         <nav class="main-nav">
-          <a href="#home">Home</a>
-          <a href="#music">Music</a>
-          <a href="#videos">Videos</a>
-          <a href="#gallery">Gallery</a>
-          <a href="#tour">Tour</a>
-          <a href="#merch">Merch</a>
-          <a href="#contact">Connect</a>
+          <a href="#home" data-page="home">Home</a>
+          <a href="#bio" data-page="bio">Bio</a>
+          <a href="#music" data-page="music">Music</a>
+          <a href="#videos" data-page="videos">Videos</a>
+          <a href="#gallery" data-page="gallery">Gallery</a>
+          <a href="#tour" data-page="tour">Tour</a>
+          <a href="#merch" data-page="merch">Merch</a>
+          <a href="#contact" data-page="contact">Connect</a>
         </nav>
+
         <a href="https://www.layoungepk.com" class="epk-button" target="_blank"
           >View EPK</a
         >
       </div>
     </header>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-      <div class="hero-overlay"></div>
-      <div class="hero-content">
-        <h2 class="hero-title">
-          <span class="hero-subtitle">L.A.</span>
-          YOUNG
-        </h2>
-        <p class="tagline">Soul in Full Color</p>
-        <div class="divider"></div>
-        <p class="hero-description">
-          A powerhouse soul singer blending jazz, blues, funk, hip-hop, and
-          country into a live experience you feel in your bones.
-        </p>
+    <!-- Main Content Container -->
+    <main id="app-container" class="page-content">
+      <!-- Pages load here dynamically -->
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading...</p>
       </div>
+    </main>
 
-      <!-- Scroll indicator -->
-      <div class="scroll-indicator">
-        <span>Scroll to Explore</span>
-        <div class="scroll-arrow"></div>
-      </div>
-    </section>
-
-    <!-- Music Section -->
-    <section id="music" class="section music-section">
-      <div class="container">
-        <h2 class="section-title">Music</h2>
-        <p class="section-subtitle">Listen to the soul</p>
-
-        <div class="music-grid">
-          <!-- Spotify/SoundCloud embeds will go here -->
-          <div class="music-player">
-            <h3>Latest Tracks</h3>
-            <!-- Replace with your Spotify embed code -->
-            <div class="placeholder-player">
-              <p>Spotify/SoundCloud player embed goes here</p>
-            </div>
-          </div>
-
-          <div class="music-player">
-            <h3>Featured Album</h3>
-            <div class="placeholder-player">
-              <p>Album player embed goes here</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Videos Section -->
-    <section id="videos" class="section videos-section">
-      <div class="container">
-        <h2 class="section-title">Videos</h2>
-        <p class="section-subtitle">Live performances & music videos</p>
-
-        <div class="video-grid">
-          <!-- YouTube embeds will go here -->
-          <div class="video-item">
-            <div class="placeholder-video">
-              <p>YouTube video 1</p>
-            </div>
-          </div>
-          <div class="video-item">
-            <div class="placeholder-video">
-              <p>YouTube video 2</p>
-            </div>
-          </div>
-          <div class="video-item">
-            <div class="placeholder-video">
-              <p>YouTube video 3</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Gallery Section -->
-    <section id="gallery" class="section gallery-section">
-      <div class="container">
-        <h2 class="section-title">Gallery</h2>
-        <p class="section-subtitle">Behind the scenes & live on stage</p>
-
-        <div class="gallery-grid">
-          <!-- Photos will go here -->
-          <div class="gallery-item">
-            <div class="placeholder-image">Photo 1</div>
-          </div>
-          <div class="gallery-item">
-            <div class="placeholder-image">Photo 2</div>
-          </div>
-          <div class="gallery-item">
-            <div class="placeholder-image">Photo 3</div>
-          </div>
-          <div class="gallery-item">
-            <div class="placeholder-image">Photo 4</div>
-          </div>
-          <div class="gallery-item">
-            <div class="placeholder-image">Photo 5</div>
-          </div>
-          <div class="gallery-item">
-            <div class="placeholder-image">Photo 6</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Tour Dates Section -->
-    <section id="tour" class="section tour-section">
-      <div class="container">
-        <h2 class="section-title">Tour Dates</h2>
-        <p class="section-subtitle">Catch L.A. Young live</p>
-
-        <div class="tour-list">
-          <!-- Tour dates will be dynamically loaded from backend -->
-          <div class="tour-item">
-            <div class="tour-date">
-              <span class="month">FEB</span>
-              <span class="day">15</span>
-            </div>
-            <div class="tour-info">
-              <h3>The Blue Note</h3>
-              <p>New York, NY</p>
-            </div>
-            <a href="#" class="tour-ticket-btn">Tickets</a>
-          </div>
-
-          <div class="tour-item">
-            <div class="tour-date">
-              <span class="month">MAR</span>
-              <span class="day">08</span>
-            </div>
-            <div class="tour-info">
-              <h3>House of Blues</h3>
-              <p>Chicago, IL</p>
-            </div>
-            <a href="#" class="tour-ticket-btn">Tickets</a>
-          </div>
-
-          <div class="tour-item">
-            <div class="tour-date">
-              <span class="month">MAR</span>
-              <span class="day">22</span>
-            </div>
-            <div class="tour-info">
-              <h3>The Fillmore</h3>
-              <p>San Francisco, CA</p>
-            </div>
-            <a href="#" class="tour-ticket-btn">Tickets</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Merch Section -->
-    <section id="merch" class="section merch-section">
-      <div class="container">
-        <h2 class="section-title">Official Merch</h2>
-        <p class="section-subtitle">Rep the soul</p>
-
-        <div class="merch-preview">
-          <p>Featured merchandise from our Shopify store</p>
-          <a
-            href="https://your-shopify-store.com"
-            class="cta-button"
-            target="_blank"
-            >Visit Store</a
-          >
-        </div>
-      </div>
-    </section>
-
-    <!-- Contact/Connect Section -->
-    <section id="contact" class="section contact-section">
-      <div class="container">
-        <h2 class="section-title">Connect</h2>
-        <p class="section-subtitle">Join the L.A. Young community</p>
-
-        <div class="contact-content">
-          <!-- Email signup form -->
-          <div class="email-signup">
-            <h3>Stay Updated</h3>
-            <p>Get the latest news, music releases, and tour dates</p>
-            <form id="signup-form" class="signup-form">
-              <input type="email" placeholder="Your email address" required />
-              <button type="submit" class="submit-btn">Subscribe</button>
-            </form>
-          </div>
-
-          <!-- Social links -->
-          <div class="social-links">
-            <h3>Follow</h3>
-            <div class="social-icons">
-              <a href="#" class="social-icon" aria-label="Instagram">IG</a>
-              <a href="#" class="social-icon" aria-label="Facebook">FB</a>
-              <a href="#" class="social-icon" aria-label="Twitter">TW</a>
-              <a href="#" class="social-icon" aria-label="YouTube">YT</a>
-              <a href="#" class="social-icon" aria-label="Spotify">SP</a>
-            </div>
-          </div>
-
-          <!-- Booking -->
-          <div class="booking-info">
-            <h3>Booking</h3>
-            <p>For booking inquiries and venue information</p>
-            <a
-              href="https://www.layoungepk.com"
-              class="cta-button"
-              target="_blank"
-              >View EPK</a
-            >
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Footer -->
     <!-- Footer -->
     <footer class="site-footer">
       <div class="container">
@@ -273,6 +89,9 @@
 
     <!-- JavaScript Modules -->
     <script src="js/utils.js"></script>
+    <script src="js/mobile-detect.js"></script>
+    <script src="js/page-loader.js"></script>
+    <script src="js/router.js"></script>
     <script src="js/api.js"></script>
     <script src="js/analytics.js"></script>
     <script src="js/navigation.js"></script>
@@ -280,8 +99,6 @@
     <script src="js/forms.js"></script>
     <script src="js/gallery.js"></script>
     <script src="js/media-player.js"></script>
-    <script src="js/page-transitions.js"></script>
-    <!-- ADD THIS LINE -->
-    <script src="js/main.js"></script>
+    <script src="js/app.js"></script>
   </body>
 </html>

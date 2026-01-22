@@ -1,34 +1,27 @@
 // js/main.js
 
 /**
- * L.A. Young Artist Page - Main Coordinator
- * Initializes all modules and coordinates application startup
+ * L.A. Young Band Page - Main SPA Controller
+ * Coordinates all modules for the Single Page Application
  */
 
 (function () {
   'use strict';
 
-  /**
-   * Main Application Object
-   */
   const App = {
-    version: '1.0.0',
-    env: 'production', // 'development' or 'production'
+    version: '2.0.0',
+    env: 'production',
 
     /**
      * Initialize the application
      */
     init() {
-      console.log(`🎸 L.A. Young Artist Page v${this.version}`);
+      console.log(`🎸 L.A. Young Band Page v${this.version} (SPA)`);
       console.log('Initializing application...');
 
-      // Initialize modules in order
+      // Initialize in order
       this.initModules();
-
-      // Setup global event listeners
       this.setupGlobalListeners();
-
-      // Performance tracking
       this.trackPerformance();
 
       console.log('✅ Application initialized successfully');
@@ -43,40 +36,38 @@
         Utils.lazyLoadImages();
       }
 
-      // Navigation (depends on Utils)
-      if (typeof Navigation !== 'undefined') {
-        Navigation.init();
+      // Mobile detection (early initialization)
+      if (typeof MobileDetect !== 'undefined') {
+        MobileDetect.init();
       }
 
-      // Scroll effects (depends on Utils)
-      if (typeof ScrollEffects !== 'undefined') {
-        ScrollEffects.init();
+      // Page loader (required for SPA)
+      if (typeof PageLoader !== 'undefined') {
+        PageLoader.init();
       }
 
-      // API configuration (no dependencies)
+      // Router (handles navigation)
+      if (typeof Router !== 'undefined') {
+        Router.init();
+      }
+
+      // API configuration
       if (typeof API !== 'undefined') {
         API.init();
       }
 
-      // Forms (depends on API)
-      if (typeof Forms !== 'undefined') {
-        Forms.init();
-      }
-
-      // Gallery (depends on Analytics)
-      if (typeof Gallery !== 'undefined') {
-        Gallery.init();
-      }
-
-      // Media players (depends on Analytics)
-      if (typeof MediaPlayer !== 'undefined') {
-        MediaPlayer.init();
+      // Navigation
+      if (typeof Navigation !== 'undefined') {
+        Navigation.init();
       }
 
       // Analytics (should initialize early)
       if (typeof Analytics !== 'undefined') {
         Analytics.init();
       }
+
+      // Note: Forms, Gallery, MediaPlayer will be initialized
+      // on-demand when their respective pages load
     },
 
     /**
@@ -86,7 +77,6 @@
       // Handle page visibility changes
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-          // Pause media when tab is hidden
           if (typeof MediaPlayer !== 'undefined') {
             MediaPlayer.pauseAll();
           }
@@ -119,6 +109,24 @@
           Analytics.trackError('Promise Rejection', e.reason);
         }
       });
+
+      // Handle orientation changes (mobile)
+      window.addEventListener('orientationchange', () => {
+        if (typeof MobileDetect !== 'undefined' && MobileDetect.isMobile) {
+          this.handleOrientationChange();
+        }
+      });
+    },
+
+    /**
+     * Handle orientation changes on mobile
+     */
+    handleOrientationChange() {
+      // Optional: Show message or adjust layout
+      console.log(
+        'Orientation changed:',
+        MobileDetect.isLandscape() ? 'landscape' : 'portrait',
+      );
     },
 
     /**
@@ -151,7 +159,6 @@
      * Show notification to user
      */
     showNotification(message, type = 'info') {
-      // Remove existing notification
       const existing = document.querySelector('.app-notification');
       if (existing) existing.remove();
 
@@ -193,10 +200,18 @@
       return {
         version: this.version,
         env: this.env,
+        currentPage:
+          typeof Router !== 'undefined' ? Router.getCurrentPage() : null,
+        deviceInfo:
+          typeof MobileDetect !== 'undefined'
+            ? MobileDetect.getDeviceInfo()
+            : null,
         modules: {
           utils: typeof Utils !== 'undefined',
+          mobileDetect: typeof MobileDetect !== 'undefined',
+          pageLoader: typeof PageLoader !== 'undefined',
+          router: typeof Router !== 'undefined',
           navigation: typeof Navigation !== 'undefined',
-          scrollEffects: typeof ScrollEffects !== 'undefined',
           forms: typeof Forms !== 'undefined',
           gallery: typeof Gallery !== 'undefined',
           mediaPlayer: typeof MediaPlayer !== 'undefined',

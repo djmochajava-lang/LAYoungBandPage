@@ -3,29 +3,29 @@
 /* === CSS VARIABLES === */
 :root {
   /* Colors */
-  --color-primary: #ffd700;          /* Gold */
-  --color-accent: #e63946;           /* Red */
-  --color-bg-dark: #0a0a0a;          /* Deep black */
-  --color-bg-navy: #1a1a2e;          /* Navy */
-  --color-bg-blue: #16213e;          /* Blue */
-  --color-bg-accent: #0f3460;        /* Accent blue */
-  
+  --color-primary: #ffd700; /* Gold */
+  --color-accent: #e63946; /* Red */
+  --color-bg-dark: #0a0a0a; /* Deep black */
+  --color-bg-navy: #1a1a2e; /* Navy */
+  --color-bg-blue: #16213e; /* Blue */
+  --color-bg-accent: #0f3460; /* Accent blue */
+
   --color-text-primary: #ffffff;
   --color-text-secondary: rgba(255, 255, 255, 0.8);
   --color-text-muted: rgba(255, 255, 255, 0.6);
   --color-text-faded: rgba(255, 255, 255, 0.4);
-  
+
   /* Spacing */
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
   --spacing-md: 2rem;
   --spacing-lg: 4rem;
   --spacing-xl: 6rem;
-  
+
   /* Typography */
   --font-primary: 'Playfair Display', 'Didot', serif;
   --font-secondary: 'Georgia', 'Times New Roman', serif;
-  
+
   --font-size-xs: 0.85rem;
   --font-size-sm: 0.95rem;
   --font-size-base: 1rem;
@@ -34,21 +34,21 @@
   --font-size-xl: 2rem;
   --font-size-2xl: 2.5rem;
   --font-size-3xl: 3rem;
-  
+
   /* Borders */
   --border-gold: 2px solid rgba(255, 215, 0, 0.3);
   --border-gold-light: 1px solid rgba(255, 215, 0, 0.2);
   --border-gold-bright: 2px solid rgba(255, 215, 0, 0.6);
-  
+
   /* Shadows */
   --shadow-gold: 0 0 20px rgba(255, 215, 0, 0.3);
   --shadow-gold-lg: 0 0 30px rgba(255, 215, 0, 0.5);
-  
+
   /* Transitions */
   --transition-fast: 0.2s ease;
   --transition-base: 0.3s ease;
   --transition-slow: 0.4s ease;
-  
+
   /* Z-index layers */
   --z-dropdown: 100;
   --z-sticky: 500;
@@ -80,7 +80,12 @@ body {
 }
 
 /* === TYPOGRAPHY === */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-primary);
   font-weight: 300;
   line-height: 1.2;
@@ -184,4 +189,14 @@ img {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-primary);
+}
+
+/* Page transitions */
+#app-container {
+  transition: opacity 0.3s ease-out;
+}
+
+.page-loading #app-container {
+  opacity: 0.5;
+  pointer-events: none;
 }

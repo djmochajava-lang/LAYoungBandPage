@@ -121,7 +121,12 @@
 .divider {
   width: 200px;
   height: 2px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-primary),
+    transparent
+  );
   margin: var(--spacing-md) auto;
   position: relative;
 }
@@ -136,8 +141,12 @@
   font-size: 0.8rem;
 }
 
-.divider::before { left: -20px; }
-.divider::after { right: -20px; }
+.divider::before {
+  left: -20px;
+}
+.divider::after {
+  right: -20px;
+}
 
 .divider-full {
   width: 100%;
@@ -233,6 +242,27 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Loading states */
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.page-loading .loading-spinner {
+  display: flex;
+}
+
+body:not(.page-loading) .loading-spinner {
+  display: none;
 }
