@@ -20,8 +20,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: clamp(0.5rem, 2vw, 2rem); /* Responsive gap - shrinks with viewport */
   overflow: visible !important;
+  flex-wrap: wrap; /* Allow wrapping when needed */
 }
 
 .site-title {
@@ -40,6 +41,7 @@
   gap: 1.5rem;
   flex-wrap: nowrap; /* Prevent wrapping */
   flex-shrink: 0; /* Don't shrink */
+  order: 1; /* Always appears first */
 }
 
 .site-title {
@@ -52,7 +54,11 @@
 }
 
 .band-page-text {
-  font-size: clamp(0.9rem, 1.8vw, 1.3rem);
+  font-size: clamp(
+    1.2rem,
+    2.5vw,
+    2.5rem
+  ) !important; /* Same responsive sizing as L.A. YOUNG, or bigger */
   font-weight: 300;
   letter-spacing: 0.15em;
   color: var(--color-primary);
@@ -64,20 +70,25 @@
 /* === MAIN NAVIGATION (DESKTOP) === */
 .main-nav {
   display: flex;
-  gap: var(--spacing-md);
+  gap: clamp(0.5rem, 1.5vw, 2rem); /* Responsive gap between nav items */
   flex: 1;
   justify-content: center;
+  flex-shrink: 1; /* Allow nav to shrink when needed */
+  min-width: 0; /* Allow flex item to shrink below content size */
+  flex-wrap: wrap; /* Allow nav items to wrap to next line */
+  order: 2; /* Appears between title and EPK */
 }
 
 .main-nav a {
   color: var(--color-text-secondary);
   text-decoration: none;
-  font-size: var(--font-size-sm);
+  font-size: clamp(0.75rem, 0.9vw, 0.95rem); /* Responsive font size */
   letter-spacing: 0.1em;
   transition: color var(--transition-base);
   text-transform: uppercase;
   padding: var(--spacing-xs) 0;
   position: relative;
+  white-space: nowrap; /* Keep text on one line */
 }
 
 .main-nav a::after {
@@ -116,6 +127,7 @@
   text-transform: uppercase;
   white-space: nowrap;
   flex-shrink: 0; /* Don't shrink */
+  order: 3; /* Always appears after nav in flex order */
 }
 
 .epk-button:hover {
@@ -275,15 +287,24 @@
 /* === TABLET RESPONSIVE === */
 @media (max-width: 1024px) and (min-width: 769px) {
   .banner-content {
-    flex-wrap: nowrap;
+    gap: 1rem; /* Tighter spacing on tablets */
   }
 
   .main-nav {
-    gap: var(--spacing-sm);
+    gap: 0.8rem; /* Closer nav items */
   }
 
   .main-nav a {
-    font-size: 0.85rem;
-    padding: 0.5rem 0.8rem;
+    font-size: 0.8rem; /* Smaller text */
+    letter-spacing: 0.05em; /* Tighter letter spacing */
+  }
+
+  .epk-button {
+    padding: 0.5rem 1.2rem; /* Smaller button */
+    font-size: 0.75rem;
+  }
+
+  .site-title-wrapper {
+    gap: 1rem; /* Tighter gap */
   }
 }
