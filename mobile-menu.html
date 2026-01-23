@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mobile Menu Test</title>
+
+    <style>
+      /* Basic CSS Variables */
+      :root {
+        --color-primary: #ffd700;
+        --color-text-secondary: rgba(255, 255, 255, 0.8);
+        --font-primary: 'Georgia', serif;
+        --font-secondary: 'Georgia', serif;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: #0a0a0a;
+        color: white;
+        font-family: Arial, sans-serif;
+      }
+
+      .test-header {
+        padding: 2rem;
+        text-align: center;
+        background: #1a1a2e;
+        border-bottom: 2px solid #ffd700;
+      }
+
+      .test-header h1 {
+        margin: 0 0 1rem 0;
+        color: #ffd700;
+      }
+
+      .hamburger-test {
+        margin: 2rem auto;
+        text-align: center;
+      }
+
+      /* Hamburger Button */
+      .menu-toggle {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        width: 30px;
+        height: 25px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        z-index: 10001;
+        margin: 0 auto;
+      }
+
+      .menu-toggle span {
+        width: 30px;
+        height: 3px;
+        background: #ffd700;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+        transform-origin: center;
+      }
+
+      .menu-toggle.active span:nth-child(1) {
+        transform: translateY(11px) rotate(45deg);
+      }
+
+      .menu-toggle.active span:nth-child(2) {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+
+      .menu-toggle.active span:nth-child(3) {
+        transform: translateY(-11px) rotate(-45deg);
+      }
+
+      /* === MOBILE MENU OVERLAY === */
+      .mobile-menu-overlay {
+        position: fixed;
+        top: 0;
+        right: 0; /* VISIBLE for testing */
+        width: 100%;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 9999;
+        transition: right 0.3s ease;
+        overflow-y: auto;
+      }
+
+      .mobile-menu-overlay.active {
+        right: 0;
+      }
+
+      /* Menu Container */
+      .mobile-menu-container {
+        width: 100%;
+        max-width: 400px;
+        height: 100%;
+        background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0a 100%);
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+        border-left: 2px solid rgba(255, 215, 0, 0.3);
+        box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Menu Header */
+      .mobile-menu-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.2);
+      }
+
+      .mobile-menu-header h2 {
+        font-family: Georgia, serif;
+        font-size: 1.8rem;
+        color: #ffd700;
+        letter-spacing: 0.2em;
+        margin: 0;
+      }
+
+      .mobile-menu-close {
+        background: transparent;
+        border: none;
+        color: #ffd700;
+        font-size: 3rem;
+        cursor: pointer;
+        padding: 0;
+        line-height: 1;
+        transition: transform 0.2s ease;
+      }
+
+      .mobile-menu-close:hover {
+        transform: scale(1.2);
+      }
+
+      /* Navigation Links */
+      .mobile-menu-nav {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: 2rem 0;
+      }
+
+      .mobile-menu-link {
+        display: block;
+        padding: 1.2rem 2rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        font-size: 1.2rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .mobile-menu-link:hover {
+        color: #ffd700;
+        padding-left: 2.5rem;
+        background: rgba(255, 215, 0, 0.05);
+      }
+
+      /* Menu Footer */
+      .mobile-menu-footer {
+        padding: 2rem;
+        border-top: 1px solid rgba(255, 215, 0, 0.2);
+      }
+
+      .mobile-menu-epk {
+        display: block;
+        text-align: center;
+        padding: 1rem 2rem;
+        background: rgba(230, 57, 70, 0.9);
+        color: white;
+        text-decoration: none;
+        font-size: 1rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        transition: all 0.3s ease;
+        border-radius: 4px;
+      }
+
+      body.mobile-menu-open {
+        overflow: hidden;
+      }
+
+      .status {
+        margin: 2rem;
+        padding: 1rem;
+        background: #1a1a2e;
+        border: 1px solid #ffd700;
+        border-radius: 4px;
+      }
+
+      .status h3 {
+        color: #ffd700;
+        margin-top: 0;
+      }
+
+      .status code {
+        background: #0a0a0a;
+        padding: 0.2rem 0.5rem;
+        border-radius: 3px;
+        color: #ffd700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="test-header">
+      <h1>🍔 Mobile Menu Test Page</h1>
+      <p>This page tests if the mobile menu is visible and working</p>
+    </div>
+
+    <div class="hamburger-test">
+      <p>Click the hamburger below:</p>
+      <button class="menu-toggle" aria-label="Toggle menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+
+    <div class="status">
+      <h3>✅ Checklist:</h3>
+      <ul>
+        <li>Do you see a dark menu on the RIGHT side of the screen?</li>
+        <li>Does it have "Menu" at the top with an X button?</li>
+        <li>Does it show navigation links (Home, Bio, Music, etc.)?</li>
+        <li>Does it have a red EPK button at the bottom?</li>
+        <li>Can you click the X to close it?</li>
+        <li>Can you click the hamburger to open it again?</li>
+      </ul>
+
+      <h3>📋 Console Messages:</h3>
+      <p>Open browser console (F12) and look for:</p>
+      <ul>
+        <li><code>🍔 Initializing Mobile Menu...</code></li>
+        <li><code>✅ Mobile menu elements found</code></li>
+        <li><code>🍔 Hamburger clicked - Opening menu</code></li>
+      </ul>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu-overlay" class="mobile-menu-overlay">
+      <div class="mobile-menu-container">
+        <div class="mobile-menu-header">
+          <h2>Menu</h2>
+          <button class="mobile-menu-close" aria-label="Close menu">
+            <span>&times;</span>
+          </button>
+        </div>
+
+        <nav class="mobile-menu-nav">
+          <a href="#home" class="mobile-menu-link">Home</a>
+          <a href="#bio" class="mobile-menu-link">Bio</a>
+          <a href="#music" class="mobile-menu-link">Music</a>
+          <a href="#videos" class="mobile-menu-link">Videos</a>
+          <a href="#gallery" class="mobile-menu-link">Gallery</a>
+          <a href="#tour" class="mobile-menu-link">Tour</a>
+          <a href="#merch" class="mobile-menu-link">Merch</a>
+          <a href="#contact" class="mobile-menu-link">Connect</a>
+        </nav>
+
+        <div class="mobile-menu-footer">
+          <a
+            href="https://www.layoungepk.com"
+            class="mobile-menu-epk"
+            target="_blank"
+          >
+            View EPK
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Mobile Menu Controller
+      const MobileMenu = {
+        menu: null,
+        hamburger: null,
+        closeBtn: null,
+        menuLinks: null,
+
+        init() {
+          console.log('🍔 Initializing Mobile Menu...');
+
+          this.menu = document.getElementById('mobile-menu-overlay');
+          this.hamburger = document.querySelector('.menu-toggle');
+          this.closeBtn = document.querySelector('.mobile-menu-close');
+          this.menuLinks = document.querySelectorAll('.mobile-menu-link');
+
+          if (!this.menu) {
+            console.error('❌ Mobile menu overlay not found!');
+            alert('ERROR: Mobile menu overlay not found!');
+            return;
+          }
+
+          if (!this.hamburger) {
+            console.error('❌ Hamburger button not found!');
+            alert('ERROR: Hamburger button not found!');
+            return;
+          }
+
+          console.log('✅ Mobile menu elements found');
+          console.log('Menu element:', this.menu);
+          console.log('Hamburger element:', this.hamburger);
+
+          this.setupEventListeners();
+
+          console.log('✅ Mobile menu initialized successfully');
+        },
+
+        setupEventListeners() {
+          if (this.hamburger) {
+            this.hamburger.addEventListener('click', (e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('🍔 Hamburger clicked - Opening menu');
+              this.open();
+            });
+          }
+
+          if (this.closeBtn) {
+            this.closeBtn.addEventListener('click', (e) => {
+              e.preventDefault();
+              console.log('✖️ Close button clicked');
+              this.close();
+            });
+          }
+
+          if (this.menuLinks) {
+            this.menuLinks.forEach((link) => {
+              link.addEventListener('click', () => {
+                console.log('🔗 Menu link clicked - Closing menu');
+                this.close();
+              });
+            });
+          }
+
+          if (this.menu) {
+            this.menu.addEventListener('click', (e) => {
+              if (e.target === this.menu) {
+                console.log('🎭 Backdrop clicked - Closing menu');
+                this.close();
+              }
+            });
+          }
+
+          document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isOpen()) {
+              console.log('⌨️ ESC pressed - Closing menu');
+              this.close();
+            }
+          });
+        },
+
+        open() {
+          console.log('📱 Opening mobile menu...');
+          if (this.menu) {
+            this.menu.classList.add('active');
+            document.body.classList.add('mobile-menu-open');
+
+            if (this.hamburger) {
+              this.hamburger.classList.add('active');
+            }
+
+            console.log('✅ Mobile menu opened');
+          }
+        },
+
+        close() {
+          console.log('📴 Closing mobile menu...');
+          if (this.menu) {
+            this.menu.classList.remove('active');
+            document.body.classList.remove('mobile-menu-open');
+
+            if (this.hamburger) {
+              this.hamburger.classList.remove('active');
+            }
+
+            console.log('✅ Mobile menu closed');
+          }
+        },
+
+        isOpen() {
+          return this.menu && this.menu.classList.contains('active');
+        },
+      };
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+          MobileMenu.init();
+        });
+      } else {
+        MobileMenu.init();
+      }
+    </script>
+  </body>
+</html>

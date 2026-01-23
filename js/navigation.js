@@ -2,77 +2,29 @@
 
 /**
  * Navigation Module
- * Handles mobile menu, smooth scrolling, and active link highlighting
+ * Handles smooth scrolling and active link highlighting
+ * (Mobile menu is handled by mobile-menu.js)
  */
 
 const Navigation = {
+  initialized: false,
+
   /**
-   * Initialize all navigation features
+   * Initialize navigation features
    */
   init() {
-    // Delay mobile menu init to ensure DOM is ready
-    setTimeout(() => {
-      this.initMobileMenu();
-    }, 200);
-    this.initSmoothScroll();
-    this.initActiveNav();
-    console.log('✅ Navigation initialized');
-  },
-
-  /**
-   * Mobile menu toggle
-   */
-  initMobileMenu() {
-    const menuToggle = document.querySelector('.menu-toggle');
-    const mainNav = document.querySelector('.main-nav');
-
-    if (!menuToggle || !mainNav) {
-      console.warn('Mobile menu elements not found');
+    if (this.initialized) {
+      console.log('⚠️ Navigation already initialized, skipping...');
       return;
     }
 
-    // Toggle menu
-    const toggleMenu = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+    console.log('🚀 Initializing Navigation (smooth scroll & active links)...');
 
-      const isActive = mainNav.classList.contains('active');
+    this.initSmoothScroll();
+    this.initActiveNav();
 
-      if (isActive) {
-        menuToggle.classList.remove('active');
-        mainNav.classList.remove('active');
-        document.body.classList.remove('menu-open');
-      } else {
-        menuToggle.classList.add('active');
-        mainNav.classList.add('active');
-        document.body.classList.add('menu-open');
-      }
-    };
-
-    // Add both click and touchstart for mobile support
-    menuToggle.addEventListener('click', toggleMenu);
-    menuToggle.addEventListener('touchstart', toggleMenu, { passive: false });
-
-    // Close menu when clicking nav links
-    const navLinks = mainNav.querySelectorAll('a');
-    navLinks.forEach((link) => {
-      link.addEventListener('click', () => {
-        menuToggle.classList.remove('active');
-        mainNav.classList.remove('active');
-        document.body.classList.remove('menu-open');
-      });
-    });
-
-    // Close menu when clicking backdrop
-    document.body.addEventListener('click', (e) => {
-      if (document.body.classList.contains('menu-open')) {
-        if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
-          menuToggle.classList.remove('active');
-          mainNav.classList.remove('active');
-          document.body.classList.remove('menu-open');
-        }
-      }
-    });
+    this.initialized = true;
+    console.log('✅ Navigation initialized');
   },
 
   /**
@@ -102,6 +54,7 @@ const Navigation = {
         }
       });
     });
+    console.log('✅ Smooth scroll initialized');
   },
 
   /**
@@ -109,9 +62,14 @@ const Navigation = {
    */
   initActiveNav() {
     const sections = document.querySelectorAll('.section, .hero');
-    const navLinks = document.querySelectorAll('.main-nav a');
+    const navLinks = document.querySelectorAll(
+      '.main-nav a, .mobile-menu-link',
+    );
 
-    if (sections.length === 0 || navLinks.length === 0) return;
+    if (sections.length === 0 || navLinks.length === 0) {
+      console.log('⚠️ No sections or nav links found for active highlighting');
+      return;
+    }
 
     const updateActiveLink = () => {
       let current = '';
@@ -135,6 +93,7 @@ const Navigation = {
 
     window.addEventListener('scroll', updateActiveLink);
     updateActiveLink(); // Set initial active link
+    console.log('✅ Active nav highlighting initialized');
   },
 
   /**
@@ -155,10 +114,13 @@ const Navigation = {
   },
 };
 
-// Auto-initialize if not using module system
+// Auto-initialize when DOM is ready
 if (typeof module === 'undefined') {
+  console.log('📄 navigation.js loaded (smooth scroll only)');
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => Navigation.init());
+    document.addEventListener('DOMContentLoaded', () => {
+      Navigation.init();
+    });
   } else {
     Navigation.init();
   }

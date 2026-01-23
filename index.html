@@ -30,6 +30,7 @@
     <link rel="stylesheet" href="css/sections.css" />
     <link rel="stylesheet" href="css/pages.css" />
     <link rel="stylesheet" href="css/animations.css" />
+    <link rel="stylesheet" href="css/mobile-menu.css" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -40,6 +41,39 @@
     />
   </head>
   <body>
+    <!-- Mobile Menu Overlay (Full-screen overlay - always in DOM) -->
+    <div id="mobile-menu-overlay" class="mobile-menu-overlay">
+      <div class="mobile-menu-container">
+        <div class="mobile-menu-header">
+          <h2>Menu</h2>
+          <button class="mobile-menu-close" aria-label="Close menu">
+            <span>&times;</span>
+          </button>
+        </div>
+
+        <nav class="mobile-menu-nav">
+          <a href="#home" class="mobile-menu-link">Home</a>
+          <a href="#bio" class="mobile-menu-link">Bio</a>
+          <a href="#music" class="mobile-menu-link">Music</a>
+          <a href="#videos" class="mobile-menu-link">Videos</a>
+          <a href="#gallery" class="mobile-menu-link">Gallery</a>
+          <a href="#tour" class="mobile-menu-link">Tour</a>
+          <a href="#merch" class="mobile-menu-link">Merch</a>
+          <a href="#contact" class="mobile-menu-link">Connect</a>
+        </nav>
+
+        <div class="mobile-menu-footer">
+          <a
+            href="https://www.layoungepk.com"
+            class="mobile-menu-epk"
+            target="_blank"
+          >
+            View EPK
+          </a>
+        </div>
+      </div>
+    </div>
+
     <!-- Top Navigation Banner -->
     <header class="top-banner">
       <div class="banner-content">
@@ -107,6 +141,7 @@
     <script src="js/forms.js"></script>
     <script src="js/gallery.js"></script>
     <script src="js/media-player.js"></script>
+    <script src="js/mobile-menu.js"></script>
     <script src="js/main.js"></script>
   </body>
 </html>

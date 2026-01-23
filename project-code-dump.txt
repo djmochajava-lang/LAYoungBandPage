@@ -3650,7 +3650,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/22/2026 00:02:23
+LAST MODIFIED: 01/23/2026 00:14:02
 ================================================================================
 
 // js/navigation.js
@@ -3665,7 +3665,10 @@ const Navigation = {
    * Initialize all navigation features
    */
   init() {
-    this.initMobileMenu();
+    // Delay mobile menu init to ensure DOM is ready
+    setTimeout(() => {
+      this.initMobileMenu();
+    }, 200);
     this.initSmoothScroll();
     this.initActiveNav();
     console.log('âœ… Navigation initialized');
@@ -3684,14 +3687,26 @@ const Navigation = {
     }
 
     // Toggle menu
-    menuToggle.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevent event bubbling
-      menuToggle.classList.toggle('active');
-      mainNav.classList.toggle('active');
-      document.body.classList.toggle('menu-open');
+    const toggleMenu = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-      console.log('Menu toggled:', mainNav.classList.contains('active'));
-    });
+      const isActive = mainNav.classList.contains('active');
+
+      if (isActive) {
+        menuToggle.classList.remove('active');
+        mainNav.classList.remove('active');
+        document.body.classList.remove('menu-open');
+      } else {
+        menuToggle.classList.add('active');
+        mainNav.classList.add('active');
+        document.body.classList.add('menu-open');
+      }
+    };
+
+    // Add both click and touchstart for mobile support
+    menuToggle.addEventListener('click', toggleMenu);
+    menuToggle.addEventListener('touchstart', toggleMenu, { passive: false });
 
     // Close menu when clicking nav links
     const navLinks = mainNav.querySelectorAll('a');
@@ -3703,12 +3718,14 @@ const Navigation = {
       });
     });
 
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
-        menuToggle.classList.remove('active');
-        mainNav.classList.remove('active');
-        document.body.classList.remove('menu-open');
+    // Close menu when clicking backdrop
+    document.body.addEventListener('click', (e) => {
+      if (document.body.classList.contains('menu-open')) {
+        if (!mainNav.contains(e.target) && !menuToggle.contains(e.target)) {
+          menuToggle.classList.remove('active');
+          mainNav.classList.remove('active');
+          document.body.classList.remove('menu-open');
+        }
       }
     });
   },
@@ -4028,7 +4045,7 @@ if (typeof module !== 'undefined' && module.exports) {
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/21/2026 01:14:56
+LAST MODIFIED: 01/23/2026 00:05:46
 ================================================================================
 
 // js/page-transitions.js
@@ -4955,7 +4972,7 @@ LAST MODIFIED: 01/21/2026 22:27:24
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/21/2026 23:29:37
+LAST MODIFIED: 01/23/2026 00:09:45
 ================================================================================
 
 <!-- pages/contact.html -->
@@ -5113,7 +5130,7 @@ LAST MODIFIED: 01/21/2026 23:29:37
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/21/2026 23:22:01
+LAST MODIFIED: 01/23/2026 00:09:45
 ================================================================================
 
 <!-- pages/gallery.html -->
@@ -5340,7 +5357,7 @@ LAST MODIFIED: 01/21/2026 22:32:24
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/21/2026 23:29:41
+LAST MODIFIED: 01/23/2026 00:09:45
 ================================================================================
 
 <!-- pages/music.html -->
@@ -5426,7 +5443,7 @@ LAST MODIFIED: 01/21/2026 23:29:41
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/21/2026 23:23:24
+LAST MODIFIED: 01/23/2026 00:09:45
 ================================================================================
 
 <!-- pages/tour.html -->
@@ -5549,7 +5566,7 @@ LAST MODIFIED: 01/21/2026 23:23:24
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/21/2026 23:23:48
+LAST MODIFIED: 01/23/2026 00:09:45
 ================================================================================
 
 <!-- pages/videos.html -->
@@ -5787,7 +5804,7 @@ LAST MODIFIED: 01/21/2026 22:48:46
 
 ================================================================================
 FILE: 
-LAST MODIFIED: 01/22/2026 00:02:48
+LAST MODIFIED: 01/23/2026 00:11:21
 ================================================================================
 
 <!-- index.html -->

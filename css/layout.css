@@ -33,7 +33,35 @@
   font-family: var(--font-primary);
 }
 
-/* === MAIN NAVIGATION === */
+/* Site Title Wrapper - Left side */
+.site-title-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: nowrap; /* Prevent wrapping */
+  flex-shrink: 0; /* Don't shrink */
+}
+
+.site-title {
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-weight: 300;
+  letter-spacing: 0.2em;
+  color: var(--color-text-primary);
+  margin: 0;
+  white-space: nowrap; /* Keep L.A. YOUNG on one line */
+}
+
+.band-page-text {
+  font-size: clamp(0.9rem, 1.8vw, 1.3rem);
+  font-weight: 300;
+  letter-spacing: 0.15em;
+  color: var(--color-primary);
+  margin: 0;
+  padding-top: 0.25rem;
+  white-space: nowrap; /* Keep BAND PAGE on one line */
+}
+
+/* === MAIN NAVIGATION (DESKTOP) === */
 .main-nav {
   display: flex;
   gap: var(--spacing-md);
@@ -87,6 +115,7 @@
   transition: all var(--transition-base);
   text-transform: uppercase;
   white-space: nowrap;
+  flex-shrink: 0; /* Don't shrink */
 }
 
 .epk-button:hover {
@@ -96,124 +125,42 @@
   transform: translateY(-2px);
 }
 
-/* === MOBILE MENU === */
+/* === MOBILE MENU TOGGLE (HAMBURGER BUTTON) === */
 .menu-toggle {
   display: none;
   flex-direction: column;
-  gap: 5px;
-  background: none;
+  justify-content: space-around;
+  width: 30px;
+  height: 25px;
+  background: transparent;
   border: none;
   cursor: pointer;
-  padding: 10px;
-  z-index: 1001;
+  padding: 0;
+  z-index: 10001; /* Above mobile menu */
+  position: relative;
 }
 
 .menu-toggle span {
-  width: 25px;
-  height: 2px;
+  width: 30px;
+  height: 3px;
   background: var(--color-primary);
-  transition: all var(--transition-base);
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
 }
 
-/* Hamburger Animation */
+/* Hamburger to X Animation */
 .menu-toggle.active span:nth-child(1) {
-  transform: rotate(45deg) translate(7px, 7px);
+  transform: translateY(11px) rotate(45deg);
 }
 
 .menu-toggle.active span:nth-child(2) {
   opacity: 0;
+  transform: translateX(-20px);
 }
 
 .menu-toggle.active span:nth-child(3) {
-  transform: rotate(-45deg) translate(7px, -7px);
-}
-
-/* Mobile Navigation */
-@media (max-width: 768px) {
-  .site-title-wrapper {
-    flex-direction: column;
-    gap: 0.2rem;
-    align-items: stretch;
-    white-space: initial;
-  }
-
-  .site-title,
-  .band-page-text {
-    white-space: normal;
-  }
-
-  .menu-toggle {
-    display: flex;
-    order: 2;
-    margin-left: auto;
-  }
-
-  .main-nav {
-    position: fixed;
-    top: 80px;
-    left: -100%;
-    width: 280px;
-    height: calc(100vh - 80px);
-    background: var(--color-bg-dark);
-    flex-direction: column;
-    padding: var(--spacing-md) 0;
-    gap: 0;
-    z-index: 10000;
-    border-right: var(--border-gold);
-    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.5);
-    transition: left 0.3s ease;
-    overflow-y: auto;
-    display: flex;
-  }
-
-  .main-nav.active {
-    left: 0;
-  }
-
-  .main-nav a {
-    padding: var(--spacing-sm) var(--spacing-md);
-    border-bottom: var(--border-gold-light);
-    font-size: var(--font-size-md);
-    color: var(--color-text-secondary);
-    text-decoration: none;
-    transition: all var(--transition-base);
-  }
-
-  .main-nav a:hover {
-    background: rgba(255, 215, 0, 0.1);
-    color: var(--color-primary);
-    padding-left: calc(var(--spacing-md) + 10px);
-  }
-
-  .main-nav a:last-child {
-    border-bottom: none;
-  }
-
-  .epk-button {
-    display: none; /* Hide on mobile or move to menu */
-  }
-
-  body.menu-open {
-    overflow: hidden;
-  }
-
-  /* Backdrop overlay when menu is open */
-  body.menu-open::before {
-    content: '';
-    position: fixed;
-    top: 80px;
-    left: 0;
-    width: 100%;
-    height: calc(100vh - 80px);
-    background: rgba(0, 0, 0, 0.7);
-    z-index: 9999;
-    animation: fadeIn 0.3s ease;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-  }
+  transform: translateY(-11px) rotate(-45deg);
 }
 
 /* === FOOTER === */
@@ -283,33 +230,36 @@
   min-height: calc(100vh - 136px);
 }
 
-/* === RESPONSIVE LAYOUT === */
+/* === MOBILE RESPONSIVE === */
 @media (max-width: 768px) {
-  .banner-content {
-    flex-wrap: wrap;
-  }
-
+  /* Show hamburger on mobile */
   .menu-toggle {
     display: flex;
-    order: 3;
   }
 
-  .site-title {
-    order: 1;
-    font-size: 1.2rem;
-  }
-
-  .epk-button {
-    order: 2;
-  }
-
+  /* Hide desktop navigation on mobile */
   .main-nav {
-    width: 280px;
-    order: 4;
+    display: none;
   }
 
-  .main-nav a::after {
+  /* Hide EPK button on mobile */
+  .epk-button {
     display: none;
+  }
+
+  /* Adjust site title for mobile */
+  .site-title-wrapper {
+    flex-direction: column;
+    gap: 0.25rem;
+    align-items: flex-start;
+  }
+
+  .band-page-text {
+    font-size: 0.8rem;
+  }
+
+  .banner-content {
+    flex-wrap: wrap;
   }
 
   .page-content {
@@ -322,80 +272,18 @@
   }
 }
 
-/* Site Title Wrapper - Left side */
-.site-title-wrapper {
-  display: flex;
-  align-items: flex-start;
-  gap: 1.5rem;
-  flex-wrap: nowrap; /* Prevent wrapping */
-  flex-shrink: 0; /* Don't shrink */
-}
-
-.site-title {
-  font-size: clamp(1.2rem, 2.5vw, 2rem);
-  font-weight: 300;
-  letter-spacing: 0.2em;
-  color: var(--color-text-primary);
-  margin: 0;
-  white-space: nowrap; /* Keep L.A. YOUNG on one line */
-}
-
-.band-page-text {
-  font-size: clamp(0.9rem, 1.8vw, 1.3rem);
-  font-weight: 300;
-  letter-spacing: 0.15em;
-  color: var(--color-primary);
-  margin: 0;
-  padding-top: 0.25rem;
-  white-space: nowrap; /* Keep BAND PAGE on one line */
-}
-
-/* Navigation - Center */
-.main-nav {
-  display: flex;
-  gap: var(--spacing-md);
-  flex: 1; /* Takes available space */
-  justify-content: center;
-}
-
-/* EPK Button - Right side */
-.epk-button {
-  flex-shrink: 0; /* Don't shrink */
-  white-space: nowrap; /* Keep button text on one line */
-}
-
-/* Mobile adjustments */
-@media (max-width: 1024px) {
+/* === TABLET RESPONSIVE === */
+@media (max-width: 1024px) and (min-width: 769px) {
   .banner-content {
-    flex-wrap: wrap;
-  }
-
-  .site-title-wrapper {
-    order: 1;
-  }
-
-  .menu-toggle {
-    order: 2;
-  }
-
-  .epk-button {
-    order: 3;
+    flex-wrap: nowrap;
   }
 
   .main-nav {
-    order: 4;
-    width: 100%;
-  }
-}
-
-@media (max-width: 768px) {
-  .site-title-wrapper {
-    flex-direction: column;
-    gap: 0.25rem;
-    align-items: flex-start;
+    gap: var(--spacing-sm);
   }
 
-  .band-page-text {
-    font-size: 0.8rem;
+  .main-nav a {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
   }
 }
