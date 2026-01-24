@@ -1,16 +1,46 @@
 <!-- index.html -->
+
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Enhanced SEO -->
     <meta
       name="description"
-      content="L.A. Young - A powerhouse soul singer blending jazz, blues, funk, hip-hop, and country. Experience her world."
+      content="L.A. Young - Powerhouse soul singer blending jazz, blues, funk, hip-hop, and country. Experience The Phyllis Hyman Experience and live performances."
     />
     <meta
       name="keywords"
-      content="L.A. Young, soul singer, jazz, blues, funk, hip-hop, country, live music, Gold Bottom Ent"
+      content="L.A. Young, soul singer, jazz, blues, funk, hip-hop, country, live music, Phyllis Hyman tribute, Washington DC, Gold Bottom Entertainment"
+    />
+    <meta name="author" content="Gold Bottom Entertainment LLC" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="L.A. Young - Soul in Full Color" />
+    <meta
+      property="og:description"
+      content="A powerhouse soul singer blending jazz, blues, funk, hip-hop, and country into a live experience you feel in your bones."
+    />
+    <meta
+      property="og:image"
+      content="https://yoursite.com/images/og-image.jpg"
+    />
+    <meta property="og:url" content="https://yoursite.com" />
+    <meta property="og:site_name" content="L.A. Young" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="L.A. Young - Soul in Full Color" />
+    <meta
+      name="twitter:description"
+      content="Experience the live show that blends soul, jazz, blues, and funk"
+    />
+    <meta
+      name="twitter:image"
+      content="https://yoursite.com/images/twitter-image.jpg"
     />
 
     <!-- PWA Meta Tags -->
@@ -21,7 +51,14 @@
     />
     <meta name="theme-color" content="#1a1a2e" />
 
-    <title>L.A. Young - Soul in Full Color</title>
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://yoursite.com" />
+
+    <title>L.A. Young - Soul in Full Color | Live Soul, Jazz & Blues</title>
+
+    <!-- Preload critical resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="css/base.css" />
@@ -33,15 +70,39 @@
     <link rel="stylesheet" href="css/mobile-menu.css" />
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "MusicGroup",
+        "name": "L.A. Young",
+        "alternateName": "L.A. Young & The Unusual Suspects",
+        "genre": ["Soul", "Jazz", "Blues", "Funk", "Hip-Hop", "Country"],
+        "url": "https://yoursite.com",
+        "sameAs": [
+          "https://www.facebook.com/layoung",
+          "https://www.instagram.com/layoung",
+          "https://twitter.com/layoung",
+          "https://www.youtube.com/layoung",
+          "https://open.spotify.com/artist/layoung"
+        ],
+        "description": "A powerhouse soul singer blending jazz, blues, funk, hip-hop, and country into a live experience you feel in your bones."
+      }
+    </script>
   </head>
   <body>
-    <!-- Mobile Menu Overlay (Full-screen overlay - always in DOM) -->
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" style="display: none">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
     <div id="mobile-menu-overlay" class="mobile-menu-overlay">
       <div class="mobile-menu-container">
         <div class="mobile-menu-header">
@@ -51,7 +112,7 @@
           </button>
         </div>
 
-        <nav class="mobile-menu-nav">
+        <nav class="mobile-menu-nav" aria-label="Mobile navigation">
           <a href="#home" class="mobile-menu-link">Home</a>
           <a href="#bio" class="mobile-menu-link">Bio</a>
           <a href="#music" class="mobile-menu-link">Music</a>
@@ -67,6 +128,7 @@
             href="https://www.layoungepk.com"
             class="mobile-menu-epk"
             target="_blank"
+            rel="noopener noreferrer"
           >
             View EPK
           </a>
@@ -91,13 +153,17 @@
         </div>
 
         <!-- Mobile Menu Toggle -->
-        <button class="menu-toggle" aria-label="Toggle menu">
+        <button
+          class="menu-toggle"
+          aria-label="Toggle navigation menu"
+          aria-expanded="false"
+        >
           <span></span>
           <span></span>
           <span></span>
         </button>
 
-        <nav class="main-nav">
+        <nav class="main-nav" aria-label="Main navigation">
           <a href="#home" data-page="home" style="display: none">Home</a>
           <a href="#bio" data-page="bio">Bio</a>
           <a href="#music" data-page="music">Music</a>
@@ -108,14 +174,19 @@
           <a href="#contact" data-page="contact">Connect</a>
         </nav>
 
-        <a href="https://www.layoungepk.com" class="epk-button" target="_blank"
-          >View EPK</a
+        <a
+          href="https://www.layoungepk.com"
+          class="epk-button"
+          target="_blank"
+          rel="noopener noreferrer"
         >
+          View EPK
+        </a>
       </div>
     </header>
 
     <!-- Main Content Container -->
-    <main id="app-container" class="page-content">
+    <main id="app-container" class="page-content" role="main">
       <!-- Pages load here dynamically via router.js -->
     </main>
 
@@ -123,7 +194,7 @@
     <footer class="site-footer">
       <div class="container">
         <p class="footer-text">
-          © 2026 L.A. Young | Managed by
+          © 2026 L.A. Young |
           <strong>Gold Bottom Entertainment LLC</strong> | All rights reserved.
         </p>
       </div>
@@ -142,6 +213,7 @@
     <script src="js/gallery.js"></script>
     <script src="js/media-player.js"></script>
     <script src="js/mobile-menu.js"></script>
+    <script src="js/sound-effects.js"></script>
     <script src="js/main.js"></script>
   </body>
 </html>

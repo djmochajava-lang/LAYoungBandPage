@@ -2,72 +2,112 @@
 
 /**
  * L.A. Young Band Page - Main SPA Controller
- * Coordinates all modules for the Single Page Application
+ * Coordinates all modules with better performance
  */
 
 (function () {
   'use strict';
 
   const App = {
-    version: '2.0.0',
+    version: '2.1.0',
     env: 'production',
+    initialized: false,
+    modules: {},
 
     /**
      * Initialize the application
      */
     init() {
-      console.log(`🎸 L.A. Young Band Page v${this.version} (SPA)`);
+      // Prevent double initialization
+      if (this.initialized) {
+        console.warn('⚠️ App already initialized, skipping');
+        return;
+      }
+
+      console.log(`🎸 L.A. Young Band Page v${this.version}`);
       console.log('Initializing application...');
 
-      // Initialize in order
-      this.initModules();
-      this.setupGlobalListeners();
-      this.trackPerformance();
+      try {
+        // Initialize in order with dependency checks
+        this.initModules();
+        this.setupGlobalListeners();
+        this.trackPerformance();
 
-      console.log('✅ Application initialized successfully');
+        // Mark as initialized
+        this.initialized = true;
+
+        console.log('✅ Application initialized successfully');
+
+        // Preload common pages after 2 seconds
+        this.preloadCommonPages();
+      } catch (error) {
+        console.error('❌ Application initialization failed:', error);
+        this.showError(
+          'Failed to initialize application. Please refresh the page.',
+        );
+      }
     },
 
     /**
-     * Initialize all modules
+     * Initialize all modules (improved with error handling)
      */
     initModules() {
       // Core utilities (no dependencies)
-      if (typeof Utils !== 'undefined') {
-        Utils.lazyLoadImages();
-      }
+      this.initModule('Utils', Utils, () => {
+        if (typeof Utils !== 'undefined' && Utils.lazyLoadImages) {
+          Utils.lazyLoadImages();
+        }
+      });
 
       // Mobile detection (early initialization)
-      if (typeof MobileDetect !== 'undefined') {
-        MobileDetect.init();
-      }
+      this.initModule('MobileDetect', MobileDetect);
 
       // Page loader (required for SPA)
-      if (typeof PageLoader !== 'undefined') {
-        PageLoader.init();
-      }
+      this.initModule('PageLoader', PageLoader);
 
       // Router (handles navigation)
-      if (typeof Router !== 'undefined') {
-        Router.init();
-      }
+      this.initModule('Router', Router);
 
       // API configuration
-      if (typeof API !== 'undefined') {
-        API.init();
-      }
+      this.initModule('API', API);
 
-      // Navigation
-      if (typeof Navigation !== 'undefined') {
-        Navigation.init();
-      }
+      // Navigation (depends on Router)
+      this.initModule('Navigation', Navigation);
 
       // Analytics (should initialize early)
-      if (typeof Analytics !== 'undefined') {
-        Analytics.init();
-      }
+      this.initModule('Analytics', Analytics);
 
-      // Note: Forms, Gallery, MediaPlayer will be initialized
-      // on-demand when their respective pages load
+      // Store remaining modules for on-demand initialization
+      this.modules.Forms = Forms;
+      this.modules.Gallery = Gallery;
+      this.modules.MediaPlayer = MediaPlayer;
+      this.modules.MobileMenu = MobileMenu;
+      this.modules.ScrollEffects = ScrollEffects;
+    },
+
+    /**
+     * Initialize a module with error handling
+     */
+    initModule(name, module, callback) {
+      try {
+        if (typeof module !== 'undefined') {
+          // Check if module has init method
+          if (typeof module.init === 'function') {
+            module.init();
+          }
+
+          // Run callback if provided
+          if (typeof callback === 'function') {
+            callback();
+          }
+
+          this.modules[name] = module;
+        } else {
+          console.warn(`⚠️ Module ${name} not found`);
+        }
+      } catch (error) {
+        console.error(`❌ Failed to initialize ${name}:`, error);
+      }
     },
 
     /**
@@ -77,8 +117,12 @@
       // Handle page visibility changes
       document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-          if (typeof MediaPlayer !== 'undefined') {
-            MediaPlayer.pauseAll();
+          // Pause media when page hidden
+          if (
+            this.modules.MediaPlayer &&
+            typeof this.modules.MediaPlayer.pauseAll === 'function'
+          ) {
+            this.modules.MediaPlayer.pauseAll();
           }
         }
       });
@@ -97,22 +141,31 @@
       // Handle errors globally
       window.addEventListener('error', (e) => {
         console.error('Global error:', e.error);
-        if (typeof Analytics !== 'undefined') {
-          Analytics.trackError('JavaScript Error', e.message);
+        if (
+          this.modules.Analytics &&
+          typeof this.modules.Analytics.trackError === 'function'
+        ) {
+          this.modules.Analytics.trackError('JavaScript Error', e.message);
         }
       });
 
       // Handle unhandled promise rejections
       window.addEventListener('unhandledrejection', (e) => {
         console.error('Unhandled promise rejection:', e.reason);
-        if (typeof Analytics !== 'undefined') {
-          Analytics.trackError('Promise Rejection', e.reason);
+        if (
+          this.modules.Analytics &&
+          typeof this.modules.Analytics.trackError === 'function'
+        ) {
+          this.modules.Analytics.trackError(
+            'Promise Rejection',
+            String(e.reason),
+          );
         }
       });
 
       // Handle orientation changes (mobile)
       window.addEventListener('orientationchange', () => {
-        if (typeof MobileDetect !== 'undefined' && MobileDetect.isMobile) {
+        if (this.modules.MobileDetect && this.modules.MobileDetect.isMobile) {
           this.handleOrientationChange();
         }
       });
@@ -122,49 +175,97 @@
      * Handle orientation changes on mobile
      */
     handleOrientationChange() {
-      // Optional: Show message or adjust layout
-      console.log(
-        'Orientation changed:',
-        MobileDetect.isLandscape() ? 'landscape' : 'portrait',
-      );
+      const orientation = this.modules.MobileDetect.isLandscape()
+        ? 'landscape'
+        : 'portrait';
+      console.log('Orientation changed:', orientation);
+
+      // Track orientation change
+      if (
+        this.modules.Analytics &&
+        typeof this.modules.Analytics.trackEvent === 'function'
+      ) {
+        this.modules.Analytics.trackEvent(
+          'Mobile',
+          'Orientation Change',
+          orientation,
+        );
+      }
     },
 
     /**
      * Track performance metrics
      */
     trackPerformance() {
-      if (!window.performance || typeof Analytics === 'undefined') return;
+      if (!window.performance || !this.modules.Analytics) return;
 
       window.addEventListener('load', () => {
+        // Wait for all resources to load
         setTimeout(() => {
-          const perfData = performance.timing;
-          const pageLoadTime = perfData.loadEventEnd - perfData.navigationStart;
-          const domReadyTime =
-            perfData.domContentLoadedEventEnd - perfData.navigationStart;
+          try {
+            const perfData = performance.timing;
+            const pageLoadTime =
+              perfData.loadEventEnd - perfData.navigationStart;
+            const domReadyTime =
+              perfData.domContentLoadedEventEnd - perfData.navigationStart;
 
-          Analytics.trackTiming('Performance', 'Page Load', pageLoadTime);
-          Analytics.trackTiming('Performance', 'DOM Ready', domReadyTime);
+            if (typeof this.modules.Analytics.trackTiming === 'function') {
+              this.modules.Analytics.trackTiming(
+                'Performance',
+                'Page Load',
+                pageLoadTime,
+              );
+              this.modules.Analytics.trackTiming(
+                'Performance',
+                'DOM Ready',
+                domReadyTime,
+              );
+            }
 
-          if (this.env === 'development') {
-            console.log('Performance metrics:', {
-              pageLoadTime: `${pageLoadTime}ms`,
-              domReadyTime: `${domReadyTime}ms`,
-            });
+            if (this.env === 'development') {
+              console.log('📊 Performance metrics:', {
+                pageLoadTime: `${pageLoadTime}ms`,
+                domReadyTime: `${domReadyTime}ms`,
+              });
+            }
+          } catch (error) {
+            console.error('Performance tracking error:', error);
           }
         }, 0);
       });
     },
 
     /**
+     * Preload commonly visited pages
+     */
+    preloadCommonPages() {
+      setTimeout(() => {
+        if (
+          this.modules.Router &&
+          typeof this.modules.Router.preloadPage === 'function'
+        ) {
+          console.log('🔄 Preloading common pages...');
+          this.modules.Router.preloadPage('bio');
+          this.modules.Router.preloadPage('tour');
+          this.modules.Router.preloadPage('music');
+        }
+      }, 2000);
+    },
+
+    /**
      * Show notification to user
      */
     showNotification(message, type = 'info') {
+      // Remove existing notifications
       const existing = document.querySelector('.app-notification');
       if (existing) existing.remove();
 
       const notification = document.createElement('div');
       notification.className = `app-notification app-notification-${type}`;
       notification.textContent = message;
+      notification.setAttribute('role', 'alert');
+      notification.setAttribute('aria-live', 'polite');
+
       notification.style.cssText = `
         position: fixed;
         top: 100px;
@@ -182,10 +283,12 @@
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         z-index: 10000;
         animation: slideInRight 0.3s ease-out;
+        transition: opacity 0.3s ease, transform 0.3s ease;
       `;
 
       document.body.appendChild(notification);
 
+      // Auto-remove after 3 seconds
       setTimeout(() => {
         notification.style.opacity = '0';
         notification.style.transform = 'translateX(400px)';
@@ -194,30 +297,31 @@
     },
 
     /**
-     * Get application state
+     * Show error message
+     */
+    showError(message) {
+      console.error('Error:', message);
+      this.showNotification(message, 'error');
+    },
+
+    /**
+     * Get application state (for debugging)
      */
     getState() {
       return {
         version: this.version,
         env: this.env,
-        currentPage:
-          typeof Router !== 'undefined' ? Router.getCurrentPage() : null,
-        deviceInfo:
-          typeof MobileDetect !== 'undefined'
-            ? MobileDetect.getDeviceInfo()
-            : null,
-        modules: {
-          utils: typeof Utils !== 'undefined',
-          mobileDetect: typeof MobileDetect !== 'undefined',
-          pageLoader: typeof PageLoader !== 'undefined',
-          router: typeof Router !== 'undefined',
-          navigation: typeof Navigation !== 'undefined',
-          forms: typeof Forms !== 'undefined',
-          gallery: typeof Gallery !== 'undefined',
-          mediaPlayer: typeof MediaPlayer !== 'undefined',
-          api: typeof API !== 'undefined',
-          analytics: typeof Analytics !== 'undefined',
-        },
+        initialized: this.initialized,
+        currentPage: this.modules.Router
+          ? this.modules.Router.getCurrentPage()
+          : null,
+        deviceInfo: this.modules.MobileDetect
+          ? this.modules.MobileDetect.getDeviceInfo()
+          : null,
+        modules: Object.keys(this.modules).reduce((acc, key) => {
+          acc[key] = typeof this.modules[key] !== 'undefined';
+          return acc;
+        }, {}),
       };
     },
   };
@@ -232,10 +336,17 @@
   }
 
   /**
-   * Expose App to window for debugging (development only)
+   * Expose App to window for debugging
    */
   if (App.env === 'development') {
     window.App = App;
     console.log('💡 App object available in console for debugging');
   }
+
+  // Also expose in production but read-only
+  Object.defineProperty(window, 'LAYoungApp', {
+    value: App,
+    writable: false,
+    configurable: false,
+  });
 })();

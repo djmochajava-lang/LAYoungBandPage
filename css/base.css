@@ -200,3 +200,53 @@ img {
   opacity: 0.5;
   pointer-events: none;
 }
+
+/* === SCROLLBAR FIX === */
+
+/* Remove main page scrollbar */
+html,
+body {
+  overflow: hidden;
+  height: 100vh;
+}
+
+body {
+  position: fixed;
+  width: 100%;
+}
+
+/* Hide scrollbars but keep functionality */
+.section {
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.section::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.hero {
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hero::-webkit-scrollbar {
+  display: none;
+}
+
+/* TEMPORARY TEST - Remove after confirming mobile works */
+@media (max-width: 768px) {
+  .section::-webkit-scrollbar {
+    display: block !important;
+    width: 4px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  .section::-webkit-scrollbar-thumb {
+    background: rgba(255, 215, 0, 0.5);
+    border-radius: 2px;
+  }
+}
