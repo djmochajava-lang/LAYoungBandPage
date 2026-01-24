@@ -235,14 +235,14 @@ const BackgroundMusic = {
 
     if (this.enabled) {
       button.innerHTML = `
-        <img src="images/icons/mute-button-new.svg.med.png" alt="Music On" class="music-icon music-on" />
+        <img src="images/icons/speaker.png" alt="Music On" class="music-icon music-on" />
         <span>Groove<br>On</span>
       `;
       button.classList.remove('disabled');
       button.classList.add('enabled');
     } else {
       button.innerHTML = `
-        <img src="images/icons/mute-button-new.svg.med.png" alt="Music Off" class="music-icon music-off" />
+        <img src="images/icons/speaker.png" alt="Music Off" class="music-icon music-off" />
         <span>Groove<br>Off</span>
       `;
       button.classList.add('disabled');
