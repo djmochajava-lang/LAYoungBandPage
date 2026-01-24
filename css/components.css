@@ -267,14 +267,14 @@ body:not(.page-loading) .loading-spinner {
   display: none;
 }
 
-/* === GLOBAL GROOVE BUTTON - IN FOOTER BAR === */
+/* === GLOBAL GROOVE BUTTON - NEXT TO HAMBURGER ON MOBILE === */
 
 .music-toggle-btn {
   position: fixed;
-  bottom: 15px; /* Aligned with footer */
-  left: 20px; /* Far left of footer */
-  width: 80px;
-  height: 80px;
+  top: 20px; /* Aligned with hamburger */
+  right: 80px; /* To the LEFT of hamburger */
+  width: 50px; /* Smaller to fit in header */
+  height: 50px;
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
@@ -282,19 +282,19 @@ body:not(.page-loading) .loading-spinner {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 2px;
   z-index: 9999;
   transition: all 0.3s ease;
   background: rgba(26, 26, 46, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  padding: 8px;
+  padding: 5px;
 }
 
 /* Music Icon Image */
 .music-icon {
-  width: 35px;
-  height: 35px;
+  width: 22px; /* Smaller for header */
+  height: 22px;
   object-fit: contain;
   transition: all 0.3s ease;
   position: relative;
@@ -314,14 +314,14 @@ body:not(.page-loading) .loading-spinner {
 .music-toggle-btn.disabled::after {
   content: '';
   position: absolute;
-  width: 70px;
-  height: 4px;
+  width: 40px; /* Adjusted for smaller size */
+  height: 3px;
   background: linear-gradient(90deg, #ff0000, #ff4444, #ff0000);
   transform: rotate(-45deg);
   top: 50%;
   left: 50%;
-  margin-left: -35px;
-  margin-top: -15px;
+  margin-left: -20px;
+  margin-top: -10px;
   box-shadow:
     0 0 10px rgba(255, 0, 0, 0.8),
     0 0 20px rgba(255, 0, 0, 0.5);
@@ -330,16 +330,16 @@ body:not(.page-loading) .loading-spinner {
   pointer-events: none;
 }
 
-/* Text label */
+/* Text label - smaller */
 .music-toggle-btn span {
-  font-size: 0.7rem;
+  font-size: 0.45rem; /* Much smaller */
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: 1.1;
+  letter-spacing: 0.03em;
+  line-height: 1;
   color: #fff;
   font-weight: bold;
   text-align: center;
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
 /* Enabled state - subtle pulse */
@@ -364,7 +364,7 @@ body:not(.page-loading) .loading-spinner {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Hover effect - subtle */
+/* Hover effect */
 .music-toggle-btn:hover {
   transform: scale(1.1);
   box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
@@ -378,7 +378,7 @@ body:not(.page-loading) .loading-spinner {
   transform: scale(0.95);
 }
 
-/* Subtle pulse animation */
+/* Animations */
 @keyframes subtlePulse {
   0%,
   100% {
@@ -389,57 +389,64 @@ body:not(.page-loading) .loading-spinner {
   }
 }
 
-/* Music icon bounce animation */
 @keyframes musicBounce {
   0%,
   100% {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-3px);
+    transform: translateY(-2px);
   }
 }
 
-/* Responsive - adjust for mobile */
-@media (max-width: 768px) {
+/* Desktop - position in footer like before */
+@media (min-width: 769px) {
   .music-toggle-btn {
-    bottom: 10px;
-    left: 10px;
-    width: 65px;
-    height: 65px;
+    top: auto;
+    right: auto;
+    bottom: 15px;
+    left: 20px;
+    width: 80px;
+    height: 80px;
+    padding: 8px;
   }
 
   .music-icon {
-    width: 28px;
-    height: 28px;
+    width: 35px;
+    height: 35px;
   }
 
   .music-toggle-btn span {
-    font-size: 0.6rem;
+    font-size: 0.7rem;
+    margin-top: 3px;
   }
 
   .music-toggle-btn.disabled::after {
-    width: 60px;
-    margin-left: -30px;
-    margin-top: -12px;
+    width: 70px;
+    margin-left: -35px;
+    margin-top: -15px;
   }
 }
 
-/* Extra small screens */
+/* Mobile adjustments */
 @media (max-width: 480px) {
   .music-toggle-btn {
-    bottom: 8px;
-    left: 8px;
-    width: 60px;
-    height: 60px;
+    right: 70px; /* Closer to hamburger on small screens */
+    width: 45px;
+    height: 45px;
   }
 
   .music-icon {
-    width: 26px;
-    height: 26px;
+    width: 20px;
+    height: 20px;
   }
 
   .music-toggle-btn span {
-    font-size: 0.55rem;
+    font-size: 0.4rem;
+  }
+
+  .music-toggle-btn.disabled::after {
+    width: 35px;
+    margin-left: -17.5px;
   }
 }
