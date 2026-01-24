@@ -266,3 +266,124 @@
 body:not(.page-loading) .loading-spinner {
   display: none;
 }
+
+/* === GLOBAL GROOVE BUTTON === */
+
+.music-toggle-btn {
+  position: fixed;
+  bottom: 80px;
+  left: 20px;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  z-index: 9999;
+  transition: all 0.3s ease;
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Metallic gold border */
+.music-toggle-btn::before {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  right: -3px;
+  bottom: -3px;
+  background: linear-gradient(
+    135deg,
+    #b8860b,
+    #ffd700,
+    #ffed4e,
+    #ffd700,
+    #b8860b
+  );
+  background-size: 200% 200%;
+  border-radius: 50%;
+  z-index: -1;
+  animation: goldShine 3s ease-in-out infinite;
+}
+
+.music-toggle-btn span {
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Enabled state - Pulsing animation */
+.music-toggle-btn.enabled {
+  animation: musicPulse 2s ease-in-out infinite;
+}
+
+.music-toggle-btn.enabled span {
+  background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShine 3s ease-in-out infinite;
+}
+
+/* Disabled state */
+.music-toggle-btn.disabled {
+  opacity: 0.6;
+}
+
+.music-toggle-btn.disabled span {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Hover effect */
+.music-toggle-btn:hover {
+  transform: scale(1.1) rotate(5deg);
+  box-shadow:
+    0 0 30px rgba(255, 215, 0, 0.6),
+    0 0 50px rgba(255, 215, 0, 0.3);
+}
+
+.music-toggle-btn:active {
+  transform: scale(0.95);
+}
+
+/* Pulsing animation when music is playing */
+@keyframes musicPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow:
+      0 0 20px rgba(255, 215, 0, 0.5),
+      0 0 40px rgba(255, 215, 0, 0.3),
+      0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Responsive - adjust position on mobile */
+@media (max-width: 768px) {
+  .music-toggle-btn {
+    bottom: 70px;
+    left: 15px;
+    width: 60px;
+    height: 60px;
+    font-size: 1.3rem;
+  }
+
+  .music-toggle-btn span {
+    font-size: 0.45rem;
+  }
+}
