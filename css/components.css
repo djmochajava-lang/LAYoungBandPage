@@ -267,17 +267,16 @@ body:not(.page-loading) .loading-spinner {
   display: none;
 }
 
-/* === GLOBAL GROOVE BUTTON === */
+/* === GLOBAL GROOVE BUTTON - IN FOOTER BAR === */
 
-/* Simple border - no gold glow */
 .music-toggle-btn {
   position: fixed;
-  bottom: 80px;
-  left: 20px;
+  bottom: 15px; /* Aligned with footer */
+  left: 20px; /* Far left of footer */
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.2); /* Simple white border */
+  border: 2px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -292,23 +291,48 @@ body:not(.page-loading) .loading-spinner {
   padding: 8px;
 }
 
-/* Metallic gold border */
-.music-toggle-btn::before {
-  content: '';
-  position: absolute;
-  top: -3px;
-  left: -3px;
-  right: -3px;
-  bottom: -3px;
-
-  background-size: 200% 200%;
-  border-radius: 50%;
-  z-index: -1;
-  animation: goldShine 3s ease-in-out infinite;
+/* Music Icon Image */
+.music-icon {
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+  transition: all 0.3s ease;
+  position: relative;
 }
 
+/* When music is ON */
+.music-toggle-btn.enabled .music-icon {
+  filter: none;
+}
+
+/* When music is OFF - add diagonal slash */
+.music-toggle-btn.disabled .music-icon {
+  opacity: 0.6;
+  filter: grayscale(50%);
+}
+
+.music-toggle-btn.disabled::after {
+  content: '';
+  position: absolute;
+  width: 70px;
+  height: 4px;
+  background: linear-gradient(90deg, #ff0000, #ff4444, #ff0000);
+  transform: rotate(-45deg);
+  top: 50%;
+  left: 50%;
+  margin-left: -35px;
+  margin-top: -15px;
+  box-shadow:
+    0 0 10px rgba(255, 0, 0, 0.8),
+    0 0 20px rgba(255, 0, 0, 0.5);
+  border-radius: 2px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* Text label */
 .music-toggle-btn span {
-  font-size: 0.7rem; /* Changed from 0.6rem */
+  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   line-height: 1.1;
@@ -318,88 +342,104 @@ body:not(.page-loading) .loading-spinner {
   margin-top: 3px;
 }
 
-/* Enabled state - Pulsing animation */
+/* Enabled state - subtle pulse */
 .music-toggle-btn.enabled {
-  animation: musicPulse 2s ease-in-out infinite;
+  animation: subtlePulse 2s ease-in-out infinite;
 }
 
 .music-toggle-btn.enabled span {
-  background: linear-gradient(135deg, #ffd700, #ffed4e, #ffd700);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  animation: goldShine 3s ease-in-out infinite;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.music-toggle-btn.enabled .music-icon {
+  animation: musicBounce 2s ease-in-out infinite;
 }
 
 /* Disabled state */
 .music-toggle-btn.disabled {
-  opacity: 0.6;
-}
-
-/* Red Slash When Muted - Over the Image */
-.music-toggle-btn.disabled::after {
-  content: '';
-  position: absolute;
-  width: 70px; /* Increased to cover the icon better */
-  height: 4px; /* Thickness of slash */
-  background: linear-gradient(90deg, #ff0000, #ff4444, #ff0000);
-  transform: rotate(-45deg);
-  top: 50%;
-  left: 50%;
-  margin-left: -35px; /* Half of width */
-  margin-top: -15px; /* Adjust to center over icon */
-  box-shadow:
-    0 0 10px rgba(255, 0, 0, 0.8),
-    0 0 20px rgba(255, 0, 0, 0.5);
-  border-radius: 2px;
-  z-index: 100; /* Make sure it's on top */
-  pointer-events: none;
+  opacity: 0.8;
 }
 
 .music-toggle-btn.disabled span {
   color: rgba(255, 255, 255, 0.5);
 }
 
-/* Hover effect */
+/* Hover effect - subtle */
 .music-toggle-btn:hover {
-  transform: scale(1.1) rotate(5deg);
-  box-shadow:
-    0 0 30px rgba(255, 215, 0, 0.6),
-    0 0 50px rgba(255, 215, 0, 0.3);
+  transform: scale(1.1);
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
+}
+
+.music-toggle-btn:hover .music-icon {
+  transform: scale(1.1);
 }
 
 .music-toggle-btn:active {
   transform: scale(0.95);
 }
 
-/* Pulsing animation when music is playing */
-@keyframes musicPulse {
+/* Subtle pulse animation */
+@keyframes subtlePulse {
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   }
   50% {
-    transform: scale(1.05);
-    box-shadow:
-      0 0 20px rgba(255, 215, 0, 0.5),
-      0 0 40px rgba(255, 215, 0, 0.3),
-      0 4px 20px rgba(0, 0, 0, 0.5);
+    transform: scale(1.03);
   }
 }
 
-/* Responsive - adjust position on mobile */
+/* Music icon bounce animation */
+@keyframes musicBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+/* Responsive - adjust for mobile */
 @media (max-width: 768px) {
   .music-toggle-btn {
-    bottom: 70px;
-    left: 15px;
-    width: 60px;
-    height: 60px;
-    font-size: 1.3rem;
+    bottom: 10px;
+    left: 10px;
+    width: 65px;
+    height: 65px;
+  }
+
+  .music-icon {
+    width: 28px;
+    height: 28px;
   }
 
   .music-toggle-btn span {
-    font-size: 0.45rem;
+    font-size: 0.6rem;
+  }
+
+  .music-toggle-btn.disabled::after {
+    width: 60px;
+    margin-left: -30px;
+    margin-top: -12px;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .music-toggle-btn {
+    bottom: 8px;
+    left: 8px;
+    width: 60px;
+    height: 60px;
+  }
+
+  .music-icon {
+    width: 26px;
+    height: 26px;
+  }
+
+  .music-toggle-btn span {
+    font-size: 0.55rem;
   }
 }
