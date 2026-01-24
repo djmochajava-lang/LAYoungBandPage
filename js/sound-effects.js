@@ -8,7 +8,7 @@
 const SoundEffects = {
   sounds: {},
   enabled: true,
-  volume: 0.005,
+  volume: 0.05,
   initialized: false,
   unlocked: false, // Track if sounds are unlocked on mobile
 
@@ -85,7 +85,7 @@ const SoundEffects = {
    */
   loadSound(src) {
     const audio = new Audio(src);
-    audio.volume = this.volume;
+    audio.volume = this.volume; // Make sure this line exists
     audio.preload = 'auto';
 
     audio.addEventListener('error', () => {
