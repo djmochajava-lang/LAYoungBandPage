@@ -8,7 +8,7 @@
 const SoundEffects = {
   sounds: {},
   enabled: true,
-  volume: 0.05,
+  volume: 0.005,
   initialized: false,
   unlocked: false, // Track if sounds are unlocked on mobile
 
