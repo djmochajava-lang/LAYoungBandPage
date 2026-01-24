@@ -267,14 +267,14 @@ body:not(.page-loading) .loading-spinner {
   display: none;
 }
 
-/* === GLOBAL GROOVE BUTTON - NEXT TO HAMBURGER ON MOBILE === */
+/* === GLOBAL GROOVE BUTTON - BOTTOM LEFT ON ALL DEVICES === */
 
 .music-toggle-btn {
   position: fixed;
-  top: 20px; /* Aligned with hamburger */
-  right: 80px; /* To the LEFT of hamburger */
-  width: 50px; /* Smaller to fit in header */
-  height: 50px;
+  bottom: 8px;
+  left: 15px;
+  width: 55px;
+  height: 55px;
   border-radius: 50%;
   border: 2px solid rgba(255, 255, 255, 0.2);
   cursor: pointer;
@@ -291,174 +291,9 @@ body:not(.page-loading) .loading-spinner {
   padding: 5px;
 }
 
-/* Music Icon Image */
 .music-icon {
-  width: 22px; /* Smaller for header */
-  height: 22px;
-  object-fit: contain;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-/* When music is ON */
-.music-toggle-btn.enabled .music-icon {
-  filter: none;
-}
-
-/* When music is OFF - add diagonal slash */
-.music-toggle-btn.disabled .music-icon {
-  opacity: 0.6;
-  filter: grayscale(50%);
-}
-
-/* Text label - smaller */
-.music-toggle-btn span {
-  font-size: 0.45rem; /* Much smaller */
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  line-height: 1;
-  color: #fff;
-  font-weight: bold;
-  text-align: center;
-  margin-top: 2px;
-}
-
-/* Enabled state - subtle pulse */
-.music-toggle-btn.enabled {
-  animation: subtlePulse 2s ease-in-out infinite;
-}
-
-.music-toggle-btn.enabled span {
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.music-toggle-btn.enabled .music-icon {
-  animation: musicBounce 2s ease-in-out infinite;
-}
-
-/* Disabled state */
-.music-toggle-btn.disabled {
-  opacity: 0.8;
-}
-
-.music-toggle-btn.disabled span {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-/* Hover effect */
-.music-toggle-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6);
-}
-
-.music-toggle-btn:hover .music-icon {
-  transform: scale(1.1);
-}
-
-.music-toggle-btn:active {
-  transform: scale(0.95);
-}
-
-/* Animations */
-@keyframes subtlePulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.03);
-  }
-}
-
-@keyframes musicBounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-2px);
-  }
-}
-
-/* Desktop - position in footer like before */
-@media (min-width: 769px) {
-  .music-toggle-btn {
-    top: auto;
-    right: auto;
-    bottom: 15px;
-    left: 20px;
-    width: 80px;
-    height: 80px;
-    padding: 8px;
-  }
-
-  .music-icon {
-    width: 35px;
-    height: 35px;
-  }
-
-  .music-toggle-btn span {
-    font-size: 0.7rem;
-    margin-top: 3px;
-  }
-
-  .music-toggle-btn.disabled::after {
-    width: 70px;
-    margin-left: -35px;
-    margin-top: -15px;
-  }
-}
-
-/* Mobile adjustments */
-@media (max-width: 480px) {
-  .music-toggle-btn {
-    right: 70px; /* Closer to hamburger on small screens */
-    width: 45px;
-    height: 45px;
-  }
-
-  .music-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .music-toggle-btn span {
-    font-size: 0.4rem;
-  }
-
-  .music-toggle-btn.disabled::after {
-    width: 35px;
-    margin-left: -17.5px;
-  }
-}
-/* === GLOBAL GROOVE BUTTON - SMALLER TO FIT IN FOOTER === */
-
-.music-toggle-btn {
-  position: fixed;
-  bottom: 8px; /* Closer to footer bottom */
-  left: 15px; /* Closer to left edge */
-  width: 55px; /* Smaller - was 80px */
-  height: 55px; /* Smaller - was 80px */
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2px; /* Reduced gap */
-  z-index: 9999;
-  transition: all 0.3s ease;
-  background: rgba(26, 26, 46, 0.95);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  padding: 5px; /* Reduced padding */
-}
-
-/* Music Icon Image - Smaller */
-.music-icon {
-  width: 24px; /* Smaller - was 35px */
-  height: 24px; /* Smaller - was 35px */
+  width: 24px;
+  height: 24px;
   object-fit: contain;
   transition: all 0.3s ease;
   position: relative;
@@ -473,9 +308,8 @@ body:not(.page-loading) .loading-spinner {
   filter: grayscale(50%);
 }
 
-/* Text label - smaller */
 .music-toggle-btn span {
-  font-size: 0.5rem; /* Smaller - was 0.7rem */
+  font-size: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   line-height: 1;
@@ -538,11 +372,30 @@ body:not(.page-loading) .loading-spinner {
   }
 }
 
-/* Responsive - even smaller on mobile */
+/* Mobile - stay at bottom, slightly smaller */
 @media (max-width: 768px) {
   .music-toggle-btn {
-    bottom: 6px;
+    bottom: 6px; /* Stay at bottom */
     left: 10px;
+    width: 50px; /* Slightly smaller on mobile */
+    height: 50px;
+  }
+
+  .music-icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  .music-toggle-btn span {
+    font-size: 0.45rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .music-toggle-btn {
+    bottom: 5px; /* Stay at bottom */
+    left: 8px;
     width: 48px;
     height: 48px;
   }
@@ -553,27 +406,6 @@ body:not(.page-loading) .loading-spinner {
   }
 
   .music-toggle-btn span {
-    font-size: 0.45rem;
-  }
-
-  .music-toggle-btn.disabled::after {
-    width: 42px;
-    margin-left: -21px;
-  }
-}
-
-@media (max-width: 480px) {
-  .music-toggle-btn {
-    width: 45px;
-    height: 45px;
-  }
-
-  .music-icon {
-    width: 18px;
-    height: 18px;
-  }
-
-  .music-toggle-btn span {
-    font-size: 0.4rem;
+    font-size: 0.42rem;
   }
 }
