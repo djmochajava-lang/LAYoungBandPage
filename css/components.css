@@ -269,26 +269,27 @@ body:not(.page-loading) .loading-spinner {
 
 /* === GLOBAL GROOVE BUTTON === */
 
+/* Simple border - no gold glow */
 .music-toggle-btn {
   position: fixed;
   bottom: 80px;
   left: 20px;
-  width: 70px;
-  height: 70px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  border: 3px solid transparent;
+  border: 2px solid rgba(255, 255, 255, 0.2); /* Simple white border */
   cursor: pointer;
-  font-size: 1.5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
+  gap: 4px;
   z-index: 9999;
   transition: all 0.3s ease;
   background: rgba(26, 26, 46, 0.95);
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  padding: 8px;
 }
 
 /* Metallic gold border */
@@ -299,14 +300,7 @@ body:not(.page-loading) .loading-spinner {
   left: -3px;
   right: -3px;
   bottom: -3px;
-  background: linear-gradient(
-    135deg,
-    #b8860b,
-    #ffd700,
-    #ffed4e,
-    #ffd700,
-    #b8860b
-  );
+
   background-size: 200% 200%;
   border-radius: 50%;
   z-index: -1;

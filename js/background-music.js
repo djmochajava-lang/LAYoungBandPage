@@ -1,4 +1,4 @@
-// js/background-music.js
+// js/background-music.js - FIXED VERSION
 
 /**
  * Background Music Module
@@ -207,18 +207,24 @@ const BackgroundMusic = {
   },
 
   /**
-   * Update toggle button appearance
+   * Update toggle button appearance - WITH CUSTOM IMAGE
    */
   updateToggleButton() {
     const button = document.getElementById('music-toggle');
     if (!button) return;
 
     if (this.enabled) {
-      button.innerHTML = '🎵<br><span>Groove<br>On</span>';
+      button.innerHTML = `
+        <img src="images/icons/mute-button-new.svg.med.png" alt="Music On" class="music-icon music-on" />
+        <span>Groove<br>On</span>
+      `;
       button.classList.remove('disabled');
       button.classList.add('enabled');
     } else {
-      button.innerHTML = '🔇<br><span>Groove<br>Off</span>';
+      button.innerHTML = `
+        <img src="images/icons/mute-button-new.svg.med.png" alt="Music Off" class="music-icon music-off" />
+        <span>Groove<br>Off</span>
+      `;
       button.classList.add('disabled');
       button.classList.remove('enabled');
     }
