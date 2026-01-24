@@ -123,6 +123,107 @@
   outline-offset: -2px;
 }
 
+/* === ANIMATED MUSICAL NOTE BULLETS === */
+
+/* Navigation Links */
+.mobile-menu-link {
+  display: block;
+  padding: 1.2rem 2rem 1.2rem 3rem; /* Extra left padding */
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: 1.2rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-family: var(--font-secondary);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+/* Musical note - vertically centered */
+.mobile-menu-link::before {
+  content: '♪';
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+}
+
+/* Hover states */
+.mobile-menu-link:hover,
+.mobile-menu-link.active,
+.mobile-menu-link:focus {
+  color: var(--color-primary);
+  padding-left: 3.5rem;
+  background: rgba(255, 215, 0, 0.05);
+}
+
+/* Dance on hover */
+.mobile-menu-link:hover::before,
+.mobile-menu-link.active::before {
+  opacity: 1;
+  animation: musicNote 1s ease-in-out infinite;
+}
+
+.mobile-menu-link:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+/* Dancing animation - maintains vertical centering */
+@keyframes musicNote {
+  0%,
+  100% {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  25% {
+    transform: translateY(calc(-50% - 3px)) rotate(-5deg);
+  }
+  50% {
+    transform: translateY(-50%) rotate(0deg);
+  }
+  75% {
+    transform: translateY(calc(-50% + 3px)) rotate(5deg);
+  }
+}
+
+/* Different notes for each menu item */
+.mobile-menu-link:nth-child(1)::before {
+  content: '♪';
+}
+.mobile-menu-link:nth-child(2)::before {
+  content: '♫';
+}
+.mobile-menu-link:nth-child(3)::before {
+  content: '♬';
+}
+.mobile-menu-link:nth-child(4)::before {
+  content: '♩';
+}
+.mobile-menu-link:nth-child(5)::before {
+  content: '♪';
+}
+.mobile-menu-link:nth-child(6)::before {
+  content: '♫';
+}
+.mobile-menu-link:nth-child(7)::before {
+  content: '♬';
+}
+.mobile-menu-link:nth-child(8)::before {
+  content: '♩';
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .mobile-menu-link::before {
+    font-size: 1.3rem;
+  }
+}
+
 /* Menu Footer */
 .mobile-menu-footer {
   padding: 2rem;
