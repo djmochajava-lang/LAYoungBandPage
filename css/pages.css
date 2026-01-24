@@ -1,7 +1,39 @@
 /* css/pages.css */
 
 /* === PAGE-SPECIFIC STYLES === */
+/* Phyllis Hyman Experience Image */
+.experience-image {
+  width: 100%;
+  max-width: 700px;
+  margin: 1.5rem auto 2rem;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  border: 3px solid rgba(255, 215, 0, 0.3);
+}
 
+.experience-photo {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  transition:
+    transform 0.3s ease,
+    filter 0.3s ease;
+}
+
+.experience-photo:hover {
+  transform: scale(1.03);
+  filter: brightness(1.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .experience-image {
+    max-width: 100%;
+    margin: 1rem 0 1.5rem;
+  }
+}
 /* === BIO PAGE === */
 .bio-section {
   background: linear-gradient(
@@ -45,9 +77,30 @@
 }
 
 .bio-image {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+  border: 3px solid rgba(255, 215, 0, 0.4);
+  display: flex; /* Use flexbox */
+}
+
+.bio-portrait-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 17px; /* Inner radius to fit inside border */
+  transition:
+    transform 0.3s ease,
+    filter 0.3s ease;
+}
+
+.bio-portrait-image:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
 }
 
 .subsection-title {

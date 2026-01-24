@@ -61,8 +61,28 @@ const BackgroundMusic = {
     const hash = window.location.hash.substring(1) || 'home';
     const trackPath = this.pageTracks[hash];
 
-    if (trackPath && this.enabled) {
-      this.playTrack(trackPath);
+    // Don't play music on Music or Videos pages
+    if (hash === 'music' || hash === 'videos') {
+      console.log(`🔇 No background music on ${hash} page`);
+      this.stopMusic();
+      return;
+    }
+
+    if (!this.enabled) {
+      // If muted, stop any playing music
+      this.stopMusic();
+      return;
+    }
+
+    if (trackPath) {
+      // ALWAYS stop current track when changing pages
+      if (this.currentAudio) {
+        this.stopCurrentTrack(() => {
+          this.playTrack(trackPath);
+        });
+      } else {
+        this.playTrack(trackPath);
+      }
     }
   },
 
@@ -245,7 +265,7 @@ const BackgroundMusic = {
    */
   getMusicPreference() {
     const saved = localStorage.getItem('backgroundMusicEnabled');
-    return saved === null ? true : saved === 'true';
+    return saved === null ? false : saved === 'true'; // Changed true to FALSE
   },
 
   /**
