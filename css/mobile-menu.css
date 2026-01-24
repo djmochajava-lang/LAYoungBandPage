@@ -4,7 +4,7 @@
 .mobile-menu-overlay {
   position: fixed;
   top: 0;
-  left: -100%; /* START HIDDEN off-screen LEFT */
+  left: -100%;
   width: 100%;
   height: 100vh;
   background: rgba(0, 0, 0, 0.95);
@@ -13,9 +13,8 @@
   overflow-y: auto;
 }
 
-/* When menu is open */
 .mobile-menu-overlay.active {
-  left: 0; /* Slide in from LEFT */
+  left: 0;
 }
 
 /* Menu Container */
@@ -24,11 +23,11 @@
   max-width: 400px;
   height: 100%;
   background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0a 100%);
-  margin-right: auto; /* Align to LEFT */
+  margin-right: auto;
   display: flex;
   flex-direction: column;
-  border-right: 2px solid rgba(255, 215, 0, 0.3); /* Border on RIGHT side */
-  box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5); /* Shadow to the RIGHT */
+  border-right: 2px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 5px 0 20px rgba(0, 0, 0, 0.5);
 }
 
 /* Menu Header */
@@ -71,7 +70,7 @@
   outline-offset: 4px;
 }
 
-/* Navigation Links */
+/* Navigation Links Container */
 .mobile-menu-nav {
   flex: 1;
   display: flex;
@@ -79,8 +78,10 @@
   padding: 2rem 0;
 }
 
+/* Navigation Links with Musical Notes */
 .mobile-menu-link {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 1.2rem 2rem;
   color: var(--color-text-secondary);
   text-decoration: none;
@@ -93,42 +94,12 @@
   position: relative;
 }
 
-.mobile-menu-link::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 0;
-  height: 100%;
-  background: rgba(255, 215, 0, 0.1);
-  transition: width 0.3s ease;
-}
-
-.mobile-menu-link:hover,
-.mobile-menu-link.active,
-.mobile-menu-link:focus {
-  color: var(--color-primary);
-  padding-left: 2.5rem;
-  background: rgba(255, 215, 0, 0.05);
-}
-
-.mobile-menu-link:hover::before,
-.mobile-menu-link.active::before,
-.mobile-menu-link:focus::before {
-  width: 4px;
-}
-
-.mobile-menu-link:focus {
-  outline: 2px solid var(--color-primary);
-  outline-offset: -2px;
-}
-
-/* === ANIMATED MUSICAL NOTE BULLETS === */
-
-/* Navigation Links */
+/* Musical Note - Left Side, Vertically Centered */
+/* Navigation Links with Musical Notes */
 .mobile-menu-link {
-  display: block;
-  padding: 1.2rem 2rem 1.2rem 3rem; /* Extra left padding */
+  display: flex;
+  align-items: center;
+  padding: 1.2rem 2rem;
   color: var(--color-text-secondary);
   text-decoration: none;
   font-size: 1.2rem;
@@ -140,33 +111,51 @@
   position: relative;
 }
 
-/* Musical note - vertically centered */
+/* Musical Note - Left Side, Vertically Centered */
 .mobile-menu-link::before {
   content: '♪';
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
+  margin-right: 1rem;
   color: var(--color-primary);
   font-size: 1.5rem;
   opacity: 0.6;
-  transition: all 0.3s ease;
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
-/* Hover states */
+/* Yellow Underline Effect - Hidden by Default */
+.mobile-menu-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+/* Hover State with Yellow Underline */
 .mobile-menu-link:hover,
-.mobile-menu-link.active,
-.mobile-menu-link:focus {
+.mobile-menu-link.active {
   color: var(--color-primary);
-  padding-left: 3.5rem;
   background: rgba(255, 215, 0, 0.05);
+  padding-left: 2.5rem;
 }
 
-/* Dance on hover */
+/* Show Yellow Underline on Hover */
+.mobile-menu-link:hover::after,
+.mobile-menu-link.active::after {
+  width: 100%;
+}
+
+/* Dancing Animation on Hover */
 .mobile-menu-link:hover::before,
 .mobile-menu-link.active::before {
-  opacity: 1;
-  animation: musicNote 1s ease-in-out infinite;
+  opacity: 1 !important;
+  animation: musicNoteDance 1s ease-in-out infinite !important;
 }
 
 .mobile-menu-link:focus {
@@ -174,24 +163,24 @@
   outline-offset: -2px;
 }
 
-/* Dancing animation - maintains vertical centering */
-@keyframes musicNote {
+/* Dancing Animation Keyframes */
+@keyframes musicNoteDance {
   0%,
   100% {
-    transform: translateY(-50%) rotate(0deg);
+    transform: translateY(0) rotate(0deg);
   }
   25% {
-    transform: translateY(calc(-50% - 3px)) rotate(-5deg);
+    transform: translateY(-5px) rotate(-10deg);
   }
   50% {
-    transform: translateY(-50%) rotate(0deg);
+    transform: translateY(0) rotate(0deg);
   }
   75% {
-    transform: translateY(calc(-50% + 3px)) rotate(5deg);
+    transform: translateY(5px) rotate(10deg);
   }
 }
 
-/* Different notes for each menu item */
+/* Different Musical Notes for Each Menu Item */
 .mobile-menu-link:nth-child(1)::before {
   content: '♪';
 }
@@ -215,13 +204,6 @@
 }
 .mobile-menu-link:nth-child(8)::before {
   content: '♩';
-}
-
-/* Responsive */
-@media (max-width: 500px) {
-  .mobile-menu-link::before {
-    font-size: 1.3rem;
-  }
 }
 
 /* Menu Footer */
@@ -258,7 +240,7 @@
   outline-offset: 2px;
 }
 
-/* Backdrop (behind the menu) */
+/* Backdrop */
 .mobile-menu-overlay::after {
   content: '';
   position: fixed;
@@ -278,14 +260,14 @@
   pointer-events: auto;
 }
 
-/* Prevent body scroll when menu is open */
+/* Prevent Body Scroll */
 body.mobile-menu-open {
   overflow: hidden;
   position: fixed;
   width: 100%;
 }
 
-/* Animation for menu items (stagger effect) */
+/* Slide In Animation for Menu Items */
 .mobile-menu-overlay.active .mobile-menu-link {
   animation: slideInLeft 0.4s ease forwards;
   opacity: 0;
@@ -327,30 +309,7 @@ body.mobile-menu-open {
   }
 }
 
-/* Responsive adjustments */
-@media (max-width: 500px) {
-  .mobile-menu-container {
-    max-width: 100%;
-  }
-
-  .mobile-menu-header h2 {
-    font-size: 1.5rem;
-  }
-
-  .mobile-menu-link {
-    font-size: 1.1rem;
-    padding: 1rem 1.5rem;
-  }
-}
-
-/* Desktop - hide mobile menu */
-@media (min-width: 769px) {
-  .mobile-menu-overlay {
-    display: none;
-  }
-}
-
-/* Hamburger Button Improvements */
+/* Hamburger Button */
 .menu-toggle {
   position: relative;
   z-index: 10001;
@@ -366,7 +325,6 @@ body.mobile-menu-open {
   outline-offset: 4px;
 }
 
-/* Hamburger animation to X */
 .menu-toggle span {
   transition: all 0.3s ease;
 }
@@ -384,19 +342,48 @@ body.mobile-menu-open {
   transform: translateY(-11px) rotate(-45deg);
 }
 
-/* Accessibility improvements */
+/* Responsive Adjustments */
+@media (max-width: 500px) {
+  .mobile-menu-container {
+    max-width: 100%;
+  }
+
+  .mobile-menu-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .mobile-menu-link {
+    font-size: 1.1rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .mobile-menu-link::before {
+    font-size: 1.3rem;
+    margin-right: 0.8rem;
+  }
+}
+
+/* Desktop - Hide Mobile Menu */
+@media (min-width: 769px) {
+  .mobile-menu-overlay {
+    display: none;
+  }
+}
+
+/* Accessibility */
 @media (prefers-reduced-motion: reduce) {
   .mobile-menu-overlay,
   .mobile-menu-link,
   .mobile-menu-close,
   .mobile-menu-epk,
-  .menu-toggle {
+  .menu-toggle,
+  .mobile-menu-link::before {
     transition: none !important;
     animation: none !important;
   }
 }
 
-/* High contrast mode support */
+/* High Contrast Mode */
 @media (prefers-contrast: high) {
   .mobile-menu-overlay {
     background: #000;
