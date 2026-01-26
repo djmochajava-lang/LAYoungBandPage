@@ -1,5 +1,4 @@
 /* css/base.css */
-
 /* === CSS VARIABLES === */
 :root {
   /* Colors */
@@ -9,23 +8,19 @@
   --color-bg-navy: #1a1a2e; /* Navy */
   --color-bg-blue: #16213e; /* Blue */
   --color-bg-accent: #0f3460; /* Accent blue */
-
   --color-text-primary: #ffffff;
   --color-text-secondary: rgba(255, 255, 255, 0.8);
   --color-text-muted: rgba(255, 255, 255, 0.6);
   --color-text-faded: rgba(255, 255, 255, 0.4);
-
   /* Spacing */
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
   --spacing-md: 2rem;
   --spacing-lg: 4rem;
   --spacing-xl: 6rem;
-
   /* Typography */
   --font-primary: 'Playfair Display', 'Didot', serif;
   --font-secondary: 'Georgia', 'Times New Roman', serif;
-
   --font-size-xs: 0.85rem;
   --font-size-sm: 0.95rem;
   --font-size-base: 1rem;
@@ -34,21 +29,17 @@
   --font-size-xl: 2rem;
   --font-size-2xl: 2.5rem;
   --font-size-3xl: 3rem;
-
   /* Borders */
   --border-gold: 2px solid rgba(255, 215, 0, 0.3);
   --border-gold-light: 1px solid rgba(255, 215, 0, 0.2);
   --border-gold-bright: 2px solid rgba(255, 215, 0, 0.6);
-
   /* Shadows */
   --shadow-gold: 0 0 20px rgba(255, 215, 0, 0.3);
   --shadow-gold-lg: 0 0 30px rgba(255, 215, 0, 0.5);
-
   /* Transitions */
   --transition-fast: 0.2s ease;
   --transition-base: 0.3s ease;
   --transition-slow: 0.4s ease;
-
   /* Z-index layers */
   --z-dropdown: 100;
   --z-sticky: 500;
@@ -67,6 +58,8 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  height: 100%;
+  overflow-y: scroll; /* Ensures scrollbar space always exists → prevents layout jumps */
 }
 
 body {
@@ -74,9 +67,10 @@ body {
   background: var(--color-bg-dark);
   color: var(--color-text-primary);
   line-height: 1.6;
-  overflow-x: hidden;
+  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Removed: position: fixed; overflow: hidden; */
 }
 
 /* === TYPOGRAPHY === */
@@ -95,11 +89,9 @@ h6 {
 h1 {
   font-size: clamp(2.5rem, 5vw, 4rem);
 }
-
 h2 {
   font-size: clamp(2rem, 4vw, 3rem);
 }
-
 h3 {
   font-size: clamp(1.5rem, 3vw, 2rem);
 }
@@ -134,11 +126,9 @@ a:hover {
 .text-center {
   text-align: center;
 }
-
 .text-gold {
   color: var(--color-primary);
 }
-
 .text-muted {
   color: var(--color-text-muted);
 }
@@ -173,7 +163,7 @@ img {
   color: var(--color-bg-dark);
 }
 
-/* === SCROLLBAR === */
+/* === SCROLLBAR (global nice look when visible) === */
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -191,9 +181,12 @@ img {
   background: var(--color-text-primary);
 }
 
-/* Page transitions */
+/* === PAGE LAYOUT WITH FIXED HEADER & FOOTER === */
 #app-container {
   transition: opacity 0.3s ease-out;
+  margin-top: 80px; /* Matches your fixed header height */
+  margin-bottom: 70px; /* Slightly more than footer height for breathing room */
+  min-height: calc(100vh - 150px);
 }
 
 .page-loading #app-container {
@@ -201,52 +194,53 @@ img {
   pointer-events: none;
 }
 
-/* === SCROLLBAR FIX === */
-
-/* Remove main page scrollbar */
-html,
-body {
-  overflow: hidden;
-  height: 100vh;
-}
-
-body {
-  position: fixed;
-  width: 100%;
-}
-
-/* Hide scrollbars but keep functionality */
-.section {
-  overflow-y: auto;
-  overflow-x: hidden;
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
-
-.section::-webkit-scrollbar {
-  display: none; /* Chrome/Safari */
-}
-
+/* === SECTION SCROLLING === */
+.section,
 .hero {
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  min-height: 100vh;
+  padding: var(--spacing-xl) 0;
+  overflow-y: auto; /* Allow scrolling when content overflows */
+  -webkit-overflow-scrolling: touch; /* Smooth momentum scrolling on iOS */
 }
 
-.hero::-webkit-scrollbar {
-  display: none;
+/* Make sure long content (like contact page) can be fully reached */
+.section {
+  padding-bottom: 4rem; /* Extra space at bottom so last element isn't hidden */
 }
 
-/* TEMPORARY TEST - Remove after confirming mobile works */
+/* Visible scrollbar styling only when needed */
+.section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.section::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.section::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 4px;
+}
+
+.section::-webkit-scrollbar-thumb:hover {
+  background: #ffeb3b;
+}
+
+/* Mobile adjustments – prevent content cutoff when keyboard opens */
 @media (max-width: 768px) {
-  .section::-webkit-scrollbar {
-    display: block !important;
-    width: 4px;
-    background: rgba(0, 0, 0, 0.1);
+  .section {
+    padding: var(--spacing-lg) 0;
+    padding-bottom: 6rem; /* More space on mobile */
   }
 
-  .section::-webkit-scrollbar-thumb {
-    background: rgba(255, 215, 0, 0.5);
-    border-radius: 2px;
+  .page-content {
+    margin-top: 110px; /* Give header more room on small screens */
+    margin-bottom: 80px;
+  }
+
+  /* Extra breathing room for contact form on mobile */
+  .contact-form-section {
+    min-height: 70vh;
+    padding-bottom: 5rem;
   }
 }
