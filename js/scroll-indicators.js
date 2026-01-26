@@ -1,46 +1,38 @@
 // js/scroll-indicators.js
 /**
- * Mobile Scroll Indicators
- * Shows up/down arrows on mobile to indicate scrollable content
+ * Mobile Scroll Indicator
+ * Shows down arrow on mobile to indicate scrollable content
  */
 
 const ScrollIndicators = {
-  topIndicator: null,
   bottomIndicator: null,
-  scrollThreshold: 100, // Distance from top/bottom to hide indicators
+  scrollThreshold: 100, // Distance from bottom to hide indicator
   initialized: false,
 
   /**
-   * Initialize scroll indicators
+   * Initialize scroll indicator
    */
   init() {
     if (this.initialized) return;
 
     // Only run on mobile
     if (window.innerWidth > 768) {
-      console.log('Desktop detected - scroll indicators disabled');
+      console.log('Desktop detected - scroll indicator disabled');
       return;
     }
 
-    this.createIndicators();
+    this.createIndicator();
     this.setupEventListeners();
-    this.updateIndicators(); // Check initial state
+    this.updateIndicator(); // Check initial state
 
     this.initialized = true;
-    console.log('✅ Scroll indicators initialized');
+    console.log('✅ Scroll indicator initialized (down arrow only)');
   },
 
   /**
-   * Create indicator HTML elements
+   * Create indicator HTML element
    */
-  createIndicators() {
-    // Top indicator (scroll up)
-    this.topIndicator = document.createElement('div');
-    this.topIndicator.className = 'scroll-indicator-top';
-    this.topIndicator.setAttribute('aria-label', 'Scroll to top');
-    this.topIndicator.setAttribute('role', 'button');
-    document.body.appendChild(this.topIndicator);
-
+  createIndicator() {
     // Bottom indicator (scroll down)
     this.bottomIndicator = document.createElement('div');
     this.bottomIndicator.className = 'scroll-indicator-bottom';
@@ -48,7 +40,7 @@ const ScrollIndicators = {
     this.bottomIndicator.setAttribute('role', 'button');
     document.body.appendChild(this.bottomIndicator);
 
-    console.log('Scroll indicators created');
+    console.log('Scroll indicator created');
   },
 
   /**
@@ -60,25 +52,16 @@ const ScrollIndicators = {
     window.addEventListener('scroll', () => {
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
-        this.updateIndicators();
+        this.updateIndicator();
       }, 50); // Throttle updates
     });
 
-    // Click handlers
-    this.topIndicator.addEventListener('click', () => {
-      this.scrollToTop();
-    });
-
+    // Click handler
     this.bottomIndicator.addEventListener('click', () => {
       this.scrollToBottom();
     });
 
-    // Touch handlers for mobile
-    this.topIndicator.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      this.scrollToTop();
-    });
-
+    // Touch handler for mobile
     this.bottomIndicator.addEventListener('touchend', (e) => {
       e.preventDefault();
       this.scrollToBottom();
@@ -94,7 +77,7 @@ const ScrollIndicators = {
         } else if (window.innerWidth <= 768 && !this.initialized) {
           this.init();
         } else {
-          this.updateIndicators();
+          this.updateIndicator();
         }
       }, 200);
     });
@@ -103,20 +86,13 @@ const ScrollIndicators = {
   /**
    * Update indicator visibility based on scroll position
    */
-  updateIndicators() {
-    if (!this.topIndicator || !this.bottomIndicator) return;
+  updateIndicator() {
+    if (!this.bottomIndicator) return;
 
     const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     const scrollHeight = document.documentElement.scrollHeight;
     const clientHeight = window.innerHeight;
     const scrollBottom = scrollHeight - scrollTop - clientHeight;
-
-    // Show/hide top indicator
-    if (scrollTop > this.scrollThreshold) {
-      this.topIndicator.classList.add('visible');
-    } else {
-      this.topIndicator.classList.remove('visible');
-    }
 
     // Show/hide bottom indicator
     if (scrollBottom > this.scrollThreshold) {
@@ -124,23 +100,6 @@ const ScrollIndicators = {
     } else {
       this.bottomIndicator.classList.remove('visible');
     }
-  },
-
-  /**
-   * Scroll to top smoothly
-   */
-  scrollToTop() {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    });
-
-    // Track with analytics if available
-    if (typeof Analytics !== 'undefined') {
-      Analytics.trackEvent('Scroll Indicator', 'Click', 'Scroll to Top');
-    }
-
-    console.log('📜 Scrolling to top');
   },
 
   /**
@@ -174,32 +133,15 @@ const ScrollIndicators = {
   },
 
   /**
-   * Scroll up one viewport height
-   */
-  scrollUpOneScreen() {
-    const currentScroll = window.pageYOffset;
-    const viewportHeight = window.innerHeight;
-
-    window.scrollTo({
-      top: currentScroll - viewportHeight + 100, // Overlap 100px
-      behavior: 'smooth',
-    });
-  },
-
-  /**
-   * Destroy indicators (cleanup)
+   * Destroy indicator (cleanup)
    */
   destroy() {
-    if (this.topIndicator) {
-      this.topIndicator.remove();
-      this.topIndicator = null;
-    }
     if (this.bottomIndicator) {
       this.bottomIndicator.remove();
       this.bottomIndicator = null;
     }
     this.initialized = false;
-    console.log('Scroll indicators destroyed');
+    console.log('Scroll indicator destroyed');
   },
 };
 

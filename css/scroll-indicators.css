@@ -24,7 +24,7 @@
 }
 
 .scroll-indicator-bottom {
-  bottom: 80px; /* Above any footer/controls */
+  bottom: 8px; /* Same as music-toggle-btn */
 }
 
 /* Chevron arrow icons - using border trick */
@@ -122,6 +122,6 @@
   }
 
   .scroll-indicator-bottom {
-    bottom: 70px; /* Adjust for smaller screens */
+    bottom: 6px; /* Match music button on small screens */
   }
 }
