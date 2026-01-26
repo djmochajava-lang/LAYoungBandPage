@@ -47,7 +47,7 @@
 
 /* Bio – subtle twinkling stars */
 #bio {
-  background-image: url('/images/backgrounds/bio-stars-twinkle.gif');
+  background-image: url('/images/backgrounds/ribbonmic3.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -73,9 +73,7 @@
 
 /* Gallery */
 #gallery {
-  /* background-image: url('/images/backgrounds/gallery-dark.jpg'); */
-  background-image: url('/images/backgrounds/connect-dark-curtains.gif');
-
+  background-image: url('/images/backgrounds/photostudio4.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -83,7 +81,8 @@
 
 /* Tour */
 #tour {
-  background-image: url('/images/backgrounds/tour-stage.jpg');
+  /* background-image: url('/images/backgrounds/tour-stage.jpg'); */
+  background-image: url('/images/backgrounds/connect-dark-curtains.gif');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -99,7 +98,7 @@
 
 /* Connect */
 #contact {
-  background-image: url('/images/backgrounds/connect-dark-curtains.gif');
+  /* background-image: url('/images/backgrounds/connect-dark-curtains.gif'); */
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
