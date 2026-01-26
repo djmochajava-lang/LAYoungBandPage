@@ -1,4 +1,4 @@
-/* css/sections.css - FIXED VERSION WITH BACKGROUNDS REMOVED */
+/* css/sections.css - CLEANED VERSION WITH PADDING REMOVED */
 
 /* === GENERAL SECTION STYLES === */
 .section {
@@ -137,7 +137,6 @@
 }
 
 /* === MUSIC SECTION === */
-/* Background removed - now managed in backgrounds.css */
 .music-section {
   /* Background managed in backgrounds.css */
 }
@@ -170,7 +169,6 @@
 }
 
 /* === VIDEOS SECTION === */
-/* Background removed - now managed in backgrounds.css */
 .videos-section {
   /* Background managed in backgrounds.css */
 }
@@ -207,7 +205,6 @@
 }
 
 /* === GALLERY SECTION === */
-/* Background removed - now managed in backgrounds.css */
 .gallery-section {
   /* Background managed in backgrounds.css */
 }
@@ -245,7 +242,6 @@
 }
 
 /* === TOUR SECTION === */
-/* Background removed - now managed in backgrounds.css */
 .tour-section {
   /* Background managed in backgrounds.css */
 }
@@ -329,7 +325,6 @@
 }
 
 /* === MERCH SECTION === */
-/* Background removed - now managed in backgrounds.css */
 .merch-section {
   /* Background managed in backgrounds.css */
 }
@@ -349,7 +344,7 @@
 
 /* === CONTACT SECTION === */
 .contact-section {
-  padding-bottom: 01.5in;
+  /* REMOVED: padding-bottom: 01.5in; - no longer needed with in-page footer */
 }
 
 .contact-content {
