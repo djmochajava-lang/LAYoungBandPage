@@ -1,17 +1,11 @@
-// js/background-music.js - FIXED VERSION
-
-/**
- * Background Music Module
- * Plays different music on different pages with global control
- */
-
+// js/background-music.js - MOBILE HARDENED VERSION - Jan 2026
 const BackgroundMusic = {
   currentAudio: null,
-  enabled: true,
-  volume: 0.3, // 30% volume
+  enabled: false, // start muted - safer for mobile
+  volume: 0.25,
   fadeInterval: null,
+  audioContextUnlocked: false,
 
-  // Map pages to music files
   pageTracks: {
     home: 'music/IntroductiongroveSoft.mp3',
     bio: 'music/DaydreamingInSoundsoft.mp3',
@@ -23,269 +17,221 @@ const BackgroundMusic = {
     contact: 'music/DaydreamingInSoundsoft.mp3',
   },
 
-  /**
-   * Initialize background music
-   */
   init() {
-    // Check user preference
     this.enabled = this.getMusicPreference();
-
-    // Listen for page changes
+    this.unlockAudioContext(); // Critical for iOS/Android
     this.setupPageListeners();
-
-    // Create global toggle button
     this.createToggleButton();
-
-    console.log('🎵 Background music initialized');
+    console.log('🎵 Background music module loaded (starts muted)');
   },
 
-  /**
-   * Setup listeners for page navigation
-   */
-  setupPageListeners() {
-    // Listen for hash changes (page navigation)
-    window.addEventListener('hashchange', () => {
-      this.handlePageChange();
+  unlockAudioContext() {
+    const unlock = () => {
+      if (this.audioContextUnlocked) return;
+
+      // Create silent oscillator to force AudioContext resume
+      const AudioContext = window.AudioContext || window.webkitAudioContext;
+      if (AudioContext) {
+        const ctx = new AudioContext();
+        const oscillator = ctx.createOscillator();
+        oscillator.connect(ctx.destination);
+        oscillator.start();
+        oscillator.stop();
+      }
+
+      // Also try playing/pausing a silent audio
+      const silent = new Audio(
+        'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=',
+      );
+      silent
+        .play()
+        .catch(() => {})
+        .finally(() => silent.pause());
+
+      this.audioContextUnlocked = true;
+      document.removeEventListener('touchstart', unlock, { passive: true });
+      document.removeEventListener('touchend', unlock, { passive: true });
+      document.removeEventListener('click', unlock);
+      console.log('🔓 Audio context unlocked');
+    };
+
+    document.addEventListener('touchstart', unlock, {
+      once: true,
+      passive: true,
     });
-
-    // Initial page load
-    setTimeout(() => {
-      this.handlePageChange();
-    }, 1000); // Wait 1 second after page loads
+    document.addEventListener('touchend', unlock, {
+      once: true,
+      passive: true,
+    });
+    document.addEventListener('click', unlock, { once: true });
   },
 
-  /**
-   * Handle page changes
-   */
+  setupPageListeners() {
+    const handler = () => this.handlePageChange();
+    window.addEventListener('hashchange', handler);
+    // Initial load (give DOM time to settle)
+    setTimeout(handler, 800);
+  },
+
   handlePageChange() {
     const hash = window.location.hash.substring(1) || 'home';
     const trackPath = this.pageTracks[hash];
 
-    // Don't play music on Music or Videos pages
+    // Never play background music on music/videos pages
     if (hash === 'music' || hash === 'videos') {
-      console.log(`🔇 No background music on ${hash} page`);
-      this.stopMusic();
+      this.stop();
       return;
     }
 
     if (!this.enabled) {
-      // If muted, stop any playing music
-      this.stopMusic();
+      this.stop();
       return;
     }
 
-    if (trackPath) {
-      // ALWAYS stop current track when changing pages
-      if (this.currentAudio) {
-        this.stopCurrentTrack(() => {
-          this.playTrack(trackPath);
-        });
-      } else {
-        this.playTrack(trackPath);
-      }
-    }
+    if (!trackPath) return;
+
+    // Stop anything playing before starting new
+    this.stop(() => this.play(trackPath));
   },
 
-  /**
-   * Play a music track
-   */
-  playTrack(trackPath) {
-    // If same track is already playing, don't restart
-    if (this.currentAudio && this.currentAudio.src.includes(trackPath)) {
-      if (this.currentAudio.paused) {
-        this.currentAudio.play().catch((err) => {
-          console.debug('Music play prevented:', err);
-        });
-      }
+  play(trackPath) {
+    // Already playing this track?
+    if (
+      this.currentAudio?.src.includes(trackPath) &&
+      !this.currentAudio.paused
+    ) {
       return;
     }
 
-    // Fade out current track
-    if (this.currentAudio) {
-      this.fadeOut(this.currentAudio, () => {
-        this.currentAudio.pause();
-        this.currentAudio = null;
-        this.startNewTrack(trackPath);
-      });
-    } else {
-      this.startNewTrack(trackPath);
-    }
-  },
+    // Clean up old audio first
+    this.stop(() => {
+      const audio = new Audio(trackPath);
+      audio.loop = true;
+      audio.volume = 0;
+      audio.preload = 'auto';
 
-  /**
-   * Start playing a new track
-   */
-  startNewTrack(trackPath) {
-    const audio = new Audio(trackPath);
-    audio.volume = 0;
-    audio.loop = true;
+      audio.addEventListener(
+        'canplaythrough',
+        () => {
+          if (!this.enabled) {
+            audio.pause();
+            return;
+          }
+          audio
+            .play()
+            .then(() => {
+              this.currentAudio = audio;
+              this.fadeIn(audio);
+              console.log(`▶ Playing: ${trackPath.split('/').pop()}`);
+            })
+            .catch((e) => console.debug('Play blocked:', e));
+        },
+        { once: true },
+      );
 
-    audio.addEventListener('canplaythrough', () => {
-      audio
-        .play()
-        .then(() => {
-          this.currentAudio = audio;
-          this.fadeIn(audio);
-          console.log(`🎵 Playing: ${trackPath}`);
-        })
-        .catch((err) => {
-          console.debug('Music play prevented:', err);
-        });
+      audio.load();
     });
-
-    audio.load();
   },
 
-  /**
-   * Fade in audio
-   */
+  stop(callback = null) {
+    if (!this.currentAudio) {
+      if (callback) callback();
+      return;
+    }
+
+    this.fadeOut(this.currentAudio, () => {
+      this.currentAudio.pause();
+      this.currentAudio.remove(); // Really help GC
+      this.currentAudio = null;
+      if (callback) callback();
+    });
+  },
+
   fadeIn(audio) {
-    const targetVolume = this.volume;
-    const step = targetVolume / 20; // 20 steps
-
     clearInterval(this.fadeInterval);
-
+    let vol = 0;
     this.fadeInterval = setInterval(() => {
-      if (audio.volume < targetVolume - step) {
-        audio.volume = Math.min(audio.volume + step, targetVolume);
-      } else {
-        audio.volume = targetVolume;
-        clearInterval(this.fadeInterval);
-      }
-    }, 50); // 50ms intervals = 1 second total fade
+      vol = Math.min(vol + 0.025, this.volume);
+      audio.volume = vol;
+      if (vol >= this.volume) clearInterval(this.fadeInterval);
+    }, 40);
   },
 
-  /**
-   * Fade out audio
-   */
   fadeOut(audio, callback) {
-    const step = audio.volume / 20;
-
     clearInterval(this.fadeInterval);
-
+    let vol = audio.volume;
     this.fadeInterval = setInterval(() => {
-      if (audio.volume > step) {
-        audio.volume = Math.max(audio.volume - step, 0);
-      } else {
-        audio.volume = 0;
+      vol = Math.max(vol - 0.025, 0);
+      audio.volume = vol;
+      if (vol <= 0) {
         clearInterval(this.fadeInterval);
         if (callback) callback();
       }
-    }, 50);
+    }, 40);
   },
 
-  /**
-   * Toggle music on/off
-   */
   toggle() {
     this.enabled = !this.enabled;
     this.saveMusicPreference(this.enabled);
 
     if (this.enabled) {
-      this.handlePageChange();
+      this.handlePageChange(); // start playing current page track
     } else {
-      this.stopMusic();
+      this.stop();
     }
 
     this.updateToggleButton();
     return this.enabled;
   },
 
-  /**
-   * Stop all music
-   */
-  stopMusic() {
-    if (this.currentAudio) {
-      this.fadeOut(this.currentAudio, () => {
-        this.currentAudio.pause();
-        this.currentAudio = null;
-      });
-    }
-  },
-
-  /**
-   * Create global toggle button
-   */
   createToggleButton() {
-    const button = document.createElement('button');
-    button.id = 'music-toggle';
-    button.className = 'music-toggle-btn';
-    button.setAttribute('aria-label', 'Toggle background music');
+    const btn = document.createElement('button');
+    btn.id = 'music-toggle';
+    btn.className = 'music-toggle-btn';
+    btn.setAttribute('aria-label', 'Toggle background music');
+    btn.innerHTML = `<img src="images/icons/speaker.png" class="music-icon" alt="">`;
+    document.body.appendChild(btn);
 
-    document.body.appendChild(button);
-
-    button.addEventListener('click', () => {
+    // Use both click + touchend for mobile reliability
+    const handleToggle = (e) => {
+      e.preventDefault();
       this.toggle();
+    };
 
-      // Play sound effect when toggling
-      if (typeof SoundEffects !== 'undefined') {
-        SoundEffects.play('click');
-      }
-    });
+    btn.addEventListener('click', handleToggle);
+    btn.addEventListener('touchend', handleToggle, { passive: false });
 
     this.updateToggleButton();
   },
 
-  /**
-   * Update toggle button appearance - WITH CUSTOM IMAGE
-   */
   updateToggleButton() {
-    const button = document.getElementById('music-toggle');
-    if (!button) return;
+    const btn = document.getElementById('music-toggle');
+    if (!btn) return;
 
+    const img = btn.querySelector('.music-icon');
     if (this.enabled) {
-      button.innerHTML = `
-        <img src="images/icons/speaker.png" alt="Music On" class="music-icon music-on" />
-        <span>On</span>
-      `;
-      button.classList.remove('disabled');
-      button.classList.add('enabled');
+      btn.classList.add('enabled');
+      btn.classList.remove('disabled');
+      if (img) img.style.filter = 'none';
     } else {
-      button.innerHTML = `
-        <img src="images/icons/speaker.png" alt="Music Off" class="music-icon music-off" />
-        <span>Off</span>
-      `;
-      button.classList.add('disabled');
-      button.classList.remove('enabled');
+      btn.classList.add('disabled');
+      btn.classList.remove('enabled');
+      if (img) img.style.filter = 'grayscale(80%) opacity(0.7)';
     }
   },
 
-  /**
-   * Set volume
-   */
-  setVolume(vol) {
-    this.volume = Math.max(0, Math.min(1, vol));
-    if (this.currentAudio) {
-      this.currentAudio.volume = this.volume;
-    }
-  },
-
-  /**
-   * Get music preference from localStorage
-   */
   getMusicPreference() {
-    const saved = localStorage.getItem('backgroundMusicEnabled');
-    return saved === null ? false : saved === 'true'; // Changed true to FALSE
+    return localStorage.getItem('backgroundMusicEnabled') === 'true';
   },
 
-  /**
-   * Save music preference to localStorage
-   */
   saveMusicPreference(enabled) {
     localStorage.setItem('backgroundMusicEnabled', enabled);
   },
 };
 
-// Auto-initialize
-if (typeof module === 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => BackgroundMusic.init());
-  } else {
-    BackgroundMusic.init();
-  }
-}
-
-// Export
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = BackgroundMusic;
+// Auto-init
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => BackgroundMusic.init());
+} else {
+  BackgroundMusic.init();
 }
