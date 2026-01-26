@@ -52,12 +52,14 @@ $files = Get-ChildItem -Path $rootPath -Recurse -File `
     -Include $includeExtensions `
     -ErrorAction SilentlyContinue `
     | Where-Object {
-        $fullPath = $_.FullName
+        $item = $_
 
-        # Skip anything inside excluded folders
-        foreach ($badDir in $excludeDirs) {
-            if ($fullPath -match [regex]::Escape($badDir) -or 
-                $fullPath -like "*\$badDir\*") {
+        # Quick ancestor check using .FullName
+        $pathParts = $item.FullName.Split([char[]]@('\','/'), [StringSplitOptions]::RemoveEmptyEntries)
+
+        foreach ($part in $pathParts) {
+            if ($excludeDirs -contains $part) {
+                # Uncomment for debugging: Write-Host "Excluded due to folder: $($item.FullName)" -ForegroundColor DarkGray
                 return $false
             }
         }
@@ -83,7 +85,7 @@ if (Test-Path $outputFile) { Remove-Item $outputFile -Force }
 
 # Write content with separators
 foreach ($file in $files) {
-    $relativePath = Resolve-Path -Relative -Path $file.FullName -RelativeBasePath $rootPath
+    $relativePath = Resolve-Path -Relative -Path $file.FullName -RelativeBase $rootPath
 
     "`n`n" + "="*80 | Out-File -FilePath $outputFile -Append -Encoding utf8
     "FILE: $relativePath" | Out-File -FilePath $outputFile -Append -Encoding utf8
