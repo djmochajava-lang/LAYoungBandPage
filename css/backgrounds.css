@@ -1,7 +1,7 @@
 /* ==========================================================================
    backgrounds.css
    Per-section/page background images
-   - Uses ROOT-RELATIVE paths (/images/...) so it works on local server & live deployment
+   - Uses RELATIVE paths (../images/...) so it works on local server & GitHub Pages
    - Global fallback + overlay for readability
    ========================================================================== */
 
@@ -39,15 +39,15 @@
 /* Home – your original hero */
 #home,
 .hero#home {
-  background-image: url('/images/backgrounds/hero-home.jpg');
+  background-image: url('../images/backgrounds/hero-home.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
 }
 
-/* Bio – subtle twinkling stars */
+/* Bio – vintage microphone */
 #bio {
-  background-image: url('/images/backgrounds/ribbonmic3.jpg');
+  background-image: url('../images/backgrounds/ribbonmic3.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -55,7 +55,7 @@
 
 /* Music */
 #music {
-  background-image: url('/images/backgrounds/goldlights.jpg');
+  background-image: url('../images/backgrounds/goldlights.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -63,9 +63,7 @@
 
 /* Videos */
 #videos {
-  /* background-image: url('/images/backgrounds/videos-stage.jpg'); */
-  background-image: url('/images/backgrounds/photostudio.jpg');
-
+  background-image: url('../images/backgrounds/photostudio.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -73,7 +71,7 @@
 
 /* Gallery */
 #gallery {
-  background-image: url('/images/backgrounds/spotlight.jpg');
+  background-image: url('../images/backgrounds/spotlight.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -81,8 +79,7 @@
 
 /* Tour */
 #tour {
-  /* background-image: url('/images/backgrounds/tour-stage.jpg'); */
-  background-image: url('/images/backgrounds/connect-dark-curtains.gif');
+  background-image: url('../images/backgrounds/connect-dark-curtains.gif');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -90,7 +87,7 @@
 
 /* Merch */
 #merch {
-  background-image: url('/images/backgrounds/shoppingbags.jpg');
+  background-image: url('../images/backgrounds/shoppingbags.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -98,8 +95,7 @@
 
 /* Connect */
 #contact {
-  /* background-image: url('/images/backgrounds/music-night-sky.jpg'); */
-  background-image: url('/images/backgrounds/smoke.jpg');
+  background-image: url('../images/backgrounds/smoke.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
