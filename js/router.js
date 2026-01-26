@@ -1,10 +1,8 @@
 // js/router.js
-
 /**
  * Router Module
  * Handles SPA navigation and page routing
  */
-
 const Router = {
   routes: {
     home: 'pages/home.html',
@@ -16,7 +14,6 @@ const Router = {
     merch: 'pages/merch.html',
     contact: 'pages/contact.html',
   },
-
   currentPage: null,
   defaultPage: 'home',
 
@@ -27,31 +24,51 @@ const Router = {
     this.setupNavigation();
     this.handleInitialRoute();
     this.handleBrowserNavigation();
-
+    this.updateMenuVisibility(); // Controls visibility of Tour menu item
     console.log('✅ Router initialized');
+  },
+
+  /**
+   * Hide/show menu items based on SITE_CONFIG
+   */
+  updateMenuVisibility() {
+    // Safety check in case config.js didn't load
+    if (typeof window.SITE_CONFIG === 'undefined') {
+      console.warn('SITE_CONFIG not found – assuming all menu items visible');
+      return;
+    }
+
+    // Find Tour links in both desktop nav and mobile menu
+    const tourLinks = document.querySelectorAll(
+      'a[href="#tour"], .mobile-menu-link[href="#tour"]',
+    );
+
+    tourLinks.forEach((link) => {
+      if (window.SITE_CONFIG.showTourMenu) {
+        link.style.display = ''; // show (default CSS)
+        link.removeAttribute('aria-hidden');
+      } else {
+        link.style.display = 'none';
+        link.setAttribute('aria-hidden', 'true');
+      }
+    });
+
+    console.log(
+      `Tour menu item visibility: ${window.SITE_CONFIG.showTourMenu ? 'VISIBLE' : 'HIDDEN'}`,
+    );
   },
 
   /**
    * Setup navigation click handlers
    */
   setupNavigation() {
-    // Handle all nav links
     document.addEventListener('click', (e) => {
       const link = e.target.closest('a[href^="#"]');
-
       if (!link) return;
-
       const href = link.getAttribute('href');
-
-      // Skip if href is just "#"
       if (href === '#') return;
-
       e.preventDefault();
-
-      // Get page name from href (remove #)
       const pageName = href.substring(1);
-
-      // Navigate to page
       this.navigateTo(pageName);
     });
   },
@@ -60,32 +77,23 @@ const Router = {
    * Navigate to a page
    */
   async navigateTo(pageName, forceLoad = false) {
-    // Validate page exists
     if (!this.routes[pageName]) {
       console.warn(`Page "${pageName}" not found, loading default`);
       pageName = this.defaultPage;
     }
 
-    // Don't reload if already on this page (unless forced)
     if (pageName === this.currentPage && !forceLoad) {
       return;
     }
 
-    // Load the page
     await this.loadPage(pageName);
-
-    // Update URL
     this.updateURL(pageName);
-
-    // Update current page
     this.currentPage = pageName;
 
-    // Track page view
     if (typeof Analytics !== 'undefined') {
       Analytics.trackPageView(`/#${pageName}`);
     }
 
-    // Close mobile menu if open
     this.closeMobileMenu();
   },
 
@@ -94,7 +102,6 @@ const Router = {
    */
   async loadPage(pageName) {
     const pageUrl = this.routes[pageName];
-
     if (typeof PageLoader !== 'undefined') {
       await PageLoader.loadPage(pageName, pageUrl);
     } else {
@@ -106,13 +113,10 @@ const Router = {
    * Handle initial route (on page load)
    */
   handleInitialRoute() {
-    // Check URL hash
     const hash = window.location.hash.substring(1);
     const initialPage = hash && this.routes[hash] ? hash : this.defaultPage;
-
-    // Force load initial page (even if currentPage matches)
     setTimeout(() => {
-      this.navigateTo(initialPage, true); // true = force load
+      this.navigateTo(initialPage, true); // force load on initial
     }, 100);
   },
 
@@ -123,8 +127,6 @@ const Router = {
     window.addEventListener('popstate', () => {
       const hash = window.location.hash.substring(1);
       const pageName = hash || this.defaultPage;
-
-      // Update current page without pushing to history
       if (this.routes[pageName]) {
         this.currentPage = pageName;
         this.loadPage(pageName);
@@ -137,21 +139,18 @@ const Router = {
    */
   updateURL(pageName) {
     const url = `#${pageName}`;
-
-    // Update browser history
     if (window.location.hash !== url) {
       window.history.pushState({ page: pageName }, '', url);
     }
   },
 
   /**
-   * Close mobile menu
+   * Close mobile menu if open
    */
   closeMobileMenu() {
     const menuToggle = document.querySelector('.menu-toggle');
     const mainNav = document.querySelector('.main-nav');
     const body = document.body;
-
     if (menuToggle && mainNav) {
       menuToggle.classList.remove('active');
       mainNav.classList.remove('active');
@@ -171,29 +170,13 @@ const Router = {
    */
   async preloadPage(pageName) {
     if (!this.routes[pageName]) return;
-
     if (typeof PageLoader !== 'undefined') {
       await PageLoader.preloadPage(pageName, this.routes[pageName]);
     }
   },
-
-  /**
-   * Preload all pages
-   */
-  async preloadAllPages() {
-    const pages = Object.keys(this.routes);
-
-    for (const page of pages) {
-      if (page !== this.currentPage) {
-        await this.preloadPage(page);
-      }
-    }
-
-    console.log('✅ All pages preloaded');
-  },
 };
 
-// Auto-initialize if not using module system
+// Auto-initialize
 if (typeof module === 'undefined') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => Router.init());
@@ -202,7 +185,6 @@ if (typeof module === 'undefined') {
   }
 }
 
-// Export for module use
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = Router;
 }

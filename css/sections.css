@@ -423,3 +423,43 @@
     background-attachment: scroll;
   }
 }
+
+/* Connect page - animated dark stage curtain background */
+#contact {
+  background-image: url('../images/backgrounds/stage-curtains-open.gif');
+  background-size: cover; /* or contain if you want no cropping */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* keeps it parallax-like on scroll */
+  position: relative;
+  min-height: 100vh;
+}
+
+/* Dark overlay to make text/form readable over animation */
+#contact::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7); /* 70% black overlay - adjust as needed */
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Ensure content stays above overlay */
+.contact-content,
+.contact-form-section,
+.email-signup,
+.social-links,
+.booking-info,
+.section-title,
+h3 {
+  position: relative;
+  z-index: 2;
+  color: #ffffff; /* white text for contrast */
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8); /* subtle shadow for readability */
+}
+
+/* Optional: Soften animation speed if GIF is too fast */
+#contact {
+  animation: none; /* if needed, override any parent animation */
+}
