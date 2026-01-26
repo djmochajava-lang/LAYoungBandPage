@@ -64,7 +64,7 @@
 /* Videos */
 #videos {
   /* background-image: url('/images/backgrounds/videos-stage.jpg'); */
-  background-image: url('/images/backgrounds/music-night-sky.jpg');
+  background-image: url('/images/backgrounds/spotlight.jpg');
 
   background-size: cover;
   background-position: center;
@@ -73,7 +73,7 @@
 
 /* Gallery */
 #gallery {
-  background-image: url('/images/backgrounds/photostudio4.jpg');
+  background-image: url('/images/backgrounds/photostudio.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -90,7 +90,7 @@
 
 /* Merch */
 #merch {
-  background-image: url('/images/backgrounds/merch-dark.jpg');
+  background-image: url('/images/backgrounds/merchimage.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -98,7 +98,9 @@
 
 /* Connect */
 #contact {
-  /* background-image: url('/images/backgrounds/connect-dark-curtains.gif'); */
+  /* background-image: url('/images/backgrounds/music-night-sky.jpg'); */
+
+  background-image: url('/images/backgrounds/smoke.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
