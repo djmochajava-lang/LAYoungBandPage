@@ -2,7 +2,6 @@
    backgrounds.css
    Per-section/page background images
    - Uses RELATIVE paths (../images/...) so it works on local server & GitHub Pages
-   - Mobile optimized for iOS/iPhone
    - Global fallback + overlay for readability
    ========================================================================== */
 
@@ -42,8 +41,7 @@
 .hero#home {
   background-image: url('../images/backgrounds/hero-home.jpg');
   background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background-position: center;
   background-attachment: fixed;
 }
 
@@ -51,8 +49,7 @@
 #bio {
   background-image: url('../images/backgrounds/ribbonmic3.jpg');
   background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background-position: center;
   background-attachment: fixed;
 }
 
@@ -60,8 +57,7 @@
 #music {
   background-image: url('../images/backgrounds/goldlights.jpg');
   background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background-position: center;
   background-attachment: fixed;
 }
 
@@ -69,8 +65,7 @@
 #videos {
   background-image: url('../images/backgrounds/photostudio.jpg');
   background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background-position: center;
   background-attachment: fixed;
 }
 
@@ -78,8 +73,7 @@
 #gallery {
   background-image: url('../images/backgrounds/spotlight.jpg');
   background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background-position: center;
   background-attachment: fixed;
 }
 
@@ -87,8 +81,7 @@
 #tour {
   background-image: url('../images/backgrounds/connect-dark-curtains.gif');
   background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background-position: center;
   background-attachment: fixed;
 }
 
@@ -96,8 +89,7 @@
 #merch {
   background-image: url('../images/backgrounds/shoppingbags.jpg');
   background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background-position: center;
   background-attachment: fixed;
 }
 
@@ -105,99 +97,15 @@
 #contact {
   background-image: url('../images/backgrounds/smoke.jpg');
   background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
+  background-position: center;
   background-attachment: fixed;
 }
 
-/* ==========================================================================
-   MOBILE OPTIMIZATION - iOS/iPhone fixes
-   ========================================================================== */
-
-/* Tablets and below - disable fixed attachment, adjust sizing */
-@media (max-width: 1024px) {
-  .section,
-  .hero {
-    background-attachment: scroll !important;
-    background-size: cover;
-    background-position: center center;
-  }
-
-  /* Ensure sections fill the viewport properly on mobile */
-  .section {
-    min-height: 100vh;
-    height: auto;
-  }
-}
-
-/* Mobile phones - additional optimizations */
+/* Mobile: disable fixed attachment for better scrolling/performance */
 @media (max-width: 768px) {
   .section,
   .hero {
-    background-attachment: scroll !important;
-    min-height: 100vh;
-
-    /* Prevent background from being cut off */
-    background-size: cover;
-    background-position: center center;
-  }
-
-  /* Adjust overlay opacity for better readability on small screens */
-  .section::before,
-  .hero::before {
-    background: rgba(0, 0, 0, 0.65); /* Slightly darker on mobile */
-  }
-}
-
-/* iPhone specific optimizations */
-@media (max-width: 480px) {
-  .section,
-  .hero {
-    /* Ensure backgrounds look good on small screens */
-    background-size: cover;
-    background-position: center center;
-    background-attachment: scroll !important;
-  }
-
-  /* Some backgrounds might need different positioning on very small screens */
-  #home,
-  .hero#home {
-    background-position: center 30%; /* Adjust hero image focus */
-  }
-
-  #bio {
-    background-position: center center;
-  }
-
-  #music {
-    background-position: center center;
-  }
-
-  #videos {
-    background-position: center center;
-  }
-
-  #gallery {
-    background-position: center center;
-  }
-
-  #tour {
-    background-position: center center;
-  }
-
-  #merch {
-    background-position: center center;
-  }
-
-  #contact {
-    background-position: center center;
-  }
-}
-
-/* iOS Safari specific fix - prevent background zoom on scroll */
-@supports (-webkit-touch-callout: none) {
-  .section,
-  .hero {
-    background-attachment: scroll !important;
+    background-attachment: scroll;
+    min-height: 120vh;
   }
 }
