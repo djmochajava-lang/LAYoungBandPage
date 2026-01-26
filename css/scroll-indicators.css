@@ -1,0 +1,127 @@
+/* css/scroll-indicators.css */
+/* Mobile Scroll Indicators - Shows up/down chevron arrows on mobile */
+
+/* === SCROLL INDICATORS === */
+.scroll-indicator-top,
+.scroll-indicator-bottom {
+  position: fixed;
+  right: 15px; /* Right side of screen */
+  width: 35px;
+  height: 35px;
+  background: transparent; /* Transparent background */
+  border: none; /* No border */
+  border-radius: 4px;
+  display: none; /* Hidden by default */
+  align-items: center;
+  justify-content: center;
+  z-index: 900;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.scroll-indicator-top {
+  top: 90px; /* Below header */
+}
+
+.scroll-indicator-bottom {
+  bottom: 80px; /* Above any footer/controls */
+}
+
+/* Chevron arrow icons - using border trick */
+.scroll-indicator-top::before,
+.scroll-indicator-bottom::before {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-right: 2px solid rgba(255, 215, 0, 0.8);
+  border-top: 2px solid rgba(255, 215, 0, 0.8);
+  transition: all 0.3s ease;
+}
+
+/* Up chevron (^) */
+.scroll-indicator-top::before {
+  transform: rotate(-45deg);
+  margin-bottom: -3px;
+}
+
+/* Down chevron (v) */
+.scroll-indicator-bottom::before {
+  transform: rotate(135deg);
+  margin-top: -3px;
+}
+
+/* Show indicators */
+.scroll-indicator-top.visible,
+.scroll-indicator-bottom.visible {
+  display: flex;
+}
+
+/* Subtle fade animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Hover effect - brighten the chevron */
+.scroll-indicator-top:hover::before,
+.scroll-indicator-bottom:hover::before {
+  border-color: rgba(255, 215, 0, 1);
+  border-width: 3px; /* Slightly thicker on hover */
+}
+
+/* Active/click effect */
+.scroll-indicator-top:active,
+.scroll-indicator-bottom:active {
+  transform: scale(0.85);
+}
+
+.scroll-indicator-top:active::before,
+.scroll-indicator-bottom:active::before {
+  border-color: rgba(255, 215, 0, 1);
+}
+
+/* === MOBILE ONLY === */
+@media (max-width: 768px) {
+  .scroll-indicator-top,
+  .scroll-indicator-bottom {
+    display: flex; /* Enable on mobile */
+  }
+}
+
+/* Hide on desktop */
+@media (min-width: 769px) {
+  .scroll-indicator-top,
+  .scroll-indicator-bottom {
+    display: none !important;
+  }
+}
+
+/* Fade in/out transitions */
+.scroll-indicator-top.fade-in,
+.scroll-indicator-bottom.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* Adjust for very small screens */
+@media (max-width: 400px) {
+  .scroll-indicator-top,
+  .scroll-indicator-bottom {
+    width: 30px;
+    height: 30px;
+    right: 10px;
+  }
+
+  .scroll-indicator-top::before,
+  .scroll-indicator-bottom::before {
+    width: 10px;
+    height: 10px;
+  }
+
+  .scroll-indicator-bottom {
+    bottom: 70px; /* Adjust for smaller screens */
+  }
+}
