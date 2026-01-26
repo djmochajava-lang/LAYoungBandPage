@@ -348,9 +348,8 @@
 }
 
 /* === CONTACT SECTION === */
-/* Background removed - now managed in backgrounds.css */
 .contact-section {
-  /* Background managed in backgrounds.css */
+  padding-bottom: 0.5in;
 }
 
 .contact-content {
