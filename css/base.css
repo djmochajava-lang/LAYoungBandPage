@@ -55,11 +55,12 @@
   box-sizing: border-box;
 }
 
-html {
+html,
+body {
   scroll-behavior: smooth;
   font-size: 16px;
   height: 100%;
-  overflow: hidden; /* Ensures scrollbar space always exists → prevents layout jumps */
+  overflow: hidden;
 }
 
 body {
@@ -184,7 +185,7 @@ img {
 /* === PAGE LAYOUT WITH FIXED HEADER & FOOTER === */
 #app-container {
   transition: opacity 0.3s ease-out;
-  margin-top: 80px; /* Matches your fixed header height */
+  margin-top: 10px; /* Matches your fixed header height */
   margin-bottom: 70px; /* Slightly more than footer height for breathing room */
   min-height: calc(100vh - 150px);
 }
