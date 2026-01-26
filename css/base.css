@@ -12,12 +12,14 @@
   --color-text-secondary: rgba(255, 255, 255, 0.8);
   --color-text-muted: rgba(255, 255, 255, 0.6);
   --color-text-faded: rgba(255, 255, 255, 0.4);
+
   /* Spacing */
   --spacing-xs: 0.5rem;
   --spacing-sm: 1rem;
   --spacing-md: 2rem;
   --spacing-lg: 4rem;
   --spacing-xl: 6rem;
+
   /* Typography */
   --font-primary: 'Playfair Display', 'Didot', serif;
   --font-secondary: 'Georgia', 'Times New Roman', serif;
@@ -29,17 +31,21 @@
   --font-size-xl: 2rem;
   --font-size-2xl: 2.5rem;
   --font-size-3xl: 3rem;
+
   /* Borders */
   --border-gold: 2px solid rgba(255, 215, 0, 0.3);
   --border-gold-light: 1px solid rgba(255, 215, 0, 0.2);
   --border-gold-bright: 2px solid rgba(255, 215, 0, 0.6);
+
   /* Shadows */
   --shadow-gold: 0 0 20px rgba(255, 215, 0, 0.3);
   --shadow-gold-lg: 0 0 30px rgba(255, 215, 0, 0.5);
+
   /* Transitions */
   --transition-fast: 0.2s ease;
   --transition-base: 0.3s ease;
   --transition-slow: 0.4s ease;
+
   /* Z-index layers */
   --z-dropdown: 100;
   --z-sticky: 500;
@@ -60,7 +66,7 @@ body {
   scroll-behavior: smooth;
   font-size: 16px;
   height: 100%;
-  overflow: hidden;
+  overflow: hidden; /* No page scrollbar */
 }
 
 body {
@@ -71,7 +77,6 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Removed: position: fixed; overflow: hidden; */
 }
 
 /* === TYPOGRAPHY === */
@@ -164,20 +169,17 @@ img {
   color: var(--color-bg-dark);
 }
 
-/* === SCROLLBAR (global nice look when visible) === */
+/* === GLOBAL SCROLLBAR === */
 ::-webkit-scrollbar {
   width: 10px;
 }
-
 ::-webkit-scrollbar-track {
   background: var(--color-bg-dark);
 }
-
 ::-webkit-scrollbar-thumb {
   background: var(--color-primary);
   border-radius: 5px;
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-primary);
 }
@@ -185,9 +187,10 @@ img {
 /* === PAGE LAYOUT WITH FIXED HEADER & FOOTER === */
 #app-container {
   transition: opacity 0.3s ease-out;
-  margin-top: 10px; /* Matches your fixed header height */
-  margin-bottom: 70px; /* Slightly more than footer height for breathing room */
+  margin-top: 10px; /* Adjusted content upward */
+  margin-bottom: 70px;
   min-height: calc(100vh - 150px);
+  padding-bottom: 0.25in; /* Extra breathing room for all pages */
 }
 
 .page-loading #app-container {
@@ -200,46 +203,42 @@ img {
 .hero {
   min-height: 100vh;
   padding: var(--spacing-xl) 0;
-  overflow-y: auto; /* Allow scrolling when content overflows */
-  -webkit-overflow-scrolling: touch; /* Smooth momentum scrolling on iOS */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* Make sure long content (like contact page) can be fully reached */
-.section {
-  padding-bottom: 4rem; /* Extra space at bottom so last element isn't hidden */
+/* Extra bottom space for all sections EXCEPT home */
+.section:not(#home) {
+  padding-bottom: calc(4rem + 0.25in);
 }
 
-/* Visible scrollbar styling only when needed */
+/* Visible scrollbar inside sections */
 .section::-webkit-scrollbar {
   width: 8px;
 }
-
 .section::-webkit-scrollbar-track {
   background: rgba(0, 0, 0, 0.4);
 }
-
 .section::-webkit-scrollbar-thumb {
   background: var(--color-primary);
   border-radius: 4px;
 }
-
 .section::-webkit-scrollbar-thumb:hover {
   background: #ffeb3b;
 }
 
-/* Mobile adjustments – prevent content cutoff when keyboard opens */
+/* === MOBILE === */
 @media (max-width: 768px) {
   .section {
     padding: var(--spacing-lg) 0;
-    padding-bottom: 6rem; /* More space on mobile */
+    padding-bottom: calc(6rem + 0.25in);
   }
 
   .page-content {
-    margin-top: 110px; /* Give header more room on small screens */
+    margin-top: 110px;
     margin-bottom: 80px;
   }
 
-  /* Extra breathing room for contact form on mobile */
   .contact-form-section {
     min-height: 70vh;
     padding-bottom: 5rem;
