@@ -424,42 +424,91 @@
   }
 }
 
-/* Connect page - animated dark stage curtain background */
+/* Connect page - animated dark stage curtain background (plays once) */
 #contact {
+  /* Base dark fallback color in case GIF fails to load */
+  background-color: #0a0a0a;
+
+  /* Animated GIF – will play once on load/when visible */
   background-image: url('../images/backgrounds/stage-curtains-open.gif');
-  background-size: cover; /* or contain if you want no cropping */
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed; /* keeps it parallax-like on scroll */
+  background-attachment: fixed; /* Parallax effect on scroll */
+
   position: relative;
   min-height: 100vh;
+  overflow: hidden; /* Prevent GIF overflow issues */
+
+  /* Force GIF to play only once and freeze on last frame */
+  animation: gif-once 0.01s forwards;
 }
 
-/* Dark overlay to make text/form readable over animation */
+/* Keyframe to trick browser into single play (most reliable method) */
+@keyframes gif-once {
+  0% {
+    background-image: url('../images/backgrounds/stage-curtains-open.gif');
+  }
+  99% {
+    background-image: url('../images/backgrounds/stage-curtains-open.gif');
+  }
+  100% {
+    background-image: url('../images/backgrounds/stage-curtains-open.gif');
+  }
+}
+
+/* Strong dark overlay for readability (70–80% opacity recommended) */
 #contact::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7); /* 70% black overlay - adjust as needed */
+  background: rgba(0, 0, 0, 0.75); /* Adjust 0.75 → darker if needed */
   z-index: 1;
   pointer-events: none;
 }
 
-/* Ensure content stays above overlay */
+/* All content must sit above the overlay */
 .contact-content,
 .contact-form-section,
 .email-signup,
 .social-links,
 .booking-info,
 .section-title,
-h3 {
+h3,
+p,
+.form-group,
+.form-label,
+.form-input,
+.form-textarea,
+.btn {
   position: relative;
   z-index: 2;
-  color: #ffffff; /* white text for contrast */
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8); /* subtle shadow for readability */
 }
 
-/* Optional: Soften animation speed if GIF is too fast */
-#contact {
-  animation: none; /* if needed, override any parent animation */
+/* Ensure text is visible on dark animated background */
+#contact,
+#contact * {
+  color: #ffffff;
+  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.9); /* Stronger shadow for contrast */
+}
+
+/* Form-specific readability tweaks */
+#contact .form-input,
+#contact .form-textarea {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: white;
+}
+
+#contact .form-input::placeholder,
+#contact .form-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Optional: Mobile optimization (reduce animation load if needed) */
+@media (max-width: 768px) {
+  #contact {
+    background-attachment: scroll; /* Disable fixed on mobile for performance */
+    min-height: 120vh; /* Extra height to cover keyboard */
+  }
 }
