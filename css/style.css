@@ -3,11 +3,14 @@
 /* === MAIN STYLESHEET === */
 /* Imports all modular CSS files */
 
-@import url('base.css');           /* Reset, variables, typography */
-@import url('components.css');     /* Reusable components (buttons, forms, cards) */
-@import url('layout.css');         /* Header, footer, navigation */
-@import url('sections.css');       /* Page sections */
-@import url('animations.css');     /* Animations and transitions */
+@import url('base.css');
+@import url('components.css');
+@import url('layout.css');
+@import url('sections.css');
+@import url('pages.css');
+@import url('animations.css');
+@import url('mobile-menu.css');
+@import url('backgrounds.css');
 
 /* 
  * File Organization:

@@ -1,4 +1,4 @@
-/* css/pages.css */
+/* css/pages.css - FIXED VERSION WITH BIO BACKGROUND REMOVED */
 
 /* === PAGE-SPECIFIC STYLES === */
 /* Phyllis Hyman Experience Image */
@@ -34,13 +34,11 @@
     margin: 1rem 0 1.5rem;
   }
 }
+
 /* === BIO PAGE === */
+/* Background removed - now managed in backgrounds.css */
 .bio-section {
-  background: linear-gradient(
-    180deg,
-    var(--color-bg-dark) 0%,
-    var(--color-bg-navy) 100%
-  );
+  /* Background managed in backgrounds.css */
 }
 
 .bio-content {

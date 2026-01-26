@@ -1,4 +1,4 @@
-/* css/sections.css */
+/* css/sections.css - FIXED VERSION WITH BACKGROUNDS REMOVED */
 
 /* === GENERAL SECTION STYLES === */
 .section {
@@ -137,12 +137,9 @@
 }
 
 /* === MUSIC SECTION === */
+/* Background removed - now managed in backgrounds.css */
 .music-section {
-  background: linear-gradient(
-    180deg,
-    var(--color-bg-dark) 0%,
-    var(--color-bg-navy) 100%
-  );
+  /* Background managed in backgrounds.css */
 }
 
 .music-grid {
@@ -173,8 +170,9 @@
 }
 
 /* === VIDEOS SECTION === */
+/* Background removed - now managed in backgrounds.css */
 .videos-section {
-  background: var(--color-bg-dark);
+  /* Background managed in backgrounds.css */
 }
 
 .video-grid {
@@ -209,12 +207,9 @@
 }
 
 /* === GALLERY SECTION === */
+/* Background removed - now managed in backgrounds.css */
 .gallery-section {
-  background: linear-gradient(
-    180deg,
-    var(--color-bg-dark) 0%,
-    var(--color-bg-blue) 100%
-  );
+  /* Background managed in backgrounds.css */
 }
 
 .gallery-grid {
@@ -250,8 +245,9 @@
 }
 
 /* === TOUR SECTION === */
+/* Background removed - now managed in backgrounds.css */
 .tour-section {
-  background: var(--color-bg-dark);
+  /* Background managed in backgrounds.css */
 }
 
 .tour-list {
@@ -333,12 +329,9 @@
 }
 
 /* === MERCH SECTION === */
+/* Background removed - now managed in backgrounds.css */
 .merch-section {
-  background: linear-gradient(
-    180deg,
-    var(--color-bg-dark) 0%,
-    var(--color-bg-navy) 100%
-  );
+  /* Background managed in backgrounds.css */
 }
 
 .merch-preview {
@@ -355,8 +348,9 @@
 }
 
 /* === CONTACT SECTION === */
+/* Background removed - now managed in backgrounds.css */
 .contact-section {
-  background: var(--color-bg-dark);
+  /* Background managed in backgrounds.css */
 }
 
 .contact-content {
@@ -421,94 +415,5 @@
 
   .hero {
     background-attachment: scroll;
-  }
-}
-
-/* Connect page - animated dark stage curtain background (plays once) */
-#contact {
-  /* Base dark fallback color in case GIF fails to load */
-  background-color: #0a0a0a;
-
-  /* Animated GIF – will play once on load/when visible */
-  background-image: url('../images/backgrounds/stage-curtains-open.gif');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed; /* Parallax effect on scroll */
-
-  position: relative;
-  min-height: 100vh;
-  overflow: hidden; /* Prevent GIF overflow issues */
-
-  /* Force GIF to play only once and freeze on last frame */
-  animation: gif-once 0.01s forwards;
-}
-
-/* Keyframe to trick browser into single play (most reliable method) */
-@keyframes gif-once {
-  0% {
-    background-image: url('../images/backgrounds/stage-curtains-open.gif');
-  }
-  99% {
-    background-image: url('../images/backgrounds/stage-curtains-open.gif');
-  }
-  100% {
-    background-image: url('../images/backgrounds/stage-curtains-open.gif');
-  }
-}
-
-/* Strong dark overlay for readability (70–80% opacity recommended) */
-#contact::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75); /* Adjust 0.75 → darker if needed */
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* All content must sit above the overlay */
-.contact-content,
-.contact-form-section,
-.email-signup,
-.social-links,
-.booking-info,
-.section-title,
-h3,
-p,
-.form-group,
-.form-label,
-.form-input,
-.form-textarea,
-.btn {
-  position: relative;
-  z-index: 2;
-}
-
-/* Ensure text is visible on dark animated background */
-#contact,
-#contact * {
-  color: #ffffff;
-  text-shadow: 0 1px 5px rgba(0, 0, 0, 0.9); /* Stronger shadow for contrast */
-}
-
-/* Form-specific readability tweaks */
-#contact .form-input,
-#contact .form-textarea {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  color: white;
-}
-
-#contact .form-input::placeholder,
-#contact .form-textarea::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-/* Optional: Mobile optimization (reduce animation load if needed) */
-@media (max-width: 768px) {
-  #contact {
-    background-attachment: scroll; /* Disable fixed on mobile for performance */
-    min-height: 120vh; /* Extra height to cover keyboard */
   }
 }

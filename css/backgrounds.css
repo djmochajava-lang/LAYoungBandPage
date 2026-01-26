@@ -1,0 +1,111 @@
+/* ==========================================================================
+   backgrounds.css
+   Per-section/page background images
+   - Uses ROOT-RELATIVE paths (/images/...) so it works on local server & live deployment
+   - Global fallback + overlay for readability
+   ========================================================================== */
+
+/* Global fallback for all sections (pure black) */
+.section,
+.hero {
+  background-color: #000000;
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Subtle dark overlay on all backgrounds (60% opacity) */
+.section::before,
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* All content above overlay */
+.section > *,
+.hero > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* ==========================================================================
+   Individual page/section backgrounds
+   ========================================================================== */
+
+/* Home – your original hero */
+#home,
+.hero#home {
+  background-image: url('/images/backgrounds/hero-home.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Bio – subtle twinkling stars */
+#bio {
+  background-image: url('/images/backgrounds/bio-stars-twinkle.gif');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Connect – dark stage curtains */
+#contact {
+  background-image: url('/images/backgrounds/connect-dark-curtains.gif');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Music */
+#music {
+  background-image: url('/images/backgrounds/music-night-sky.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Videos */
+#videos {
+  background-image: url('/images/backgrounds/videos-stage.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Gallery */
+#gallery {
+  background-image: url('/images/backgrounds/gallery-dark.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Tour */
+#tour {
+  background-image: url('/images/backgrounds/tour-stage.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Merch */
+#merch {
+  background-image: url('/images/backgrounds/merch-dark.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Mobile: disable fixed attachment for better scrolling/performance */
+@media (max-width: 768px) {
+  .section,
+  .hero {
+    background-attachment: scroll;
+    min-height: 120vh;
+  }
+}
