@@ -1,0 +1,99 @@
+<!-- Language: HTML, CSS, JavaScript -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boombox Music Player</title>
+    <style>
+      /* Basic boombox-style styling */
+      body {
+        font-family: Arial, sans-serif;
+        background: #222;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .boombox {
+        background: #444;
+        padding: 20px;
+        border-radius: 15px;
+        text-align: center;
+        width: 300px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      }
+
+      .controls button {
+        background: #ff0066;
+        border: none;
+        color: #fff;
+        padding: 10px 15px;
+        margin: 5px;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .controls button:hover {
+        background: #ff3399;
+      }
+
+      .track-info {
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="boombox">
+      <h2>My Boombox</h2>
+      <div class="track-info" id="track-info">Track 1</div>
+      <audio id="audio-player" src="song1.mp3"></audio>
+      <div class="controls">
+        <button id="play">Play</button>
+        <button id="pause">Pause</button>
+        <button id="prev">Prev</button>
+        <button id="next">Next</button>
+      </div>
+    </div>
+
+    <script>
+      const audioPlayer = document.getElementById('audio-player');
+      const trackInfo = document.getElementById('track-info');
+      const tracks = [
+        { title: 'Track 1', src: 'song1.mp3' },
+        { title: 'Track 2', src: 'song2.mp3' },
+        { title: 'Track 3', src: 'song3.mp3' },
+      ];
+      let currentTrack = 0;
+
+      function loadTrack(index) {
+        audioPlayer.src = tracks[index].src;
+        trackInfo.textContent = tracks[index].title;
+      }
+
+      document
+        .getElementById('play')
+        .addEventListener('click', () => audioPlayer.play());
+      document
+        .getElementById('pause')
+        .addEventListener('click', () => audioPlayer.pause());
+      document.getElementById('next').addEventListener('click', () => {
+        currentTrack = (currentTrack + 1) % tracks.length;
+        loadTrack(currentTrack);
+        audioPlayer.play();
+      });
+      document.getElementById('prev').addEventListener('click', () => {
+        currentTrack = (currentTrack - 1 + tracks.length) % tracks.length;
+        loadTrack(currentTrack);
+        audioPlayer.play();
+      });
+
+      // Initialize first track
+      loadTrack(currentTrack);
+    </script>
+  </body>
+</html>

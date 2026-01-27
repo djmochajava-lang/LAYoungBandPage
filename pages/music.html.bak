@@ -22,6 +22,44 @@
 
       <div class="divider"></div>
 
+      <!-- Music Grid -->
+      <div class="music-grid">
+        <!-- Track 1 -->
+        <div class="music-player scroll-reveal delay-2">
+          <h3>Original Tracks</h3>
+          <div class="placeholder-player">
+            <p>[Music Player 1]</p>
+            <p class="placeholder-text">
+              Working with Norman Connors on new material
+            </p>
+          </div>
+        </div>
+
+        <!-- Track 2 -->
+        <div class="music-player scroll-reveal delay-3">
+          <h3>Live Performances</h3>
+          <div class="placeholder-player">
+            <p>[Music Player 2]</p>
+            <p class="placeholder-text">
+              The Phyllis Hyman Experience recordings
+            </p>
+          </div>
+        </div>
+
+        <!-- Track 3 -->
+        <div class="music-player scroll-reveal delay-4">
+          <h3>Collaborations</h3>
+          <div class="placeholder-player">
+            <p>[Music Player 3]</p>
+            <p class="placeholder-text">
+              Featuring Pieces of A Dream and The Unusual Suspects
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
       <!-- Studio Production Team Photo -->
       <div class="studio-photo scroll-reveal">
         <h2 class="section-title">New Music</h2>
