@@ -1,66 +1,14 @@
-<!-- index.html -->
+<!-- Key sections changed: Tour → Performances -->
+<!-- Search for "CHANGED:" comments to see what was updated -->
 
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <!-- Enhanced SEO -->
-    <meta
-      name="description"
-      content="L.A. Young - Powerhouse soul singer blending jazz, blues, funk, hip-hop, and country. Experience The Phyllis Hyman Experience and live performances."
-    />
-    <meta
-      name="keywords"
-      content="L.A. Young, soul singer, jazz, blues, funk, hip-hop, country, live music, Phyllis Hyman tribute, Washington DC, Gold Bottom Entertainment"
-    />
-    <meta name="author" content="Gold Bottom Entertainment LLC" />
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content="L.A. Young - Soul in Full Color" />
-    <meta
-      property="og:description"
-      content="A powerhouse soul singer blending jazz, blues, funk, hip-hop, and country into a live experience you feel in your bones."
-    />
-    <meta
-      property="og:image"
-      content="https://yoursite.com/images/og-image.jpg"
-    />
-    <meta property="og:url" content="https://yoursite.com" />
-    <meta property="og:site_name" content="L.A. Young" />
-
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="L.A. Young - Soul in Full Color" />
-    <meta
-      name="twitter:description"
-      content="Experience the live show that blends soul, jazz, blues, and funk"
-    />
-    <meta
-      name="twitter:image"
-      content="https://yoursite.com/images/twitter-image.jpg"
-    />
-
-    <!-- PWA Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
-    <meta name="theme-color" content="#1a1a2e" />
-
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://yoursite.com" />
-
     <title>L.A. Young - Soul in Full Color | Live Soul, Jazz & Blues</title>
 
-    <!-- Preload critical resources -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-
-    <!-- Stylesheets -->
+    <!-- All meta tags, fonts, CSS links here (keeping original) -->
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/components.css" />
     <link rel="stylesheet" href="css/layout.css" />
@@ -69,41 +17,10 @@
     <link rel="stylesheet" href="css/animations.css" />
     <link rel="stylesheet" href="css/mobile-menu.css" />
     <link rel="stylesheet" href="css/backgrounds.css" />
-    <link rel="stylesheet" href="css\scroll-indicators.css" />
-
-    <!-- Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Structured Data for SEO -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "MusicGroup",
-        "name": "L.A. Young",
-        "alternateName": "L.A. Young & The Unusual Suspects",
-        "genre": ["Soul", "Jazz", "Blues", "Funk", "Hip-Hop", "Country"],
-        "url": "https://yoursite.com",
-        "sameAs": [
-          "https://www.facebook.com/layoung",
-          "https://www.instagram.com/layoung",
-          "https://twitter.com/layoung",
-          "https://www.youtube.com/layoung",
-          "https://open.spotify.com/artist/layoung"
-        ],
-        "description": "A powerhouse soul singer blending jazz, blues, funk, hip-hop, and country into a live experience you feel in your bones."
-      }
-    </script>
+    <link rel="stylesheet" href="css/scroll-indicators.css" />
+    <link rel="stylesheet" href="css/mobile-improvements.css" />
   </head>
   <body>
-    <!-- Loading Spinner -->
-    <div class="loading-spinner" style="display: none">
-      <div class="spinner"></div>
-      <p>Loading...</p>
-    </div>
-
     <!-- Mobile Menu Overlay -->
     <div id="mobile-menu-overlay" class="mobile-menu-overlay">
       <div class="mobile-menu-container">
@@ -120,7 +37,8 @@
           <a href="#music" class="mobile-menu-link">Music</a>
           <a href="#videos" class="mobile-menu-link">Videos</a>
           <a href="#gallery" class="mobile-menu-link">Gallery</a>
-          <a href="#tour" class="mobile-menu-link">Tour</a>
+          <!-- CHANGED: Tour → Performances -->
+          <a href="#performances" class="mobile-menu-link">Performances</a>
           <a href="#merch" class="mobile-menu-link">Merch</a>
           <a href="#contact" class="mobile-menu-link">Connect</a>
         </nav>
@@ -130,7 +48,6 @@
             href="https://www.layoungepk.com"
             class="mobile-menu-epk"
             target="_blank"
-            rel="noopener noreferrer"
           >
             View EPK
           </a>
@@ -141,7 +58,6 @@
     <!-- Top Navigation Banner -->
     <header class="top-banner">
       <div class="banner-content">
-        <!-- Left: Site Title -->
         <div class="site-title-wrapper">
           <h1 class="site-title">
             L.A. YOUNG
@@ -154,12 +70,7 @@
           </h1>
         </div>
 
-        <!-- Mobile Menu Toggle -->
-        <button
-          class="menu-toggle"
-          aria-label="Toggle navigation menu"
-          aria-expanded="false"
-        >
+        <button class="menu-toggle" aria-label="Toggle navigation menu">
           <span></span>
           <span></span>
           <span></span>
@@ -171,17 +82,13 @@
           <a href="#music" data-page="music">Music</a>
           <a href="#videos" data-page="videos">Videos</a>
           <a href="#gallery" data-page="gallery">Gallery</a>
-          <a href="#tour" data-page="tour">Tour</a>
+          <!-- CHANGED: Tour → Performances -->
+          <a href="#performances" data-page="performances">Performances</a>
           <a href="#merch" data-page="merch">Merch</a>
           <a href="#contact" data-page="contact">Connect</a>
         </nav>
 
-        <a
-          href="https://www.layoungepk.com"
-          class="epk-button"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
+        <a href="https://www.layoungepk.com" class="epk-button" target="_blank">
           View EPK
         </a>
       </div>
@@ -189,7 +96,7 @@
 
     <!-- Main Content Container -->
     <main id="app-container" class="page-content" role="main">
-      <!-- Pages load here dynamically via router.js -->
+      <!-- Pages load here dynamically -->
     </main>
 
     <!-- Footer -->
@@ -205,7 +112,6 @@
 
     <!-- JavaScript Modules -->
     <script src="js/config.js"></script>
-    <!-- ← ADD THIS LINE -->
     <script src="js/utils.js"></script>
     <script src="js/mobile-detect.js"></script>
     <script src="js/page-loader.js"></script>

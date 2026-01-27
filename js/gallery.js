@@ -1,4 +1,4 @@
-// js/gallery.js
+// js/gallery.js - IMPROVED VERSION WITH BETTER ERROR HANDLING
 
 /**
  * Gallery Module
@@ -8,14 +8,24 @@
 const Gallery = {
   currentIndex: 0,
   images: [],
+  initialized: false,
 
   /**
    * Initialize gallery
    */
   init() {
+    console.log('🖼️ Initializing Gallery...');
+
+    if (this.initialized) {
+      console.log('Gallery already initialized, skipping...');
+      return;
+    }
+
     this.initGalleryItems();
     this.createLightbox();
-    console.log('✅ Gallery initialized');
+    this.initialized = true;
+
+    console.log('✅ Gallery initialized with', this.images.length, 'images');
   },
 
   /**
@@ -24,21 +34,61 @@ const Gallery = {
   initGalleryItems() {
     const galleryItems = document.querySelectorAll('.gallery-item');
 
-    if (galleryItems.length === 0) return;
+    if (galleryItems.length === 0) {
+      console.warn('⚠️ No gallery items found');
+      return;
+    }
+
+    console.log(`📸 Found ${galleryItems.length} gallery items`);
 
     // Collect all images
-    this.images = Array.from(galleryItems).map((item) => {
-      const img = item.querySelector('img');
-      return {
-        src: img?.src || item.dataset.src || '',
-        alt: img?.alt || '',
-        caption: item.dataset.caption || '',
-      };
-    });
+    this.images = Array.from(galleryItems)
+      .map((item, index) => {
+        const img = item.querySelector('img');
+
+        if (!img) {
+          console.warn(`⚠️ No image found in gallery item ${index + 1}`);
+          return null;
+        }
+
+        // Log image details for debugging
+        console.log(`Image ${index + 1}:`, {
+          src: img.src,
+          alt: img.alt,
+          complete: img.complete,
+          naturalWidth: img.naturalWidth,
+        });
+
+        return {
+          src: img.src || img.dataset.src || '',
+          alt: img.alt || '',
+          caption: item.dataset.caption || '',
+          element: img,
+        };
+      })
+      .filter((img) => img !== null); // Remove any null entries
+
+    console.log(`✅ Successfully loaded ${this.images.length} images`);
 
     // Add click handlers
     galleryItems.forEach((item, index) => {
+      const img = item.querySelector('img');
+
+      if (!img) return;
+
+      // Add error handler to each image
+      img.addEventListener('error', (e) => {
+        console.error(`❌ Failed to load image ${index + 1}:`, img.src);
+        this.handleImageError(img, index);
+      });
+
+      // Add load handler for debugging
+      img.addEventListener('load', (e) => {
+        console.log(`✅ Successfully loaded image ${index + 1}`);
+      });
+
       item.addEventListener('click', () => {
+        console.log(`🖱️ Clicked gallery item ${index + 1}`);
         this.openLightbox(index);
 
         if (typeof Analytics !== 'undefined') {
@@ -58,9 +108,51 @@ const Gallery = {
   },
 
   /**
+   * Handle image loading errors
+   */
+  handleImageError(img, index) {
+    // Try alternate file extensions
+    const src = img.src;
+
+    if (src.endsWith('.JPG') && !img.dataset.triedLowercase) {
+      console.log('⚠️ Trying lowercase .jpg extension...');
+      img.dataset.triedLowercase = 'true';
+      img.src = src.replace('.JPG', '.jpg');
+    } else if (src.endsWith('.PNG') && !img.dataset.triedLowercase) {
+      console.log('⚠️ Trying lowercase .png extension...');
+      img.dataset.triedLowercase = 'true';
+      img.src = src.replace('.PNG', '.png');
+    } else {
+      // Show placeholder
+      console.error('❌ All attempts failed, showing placeholder');
+      img.alt = `Image ${index + 1} failed to load`;
+      img.style.display = 'none';
+
+      // Add placeholder text
+      const parent = img.parentElement;
+      if (parent && !parent.querySelector('.image-error')) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'image-error';
+        errorDiv.innerHTML = `
+          <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 2rem;">
+            📷 Image not available<br>
+            <small>${img.alt || 'Gallery image'}</small>
+          </p>
+        `;
+        parent.appendChild(errorDiv);
+      }
+    }
+  },
+
+  /**
    * Create lightbox HTML structure
    */
   createLightbox() {
+    if (document.getElementById('lightbox')) {
+      console.log('Lightbox already exists');
+      return;
+    }
+
     const lightbox = document.createElement('div');
     lightbox.id = 'lightbox';
     lightbox.className = 'lightbox';
@@ -103,6 +195,8 @@ const Gallery = {
       if (e.key === 'ArrowLeft') this.prevImage();
       if (e.key === 'ArrowRight') this.nextImage();
     });
+
+    console.log('✅ Lightbox created');
   },
 
   /**
@@ -220,6 +314,15 @@ const Gallery = {
           font-size: 1.5rem;
         }
       }
+
+      .image-error {
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 215, 0, 0.2);
+      }
     `;
 
     document.head.appendChild(style);
@@ -229,13 +332,26 @@ const Gallery = {
    * Open lightbox at specific index
    */
   openLightbox(index) {
+    if (index < 0 || index >= this.images.length) {
+      console.error('Invalid image index:', index);
+      return;
+    }
+
     this.currentIndex = index;
     const lightbox = document.getElementById('lightbox');
+
+    if (!lightbox) {
+      console.error('Lightbox element not found');
+      return;
+    }
+
     const img = lightbox.querySelector('.lightbox-image');
     const caption = lightbox.querySelector('.lightbox-caption');
     const counter = lightbox.querySelector('.lightbox-counter');
 
     const imageData = this.images[index];
+
+    console.log('Opening lightbox with image:', imageData);
 
     img.src = imageData.src;
     img.alt = imageData.alt;
@@ -251,8 +367,10 @@ const Gallery = {
    */
   closeLightbox() {
     const lightbox = document.getElementById('lightbox');
-    lightbox.classList.remove('active');
-    document.body.style.overflow = '';
+    if (lightbox) {
+      lightbox.classList.remove('active');
+      document.body.style.overflow = '';
+    }
   },
 
   /**
@@ -270,6 +388,17 @@ const Gallery = {
   nextImage() {
     this.currentIndex = (this.currentIndex + 1) % this.images.length;
     this.openLightbox(this.currentIndex);
+  },
+
+  /**
+   * Reload gallery (useful after dynamic content changes)
+   */
+  reload() {
+    console.log('🔄 Reloading gallery...');
+    this.initialized = false;
+    this.images = [];
+    this.currentIndex = 0;
+    this.init();
   },
 };
 

@@ -1,8 +1,4 @@
-// js/router.js
-/**
- * Router Module
- * Handles SPA navigation and page routing
- */
+// js/router.js - UPDATED: Tour → Performances
 const Router = {
   routes: {
     home: 'pages/home.html',
@@ -10,42 +6,35 @@ const Router = {
     music: 'pages/music.html',
     videos: 'pages/videos.html',
     gallery: 'pages/gallery.html',
-    tour: 'pages/tour.html',
+    performances: 'pages/performances.html', // CHANGED: tour → performances
     merch: 'pages/merch.html',
     contact: 'pages/contact.html',
   },
   currentPage: null,
   defaultPage: 'home',
 
-  /**
-   * Initialize router
-   */
   init() {
     this.setupNavigation();
     this.handleInitialRoute();
     this.handleBrowserNavigation();
-    this.updateMenuVisibility(); // Controls visibility of Tour menu item
+    this.updateMenuVisibility();
     console.log('✅ Router initialized');
   },
 
-  /**
-   * Hide/show menu items based on SITE_CONFIG
-   */
   updateMenuVisibility() {
-    // Safety check in case config.js didn't load
     if (typeof window.SITE_CONFIG === 'undefined') {
       console.warn('SITE_CONFIG not found – assuming all menu items visible');
       return;
     }
 
-    // Find Tour links in both desktop nav and mobile menu
-    const tourLinks = document.querySelectorAll(
-      'a[href="#tour"], .mobile-menu-link[href="#tour"]',
+    // CHANGED: Now targeting "performances" links instead of "tour"
+    const performancesLinks = document.querySelectorAll(
+      'a[href="#performances"], .mobile-menu-link[href="#performances"]',
     );
 
-    tourLinks.forEach((link) => {
-      if (window.SITE_CONFIG.showTourMenu) {
-        link.style.display = ''; // show (default CSS)
+    performancesLinks.forEach((link) => {
+      if (window.SITE_CONFIG.showPerformancesMenu) {
+        link.style.display = '';
         link.removeAttribute('aria-hidden');
       } else {
         link.style.display = 'none';
@@ -54,13 +43,10 @@ const Router = {
     });
 
     console.log(
-      `Tour menu item visibility: ${window.SITE_CONFIG.showTourMenu ? 'VISIBLE' : 'HIDDEN'}`,
+      `Performances menu visibility: ${window.SITE_CONFIG.showPerformancesMenu ? 'VISIBLE' : 'HIDDEN'}`,
     );
   },
 
-  /**
-   * Setup navigation click handlers
-   */
   setupNavigation() {
     document.addEventListener('click', (e) => {
       const link = e.target.closest('a[href^="#"]');
@@ -73,9 +59,6 @@ const Router = {
     });
   },
 
-  /**
-   * Navigate to a page
-   */
   async navigateTo(pageName, forceLoad = false) {
     if (!this.routes[pageName]) {
       console.warn(`Page "${pageName}" not found, loading default`);
@@ -97,9 +80,6 @@ const Router = {
     this.closeMobileMenu();
   },
 
-  /**
-   * Load page content
-   */
   async loadPage(pageName) {
     const pageUrl = this.routes[pageName];
     if (typeof PageLoader !== 'undefined') {
@@ -109,20 +89,14 @@ const Router = {
     }
   },
 
-  /**
-   * Handle initial route (on page load)
-   */
   handleInitialRoute() {
     const hash = window.location.hash.substring(1);
     const initialPage = hash && this.routes[hash] ? hash : this.defaultPage;
     setTimeout(() => {
-      this.navigateTo(initialPage, true); // force load on initial
+      this.navigateTo(initialPage, true);
     }, 100);
   },
 
-  /**
-   * Handle browser back/forward buttons
-   */
   handleBrowserNavigation() {
     window.addEventListener('popstate', () => {
       const hash = window.location.hash.substring(1);
@@ -134,9 +108,6 @@ const Router = {
     });
   },
 
-  /**
-   * Update URL without page reload
-   */
   updateURL(pageName) {
     const url = `#${pageName}`;
     if (window.location.hash !== url) {
@@ -144,9 +115,6 @@ const Router = {
     }
   },
 
-  /**
-   * Close mobile menu if open
-   */
   closeMobileMenu() {
     const menuToggle = document.querySelector('.menu-toggle');
     const mainNav = document.querySelector('.main-nav');
@@ -158,16 +126,10 @@ const Router = {
     }
   },
 
-  /**
-   * Get current page
-   */
   getCurrentPage() {
     return this.currentPage;
   },
 
-  /**
-   * Preload a page
-   */
   async preloadPage(pageName) {
     if (!this.routes[pageName]) return;
     if (typeof PageLoader !== 'undefined') {
@@ -176,7 +138,6 @@ const Router = {
   },
 };
 
-// Auto-initialize
 if (typeof module === 'undefined') {
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => Router.init());
