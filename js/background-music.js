@@ -1,4 +1,4 @@
-// js/background-music.js - MOBILE HARDENED VERSION - Jan 2026
+// js/background-music.js
 const BackgroundMusic = {
   currentAudio: null,
   enabled: false, // start muted - safer for mobile

@@ -1,4 +1,4 @@
-// js/sound-effects.js - MOBILE FIXED VERSION
+// js/sound-effects.js
 
 /**
  * Sound Effects Module

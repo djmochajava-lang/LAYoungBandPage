@@ -1,4 +1,4 @@
-// js/swipe-navigation.js - WITH PAGE TURNING ANIMATION
+// js/swipe-navigation.js
 
 /**
  * Mobile Swipe Navigation with Page Turning Effect
