@@ -1,8 +1,8 @@
-<!-- pages/gallery.html - FIXED VERSION -->
+<!-- pages/gallery.html - WITH SLIDESHOW (124 IMAGES) -->
 
 <section class="section gallery-section" id="gallery">
   <div class="container">
-    <h2 class="section-title">Gallery</h2>
+    <h2 class="section-title">My Gallery</h2>
     <p class="section-subtitle">Moments in Color</p>
 
     <div class="gallery-content">
@@ -141,6 +141,61 @@
       <!-- Gallery Note -->
       <div class="gallery-note scroll-reveal delay-9">
         <p class="text-muted">Click any image to view in full screen</p>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- EVENT SLIDESHOW SECTION -->
+    <div class="slideshow-section scroll-reveal">
+      <h2 class="section-title">Event Slideshow</h2>
+      <p class="section-subtitle">Backstage Sneak Peeks & More</p>
+
+      <!-- Slideshow Container -->
+      <div class="slideshow-container">
+        <!-- Slideshow will be dynamically populated by JavaScript -->
+        <div class="slideshow-wrapper">
+          <div class="slideshow-image-container">
+            <img
+              id="slideshow-image"
+              src=""
+              alt="Event Photo"
+              class="slideshow-image"
+            />
+          </div>
+
+          <!-- Navigation Arrows -->
+          <button class="slideshow-prev" aria-label="Previous slide">
+            <span>&#8249;</span>
+          </button>
+          <button class="slideshow-next" aria-label="Next slide">
+            <span>&#8250;</span>
+          </button>
+
+          <!-- Slide Counter -->
+          <div class="slideshow-counter">
+            <span id="current-slide">1</span> / <span id="total-slides">0</span>
+          </div>
+
+          <!-- Caption -->
+          <div class="slideshow-caption" id="slideshow-caption">
+            Backstage moments
+          </div>
+        </div>
+
+        <!-- Play/Pause Controls -->
+        <div class="slideshow-controls">
+          <button class="slideshow-control-btn" id="slideshow-play-pause">
+            <span class="play-icon">▶</span>
+            <span class="pause-icon" style="display: none">⏸</span>
+          </button>
+          <span class="slideshow-status">Auto-playing</span>
+        </div>
+
+        <!-- Thumbnail Navigation (Optional) -->
+        <div class="slideshow-thumbnails" id="slideshow-thumbnails">
+          <!-- Thumbnails will be dynamically added here -->
+        </div>
       </div>
     </div>
 
