@@ -42,7 +42,9 @@ var BootScene = new Phaser.Class({
 
   create: function () {
     this.generatePlaceholders();
-    this.scene.start('MainMenuScene');
+    // Use game.scene (global SceneManager) - scene plugin's start() is unreliable from create()
+    this.game.scene.stop('BootScene');
+    this.game.scene.start('MainMenuScene');
   },
 
   generatePlaceholders: function () {

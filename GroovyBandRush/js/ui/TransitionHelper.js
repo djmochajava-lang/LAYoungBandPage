@@ -10,10 +10,14 @@ var TransitionHelper = {
    */
   fadeToScene: function (scene, targetScene, data, duration) {
     duration = duration || 500;
+    var sceneKey = scene.scene.key;
+    var gameRef = scene.game;
     scene.cameras.main.fadeOut(duration, 0, 0, 0);
-    scene.cameras.main.once('camerafadeoutcomplete', function () {
-      scene.scene.start(targetScene, data || {});
-    });
+    // Use native setTimeout - Phaser scene timers can be unreliable during transitions
+    setTimeout(function () {
+      gameRef.scene.stop(sceneKey);
+      gameRef.scene.start(targetScene, data || {});
+    }, duration + 50);
   },
 
   /**

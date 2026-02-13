@@ -1218,6 +1218,9 @@ var Act5PianoScene = new Phaser.Class({
         // Emit act complete
         self.game.events.emit('hud:actComplete', 4);
 
+        // Stop HUD before transitioning
+        self.scene.stop('HUDScene');
+
         // Transition to VictoryScene
         TransitionHelper.fadeToScene(self, 'VictoryScene', {
           totalDollars: GBR.state.totalDollars,

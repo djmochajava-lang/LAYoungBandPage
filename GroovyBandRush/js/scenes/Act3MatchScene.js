@@ -88,7 +88,9 @@ var Act3MatchScene = new Phaser.Class({
     this.lastInputTime = this.time.now;
 
     // --- HUD ---
-    this.scene.launch('HUDScene');
+    if (!this.scene.isActive('HUDScene')) {
+      this.scene.launch('HUDScene');
+    }
     this.game.events.emit('hud:refresh');
     this.game.events.emit('hud:dollars', GBR.state.totalDollars);
 

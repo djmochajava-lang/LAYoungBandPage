@@ -173,10 +173,8 @@ var MainMenuScene = new Phaser.Class({
       self.tweens.add({ targets: playBtn, scaleX: 1.2, scaleY: 1.2, duration: 150 });
     });
     playBtn.on('pointerdown', function () {
-      self.cameras.main.fadeOut(500, 0, 0, 0);
-      self.cameras.main.once('camerafadeoutcomplete', function () {
-        self.scene.start('StoryScene', { actNumber: 0, nextScene: 'Act1RunnerScene' });
-      });
+      AudioSynth.resume();
+      TransitionHelper.fadeToScene(self, 'StoryScene', { actNumber: 0, nextScene: 'Act1RunnerScene' });
     });
 
     // --- Footer ---

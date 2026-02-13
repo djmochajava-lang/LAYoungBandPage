@@ -49,8 +49,31 @@ var HUDScene = new Phaser.Class({
     this.hearts = [];
     this.heartsVisible = false;
 
+    // Remove any old listeners before adding new ones (prevents accumulation)
+    this.removeListeners();
+
     // Listen for events from game scenes
     this.setupListeners();
+
+    // Clean up listeners when this scene shuts down
+    var self = this;
+    this.events.once('shutdown', function () {
+      self.removeListeners();
+    });
+    this.events.once('destroy', function () {
+      self.removeListeners();
+    });
+  },
+
+  removeListeners: function () {
+    var eventEmitter = this.game.events;
+    eventEmitter.off('hud:dollars');
+    eventEmitter.off('hud:actComplete');
+    eventEmitter.off('hud:memberFound');
+    eventEmitter.off('hud:showLives');
+    eventEmitter.off('hud:updateLives');
+    eventEmitter.off('hud:hideLives');
+    eventEmitter.off('hud:refresh');
   },
 
   setupListeners: function () {
@@ -60,20 +83,21 @@ var HUDScene = new Phaser.Class({
     // Update dollars
     eventEmitter.on('hud:dollars', function (amount) {
       GBR.state.totalDollars = amount;
-      self.dollarText.setText(amount.toString());
-      // Pop animation
-      self.tweens.add({
-        targets: self.dollarText,
-        scaleX: 1.3,
-        scaleY: 1.3,
-        duration: 100,
-        yoyo: true
-      });
+      if (self.dollarText && self.dollarText.scene) {
+        self.dollarText.setText(amount.toString());
+        self.tweens.add({
+          targets: self.dollarText,
+          scaleX: 1.3,
+          scaleY: 1.3,
+          duration: 100,
+          yoyo: true
+        });
+      }
     });
 
     // Update act completion
     eventEmitter.on('hud:actComplete', function (actIndex) {
-      if (self.stars[actIndex]) {
+      if (self.stars[actIndex] && self.stars[actIndex].scene) {
         self.stars[actIndex].setText('\u2605');
         self.stars[actIndex].setColor('#ffd700');
         self.tweens.add({
@@ -89,7 +113,7 @@ var HUDScene = new Phaser.Class({
     // Update band member found
     eventEmitter.on('hud:memberFound', function (memberIndex) {
       GBR.state.bandMembers[memberIndex].found = true;
-      if (self.memberIcons[memberIndex]) {
+      if (self.memberIcons[memberIndex] && self.memberIcons[memberIndex].scene) {
         self.memberIcons[memberIndex].setAlpha(1);
         self.tweens.add({
           targets: self.memberIcons[memberIndex],
