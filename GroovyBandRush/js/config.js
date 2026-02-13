@@ -185,8 +185,8 @@ GBR.resetState = function () {
 document.addEventListener('DOMContentLoaded', function () {
   var config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: 450,
+    height: 800,
     parent: 'game-container',
     backgroundColor: '#0a0a0a',
     physics: {
@@ -198,7 +198,8 @@ document.addEventListener('DOMContentLoaded', function () {
     },
     scale: {
       mode: Phaser.Scale.FIT,
-      autoCenter: Phaser.Scale.CENTER_BOTH
+      autoCenter: Phaser.Scale.CENTER_BOTH,
+      expandParent: true
     },
     input: {
       activePointers: 3,

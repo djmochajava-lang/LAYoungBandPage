@@ -204,7 +204,7 @@ var VictoryScene = new Phaser.Class({
     // Buttons (appear after delay)
     this.time.delayedCall(3000, function () {
       // Play Again button
-      createButton(self, width / 2 - 130, height * 0.90, 'PLAY AGAIN', function () {
+      createButton(self, width / 2, height * 0.86, 'PLAY AGAIN', function () {
         GBR.resetState();
         TransitionHelper.fadeToScene(self, 'MainMenuScene');
       }, {
@@ -215,7 +215,7 @@ var VictoryScene = new Phaser.Class({
       });
 
       // Visit Band Page button
-      createButton(self, width / 2 + 130, height * 0.90, 'BAND PAGE', function () {
+      createButton(self, width / 2, height * 0.94, 'BAND PAGE', function () {
         window.location.href = '../index.html';
       }, {
         bgColor: 0x3498db,

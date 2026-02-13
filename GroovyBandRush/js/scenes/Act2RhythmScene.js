@@ -8,13 +8,19 @@ var Act2RhythmScene = new Phaser.Class({
   },
 
   create: function () {
-    var width = this.cameras.main.width;   // 800
-    var height = this.cameras.main.height;  // 600
+    var width = this.cameras.main.width;
+    var height = this.cameras.main.height;
     var self = this;
     var cfg = GBR.ACT2;
 
     // Resume audio context for mobile
     AudioSynth.resume();
+
+    // Launch HUD overlay
+    if (!this.scene.isActive('HUDScene')) {
+      this.scene.launch('HUDScene');
+    }
+    this.game.events.emit('hud:refresh');
 
     // --- State ---
     this.gameState = 'intro';  // intro | playing | roundComplete | win
@@ -33,8 +39,8 @@ var Act2RhythmScene = new Phaser.Class({
     this.laneColorHex = ['#e63946', '#3498db', '#2ecc71', '#ffd700'];
     this.laneKeys = ['\u2190', '\u2193', '\u2191', '\u2192'];  // Arrow key symbols
     this.laneNotes = [GBR.NOTES.C4, GBR.NOTES.E4, GBR.NOTES.G4, GBR.NOTES.B4];
-    this.laneWidth = 100;
-    this.laneSpacing = 120;
+    this.laneWidth = Math.min(100, Math.floor((width - 40) / cfg.lanes));
+    this.laneSpacing = Math.min(120, Math.floor((width - 20) / cfg.lanes));
     this.laneStartX = (width - (cfg.lanes - 1) * this.laneSpacing) / 2;
 
     // Hit zone dimensions (generous for kids)

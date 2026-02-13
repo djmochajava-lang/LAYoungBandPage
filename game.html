@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
     <meta
       name="viewport"
-      content="width=device-width, initial-scale=1.0, user-scalable=no"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <title>Groovy Band Rush | L.A. Young – Soul in Full Color</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -401,6 +401,77 @@
           border-radius: 12px;
         }
       }
+      /* Fullscreen portrait mode for mobile */
+      body.fullscreen-game {
+        overflow: hidden;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overscroll-behavior: none;
+      }
+      body.fullscreen-game .site-header,
+      body.fullscreen-game .hero,
+      body.fullscreen-game .characters,
+      body.fullscreen-game .cta-section,
+      body.fullscreen-game .site-footer,
+      body.fullscreen-game .speed-selector,
+      body.fullscreen-game .speed-label,
+      body.fullscreen-game .game-controls-hint,
+      body.fullscreen-game .section-title,
+      body.fullscreen-game .section-sub,
+      body.fullscreen-game .divider {
+        display: none !important;
+      }
+      body.fullscreen-game .game-section {
+        padding: 0;
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #000;
+      }
+      body.fullscreen-game .game-wrapper {
+        max-width: 100%;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        margin: 0;
+        touch-action: none;
+        -ms-touch-action: none;
+      }
+      body.fullscreen-game #gameCanvas {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        touch-action: none;
+        -ms-touch-action: none;
+      }
+      .fullscreen-toggle {
+        position: fixed;
+        top: 10px;
+        right: 10px;
+        z-index: 9999;
+        background: rgba(0,0,0,0.7);
+        color: var(--gold);
+        border: 1px solid var(--gold-dim);
+        border-radius: 8px;
+        padding: 8px 14px;
+        font-family: var(--font-fun);
+        font-size: 0.8rem;
+        cursor: pointer;
+        display: none;
+      }
+      @media (max-width: 768px) {
+        .fullscreen-toggle {
+          display: block;
+        }
+      }
       .cta-section {
         padding: 5rem 2rem;
         text-align: center;
@@ -542,6 +613,7 @@
     </style>
   </head>
   <body>
+    <button class="fullscreen-toggle" id="fsToggle" onclick="toggleFullscreen()">FULLSCREEN</button>
     <header class="site-header">
       <div style="display: flex; align-items: center; gap: 2rem">
         <a href="index.html" class="logo"
@@ -676,6 +748,39 @@
     </footer>
 
     <script>
+      // Fullscreen toggle for mobile
+      function toggleFullscreen() {
+        var body = document.body;
+        var btn = document.getElementById('fsToggle');
+        body.classList.toggle('fullscreen-game');
+        if (body.classList.contains('fullscreen-game')) {
+          btn.textContent = 'EXIT';
+          // Scroll to game section
+          document.getElementById('play').scrollIntoView();
+          // Prevent body scroll
+          document.body.style.overflow = 'hidden';
+        } else {
+          btn.textContent = 'FULLSCREEN';
+          document.body.style.overflow = '';
+        }
+      }
+      // Auto-enter fullscreen on mobile when scrolling to game
+      if (window.innerWidth <= 768) {
+        document.addEventListener('DOMContentLoaded', function() {
+          // Auto-enter fullscreen on mobile
+          var playSection = document.getElementById('play');
+          if (playSection) {
+            var observer = new IntersectionObserver(function(entries) {
+              if (entries[0].isIntersecting && !document.body.classList.contains('fullscreen-game')) {
+                // Don't auto-enter, but show the toggle prominently
+                document.getElementById('fsToggle').style.animation = 'pulse 2s ease-in-out infinite';
+              }
+            }, { threshold: 0.5 });
+            observer.observe(playSection);
+          }
+        });
+      }
+
       // Speed presets (global so onclick can access)
       var SPEEDS = {
         easy: {

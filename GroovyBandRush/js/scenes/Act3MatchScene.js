@@ -27,7 +27,7 @@ var Act3MatchScene = new Phaser.Class({
     this.won = false;           // prevent double-win
 
     // --- Grid layout ---
-    this.tileSize = 70;
+    this.tileSize = Math.min(70, Math.floor((width - 40) / cfg.cols) - 2);
     this.tileSpacing = 2;
     this.cellSize = this.tileSize + this.tileSpacing;
     this.gridWidth = cfg.cols * this.cellSize;

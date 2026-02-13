@@ -33,6 +33,12 @@ var Act4SimonScene = new Phaser.Class({
 
     AudioSynth.resume();
 
+    // Launch HUD overlay
+    if (!this.scene.isActive('HUDScene')) {
+      this.scene.launch('HUDScene');
+    }
+    this.game.events.emit('hud:refresh');
+
     // --- Dark background with subtle gradient ---
     var bg = this.add.graphics();
     bg.fillGradientStyle(0x0a0a0a, 0x0a0a0a, 0x1a1a2e, 0x16213e);

@@ -93,12 +93,13 @@ var OutfitScene = new Phaser.Class({
     // Outfit cards
     var outfitCards = [];
     var outfitBorders = [];
-    var cardStartX = width / 2 - 180;
+    var cardSpacing = Math.min(140, (width - 60) / 3);
+    var cardStartX = width / 2 - cardSpacing;
     var cardY = height * 0.72;
 
     for (var i = 0; i < 3; i++) {
       (function (index) {
-        var cardX = cardStartX + index * 140;
+        var cardX = cardStartX + index * cardSpacing - 60;
         var outfit = GBR.OUTFITS[index];
 
         // Card background

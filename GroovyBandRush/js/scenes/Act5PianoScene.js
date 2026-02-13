@@ -12,6 +12,12 @@ var Act5PianoScene = new Phaser.Class({
     var height = this.cameras.main.height;
     var self = this;
 
+    // Launch HUD overlay
+    if (!this.scene.isActive('HUDScene')) {
+      this.scene.launch('HUDScene');
+    }
+    this.game.events.emit('hud:refresh');
+
     // --- Scene state ---
     this.phase = 'pianoIntro';
     this.currentRound = 0;
@@ -143,8 +149,8 @@ var Act5PianoScene = new Phaser.Class({
     var height = this.cameras.main.height;
     var self = this;
     var keyCount = GBR.ACT5.keys;
-    var keyWidth = 80;
-    var keySpacing = 8;
+    var keyWidth = 48;
+    var keySpacing = 4;
     var totalWidth = keyCount * keyWidth + (keyCount - 1) * keySpacing;
     var startX = (width - totalWidth) / 2 + keyWidth / 2;
     var keyY = height - 120;
@@ -603,12 +609,13 @@ var Act5PianoScene = new Phaser.Class({
     // --- Outfit cards ---
     var outfitBorders = [];
     var outfitCards = [];
-    var cardStartX = width / 2 - 200;
+    var cardSpacing = Math.min(160, (width - 60) / 3);
+    var cardStartX = width / 2 - cardSpacing;
     var cardY = height * 0.70;
 
     for (var i = 0; i < 3; i++) {
       (function (index) {
-        var cardX = cardStartX + index * 160;
+        var cardX = cardStartX + index * cardSpacing - 60;
         var outfit = GBR.OUTFITS[index];
 
         // Card image
@@ -940,11 +947,11 @@ var Act5PianoScene = new Phaser.Class({
 
     // --- Band members walk on stage ---
     var memberPositions = [
-      { x: 150, y: height * 0.58, fromX: -80 },    // Eugene - Sax - from left
-      { x: 300, y: height * 0.60, fromX: -80 },     // Kevin W - Bass - from left
-      { x: 500, y: height * 0.60, fromX: width + 80 }, // Kevin R - Guitar - from right
-      { x: 650, y: height * 0.58, fromX: width + 80 }, // Jimmy - Drums - from right
-      { x: width / 2, y: height * 0.52, fromX: width / 2 } // L.A. Young - center (drops in)
+      { x: width * 0.15, y: height * 0.58, fromX: -80 },     // Eugene - Sax - from left
+      { x: width * 0.35, y: height * 0.60, fromX: -80 },     // Kevin W - Bass - from left
+      { x: width * 0.65, y: height * 0.60, fromX: width + 80 }, // Kevin R - Guitar - from right
+      { x: width * 0.85, y: height * 0.58, fromX: width + 80 }, // Jimmy - Drums - from right
+      { x: width / 2, y: height * 0.52, fromX: width / 2 }     // L.A. Young - center (drops in)
     ];
 
     this.bandSprites = [];
