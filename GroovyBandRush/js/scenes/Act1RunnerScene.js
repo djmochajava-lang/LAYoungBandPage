@@ -829,16 +829,19 @@ var Act1RunnerScene = new Phaser.Class({
     GBR.state.actScores[0] = this.score;
     GBR.state.totalDollars = this.dollars;
 
-    // HUD events
-    this.time.delayedCall(500, function () {
+    // HUD events - use setTimeout to avoid throttling in background tabs
+    setTimeout(function () {
+      if (!self.scene.isActive()) return;
       self.game.events.emit('hud:memberFound', 0);
-    });
-    this.time.delayedCall(1000, function () {
+    }, 500);
+    setTimeout(function () {
+      if (!self.scene.isActive()) return;
       self.game.events.emit('hud:actComplete', 0);
-    });
+    }, 1000);
 
-    // Transition after celebration
-    this.time.delayedCall(2500, function () {
+    // Transition after celebration - use setTimeout to avoid throttling in background tabs
+    setTimeout(function () {
+      if (!self.scene.isActive()) return;
       self.game.events.emit('hud:hideLives');
       self.scene.stop('HUDScene');
       TransitionHelper.fadeToScene(self, 'OutfitScene', {
@@ -846,7 +849,7 @@ var Act1RunnerScene = new Phaser.Class({
         nextScene: 'StoryScene',
         nextData: { actNumber: 1, nextScene: 'Act2RhythmScene' }
       });
-    });
+    }, 2500);
   },
 
   // =============== GAME OVER ===============

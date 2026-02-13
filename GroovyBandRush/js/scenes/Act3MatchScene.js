@@ -1128,7 +1128,9 @@ var Act3MatchScene = new Phaser.Class({
     });
 
     // Continue button after delay
-    this.time.delayedCall(2500, function () {
+    // Use setTimeout instead of this.time.delayedCall to avoid throttling in background tabs
+    setTimeout(function () {
+      if (!self.scene.isActive()) return;
       celebEmitter.stop();
       celebDots.stop();
 
@@ -1145,6 +1147,6 @@ var Act3MatchScene = new Phaser.Class({
         width: 260,
         height: 60
       });
-    });
+    }, 2500);
   }
 });

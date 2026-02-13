@@ -170,7 +170,7 @@ var OutfitScene = new Phaser.Class({
     this.continueShown = true;
 
     // "LOOKING GOOD!" text
-    var lookingGood = this.add.text(width / 2, height * 0.88, 'LOOKING GOOD!', {
+    var lookingGood = this.add.text(width / 2, height * 0.82, 'LOOKING GOOD!', {
       fontFamily: GBR.FONTS.display,
       fontSize: '20px',
       color: '#ffd700'
@@ -182,9 +182,10 @@ var OutfitScene = new Phaser.Class({
       duration: 300
     });
 
-    // Continue button
-    this.time.delayedCall(500, function () {
-      createButton(self, width / 2, height * 0.95, 'CONTINUE', function () {
+    // Continue button - use setTimeout to avoid Phaser timer throttling
+    setTimeout(function () {
+      if (!self.scene.isActive()) return; // guard if scene was stopped
+      createButton(self, width / 2, height * 0.90, 'CONTINUE', function () {
         // Save outfit choice
         GBR.state.bandMembers[self.memberIndex].outfit = self.selectedOutfit;
         TransitionHelper.fadeToScene(self, self.nextScene, self.nextData);
@@ -194,6 +195,6 @@ var OutfitScene = new Phaser.Class({
         height: 50,
         fontSize: '24px'
       });
-    });
+    }, 500);
   }
 });

@@ -1064,7 +1064,9 @@ var Act2RhythmScene = new Phaser.Class({
     });
 
     // Continue button after a moment
-    this.time.delayedCall(2000, function () {
+    // Use setTimeout instead of this.time.delayedCall to avoid throttling in background tabs
+    setTimeout(function () {
+      if (!self.scene.isActive()) return;
       createButton(self, width / 2, height * 0.88, 'CONTINUE', function () {
         self.scene.stop('HUDScene');
         TransitionHelper.fadeToScene(self, 'OutfitScene', {
@@ -1090,7 +1092,7 @@ var Act2RhythmScene = new Phaser.Class({
           });
         });
       }
-    });
+    }, 2000);
   },
 
   /* =========================================================
