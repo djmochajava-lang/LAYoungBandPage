@@ -201,8 +201,9 @@ var VictoryScene = new Phaser.Class({
       }).setOrigin(0.5);
     }
 
-    // Buttons (appear after delay)
-    this.time.delayedCall(3000, function () {
+    // Buttons (appear after delay) - use setTimeout to avoid throttling
+    setTimeout(function () {
+      if (!self.scene.isActive()) return;
       // Play Again button
       createButton(self, width / 2, height * 0.86, 'PLAY AGAIN', function () {
         GBR.resetState();
@@ -223,12 +224,12 @@ var VictoryScene = new Phaser.Class({
         height: 50,
         fontSize: '22px'
       });
-    });
+    }, 3000);
 
     // Play celebration sound
-    this.time.delayedCall(200, function () {
+    setTimeout(function () {
       AudioSynth.playSuccess();
-    });
+    }, 200);
 
     // Fade in
     TransitionHelper.fadeIn(this, 800);

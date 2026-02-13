@@ -956,7 +956,7 @@ var Act1RunnerScene = new Phaser.Class({
         fontSize: '18px',
         color: '#cccccc'
       }).setOrigin(0.5).setDepth(50);
-    });
+    }, 1200);
   },
 
   // =============== VISUAL EFFECTS ===============

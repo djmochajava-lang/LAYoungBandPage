@@ -1204,7 +1204,9 @@ var Act5PianoScene = new Phaser.Class({
       });
 
       // --- After finaleDisplayTime, transition out ---
-      self.time.delayedCall(GBR.ACT5.finaleDisplayTime, function () {
+      // Use setTimeout to avoid Phaser timer throttling in background tabs
+      setTimeout(function () {
+        if (!self.scene.isActive()) return;
         // Stop particles
         confettiTop.stop();
         starBurst.stop();
@@ -1226,7 +1228,7 @@ var Act5PianoScene = new Phaser.Class({
           totalDollars: GBR.state.totalDollars,
           songGenre: self.selectedGenre
         });
-      });
+      }, GBR.ACT5.finaleDisplayTime);
     });
   },
 
