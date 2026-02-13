@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Groovy Band Rush | L.A. Young - Soul in Full Color</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Righteous&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Game Styles -->
+  <link rel="stylesheet" href="css/game.css" />
+</head>
+<body>
+  <div id="game-container"></div>
+
+  <!-- Phaser 3 from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+
+  <!-- Helpers -->
+  <script src="js/helpers/AudioSynth.js"></script>
+  <script src="js/helpers/MatchEngine.js"></script>
+  <script src="js/helpers/PatternEngine.js"></script>
+
+  <!-- UI Components -->
+  <script src="js/ui/Button.js"></script>
+  <script src="js/ui/TransitionHelper.js"></script>
+
+  <!-- Scenes -->
+  <script src="js/scenes/BootScene.js"></script>
+  <script src="js/scenes/MainMenuScene.js"></script>
+  <script src="js/scenes/StoryScene.js"></script>
+  <script src="js/scenes/HUDScene.js"></script>
+  <script src="js/scenes/Act1RunnerScene.js"></script>
+  <script src="js/scenes/Act2RhythmScene.js"></script>
+  <script src="js/scenes/Act3MatchScene.js"></script>
+  <script src="js/scenes/Act4SimonScene.js"></script>
+  <script src="js/scenes/Act5PianoScene.js"></script>
+  <script src="js/scenes/OutfitScene.js"></script>
+  <script src="js/scenes/VictoryScene.js"></script>
+
+  <!-- Config (creates game instance - must be last) -->
+  <script src="js/config.js"></script>
+</body>
+</html>

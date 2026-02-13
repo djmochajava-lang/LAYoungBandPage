@@ -1,3 +1,5 @@
+// js/slideshow.js
+
 (function () {
   'use strict';
 

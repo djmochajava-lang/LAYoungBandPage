@@ -1,4 +1,4 @@
-// js/router.js - UPDATED: Tour → Performances
+// js/router.js
 const Router = {
   routes: {
     home: 'pages/home.html',

@@ -1,0 +1,243 @@
+/* GroovyBandRush/js/scenes/BootScene.js */
+
+var BootScene = new Phaser.Class({
+  Extends: Phaser.Scene,
+
+  initialize: function BootScene() {
+    Phaser.Scene.call(this, { key: 'BootScene' });
+  },
+
+  preload: function () {
+    // Show loading bar
+    var width = this.cameras.main.width;
+    var height = this.cameras.main.height;
+
+    var progressBox = this.add.graphics();
+    var progressBar = this.add.graphics();
+
+    progressBox.fillStyle(0x222222, 0.8);
+    progressBox.fillRoundedRect(width / 2 - 160, height / 2 - 15, 320, 30, 8);
+
+    var loadingText = this.add.text(width / 2, height / 2 - 40, 'Loading...', {
+      fontFamily: GBR.FONTS.display,
+      fontSize: '24px',
+      color: '#ffd700'
+    }).setOrigin(0.5);
+
+    this.load.on('progress', function (value) {
+      progressBar.clear();
+      progressBar.fillStyle(0xffd700, 1);
+      progressBar.fillRoundedRect(width / 2 - 155, height / 2 - 10, 310 * value, 20, 6);
+    });
+
+    this.load.on('complete', function () {
+      progressBar.destroy();
+      progressBox.destroy();
+      loadingText.destroy();
+    });
+
+    // Load any real assets here in the future
+    // For now we generate placeholders in create()
+  },
+
+  create: function () {
+    this.generatePlaceholders();
+    this.scene.start('MainMenuScene');
+  },
+
+  generatePlaceholders: function () {
+    var g;
+
+    // --- Van (player vehicle) ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillGradientStyle(0xe8751a, 0xffd700, 0xe84393, 0xffd700);
+    g.fillRoundedRect(0, 0, 44, 60, 8);
+    g.fillStyle(0x64c8ff, 0.5);
+    g.fillRoundedRect(6, 5, 32, 18, 3);
+    g.fillStyle(0xffffff, 0.5);
+    g.fillRect(0, 28, 44, 3);
+    g.fillStyle(0xff4444);
+    g.fillCircle(8, 55, 4);
+    g.fillCircle(36, 55, 4);
+    g.generateTexture('van', 44, 60);
+    g.destroy();
+
+    // --- Obstacle (rock) ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0x666666);
+    g.fillCircle(20, 20, 20);
+    g.fillStyle(0x888888);
+    g.fillCircle(16, 14, 8);
+    g.generateTexture('obstacle', 40, 40);
+    g.destroy();
+
+    // --- Dollar collectible ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0x32cd32);
+    g.fillCircle(16, 16, 16);
+    g.fillStyle(0xffffff);
+    g.fillRect(12, 6, 2, 20);
+    g.fillRect(14, 6, 6, 2);
+    g.fillRect(14, 14, 4, 2);
+    g.fillRect(14, 24, 6, 2);
+    g.generateTexture('dollar', 32, 32);
+    g.destroy();
+
+    // --- Instrument collectible ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0xffd700);
+    g.fillCircle(18, 18, 18);
+    g.fillStyle(0x1a1a2e);
+    g.fillCircle(18, 18, 10);
+    g.fillStyle(0xffd700);
+    g.fillCircle(18, 18, 4);
+    g.generateTexture('instrument', 36, 36);
+    g.destroy();
+
+    // --- Band member placeholder (generic) ---
+    var memberColors = [0x3498db, 0x9b59b6, 0xe74c3c, 0x2ecc71, 0xe8751a];
+    for (var i = 0; i < 5; i++) {
+      g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(memberColors[i]);
+      g.fillRoundedRect(0, 0, 48, 64, 10);
+      g.fillStyle(0xffffff);
+      g.fillCircle(24, 18, 12);
+      g.generateTexture('member_' + i, 48, 64);
+      g.destroy();
+    }
+
+    // --- Drum pads (4 colors) ---
+    var drumColors = [0xe63946, 0x3498db, 0x2ecc71, 0xffd700];
+    for (var d = 0; d < 4; d++) {
+      g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(drumColors[d]);
+      g.fillCircle(50, 50, 50);
+      g.fillStyle(0xffffff, 0.3);
+      g.fillCircle(40, 35, 20);
+      g.generateTexture('drum_' + d, 100, 100);
+      g.destroy();
+
+      // Highlighted version
+      g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(0xffffff);
+      g.fillCircle(50, 50, 50);
+      g.fillStyle(drumColors[d], 0.6);
+      g.fillCircle(50, 50, 45);
+      g.generateTexture('drum_' + d + '_lit', 100, 100);
+      g.destroy();
+    }
+
+    // --- Piano keys (8 colors for one octave) ---
+    var keyColors = [0xe63946, 0xe8751a, 0xffd700, 0x2ecc71, 0x3498db, 0x6c3483, 0xe84393, 0xf39c12];
+    for (var k = 0; k < 8; k++) {
+      g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(keyColors[k]);
+      g.fillRoundedRect(0, 0, 80, 140, { tl: 6, tr: 6, bl: 16, br: 16 });
+      g.fillStyle(0xffffff, 0.25);
+      g.fillRoundedRect(4, 4, 72, 40, 4);
+      g.generateTexture('pianokey_' + k, 80, 140);
+      g.destroy();
+
+      // Pressed version
+      g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(0xffffff);
+      g.fillRoundedRect(0, 0, 80, 140, { tl: 6, tr: 6, bl: 16, br: 16 });
+      g.fillStyle(keyColors[k], 0.4);
+      g.fillRoundedRect(2, 2, 76, 136, { tl: 5, tr: 5, bl: 15, br: 15 });
+      g.generateTexture('pianokey_' + k + '_lit', 80, 140);
+      g.destroy();
+    }
+
+    // --- Match-three tiles (5 instrument types + microphone wildcard) ---
+    var tileColors = [0xe63946, 0x3498db, 0x2ecc71, 0x9b59b6, 0xe8751a, 0xffd700];
+    var tileSymbols = ['G', 'S', 'D', 'B', 'P', 'M']; // Guitar, Sax, Drums, Bass, Piano, Mic
+    for (var t = 0; t < 6; t++) {
+      g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(tileColors[t]);
+      g.fillRoundedRect(0, 0, 64, 64, 12);
+      g.fillStyle(0xffffff, 0.3);
+      g.fillRoundedRect(4, 4, 56, 28, 8);
+      g.generateTexture('tile_' + t, 64, 64);
+      g.destroy();
+    }
+
+    // --- Rhythm note ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0xffd700);
+    g.fillCircle(24, 24, 24);
+    g.fillStyle(0x1a1a2e);
+    g.fillCircle(24, 24, 16);
+    g.generateTexture('note', 48, 48);
+    g.destroy();
+
+    // --- Star particle ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0xffd700);
+    // Draw a simple diamond/star shape manually
+    g.fillTriangle(8, 0, 12, 8, 4, 8);   // top
+    g.fillTriangle(4, 8, 12, 8, 8, 16);   // bottom
+    g.fillTriangle(0, 8, 8, 4, 8, 12);    // left
+    g.fillTriangle(16, 8, 8, 4, 8, 12);   // right
+    g.generateTexture('star', 16, 16);
+    g.destroy();
+
+    // --- Simple white particle ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0xffffff);
+    g.fillCircle(4, 4, 4);
+    g.generateTexture('particle', 8, 8);
+    g.destroy();
+
+    // --- Button background ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0xe8751a);
+    g.fillRoundedRect(0, 0, 240, 64, 32);
+    g.generateTexture('btn_orange', 240, 64);
+    g.destroy();
+
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0xffd700);
+    g.fillRoundedRect(0, 0, 240, 64, 32);
+    g.generateTexture('btn_gold', 240, 64);
+    g.destroy();
+
+    // --- Outfit cards (3 color variants per member) ---
+    var outfitColors = [
+      [0xe63946, 0x3498db, 0x2ecc71],  // Funky, Classic, Wild
+    ];
+    for (var oc = 0; oc < 3; oc++) {
+      g = this.make.graphics({ x: 0, y: 0, add: false });
+      g.fillStyle(outfitColors[0][oc]);
+      g.fillRoundedRect(0, 0, 120, 160, 12);
+      g.fillStyle(0xffffff, 0.2);
+      g.fillRoundedRect(8, 8, 104, 80, 8);
+      g.generateTexture('outfit_' + oc, 120, 160);
+      g.destroy();
+    }
+
+    // --- Road stripe ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0xffffff);
+    g.fillRect(0, 0, 8, 40);
+    g.generateTexture('road_stripe', 8, 40);
+    g.destroy();
+
+    // --- Heart (life indicator) ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0xe63946);
+    g.fillCircle(8, 10, 8);
+    g.fillCircle(20, 10, 8);
+    g.fillTriangle(0, 14, 28, 14, 14, 28);
+    g.generateTexture('heart', 28, 28);
+    g.destroy();
+
+    // --- Empty heart ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    g.fillStyle(0x444444);
+    g.fillCircle(8, 10, 8);
+    g.fillCircle(20, 10, 8);
+    g.fillTriangle(0, 14, 28, 14, 14, 28);
+    g.generateTexture('heart_empty', 28, 28);
+    g.destroy();
+  }
+});

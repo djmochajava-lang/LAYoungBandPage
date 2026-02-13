@@ -1,4 +1,4 @@
-// js/gallery.js - IMPROVED VERSION WITH BETTER ERROR HANDLING
+// js/gallery.js
 
 /**
  * Gallery Module

@@ -1,0 +1,1523 @@
+<!-- game.html -->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>Groovy Band Rush | L.A. Young – Soul in Full Color</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Righteous&family=Fredoka+One&family=Bangers&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      :root {
+        --gold: #ffd700;
+        --gold-dim: rgba(255, 215, 0, 0.3);
+        --red: #e63946;
+        --bg-dark: #0a0a0a;
+        --bg-navy: #1a1a2e;
+        --funk-orange: #e8751a;
+        --funk-pink: #e84393;
+        --funk-purple: #6c3483;
+        --text-primary: #fff;
+        --text-muted: rgba(255, 255, 255, 0.6);
+        --font-display: 'Bangers', 'Fredoka One', cursive;
+        --font-body: 'Playfair Display', 'Georgia', serif;
+        --font-fun: 'Righteous', 'Fredoka One', cursive;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        background: var(--bg-dark);
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        overflow-x: hidden;
+        min-height: 100vh;
+      }
+      .site-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        background: rgba(10, 10, 10, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--gold-dim);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.8rem 2rem;
+        height: 70px;
+      }
+      .site-header .logo {
+        font-family: var(--font-body);
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--text-primary);
+        text-decoration: none;
+      }
+      .site-header .logo span {
+        color: var(--gold);
+        font-style: italic;
+        display: block;
+        font-size: 0.7rem;
+        letter-spacing: 1px;
+      }
+      .site-header nav a {
+        color: var(--text-primary);
+        text-decoration: none;
+        font-family: var(--font-body);
+        font-size: 0.85rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-left: 1.5rem;
+        transition: color 0.3s;
+      }
+      .site-header nav a:hover,
+      .site-header nav a.active {
+        color: var(--gold);
+      }
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: var(--gold);
+        text-decoration: none;
+        font-family: var(--font-body);
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: opacity 0.3s;
+      }
+      .back-btn:hover {
+        opacity: 0.7;
+      }
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 100px 2rem 4rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(
+            ellipse at 20% 50%,
+            rgba(232, 117, 26, 0.15) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 80% 30%,
+            rgba(232, 67, 147, 0.12) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            ellipse at 50% 80%,
+            rgba(108, 52, 131, 0.1) 0%,
+            transparent 50%
+          ),
+          linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-navy) 100%);
+        z-index: 0;
+      }
+      .hero::after {
+        content: '🎵 🎷 🎸 🥁 🎤 ✨';
+        position: absolute;
+        font-size: 2rem;
+        opacity: 0.08;
+        white-space: nowrap;
+        animation: floatE 20s linear infinite;
+        top: 30%;
+        z-index: 0;
+      }
+      @keyframes floatE {
+        0% {
+          transform: translateX(100vw);
+        }
+        100% {
+          transform: translateX(-200vw);
+        }
+      }
+      .hero-content {
+        position: relative;
+        z-index: 1;
+        max-width: 800px;
+      }
+      .hero-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, var(--funk-orange), var(--red));
+        color: #fff;
+        font-family: var(--font-fun);
+        font-size: 0.9rem;
+        padding: 0.4rem 1.2rem;
+        border-radius: 50px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+        animation: pulse 2s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+          box-shadow: 0 0 20px 5px rgba(232, 117, 26, 0.2);
+        }
+      }
+      .hero-title {
+        font-family: var(--font-display);
+        font-size: clamp(3rem, 8vw, 6rem);
+        line-height: 1;
+        letter-spacing: 4px;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(
+          135deg,
+          var(--gold),
+          var(--funk-orange),
+          var(--funk-pink),
+          var(--gold)
+        );
+        background-size: 300% 300%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 4s ease-in-out infinite;
+      }
+      @keyframes shimmer {
+        0%,
+        100% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+      }
+      .hero-subtitle {
+        font-family: var(--font-fun);
+        font-size: clamp(1.2rem, 3vw, 1.8rem);
+        color: var(--gold);
+        margin-bottom: 1.5rem;
+        letter-spacing: 3px;
+      }
+      .hero-desc {
+        font-size: 1.1rem;
+        color: var(--text-muted);
+        line-height: 1.7;
+        max-width: 550px;
+        margin: 0 auto 2.5rem;
+      }
+      .play-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        background: linear-gradient(135deg, var(--funk-orange), var(--red));
+        color: #fff;
+        font-family: var(--font-display);
+        font-size: 1.8rem;
+        letter-spacing: 3px;
+        padding: 1rem 3rem;
+        border: none;
+        border-radius: 60px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.3s;
+        box-shadow: 0 8px 30px rgba(232, 117, 26, 0.3);
+        animation: bounceBtn 3s ease-in-out infinite;
+      }
+      .play-btn:hover {
+        transform: scale(1.08);
+        box-shadow: 0 12px 40px rgba(232, 117, 26, 0.5);
+      }
+      @keyframes bounceBtn {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-5px);
+        }
+      }
+      .characters {
+        padding: 5rem 2rem;
+        text-align: center;
+        background: linear-gradient(
+          180deg,
+          var(--bg-navy) 0%,
+          var(--bg-dark) 100%
+        );
+      }
+      .section-title {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 5vw, 3rem);
+        color: var(--gold);
+        letter-spacing: 4px;
+        margin-bottom: 0.5rem;
+      }
+      .section-sub {
+        color: var(--text-muted);
+        font-style: italic;
+        margin-bottom: 3rem;
+        font-size: 1.05rem;
+      }
+      .character-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 2rem;
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .character-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--gold-dim);
+        border-radius: 20px;
+        padding: 2rem 1.5rem;
+        transition: all 0.4s;
+        position: relative;
+        overflow: hidden;
+      }
+      .character-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--gold), var(--funk-orange));
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .character-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--gold);
+      }
+      .character-card:hover::before {
+        opacity: 1;
+      }
+      .char-emoji {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        display: block;
+      }
+      .char-name {
+        font-family: var(--font-fun);
+        font-size: 1.3rem;
+        color: var(--gold);
+        margin-bottom: 0.3rem;
+      }
+      .char-role {
+        font-size: 0.9rem;
+        color: var(--funk-orange);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 0.8rem;
+      }
+      .char-desc {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+      .game-section {
+        padding: 3rem 1rem;
+        text-align: center;
+        background: var(--bg-dark);
+      }
+      .game-section .section-title {
+        margin-bottom: 0.5rem;
+      }
+      .game-section .section-sub {
+        margin-bottom: 1.5rem;
+      }
+      .game-wrapper {
+        position: relative;
+        max-width: 500px;
+        margin: 0 auto;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 2px solid var(--gold-dim);
+        box-shadow: 0 0 60px rgba(255, 215, 0, 0.08);
+        background: #111;
+        touch-action: none;
+      }
+      #gameCanvas {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .game-controls-hint {
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+        flex-wrap: wrap;
+      }
+      .control-hint {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+      .key-cap {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 6px;
+        padding: 0.3rem 0.6rem;
+        font-family: monospace;
+        font-size: 0.8rem;
+        min-width: 2rem;
+      }
+      @media (max-width: 768px) {
+        .game-controls-hint {
+          display: none;
+        }
+        .game-wrapper {
+          max-width: 100%;
+          border-radius: 12px;
+        }
+      }
+      .cta-section {
+        padding: 5rem 2rem;
+        text-align: center;
+        background: linear-gradient(
+          180deg,
+          var(--bg-dark) 0%,
+          var(--bg-navy) 100%
+        );
+      }
+      .cta-links {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+      }
+      .cta-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.8rem 2rem;
+        border: 1px solid var(--gold-dim);
+        border-radius: 50px;
+        color: var(--gold);
+        text-decoration: none;
+        font-family: var(--font-fun);
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+        transition: all 0.3s;
+      }
+      .cta-link:hover {
+        background: rgba(255, 215, 0, 0.1);
+        border-color: var(--gold);
+        transform: translateY(-2px);
+      }
+      .cta-link.primary {
+        background: linear-gradient(135deg, var(--funk-orange), var(--red));
+        border-color: transparent;
+        color: #fff;
+      }
+      .cta-link.primary:hover {
+        box-shadow: 0 8px 25px rgba(232, 117, 26, 0.3);
+      }
+      .site-footer {
+        padding: 2rem;
+        text-align: center;
+        border-top: 1px solid var(--gold-dim);
+        font-size: 0.8rem;
+        color: var(--text-muted);
+      }
+      .site-footer a {
+        color: var(--gold);
+        text-decoration: none;
+      }
+      .divider {
+        width: 80px;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--gold),
+          transparent
+        );
+        margin: 0 auto 2rem;
+      }
+      .diamond-divider {
+        text-align: center;
+        margin: 0 auto 2rem;
+        color: var(--gold);
+        font-size: 0.6rem;
+        letter-spacing: 8px;
+      }
+      .speed-selector {
+        display: flex;
+        justify-content: center;
+        gap: 0.6rem;
+        margin-bottom: 1.2rem;
+        flex-wrap: wrap;
+      }
+      .speed-btn {
+        padding: 0.5rem 1.4rem;
+        border: 2px solid var(--gold-dim);
+        border-radius: 50px;
+        background: transparent;
+        color: var(--text-muted);
+        font-family: var(--font-fun);
+        font-size: 0.95rem;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.3s;
+        -webkit-tap-highlight-color: transparent;
+        user-select: none;
+      }
+      .speed-btn:hover {
+        border-color: var(--gold);
+        color: var(--gold);
+      }
+      .speed-btn.active {
+        background: linear-gradient(135deg, var(--funk-orange), var(--red));
+        border-color: transparent;
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(232, 117, 26, 0.3);
+      }
+      .speed-label {
+        color: var(--gold);
+        font-family: var(--font-fun);
+        font-size: 0.85rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+      @media (max-width: 600px) {
+        .site-header {
+          padding: 0.6rem 1rem;
+          height: 60px;
+        }
+        .site-header nav {
+          display: none;
+        }
+        .hero {
+          padding: 80px 1.5rem 3rem;
+          min-height: 90vh;
+        }
+        .play-btn {
+          font-size: 1.4rem;
+          padding: 0.8rem 2rem;
+        }
+        .character-grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+        }
+        .character-card {
+          padding: 1.2rem 1rem;
+        }
+        .char-emoji {
+          font-size: 2.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="site-header">
+      <div style="display: flex; align-items: center; gap: 2rem">
+        <a href="index.html" class="logo"
+          >L.A. YOUNG <span>Soul in Full Color</span></a
+        >
+        <a href="index.html" class="back-btn">← Band Page</a>
+      </div>
+      <nav>
+        <a href="#hero">Game</a>
+        <a href="#characters">Characters</a>
+        <a href="#play" class="active">Play</a>
+        <a href="index.html">Band Page</a>
+      </nav>
+    </header>
+    <section class="hero" id="hero">
+      <div class="hero-content">
+        <span class="hero-badge">🎮 New! Free to Play</span>
+        <h1 class="hero-title">GROOVY BAND RUSH</h1>
+        <p class="hero-subtitle">Soul in Full Color</p>
+        <div class="diamond-divider">◆ ——— ◆</div>
+        <p class="hero-desc">
+          Help L.A. Young cruise the funky streets, dodge traffic, and collect
+          her bandmates for the big gig! Swipe to switch lanes and grab the
+          whole crew!
+        </p>
+        <a href="#play" class="play-btn"
+          ><span class="play-icon">▶</span> PLAY NOW</a
+        >
+      </div>
+    </section>
+    <section class="characters" id="characters">
+      <h2 class="section-title">MEET THE BAND</h2>
+      <p class="section-sub">Collect them all on the streets!</p>
+      <div class="divider"></div>
+      <div class="character-grid">
+        <div class="character-card">
+          <span class="char-emoji">🎤</span>
+          <h3 class="char-name">L.A. Young</h3>
+          <p class="char-role">Lead Vocals</p>
+          <p class="char-desc">The powerhouse soul belter behind the wheel!</p>
+        </div>
+        <div class="character-card">
+          <span class="char-emoji">🎸</span>
+          <h3 class="char-name">Kevin Robinson</h3>
+          <p class="char-role">Guitar</p>
+          <p class="char-desc">Shredding funky riffs on the block!</p>
+        </div>
+        <div class="character-card">
+          <span class="char-emoji">🎷</span>
+          <h3 class="char-name">Eugene Chapman</h3>
+          <p class="char-role">Saxophone</p>
+          <p class="char-desc">Smooth sax waiting on the corner!</p>
+        </div>
+        <div class="character-card">
+          <span class="char-emoji">🥁</span>
+          <h3 class="char-name">Jimmy Carney</h3>
+          <p class="char-role">Percussion</p>
+          <p class="char-desc">Always beating those bongos!</p>
+        </div>
+        <div class="character-card">
+          <span class="char-emoji">🎸</span>
+          <h3 class="char-name">Kevin Walker</h3>
+          <p class="char-role">Bass</p>
+          <p class="char-desc">Low end thunder on the loose!</p>
+        </div>
+      </div>
+    </section>
+    <section class="game-section" id="play">
+      <h2 class="section-title">🎮 LET'S RIDE!</h2>
+      <p class="section-sub">
+        Swipe left & right to switch lanes — grab money 💰, dodge rocks 🪨,
+        collect the band!
+      </p>
+      <p class="speed-label">⚙️ Select Speed</p>
+      <div class="speed-selector">
+        <button
+          class="speed-btn active"
+          data-speed="easy"
+          onclick="setSpeed('easy', this)"
+        >
+          🐢 Easy
+        </button>
+        <button
+          class="speed-btn"
+          data-speed="medium"
+          onclick="setSpeed('medium', this)"
+        >
+          🚐 Medium
+        </button>
+        <button
+          class="speed-btn"
+          data-speed="hard"
+          onclick="setSpeed('hard', this)"
+        >
+          🔥 Hard
+        </button>
+      </div>
+      <div class="game-wrapper" id="gameWrapper">
+        <canvas id="gameCanvas" width="400" height="700"></canvas>
+      </div>
+      <div class="game-controls-hint">
+        <div class="control-hint">
+          <span class="key-cap">←</span><span class="key-cap">→</span> Switch
+          lanes
+        </div>
+        <div class="control-hint">
+          <span class="key-cap">Space</span> Start / Restart
+        </div>
+      </div>
+    </section>
+    <section class="cta-section" id="cta">
+      <h2 class="section-title">DIG THE VIBE?</h2>
+      <p class="section-sub">Check out the real L.A. Young Band!</p>
+      <div class="divider"></div>
+      <div class="cta-links">
+        <a href="index.html" class="cta-link primary">🎵 Band Page</a>
+        <a href="https://www.layoungepk.com" class="cta-link" target="_blank"
+          >📋 View EPK</a
+        >
+        <a
+          href="https://www.facebook.com/LaYoungMusicEntertainment"
+          class="cta-link"
+          target="_blank"
+          >📘 Facebook</a
+        >
+      </div>
+    </section>
+    <footer class="site-footer">
+      © 2026 LA Young Band |
+      <a href="index.html">Powered by Gold Bottom Entertainment LLC</a> | All
+      rights reserved.
+    </footer>
+
+    <script>
+      // Speed presets (global so onclick can access)
+      var SPEEDS = {
+        easy: {
+          startSpd: 1.2,
+          maxSpd: 3,
+          ramp: 0.0002,
+          obsRate: 180,
+          label: '🐢 Easy',
+        },
+        medium: {
+          startSpd: 2.2,
+          maxSpd: 5,
+          ramp: 0.0005,
+          obsRate: 110,
+          label: '🚐 Medium',
+        },
+        hard: {
+          startSpd: 3.5,
+          maxSpd: 8,
+          ramp: 0.001,
+          obsRate: 70,
+          label: '🔥 Hard',
+        },
+      };
+      var currentDiff = 'easy';
+      function setSpeed(diff, btn) {
+        currentDiff = diff;
+        document.querySelectorAll('.speed-btn').forEach(function (b) {
+          b.classList.remove('active');
+        });
+        if (btn) btn.classList.add('active');
+      }
+      (function () {
+        var c = document.getElementById('gameCanvas'),
+          x = c.getContext('2d');
+        var W = 400,
+          H = 700,
+          HY = 180,
+          RBW = 360,
+          RTW = 60,
+          LC = 3,
+          VY = H - 130;
+        var state = 'menu',
+          score = 0,
+          dist = 0,
+          spd = 3,
+          lane = 1,
+          tgtX = 0,
+          vanX = 0,
+          tilt = 0;
+        var lives = 3,
+          collected = 0,
+          fc = 0,
+          shX = 0,
+          shY = 0,
+          inv = 0;
+        var obs = [],
+          cols = [],
+          parts = [],
+          rlines = [],
+          blds = [];
+        var flash = '',
+          flashT = 0,
+          nextBS = 200,
+          obsT = 0;
+        var BAND = [
+          { name: 'Kevin R.', emoji: '🎸', color: '#e74c3c', found: false },
+          { name: 'Eugene', emoji: '🎷', color: '#3498db', found: false },
+          { name: 'Jimmy', emoji: '🥁', color: '#2ecc71', found: false },
+          { name: 'Kevin W.', emoji: '🎸', color: '#9b59b6', found: false },
+        ];
+        for (var i = 0; i < 12; i++) rlines.push({ z: i * 0.1 });
+        function genB() {
+          blds = [];
+          for (var i = 0; i < 20; i++)
+            blds.push({
+              z: i * 0.15,
+              side: i % 2 === 0 ? 'left' : 'right',
+              h: 30 + Math.random() * 60,
+              color: ['#5C2D0E', '#8B4513', '#6B3410', '#4a2410', '#7a4422'][
+                i % 5
+              ],
+              hasSign: Math.random() > 0.6,
+              signColor: ['#e8751a', '#e84393', '#ffd700', '#2ecc71'][
+                Math.floor(Math.random() * 4)
+              ],
+            });
+        }
+        function zY(z) {
+          return HY + (H - HY) * z;
+        }
+        function rW(z) {
+          return RTW + (RBW - RTW) * z;
+        }
+        function lX(l, z) {
+          var w = rW(z);
+          return W / 2 - w / 2 + (w / LC) * l + w / LC / 2;
+        }
+        function init() {
+          var s = SPEEDS[currentDiff];
+          state = 'menu';
+          score = 0;
+          dist = 0;
+          spd = s.startSpd;
+          lane = 1;
+          vanX = lX(1, 1);
+          tgtX = vanX;
+          tilt = 0;
+          lives = 5;
+          collected = 0;
+          inv = 0;
+          obs = [];
+          cols = [];
+          parts = [];
+          BAND.forEach(function (m) {
+            m.found = false;
+          });
+          genB();
+          nextBS = 200;
+          obsT = 0;
+          flash = '';
+          flashT = 0;
+        }
+        function start() {
+          var s = SPEEDS[currentDiff];
+          state = 'playing';
+          score = 0;
+          dist = 0;
+          spd = s.startSpd;
+          lane = 1;
+          vanX = lX(1, 1);
+          tgtX = lX(1, 1);
+          tilt = 0;
+          lives = 5;
+          collected = 0;
+          inv = 0;
+          obs = [];
+          cols = [];
+          parts = [];
+          BAND.forEach(function (m) {
+            m.found = false;
+          });
+          genB();
+          nextBS = 100 + Math.random() * 80;
+          obsT = 0;
+        }
+        function spawnObs() {
+          var l = Math.floor(Math.random() * 3);
+          var ts = [
+            { e: '🪨' },
+            { e: '🪨' },
+            { e: '🪨' },
+            { e: '🧱' },
+            { e: '🪨' },
+            { e: '⛰️' },
+          ];
+          var t = ts[Math.floor(Math.random() * ts.length)];
+          obs.push({ lane: l, z: -0.05, emoji: t.e, hit: false });
+        }
+        function spawnBand() {
+          var rem = BAND.filter(function (m) {
+            return !m.found;
+          });
+          if (!rem.length) return;
+          cols.push({
+            lane: Math.floor(Math.random() * 3),
+            z: -0.05,
+            member: rem[0],
+            type: 'band',
+          });
+        }
+        function spawnCoin() {
+          cols.push({
+            lane: Math.floor(Math.random() * 3),
+            z: -0.05,
+            type: 'coin',
+          });
+          if (Math.random() > 0.5)
+            cols.push({
+              lane: Math.floor(Math.random() * 3),
+              z: -0.12,
+              type: 'coin',
+            });
+        }
+        function addP(px, py, col, n) {
+          for (var i = 0; i < n; i++)
+            parts.push({
+              x: px,
+              y: py,
+              vx: (Math.random() - 0.5) * 6,
+              vy: -Math.random() * 5 - 1,
+              color: col,
+              life: 30 + Math.random() * 30,
+              size: 2 + Math.random() * 4,
+            });
+        }
+        function addSmoke(px, py) {
+          parts.push({
+            x: px + (Math.random() - 0.5) * 20,
+            y: py,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: 1 + Math.random(),
+            color: 'smoke',
+            life: 20 + Math.random() * 15,
+            size: 5 + Math.random() * 8,
+          });
+        }
+        function showF(t) {
+          flash = t;
+          flashT = 80;
+        }
+
+        // Input
+        var swSX = 0,
+          swSY = 0,
+          swiping = false;
+        c.addEventListener(
+          'touchstart',
+          function (e) {
+            e.preventDefault();
+            var t = e.touches[0],
+              r = c.getBoundingClientRect();
+            swSX = t.clientX - r.left;
+            swSY = t.clientY - r.top;
+            swiping = true;
+            if (state !== 'playing') start();
+          },
+          { passive: false },
+        );
+        c.addEventListener(
+          'touchmove',
+          function (e) {
+            e.preventDefault();
+          },
+          { passive: false },
+        );
+        c.addEventListener(
+          'touchend',
+          function (e) {
+            e.preventDefault();
+            if (!swiping) return;
+            swiping = false;
+            var t = e.changedTouches[0],
+              r = c.getBoundingClientRect();
+            var dx = t.clientX - r.left - swSX;
+            if (Math.abs(dx) > 25) {
+              if (dx < 0 && lane > 0) {
+                lane--;
+                tilt = -0.2;
+              } else if (dx > 0 && lane < 2) {
+                lane++;
+                tilt = 0.2;
+              }
+              tgtX = lX(lane, 1);
+            }
+          },
+          { passive: false },
+        );
+        c.addEventListener('click', function () {
+          if (state !== 'playing') start();
+        });
+        document.addEventListener('keydown', function (e) {
+          if (state !== 'playing') {
+            if (
+              e.code === 'Space' ||
+              e.code === 'ArrowLeft' ||
+              e.code === 'ArrowRight'
+            ) {
+              e.preventDefault();
+              start();
+              return;
+            }
+          }
+          if (state !== 'playing') return;
+          if ((e.code === 'ArrowLeft' || e.code === 'KeyA') && lane > 0) {
+            e.preventDefault();
+            lane--;
+            tilt = -0.2;
+            tgtX = lX(lane, 1);
+          }
+          if ((e.code === 'ArrowRight' || e.code === 'KeyD') && lane < 2) {
+            e.preventDefault();
+            lane++;
+            tilt = 0.2;
+            tgtX = lX(lane, 1);
+          }
+        });
+
+        function update() {
+          fc++;
+          if (flashT > 0) flashT--;
+          if (state !== 'playing') return;
+          dist += spd;
+          score = Math.floor(dist / 10);
+          var s = SPEEDS[currentDiff];
+          if (spd < s.maxSpd) spd += s.ramp;
+          if (inv > 0) inv--;
+          vanX += (tgtX - vanX) * 0.18;
+          tilt *= 0.92;
+          rlines.forEach(function (l) {
+            l.z += spd * 0.006;
+            if (l.z > 1.2) l.z -= 1.3;
+          });
+          blds.forEach(function (b) {
+            b.z += spd * 0.005;
+            if (b.z > 1.5) b.z -= 1.8 + Math.random() * 0.5;
+          });
+          if (fc % 3 === 0) addSmoke(vanX, VY + 35);
+          obsT += spd * 0.1;
+          if (obsT > s.obsRate + Math.random() * 40) {
+            spawnObs();
+            obsT = 0;
+          }
+          nextBS -= spd * 0.1;
+          if (
+            nextBS <= 0 &&
+            BAND.some(function (m) {
+              return !m.found;
+            })
+          ) {
+            spawnBand();
+            nextBS = 200 + Math.random() * 100;
+          }
+          if (fc % 35 === 0) spawnCoin();
+          obs.forEach(function (o) {
+            o.z += spd * 0.007;
+          });
+          cols.forEach(function (c) {
+            c.z += spd * 0.007;
+          });
+          // Collisions
+          obs = obs.filter(function (o) {
+            if (o.z > 1.3) return false;
+            if (o.hit) return true;
+            if (o.z > 0.78 && o.z < 0.95 && o.lane === lane) {
+              if (inv <= 0) {
+                o.hit = true;
+                lives--;
+                inv = 60;
+                shX = 10;
+                shY = 5;
+                addP(vanX, VY, '#e63946', 15);
+                if (lives <= 0) {
+                  state = 'gameover';
+                  showF('💥 CRASH!');
+                } else showF('💥 OUCH! Lives: ' + lives);
+              }
+              return false;
+            }
+            return true;
+          });
+          cols = cols.filter(function (cl) {
+            if (cl.z > 1.3) return false;
+            if (cl.z > 0.78 && cl.z < 0.95 && cl.lane === lane) {
+              if (cl.type === 'coin') {
+                score += 50;
+                addP(vanX, VY - 20, '#32cd32', 8);
+              } else if (cl.member) {
+                cl.member.found = true;
+                collected++;
+                addP(vanX, VY - 30, cl.member.color, 25);
+                showF(
+                  '✨ ' +
+                    cl.member.emoji +
+                    ' ' +
+                    cl.member.name +
+                    ' JOINED! (' +
+                    collected +
+                    '/4)',
+                );
+                spd += 0.3;
+                if (collected >= 4)
+                  setTimeout(function () {
+                    state = 'win';
+                    addP(W / 2, H / 2, '#ffd700', 50);
+                  }, 800);
+              }
+              return false;
+            }
+            return true;
+          });
+          parts = parts.filter(function (p) {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.color !== 'smoke') p.vy += 0.15;
+            p.life--;
+            return p.life > 0;
+          });
+          shX *= 0.85;
+          shY *= 0.85;
+        }
+
+        function draw() {
+          x.save();
+          x.translate(shX * (Math.random() - 0.5), shY * (Math.random() - 0.5));
+          // Sky
+          var sg = x.createLinearGradient(0, 0, 0, HY);
+          sg.addColorStop(0, '#1a0a2e');
+          sg.addColorStop(0.5, '#2d1b4e');
+          sg.addColorStop(1, '#e8751a');
+          x.fillStyle = sg;
+          x.fillRect(0, 0, W, HY + 20);
+          // Stars
+          x.fillStyle = 'rgba(255,255,255,0.5)';
+          for (var i = 0; i < 30; i++) {
+            x.fillRect(
+              (i * 137.5 + fc * 0.02) % W,
+              (i * 97.3) % (HY - 20),
+              1.5,
+              1.5,
+            );
+          }
+          // Horizon glow
+          var gg = x.createRadialGradient(W / 2, HY, 0, W / 2, HY, 120);
+          gg.addColorStop(0, 'rgba(255,215,0,0.3)');
+          gg.addColorStop(1, 'transparent');
+          x.fillStyle = gg;
+          x.fillRect(0, HY - 120, W, 240);
+          // Skyline
+          x.fillStyle = '#0a0a0a';
+          var sk = [
+            { x: 0, w: 40, h: 35 },
+            { x: 35, w: 25, h: 50 },
+            { x: 55, w: 35, h: 30 },
+            { x: 90, w: 20, h: 55 },
+            { x: 105, w: 30, h: 25 },
+            { x: 130, w: 40, h: 45 },
+            { x: 170, w: 25, h: 60 },
+            { x: 190, w: 35, h: 35 },
+            { x: 220, w: 20, h: 50 },
+            { x: 240, w: 40, h: 30 },
+            { x: 275, w: 30, h: 55 },
+            { x: 300, w: 25, h: 40 },
+            { x: 320, w: 35, h: 48 },
+            { x: 350, w: 30, h: 35 },
+            { x: 375, w: 30, h: 42 },
+          ];
+          sk.forEach(function (b) {
+            x.fillStyle = '#0a0a0a';
+            x.fillRect(b.x, HY - b.h + 10, b.w - 2, b.h);
+            x.fillStyle = 'rgba(255,200,50,0.15)';
+            for (var wy = HY - b.h + 15; wy < HY + 5; wy += 8)
+              for (var wx = b.x + 3; wx < b.x + b.w - 5; wx += 7)
+                if (Math.random() > 0.4) x.fillRect(wx, wy, 3, 4);
+          });
+          // Road
+          x.fillStyle = '#2a2a2a';
+          x.beginPath();
+          x.moveTo(W / 2 - RTW / 2, HY);
+          x.lineTo(W / 2 + RTW / 2, HY);
+          x.lineTo(W / 2 + RBW / 2, H);
+          x.lineTo(W / 2 - RBW / 2, H);
+          x.closePath();
+          x.fill();
+          // Sidewalks
+          x.fillStyle = '#444';
+          x.beginPath();
+          x.moveTo(W / 2 - RTW / 2 - 3, HY);
+          x.lineTo(W / 2 - RTW / 2, HY);
+          x.lineTo(W / 2 - RBW / 2, H);
+          x.lineTo(W / 2 - RBW / 2 - 20, H);
+          x.closePath();
+          x.fill();
+          x.beginPath();
+          x.moveTo(W / 2 + RTW / 2 + 3, HY);
+          x.lineTo(W / 2 + RTW / 2, HY);
+          x.lineTo(W / 2 + RBW / 2, H);
+          x.lineTo(W / 2 + RBW / 2 + 20, H);
+          x.closePath();
+          x.fill();
+          x.fillStyle = '#1a1a1a';
+          x.fillRect(0, HY, W / 2 - RBW / 2 - 20, H - HY);
+          x.fillRect(W / 2 + RBW / 2 + 20, HY, W, H - HY);
+          // Road lines
+          rlines.forEach(function (l) {
+            if (l.z < 0 || l.z > 1.1) return;
+            var y = zY(l.z),
+              w = rW(l.z),
+              lw = w / 3,
+              rl = W / 2 - w / 2,
+              ll = Math.max(1, 12 * l.z),
+              lwd = Math.max(1, 2 * l.z);
+            x.fillStyle = 'rgba(255,255,255,0.4)';
+            x.fillRect(rl + lw - lwd / 2, y - ll / 2, lwd, ll);
+            x.fillRect(rl + lw * 2 - lwd / 2, y - ll / 2, lwd, ll);
+            x.fillStyle = 'rgba(255,215,0,0.5)';
+            x.fillRect(rl + 1, y - 1, Math.max(1, 3 * l.z), 2);
+            x.fillRect(rl + w - 3, y - 1, Math.max(1, 3 * l.z), 2);
+          });
+          // Buildings
+          blds.forEach(function (b) {
+            if (b.z < 0 || b.z > 1.3) return;
+            var y = zY(b.z),
+              s = b.z,
+              rwd = rW(b.z),
+              bh = b.h * s,
+              bw = 40 * s,
+              bx;
+            if (b.side === 'left') bx = W / 2 - rwd / 2 - bw - 12 * s;
+            else bx = W / 2 + rwd / 2 + 12 * s;
+            if (bx < -50 || bx > W + 50) return;
+            x.fillStyle = b.color;
+            x.fillRect(bx, y - bh, bw, bh);
+            x.fillStyle = 'rgba(255,200,50,0.25)';
+            var ws = Math.max(2, 4 * s),
+              wg = Math.max(4, 8 * s);
+            for (var wy = y - bh + wg; wy < y - 4; wy += wg)
+              for (var wx = bx + 3 * s; wx < bx + bw - 3 * s; wx += wg)
+                x.fillRect(wx, wy, ws, ws);
+            if (b.hasSign && s > 0.3) {
+              x.fillStyle = b.signColor;
+              x.globalAlpha = 0.5 + Math.sin(fc * 0.1 + b.z * 10) * 0.3;
+              x.fillRect(bx + 2, y - bh - 4 * s, bw - 4, 3 * s);
+              x.globalAlpha = 1;
+            }
+          });
+          // Collectibles & Obstacles
+          cols.forEach(function (cl) {
+            if (cl.z >= 0 && cl.z < 0.75) drawCol(cl);
+          });
+          obs.forEach(function (o) {
+            if (o.z >= 0 && o.z < 0.82 && !o.hit) drawObs(o);
+          });
+          cols.forEach(function (cl) {
+            if (cl.z >= 0.75) drawCol(cl);
+          });
+          obs.forEach(function (o) {
+            if (o.z >= 0.82 && !o.hit) drawObs(o);
+          });
+          // Van
+          drawVan();
+          // Particles
+          parts.forEach(function (p) {
+            if (p.color === 'smoke') {
+              x.fillStyle = 'rgba(100,150,255,' + (p.life / 35) * 0.3 + ')';
+              x.beginPath();
+              x.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+              x.fill();
+            } else {
+              x.globalAlpha = Math.min(1, p.life / 10);
+              x.fillStyle = p.color;
+              x.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+              x.globalAlpha = 1;
+            }
+          });
+          // HUD
+          drawHUD();
+          // Flash
+          if (flashT > 0) {
+            x.globalAlpha = Math.min(1, flashT / 15);
+            x.font = 'bold 24px "Bangers",cursive';
+            x.textAlign = 'center';
+            x.strokeStyle = '#000';
+            x.lineWidth = 5;
+            x.strokeText(flash, W / 2, H / 2 - 80);
+            x.fillStyle = '#ffd700';
+            x.fillText(flash, W / 2, H / 2 - 80);
+            x.globalAlpha = 1;
+          }
+          if (state === 'menu') drawMenu();
+          if (state === 'gameover') drawGO();
+          if (state === 'win') drawWin();
+          x.restore();
+        }
+
+        function drawObs(o) {
+          var y = zY(o.z),
+            px = lX(o.lane, o.z),
+            sz = Math.max(16, 55 * o.z);
+          x.fillStyle = 'rgba(0,0,0,0.4)';
+          x.beginPath();
+          x.ellipse(px + 2, y + 2, sz / 2, sz / 4, 0, 0, Math.PI * 2);
+          x.fill();
+          x.font = sz + 'px sans-serif';
+          x.textAlign = 'center';
+          x.fillText(o.emoji, px, y);
+        }
+        function drawCol(cl) {
+          if (cl.z < 0) return;
+          var y = zY(cl.z),
+            px = lX(cl.lane, cl.z),
+            sz = Math.max(16, 50 * cl.z),
+            bounce = Math.sin(fc * 0.1 + cl.z * 5) * 4 * cl.z;
+          var g = x.createRadialGradient(
+            px,
+            y - sz / 3,
+            0,
+            px,
+            y - sz / 3,
+            sz * 1.8,
+          );
+          g.addColorStop(
+            0,
+            cl.type === 'coin'
+              ? 'rgba(50,205,50,0.4)'
+              : 'rgba(255,255,255,0.35)',
+          );
+          g.addColorStop(1, 'transparent');
+          x.fillStyle = g;
+          x.fillRect(px - sz * 1.8, y - sz / 3 - sz * 1.8, sz * 3.6, sz * 3.6);
+          if (cl.type === 'coin') {
+            x.font = sz + 'px sans-serif';
+            x.textAlign = 'center';
+            x.fillText('💵', px, y + bounce);
+          } else if (cl.member) {
+            x.strokeStyle = cl.member.color;
+            x.lineWidth = Math.max(2, 4 * cl.z);
+            x.beginPath();
+            x.arc(px, y - sz / 3 + bounce, sz / 2 + 6 * cl.z, 0, Math.PI * 2);
+            x.stroke();
+            x.font = sz + 'px sans-serif';
+            x.textAlign = 'center';
+            x.fillText(cl.member.emoji, px, y + bounce);
+            if (cl.z > 0.25) {
+              x.font =
+                'bold ' + Math.max(10, 16 * cl.z) + 'px "Bangers",cursive';
+              x.fillStyle = cl.member.color;
+              x.fillText(cl.member.name, px, y + bounce + sz / 2 + 10 * cl.z);
+            }
+          }
+        }
+
+        function drawVan() {
+          x.save();
+          x.translate(vanX, VY);
+          x.rotate(tilt);
+          if (inv > 0 && fc % 6 < 3) x.globalAlpha = 0.4;
+          var vw = 44,
+            vh = 60;
+          x.fillStyle = 'rgba(0,0,0,0.4)';
+          x.beginPath();
+          x.ellipse(0, vh / 2 + 5, vw / 2 + 5, 8, 0, 0, Math.PI * 2);
+          x.fill();
+          var bg = x.createLinearGradient(-vw / 2, 0, vw / 2, 0);
+          bg.addColorStop(0, '#e8751a');
+          bg.addColorStop(0.5, '#ffd700');
+          bg.addColorStop(1, '#e84393');
+          x.fillStyle = bg;
+          rr(x, -vw / 2, -vh / 2, vw, vh, 8, true);
+          x.fillStyle = 'rgba(100,200,255,0.4)';
+          rr(x, -vw / 2 + 6, -vh / 2 + 5, vw - 12, 18, 4, true);
+          x.fillStyle = 'rgba(255,255,255,0.7)';
+          x.fillRect(-vw / 2, 0, vw, 3);
+          x.fillStyle = '#ff4444';
+          x.beginPath();
+          x.arc(-vw / 2 + 8, vh / 2 - 5, 4, 0, Math.PI * 2);
+          x.fill();
+          x.beginPath();
+          x.arc(vw / 2 - 8, vh / 2 - 5, 4, 0, Math.PI * 2);
+          x.fill();
+          x.fillStyle = 'rgba(100,150,255,0.3)';
+          x.beginPath();
+          x.ellipse(0, vh / 2 + 2, 15, 5, 0, 0, Math.PI * 2);
+          x.fill();
+          x.fillStyle = 'rgba(255,255,255,0.3)';
+          x.font = '14px sans-serif';
+          x.textAlign = 'center';
+          x.fillText('☮', 0, 18);
+          var dx = -15;
+          BAND.forEach(function (m) {
+            if (m.found) {
+              x.fillStyle = m.color;
+              x.beginPath();
+              x.arc(dx, -vh / 2 - 6, 5, 0, Math.PI * 2);
+              x.fill();
+              x.font = '8px sans-serif';
+              x.fillStyle = '#fff';
+              x.fillText(m.emoji, dx, -vh / 2 - 14);
+              dx += 11;
+            }
+          });
+          x.globalAlpha = 1;
+          x.restore();
+        }
+
+        function drawHUD() {
+          x.fillStyle = 'rgba(0,0,0,0.5)';
+          rr(x, 10, 10, 120, 35, 8, true);
+          x.fillStyle = '#ffd700';
+          x.font = 'bold 18px "Bangers",cursive';
+          x.textAlign = 'left';
+          x.fillText('Score: ' + score, 20, 33);
+          x.fillStyle = 'rgba(0,0,0,0.5)';
+          rr(x, W - 130, 10, 120, 35, 8, true);
+          x.font = '14px sans-serif';
+          x.textAlign = 'center';
+          var hs = '';
+          for (var i = 0; i < 5; i++) hs += i < lives ? '❤️' : '🖤';
+          x.fillText(hs, W - 70, 34);
+          x.fillStyle = 'rgba(0,0,0,0.5)';
+          rr(x, W / 2 - 80, 10, 160, 35, 8, true);
+          x.fillStyle = '#ffd700';
+          x.font = 'bold 14px "Bangers",cursive';
+          x.textAlign = 'center';
+          x.fillText('BAND: ' + collected + '/4', W / 2, 26);
+          var ix = W / 2 - 30;
+          BAND.forEach(function (m) {
+            x.globalAlpha = m.found ? 1 : 0.3;
+            x.font = '12px sans-serif';
+            x.fillText(m.emoji, ix, 42);
+            ix += 17;
+          });
+          x.globalAlpha = 1;
+        }
+
+        function drawMenu() {
+          x.fillStyle = 'rgba(0,0,0,0.8)';
+          x.fillRect(0, 0, W, H);
+          x.fillStyle = '#ffd700';
+          x.font = 'bold 44px "Bangers",cursive';
+          x.textAlign = 'center';
+          x.fillText('GROOVY', W / 2, 200);
+          x.fillText('BAND RUSH', W / 2, 255);
+          x.font = '20px "Righteous",sans-serif';
+          x.fillStyle = '#e8751a';
+          x.fillText('Soul in Full Color', W / 2, 290);
+          x.font = '50px sans-serif';
+          x.fillText('🚐', W / 2, 370);
+          x.fillStyle = '#fff';
+          x.font = '15px "Righteous",sans-serif';
+          x.fillText('"Round up the band for the gig!"', W / 2, 420);
+          x.fillStyle = 'rgba(255,255,255,0.6)';
+          x.font = '13px "Righteous",sans-serif';
+          x.fillText('⬅ Swipe Left/Right to switch lanes ➡', W / 2, 470);
+          x.fillText(
+            'Dodge rocks 🪨  Grab cash 💵  Collect the band!',
+            W / 2,
+            495,
+          );
+          x.fillStyle = '#ffd700';
+          x.font = 'bold 15px "Bangers",cursive';
+          x.fillText('Speed: ' + SPEEDS[currentDiff].label, W / 2, 530);
+          if (Math.sin(fc * 0.08) > 0) {
+            x.fillStyle = '#e63946';
+            x.font = 'bold 24px "Bangers",cursive';
+            x.fillText('🎮 TAP TO START!', W / 2, 570);
+          }
+        }
+
+        function drawGO() {
+          x.fillStyle = 'rgba(0,0,0,0.85)';
+          x.fillRect(0, 0, W, H);
+          x.fillStyle = '#e63946';
+          x.font = 'bold 40px "Bangers",cursive';
+          x.textAlign = 'center';
+          x.fillText('💥 CRASH!', W / 2, 200);
+          x.fillStyle = '#ffd700';
+          x.font = '22px "Bangers",cursive';
+          x.fillText('Score: ' + score, W / 2, 260);
+          x.font = '18px "Righteous",sans-serif';
+          x.fillStyle = '#fff';
+          x.fillText('Band collected: ' + collected + '/4', W / 2, 300);
+          var mx = W / 2 - 50;
+          BAND.forEach(function (m) {
+            x.globalAlpha = m.found ? 1 : 0.25;
+            x.font = '30px sans-serif';
+            x.fillText(m.emoji, mx, 360);
+            mx += 30;
+          });
+          x.globalAlpha = 1;
+          if (Math.sin(fc * 0.08) > 0) {
+            x.fillStyle = '#ffd700';
+            x.font = 'bold 22px "Bangers",cursive';
+            x.fillText('TAP TO TRY AGAIN!', W / 2, 450);
+          }
+        }
+
+        function drawWin() {
+          if (fc % 3 === 0)
+            addP(
+              Math.random() * W,
+              Math.random() * 100,
+              ['#ffd700', '#e63946', '#e8751a', '#e84393', '#2ecc71'][
+                Math.floor(Math.random() * 5)
+              ],
+              3,
+            );
+          x.fillStyle = 'rgba(0,0,0,0.85)';
+          x.fillRect(0, 0, W, H);
+          x.fillStyle = '#ffd700';
+          x.font = 'bold 38px "Bangers",cursive';
+          x.textAlign = 'center';
+          x.fillText('🎉 GROOVY! 🎉', W / 2, 170);
+          x.font = '20px "Righteous",sans-serif';
+          x.fillStyle = '#e8751a';
+          x.fillText('You found the whole band!', W / 2, 210);
+          x.font = '22px "Bangers",cursive';
+          x.fillStyle = '#ffd700';
+          x.fillText('Score: ' + score, W / 2, 250);
+          x.font = '45px sans-serif';
+          x.fillText('🎤', W / 2, 320);
+          var bx = W / 2 - 60;
+          BAND.forEach(function (m) {
+            x.fillText(m.emoji, bx, 370);
+            bx += 35;
+          });
+          x.fillStyle = '#ffd700';
+          x.font = '16px "Righteous",sans-serif';
+          x.fillText('L.A. Young & The Band', W / 2, 420);
+          x.fillStyle = '#fff';
+          x.font = '12px "Righteous",sans-serif';
+          x.fillText('"Soul in Full Color"', W / 2, 445);
+          if (Math.sin(fc * 0.08) > 0) {
+            x.fillStyle = '#e63946';
+            x.font = 'bold 20px "Bangers",cursive';
+            x.fillText('TAP TO PLAY AGAIN!', W / 2, 530);
+          }
+        }
+
+        function rr(ctx, rx, ry, rw, rh, r, fill) {
+          ctx.beginPath();
+          ctx.moveTo(rx + r, ry);
+          ctx.lineTo(rx + rw - r, ry);
+          ctx.quadraticCurveTo(rx + rw, ry, rx + rw, ry + r);
+          ctx.lineTo(rx + rw, ry + rh - r);
+          ctx.quadraticCurveTo(rx + rw, ry + rh, rx + rw - r, ry + rh);
+          ctx.lineTo(rx + r, ry + rh);
+          ctx.quadraticCurveTo(rx, ry + rh, rx, ry + rh - r);
+          ctx.lineTo(rx, ry + r);
+          ctx.quadraticCurveTo(rx, ry, rx + r, ry);
+          ctx.closePath();
+          if (fill) ctx.fill();
+        }
+
+        function resize() {
+          var wr = document.getElementById('gameWrapper'),
+            mw = Math.min(wr.clientWidth, 500),
+            rt = H / W;
+          c.style.width = mw + 'px';
+          c.style.height = mw * rt + 'px';
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        function loop() {
+          update();
+          draw();
+          requestAnimationFrame(loop);
+        }
+        init();
+        loop();
+      })();
+    </script>
+  </body>
+</html>
