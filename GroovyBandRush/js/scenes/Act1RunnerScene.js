@@ -898,8 +898,9 @@ var Act1RunnerScene = new Phaser.Class({
       ease: 'Sine.easeInOut'
     });
 
-    // Score display
-    this.time.delayedCall(500, function () {
+    // Score display - use setTimeout to avoid throttling
+    setTimeout(function () {
+      if (!self.scene.isActive()) return;
       self.add.text(self.W / 2, self.H * 0.44, 'SCORE: ' + self.score, {
         fontFamily: GBR.FONTS.display,
         fontSize: '32px',
@@ -918,10 +919,11 @@ var Act1RunnerScene = new Phaser.Class({
         fontSize: '20px',
         color: '#e8751a'
       }).setOrigin(0.5).setDepth(50);
-    });
+    }, 500);
 
-    // "TRY AGAIN" button
-    this.time.delayedCall(1200, function () {
+    // "TRY AGAIN" button - use setTimeout to avoid throttling
+    setTimeout(function () {
+      if (!self.scene.isActive()) return;
       var retryBtn = createButton(self, self.W / 2, self.H * 0.72, 'TRY AGAIN!', function () {
         self.scene.stop('HUDScene');
         self.scene.restart();
