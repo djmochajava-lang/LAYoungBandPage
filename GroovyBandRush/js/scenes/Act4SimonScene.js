@@ -749,7 +749,6 @@ var Act4SimonScene = new Phaser.Class({
     // Emit HUD events for member found and act complete
     // Use setTimeout to avoid throttling in background tabs
     setTimeout(function () {
-      if (!self.scene.isActive()) return;
       self.game.events.emit('hud:memberFound', 3);
       self.game.events.emit('hud:actComplete', 3);
     }, 500);
@@ -757,7 +756,6 @@ var Act4SimonScene = new Phaser.Class({
     // Continue button after celebration
     // Use setTimeout instead of this.time.delayedCall to avoid throttling in background tabs
     setTimeout(function () {
-      if (!self.scene.isActive()) return;
       var btn = createButton(self, width / 2, height - 55, 'CONTINUE', function () {
         self.scene.stop('HUDScene');
         TransitionHelper.fadeToScene(self, 'OutfitScene', {

@@ -203,7 +203,6 @@ var VictoryScene = new Phaser.Class({
 
     // Buttons (appear after delay) - use setTimeout to avoid throttling
     setTimeout(function () {
-      if (!self.scene.isActive()) return;
       // Play Again button
       createButton(self, width / 2, height * 0.86, 'PLAY AGAIN', function () {
         GBR.resetState();

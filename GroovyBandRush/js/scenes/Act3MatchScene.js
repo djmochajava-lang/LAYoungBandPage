@@ -1130,7 +1130,6 @@ var Act3MatchScene = new Phaser.Class({
     // Continue button after delay
     // Use setTimeout instead of this.time.delayedCall to avoid throttling in background tabs
     setTimeout(function () {
-      if (!self.scene.isActive()) return;
       celebEmitter.stop();
       celebDots.stop();
 

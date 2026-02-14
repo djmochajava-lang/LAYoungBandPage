@@ -127,7 +127,6 @@ var StoryScene = new Phaser.Class({
     // GO! button (appears after short delay)
     // Use setTimeout instead of this.time.delayedCall to avoid throttling in background tabs
     setTimeout(function () {
-      if (!self.scene.isActive()) return;
       var goBtn = createButton(self, width / 2, height * 0.88, "LET'S GO!", function () {
         GBR.state.currentAct = self.actNumber + 1;
         TransitionHelper.fadeToScene(self, self.nextScene);

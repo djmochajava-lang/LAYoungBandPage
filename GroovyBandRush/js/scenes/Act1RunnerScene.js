@@ -831,17 +831,14 @@ var Act1RunnerScene = new Phaser.Class({
 
     // HUD events - use setTimeout to avoid throttling in background tabs
     setTimeout(function () {
-      if (!self.scene.isActive()) return;
       self.game.events.emit('hud:memberFound', 0);
     }, 500);
     setTimeout(function () {
-      if (!self.scene.isActive()) return;
       self.game.events.emit('hud:actComplete', 0);
     }, 1000);
 
     // Transition after celebration - use setTimeout to avoid throttling in background tabs
     setTimeout(function () {
-      if (!self.scene.isActive()) return;
       self.game.events.emit('hud:hideLives');
       self.scene.stop('HUDScene');
       TransitionHelper.fadeToScene(self, 'OutfitScene', {
@@ -900,7 +897,6 @@ var Act1RunnerScene = new Phaser.Class({
 
     // Score display - use setTimeout to avoid throttling
     setTimeout(function () {
-      if (!self.scene.isActive()) return;
       self.add.text(self.W / 2, self.H * 0.44, 'SCORE: ' + self.score, {
         fontFamily: GBR.FONTS.display,
         fontSize: '32px',
@@ -923,7 +919,6 @@ var Act1RunnerScene = new Phaser.Class({
 
     // "TRY AGAIN" button - use setTimeout to avoid throttling
     setTimeout(function () {
-      if (!self.scene.isActive()) return;
       var retryBtn = createButton(self, self.W / 2, self.H * 0.72, 'TRY AGAIN!', function () {
         self.scene.stop('HUDScene');
         self.scene.restart();

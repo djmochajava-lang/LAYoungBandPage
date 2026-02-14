@@ -1206,7 +1206,6 @@ var Act5PianoScene = new Phaser.Class({
       // --- After finaleDisplayTime, transition out ---
       // Use setTimeout to avoid Phaser timer throttling in background tabs
       setTimeout(function () {
-        if (!self.scene.isActive()) return;
         // Stop particles
         confettiTop.stop();
         starBurst.stop();
