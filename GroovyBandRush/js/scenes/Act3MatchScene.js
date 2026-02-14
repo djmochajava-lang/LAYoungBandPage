@@ -1117,8 +1117,8 @@ var Act3MatchScene = new Phaser.Class({
 
       self.tweens.add({
         targets: portrait,
-        scaleX: 3,
-        scaleY: 3,
+        scaleX: 0.45,
+        scaleY: 0.45,
         duration: 600,
         ease: 'Back.easeOut'
       });

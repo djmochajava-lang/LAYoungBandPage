@@ -43,11 +43,38 @@ GBR.BAND = [
   { name: 'L.A. Young', role: 'Vocals', emoji: '\uD83C\uDFA4', color: 0xe8751a, colorHex: '#e8751a' }
 ];
 
-// --- Outfit Options ---
+// --- Outfit Options (per member) ---
 GBR.OUTFITS = [
-  { name: 'Funky Fresh', color: 0xe63946 },
-  { name: 'Classic Soul', color: 0x3498db },
-  { name: 'Wild Style', color: 0x2ecc71 }
+  // Member 0 - Eugene Chapman (Sax)
+  [
+    { name: 'Sharp Blues', color: 0x3498db },
+    { name: 'Smooth Operator', color: 0x8b0000 },
+    { name: 'Street Jazz', color: 0x1a1a1a }
+  ],
+  // Member 1 - Kevin Walker (Bass)
+  [
+    { name: 'Purple Funk', color: 0x9b59b6 },
+    { name: 'Bass Boss', color: 0x2c003e },
+    { name: 'Groove King', color: 0x2ecc71 }
+  ],
+  // Member 2 - Kevin Robinson (Guitar)
+  [
+    { name: 'Roots Rock', color: 0xe74c3c },
+    { name: 'Rebel Reggae', color: 0x556b2f },
+    { name: 'Island Vibes', color: 0xffd700 }
+  ],
+  // Member 3 - Jimmy Carney (Drums)
+  [
+    { name: 'Beat Machine', color: 0x2ecc71 },
+    { name: 'Neon Groove', color: 0x39ff14 },
+    { name: 'Classic Drummer', color: 0x1a1a1a }
+  ],
+  // Member 4 - L.A. Young (Vocals)
+  [
+    { name: 'Pop Singer', color: 0x1a1a1a },
+    { name: 'Pink Diva', color: 0xe84393 },
+    { name: 'Power Sister', color: 0x1a1a1a }
+  ]
 ];
 
 // --- Story Dialogue ---
@@ -218,6 +245,7 @@ document.addEventListener('DOMContentLoaded', function () {
       typeof Act4SimonScene !== 'undefined' ? Act4SimonScene : null,
       typeof Act5PianoScene !== 'undefined' ? Act5PianoScene : null,
       typeof OutfitScene !== 'undefined' ? OutfitScene : null,
+      typeof SingerOutfitScene !== 'undefined' ? SingerOutfitScene : null,
       typeof VictoryScene !== 'undefined' ? VictoryScene : null
     ].filter(Boolean)
   };

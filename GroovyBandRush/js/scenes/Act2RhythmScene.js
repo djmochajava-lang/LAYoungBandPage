@@ -1008,14 +1008,14 @@ var Act2RhythmScene = new Phaser.Class({
     // Kevin Walker (bassist) appears!
     var member = GBR.BAND[1]; // Kevin Walker
     var portrait = this.add.image(width / 2, height * 0.55, 'member_1')
-      .setScale(0.5)
+      .setScale(0)
       .setAlpha(0);
 
     this.tweens.add({
       targets: portrait,
       alpha: 1,
-      scaleX: 3,
-      scaleY: 3,
+      scaleX: 0.45,
+      scaleY: 0.45,
       duration: 600,
       delay: 800,
       ease: 'Back.easeOut'

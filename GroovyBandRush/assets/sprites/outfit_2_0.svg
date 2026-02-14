@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" width="120" height="160">
+  <!-- Outfit 2-0: Roots Rock - Open rasta-striped shirt, torn denim jeans -->
+  <defs>
+    <linearGradient id="kr0bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e74c3c"/>
+      <stop offset="100%" stop-color="#c0392b"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="116" height="156" rx="10" fill="url(#kr0bg)"/>
+  <rect x="6" y="6" width="108" height="148" rx="8" fill="#1a1a2e" opacity="0.85"/>
+  <g transform="translate(60, 20)">
+    <!-- Hanger -->
+    <path d="M-20 5 Q0 -8 20 5" stroke="#C0C0C0" stroke-width="2.5" fill="none"/>
+    <circle cx="0" cy="-8" r="3" fill="#C0C0C0"/>
+    <!-- Bare chest/skin showing (shirt is open) -->
+    <path d="M-8 14 L-8 65 L8 65 L8 14 Q0 10 -8 14" fill="#8B5E3C"/>
+    <!-- Open rasta-striped shirt - left side -->
+    <path d="M-32 10 L-35 70 L-8 70 L-8 10 Z" fill="#e74c3c"/>
+    <rect x="-35" y="18" width="27" height="8" fill="#ffd700"/>
+    <rect x="-35" y="26" width="27" height="8" fill="#2ecc71"/>
+    <rect x="-35" y="42" width="27" height="8" fill="#ffd700"/>
+    <rect x="-35" y="50" width="27" height="8" fill="#2ecc71"/>
+    <!-- Open rasta-striped shirt - right side -->
+    <path d="M32 10 L35 70 L8 70 L8 10 Z" fill="#e74c3c"/>
+    <rect x="8" y="18" width="27" height="8" fill="#ffd700"/>
+    <rect x="8" y="26" width="27" height="8" fill="#2ecc71"/>
+    <rect x="8" y="42" width="27" height="8" fill="#ffd700"/>
+    <rect x="8" y="50" width="27" height="8" fill="#2ecc71"/>
+    <!-- Shirt collar -->
+    <path d="M-14 8 L-8 18 L-4 10" fill="#c0392b"/>
+    <path d="M14 8 L8 18 L4 10" fill="#c0392b"/>
+    <!-- Rasta bead bracelet -->
+    <circle cx="-33" cy="66" r="1.5" fill="#e74c3c"/>
+    <circle cx="-30" cy="67" r="1.5" fill="#ffd700"/>
+    <circle cx="-27" cy="66" r="1.5" fill="#2ecc71"/>
+    <!-- Torn denim jeans -->
+    <path d="M-26 72 L-28 115 L-6 115 L-2 80 L2 80 L6 115 L28 115 L26 72 Z" fill="#4a90d9"/>
+    <!-- Rips at knees -->
+    <rect x="-22" y="95" width="10" height="6" rx="2" fill="#7ab8e8" opacity="0.6"/>
+    <rect x="12" y="92" width="10" height="5" rx="2" fill="#7ab8e8" opacity="0.6"/>
+    <!-- Frayed edges -->
+    <path d="M-22 95 L-20 97 L-18 95 L-16 97 L-14 95" stroke="#5a9fd4" stroke-width="0.5" fill="none"/>
+    <!-- Belt -->
+    <rect x="-27" y="70" width="54" height="4" rx="2" fill="#8B4513"/>
+    <!-- Brown sandals -->
+    <path d="M-28 113 L-4 113 L-4 118 L-28 118 Z" fill="#8B4513"/>
+    <path d="M6 113 L28 113 L28 118 L6 118 Z" fill="#8B4513"/>
+  </g>
+</svg>

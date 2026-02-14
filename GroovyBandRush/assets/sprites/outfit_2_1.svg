@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" width="120" height="160">
+  <!-- Outfit 2-1: Rebel Reggae - Olive military jacket, rasta patches, black pants -->
+  <defs>
+    <linearGradient id="kr1bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#556b2f"/>
+      <stop offset="100%" stop-color="#3d4f22"/>
+    </linearGradient>
+    <linearGradient id="kr1jacket" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6b8e23"/>
+      <stop offset="100%" stop-color="#556b2f"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="116" height="156" rx="10" fill="url(#kr1bg)"/>
+  <rect x="6" y="6" width="108" height="148" rx="8" fill="#1a1a2e" opacity="0.85"/>
+  <g transform="translate(60, 20)">
+    <!-- Hanger -->
+    <path d="M-20 5 Q0 -8 20 5" stroke="#C0C0C0" stroke-width="2.5" fill="none"/>
+    <circle cx="0" cy="-8" r="3" fill="#C0C0C0"/>
+    <!-- Olive military jacket -->
+    <path d="M-33 10 L-37 72 L-14 72 L-14 26 L14 26 L14 72 L37 72 L33 10 Z" fill="url(#kr1jacket)"/>
+    <!-- Collar/lapels -->
+    <path d="M-14 8 L-6 22 L0 10" fill="#4a6b1a"/>
+    <path d="M14 8 L6 22 L0 10" fill="#4a6b1a"/>
+    <!-- Epaulets -->
+    <rect x="-33" y="10" width="10" height="4" rx="1" fill="#4a6b1a" stroke="#556b2f" stroke-width="0.5"/>
+    <rect x="23" y="10" width="10" height="4" rx="1" fill="#4a6b1a" stroke="#556b2f" stroke-width="0.5"/>
+    <!-- Breast pockets with flaps -->
+    <rect x="-26" y="30" width="14" height="12" rx="1" fill="#4a6b1a"/>
+    <rect x="-26" y="28" width="14" height="4" rx="1" fill="#556b2f"/>
+    <rect x="12" y="30" width="14" height="12" rx="1" fill="#4a6b1a"/>
+    <rect x="12" y="28" width="14" height="4" rx="1" fill="#556b2f"/>
+    <!-- Rasta circle patch on left chest -->
+    <circle cx="-19" cy="36" r="5" fill="#e74c3c"/>
+    <circle cx="-19" cy="36" r="3.5" fill="#ffd700"/>
+    <circle cx="-19" cy="36" r="2" fill="#2ecc71"/>
+    <!-- Lion of Judah patch on right arm -->
+    <circle cx="28" cy="40" r="5" fill="#1a1a1a"/>
+    <text x="28" y="43" font-size="7" fill="#ffd700" text-anchor="middle">♌</text>
+    <!-- Silver buttons -->
+    <circle cx="0" cy="30" r="2" fill="#C0C0C0"/>
+    <circle cx="0" cy="40" r="2" fill="#C0C0C0"/>
+    <circle cx="0" cy="50" r="2" fill="#C0C0C0"/>
+    <circle cx="0" cy="60" r="2" fill="#C0C0C0"/>
+    <!-- Black fitted pants -->
+    <path d="M-26 74 L-28 115 L-8 115 L-2 82 L2 82 L8 115 L28 115 L26 74 Z" fill="#1a1a1a"/>
+    <!-- Belt -->
+    <rect x="-27" y="72" width="54" height="4" rx="2" fill="#333"/>
+    <rect x="-3" y="71" width="6" height="6" rx="1" fill="#C0C0C0"/>
+    <!-- Black combat boots -->
+    <path d="M-28 111 L-6 111 L-4 120 L-30 120 Z" fill="#111"/>
+    <path d="M8 111 L28 111 L30 120 L6 120 Z" fill="#111"/>
+    <!-- Boot soles -->
+    <rect x="-30" y="118" width="26" height="3" rx="1" fill="#333"/>
+    <rect x="6" y="118" width="26" height="3" rx="1" fill="#333"/>
+    <!-- Boot lace hints -->
+    <line x1="-18" y1="112" x2="-18" y2="117" stroke="#444" stroke-width="0.5"/>
+    <line x1="18" y1="112" x2="18" y2="117" stroke="#444" stroke-width="0.5"/>
+  </g>
+</svg>

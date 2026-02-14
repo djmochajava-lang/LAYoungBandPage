@@ -98,13 +98,14 @@ var OutfitScene = new Phaser.Class({
     var cardY = height * 0.65;
 
     // Pre-select first outfit border
+    var memberOutfits = GBR.OUTFITS[this.memberIndex];
     for (var i = 0; i < 3; i++) {
       (function (index) {
         var cardX = cardStartX + index * cardSpacing - 60;
-        var outfit = GBR.OUTFITS[index];
+        var outfit = memberOutfits[index];
 
-        // Card background
-        var card = self.add.image(cardX + 60, cardY, 'outfit_' + index).setScale(1);
+        // Card background — per-member outfit texture
+        var card = self.add.image(cardX + 60, cardY, 'outfit_' + self.memberIndex + '_' + index).setScale(1);
 
         // Outfit label
         self.add.text(cardX + 60, cardY + 90, outfit.name, {

@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" width="120" height="160">
+  <defs>
+    <linearGradient id="jc2bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a1a"/>
+      <stop offset="100%" stop-color="#333333"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background -->
+  <rect x="2" y="2" width="116" height="156" rx="10" fill="url(#jc2bg)"/>
+  <rect x="6" y="6" width="108" height="148" rx="8" fill="#1a1a2e" opacity="0.85"/>
+  <!-- Outfit on hanger -->
+  <g transform="translate(60, 20)">
+    <!-- Hanger -->
+    <path d="M-20 5 Q0 -8 20 5" stroke="#C0C0C0" stroke-width="2.5" fill="none"/>
+    <circle cx="0" cy="-8" r="3" fill="#C0C0C0"/>
+    <!-- Black band tee -->
+    <path d="M-24 8 L-26 55 L26 55 L24 8 L14 5 L6 10 L0 8 L-6 10 L-14 5 Z" fill="#1a1a1a" stroke="#111" stroke-width="0.5"/>
+    <!-- T-shirt sleeves -->
+    <path d="M-24 8 L-34 32 L-22 36 L-18 12" fill="#1a1a1a" stroke="#111" stroke-width="0.5"/>
+    <path d="M24 8 L34 32 L22 36 L18 12" fill="#1a1a1a" stroke="#111" stroke-width="0.5"/>
+    <!-- Round neckline -->
+    <path d="M-6 10 Q0 14 6 10" stroke="#333" stroke-width="1" fill="none"/>
+    <!-- Crossed drumsticks logo on tee -->
+    <!-- Drumstick 1 (top-left to bottom-right) -->
+    <line x1="-10" y1="22" x2="10" y2="42" stroke="#d4a843" stroke-width="2" stroke-linecap="round"/>
+    <!-- Drumstick 2 (top-right to bottom-left) -->
+    <line x1="10" y1="22" x2="-10" y2="42" stroke="#d4a843" stroke-width="2" stroke-linecap="round"/>
+    <!-- Drumstick tips (wider end at bottom) -->
+    <ellipse cx="10" cy="42" rx="2" ry="1.2" fill="#d4a843" transform="rotate(45,10,42)"/>
+    <ellipse cx="-10" cy="42" rx="2" ry="1.2" fill="#d4a843" transform="rotate(-45,-10,42)"/>
+    <!-- Drumstick grip lines (top ends) -->
+    <line x1="-9" y1="23" x2="-8" y2="25" stroke="#f0f0f0" stroke-width="0.4" opacity="0.6"/>
+    <line x1="-8.5" y1="24" x2="-7.5" y2="26" stroke="#f0f0f0" stroke-width="0.4" opacity="0.6"/>
+    <line x1="9" y1="23" x2="8" y2="25" stroke="#f0f0f0" stroke-width="0.4" opacity="0.6"/>
+    <line x1="8.5" y1="24" x2="7.5" y2="26" stroke="#f0f0f0" stroke-width="0.4" opacity="0.6"/>
+    <!-- Studded belt -->
+    <rect x="-22" y="55" width="44" height="4" rx="1" fill="#1a1a1a" stroke="#333" stroke-width="0.5"/>
+    <!-- Chrome studs on belt -->
+    <circle cx="-18" cy="57" r="1" fill="#C0C0C0" stroke="#999" stroke-width="0.3"/>
+    <circle cx="-14" cy="57" r="1" fill="#C0C0C0" stroke="#999" stroke-width="0.3"/>
+    <circle cx="-10" cy="57" r="1" fill="#C0C0C0" stroke="#999" stroke-width="0.3"/>
+    <circle cx="-6" cy="57" r="1" fill="#C0C0C0" stroke="#999" stroke-width="0.3"/>
+    <circle cx="-2" cy="57" r="1" fill="#C0C0C0" stroke="#999" stroke-width="0.3"/>
+    <circle cx="2" cy="57" r="1" fill="#C0C0C0" stroke="#999" stroke-width="0.3"/>
+    <circle cx="6" cy="57" r="1" fill="#C0C0C0" stroke="#999" stroke-width="0.3"/>
+    <circle cx="10" cy="57" r="1" fill="#C0C0C0" stroke="#999" stroke-width="0.3"/>
+    <circle cx="14" cy="57" r="1" fill="#C0C0C0" stroke="#999" stroke-width="0.3"/>
+    <circle cx="18" cy="57" r="1" fill="#C0C0C0" stroke="#999" stroke-width="0.3"/>
+    <!-- Belt buckle -->
+    <rect x="-3" y="54.5" width="6" height="5" rx="0.5" fill="none" stroke="#C0C0C0" stroke-width="1"/>
+    <line x1="0" y1="55" x2="0" y2="59" stroke="#C0C0C0" stroke-width="0.8"/>
+    <!-- Silver chain from belt loop -->
+    <path d="M-16 59 Q-18 65 -14 68 Q-10 71 -12 77 Q-14 80 -10 82" stroke="#C0C0C0" stroke-width="1" fill="none" stroke-linecap="round"/>
+    <!-- Chain links detail -->
+    <circle cx="-16" cy="62" r="1" fill="none" stroke="#C0C0C0" stroke-width="0.5"/>
+    <circle cx="-14" cy="68" r="1" fill="none" stroke="#C0C0C0" stroke-width="0.5"/>
+    <circle cx="-12" cy="74" r="1" fill="none" stroke="#C0C0C0" stroke-width="0.5"/>
+    <circle cx="-11" cy="80" r="1" fill="none" stroke="#C0C0C0" stroke-width="0.5"/>
+    <!-- Ripped/distressed blue jeans -->
+    <path d="M-20 59 L-22 108 L-8 108 L-2 72 L2 72 L8 108 L22 108 L20 59 Z" fill="#3b5998" stroke="#2d4373" stroke-width="0.5"/>
+    <!-- Denim texture lines -->
+    <line x1="-16" y1="62" x2="-17" y2="106" stroke="#4a69a8" stroke-width="0.4" opacity="0.3"/>
+    <line x1="16" y1="62" x2="17" y2="106" stroke="#4a69a8" stroke-width="0.4" opacity="0.3"/>
+    <!-- Ripped knee - left leg (torn effect with lighter patches) -->
+    <ellipse cx="-16" cy="88" rx="5" ry="4" fill="#6b8cc7" opacity="0.7"/>
+    <path d="M-20 86 Q-16 84 -12 86" stroke="#f0f0f0" stroke-width="0.4" fill="none" opacity="0.5"/>
+    <path d="M-19 88 Q-15 90 -12 88" stroke="#f0f0f0" stroke-width="0.4" fill="none" opacity="0.5"/>
+    <path d="M-20 90 Q-17 92 -13 90" stroke="#f0f0f0" stroke-width="0.4" fill="none" opacity="0.5"/>
+    <!-- Ripped knee - right leg -->
+    <ellipse cx="16" cy="90" rx="4" ry="3.5" fill="#6b8cc7" opacity="0.7"/>
+    <path d="M13 88 Q16 86 19 88" stroke="#f0f0f0" stroke-width="0.4" fill="none" opacity="0.5"/>
+    <path d="M12 90 Q16 92 19 90" stroke="#f0f0f0" stroke-width="0.4" fill="none" opacity="0.5"/>
+    <path d="M13 92 Q15 94 18 92" stroke="#f0f0f0" stroke-width="0.4" fill="none" opacity="0.5"/>
+    <!-- Additional distress marks -->
+    <line x1="-18" y1="76" x2="-13" y2="76" stroke="#6b8cc7" stroke-width="1" opacity="0.5"/>
+    <line x1="12" y1="78" x2="18" y2="78" stroke="#6b8cc7" stroke-width="1" opacity="0.5"/>
+    <!-- Black high-top Converse-style sneakers -->
+    <path d="M-22 108 L-24 114 L-22 118 L-6 118 L-6 114 L-8 108 Z" fill="#1a1a1a" stroke="#111" stroke-width="0.5"/>
+    <path d="M8 108 L6 114 L6 118 L22 118 L24 114 L22 108 Z" fill="#1a1a1a" stroke="#111" stroke-width="0.5"/>
+    <!-- High-top ankle portion -->
+    <path d="M-22 108 L-22 112 L-8 112 L-8 108" fill="#222" stroke="#111" stroke-width="0.3"/>
+    <path d="M8 108 L8 112 L22 112 L22 108" fill="#222" stroke="#111" stroke-width="0.3"/>
+    <!-- White toe caps -->
+    <path d="M-24 114 L-22 118 L-10 118 L-10 114 Z" fill="#f0f0f0" stroke="#ddd" stroke-width="0.3" rx="2"/>
+    <path d="M10 114 L10 118 L22 118 L24 114 Z" fill="#f0f0f0" stroke="#ddd" stroke-width="0.3" rx="2"/>
+    <!-- White sole stripe -->
+    <rect x="-25" y="117" width="20" height="2" rx="1" fill="#f0f0f0" stroke="#ddd" stroke-width="0.3"/>
+    <rect x="5" y="117" width="20" height="2" rx="1" fill="#f0f0f0" stroke="#ddd" stroke-width="0.3"/>
+    <!-- Laces on sneakers -->
+    <line x1="-17" y1="110" x2="-13" y2="110" stroke="#f0f0f0" stroke-width="0.5"/>
+    <line x1="-17" y1="112" x2="-13" y2="112" stroke="#f0f0f0" stroke-width="0.5"/>
+    <line x1="13" y1="110" x2="17" y2="110" stroke="#f0f0f0" stroke-width="0.5"/>
+    <line x1="13" y1="112" x2="17" y2="112" stroke="#f0f0f0" stroke-width="0.5"/>
+  </g>
+</svg>

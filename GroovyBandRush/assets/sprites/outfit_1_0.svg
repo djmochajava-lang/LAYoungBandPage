@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" width="120" height="160">
+  <!-- Outfit 1-0: Purple Funk - 70s purple bell-bottom suit, wide lapels, gold buttons -->
+  <defs>
+    <linearGradient id="kw0bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9b59b6"/>
+      <stop offset="100%" stop-color="#7d3c98"/>
+    </linearGradient>
+    <linearGradient id="kw0suit" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9b59b6"/>
+      <stop offset="100%" stop-color="#6c3483"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="116" height="156" rx="10" fill="url(#kw0bg)"/>
+  <rect x="6" y="6" width="108" height="148" rx="8" fill="#1a1a2e" opacity="0.85"/>
+  <g transform="translate(60, 20)">
+    <!-- Hanger -->
+    <path d="M-20 5 Q0 -8 20 5" stroke="#C0C0C0" stroke-width="2.5" fill="none"/>
+    <circle cx="0" cy="-8" r="3" fill="#C0C0C0"/>
+    <!-- Deep V chest opening -->
+    <path d="M-6 14 L0 40 L6 14" fill="#4a2a1a"/>
+    <!-- Purple suit jacket with wide lapels -->
+    <path d="M-33 12 L-37 72 L-14 72 L-14 30 L14 30 L14 72 L37 72 L33 12 Z" fill="url(#kw0suit)"/>
+    <!-- WIDE pointed 70s lapels -->
+    <path d="M-18 10 L-6 42 L0 14" fill="#6c3483"/>
+    <path d="M18 10 L6 42 L0 14" fill="#6c3483"/>
+    <!-- Lapel edges -->
+    <line x1="-18" y1="10" x2="-6" y2="42" stroke="#8e44ad" stroke-width="0.5"/>
+    <line x1="18" y1="10" x2="6" y2="42" stroke="#8e44ad" stroke-width="0.5"/>
+    <!-- 3 gold buttons -->
+    <circle cx="0" cy="44" r="2.5" fill="#ffd700"/>
+    <circle cx="0" cy="53" r="2.5" fill="#ffd700"/>
+    <circle cx="0" cy="62" r="2.5" fill="#ffd700"/>
+    <!-- Gold belt buckle -->
+    <rect x="-28" y="72" width="56" height="5" rx="2" fill="#ffd700"/>
+    <rect x="-5" y="71" width="10" height="7" rx="1" fill="#daa520" stroke="#ffd700" stroke-width="0.5"/>
+    <!-- Purple bell-bottom pants -->
+    <path d="M-26 78 L-34 118 L-6 118 L-2 86 L2 86 L6 118 L34 118 L26 78 Z" fill="#8e44ad"/>
+    <!-- Bell flare at bottom -->
+    <path d="M-34 115 Q-30 112 -6 115" stroke="#7d3c98" stroke-width="0.5" fill="none"/>
+    <path d="M6 115 Q30 112 34 115" stroke="#7d3c98" stroke-width="0.5" fill="none"/>
+    <!-- Platform shoes -->
+    <rect x="-34" y="116" width="28" height="4" rx="1" fill="#9b59b6"/>
+    <rect x="6" y="116" width="28" height="4" rx="1" fill="#9b59b6"/>
+    <rect x="-34" y="119" width="28" height="4" rx="1" fill="#4a235a"/>
+    <rect x="6" y="119" width="28" height="4" rx="1" fill="#4a235a"/>
+  </g>
+</svg>

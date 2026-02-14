@@ -41,10 +41,23 @@ var BootScene = new Phaser.Class({
       this.load.svg('member_' + i, 'assets/sprites/member_' + i + '.svg', { width: 200, height: 300 });
     }
 
-    // Load outfit card art (SVG)
-    for (var o = 0; o < 3; o++) {
-      this.load.svg('outfit_' + o, 'assets/sprites/outfit_' + o + '.svg', { width: 120, height: 160 });
+    // Load per-member outfit card art (SVG) - 5 members x 3 outfits
+    for (var m = 0; m < 5; m++) {
+      for (var o = 0; o < 3; o++) {
+        this.load.svg('outfit_' + m + '_' + o, 'assets/sprites/outfit_' + m + '_' + o + '.svg', { width: 120, height: 160 });
+      }
     }
+
+    // Load L.A. Young avatar (default / fallback)
+    this.load.image('la_avatar', '../images/la-avatar.png');
+
+    // Load L.A. Young talking head photo (used for StoryScene portraits)
+    this.load.image('la_talking_head', '../images/artist/IMG_3118.jpg');
+
+    // Load L.A. Young outfit photos for SingerOutfitScene
+    this.load.image('la_outfit_0', '../images/artist/LAPopSinger.jpeg');
+    this.load.image('la_outfit_1', '../images/artist/LAYoungPink.JPG');
+    this.load.image('la_outfit_2', '../images/artist/laPowerSister.png');
   },
 
   create: function () {

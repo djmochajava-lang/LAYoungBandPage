@@ -64,19 +64,8 @@ var StoryScene = new Phaser.Class({
       strokeThickness: 3
     }).setOrigin(0.5);
 
-    // Speaker portrait (band member or L.A. Young)
-    var portraitIndex = 4; // L.A. Young default
-    var portrait = this.add.image(width / 2, height * 0.38, 'member_' + portraitIndex).setScale(2.5);
-
-    // Bounce portrait
-    this.tweens.add({
-      targets: portrait,
-      y: portrait.y - 6,
-      duration: 1500,
-      yoyo: true,
-      repeat: -1,
-      ease: 'Sine.easeInOut'
-    });
+    // Animated talking face (L.A. Young)
+    var face = LAFace.create(this, width / 2, height * 0.34);
 
     // Speaker name
     this.add.text(width / 2, height * 0.52, story.speaker, {
@@ -103,6 +92,10 @@ var StoryScene = new Phaser.Class({
 
     var fullText = story.text;
     var charIndex = 0;
+
+    // Start talking when typewriter begins
+    face.startTalking();
+
     var typeTimer = this.time.addEvent({
       delay: 30,
       callback: function () {
@@ -110,6 +103,8 @@ var StoryScene = new Phaser.Class({
         dialogText.setText(fullText.substring(0, charIndex));
         if (charIndex >= fullText.length) {
           typeTimer.destroy();
+          face.stopTalking();
+          face.setExpression('excited');
         }
       },
       repeat: fullText.length - 1
@@ -121,7 +116,14 @@ var StoryScene = new Phaser.Class({
         typeTimer.destroy();
         charIndex = fullText.length;
         dialogText.setText(fullText);
+        face.stopTalking();
+        face.setExpression('excited');
       }
+    });
+
+    // Cleanup face timers when scene shuts down
+    this.events.once('shutdown', function () {
+      face.destroy();
     });
 
     // GO! button (appears after short delay)

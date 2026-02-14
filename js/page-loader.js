@@ -138,7 +138,7 @@ const PageLoader = {
 
     if (
       typeof MediaPlayer !== 'undefined' &&
-      (pageName === 'music' || pageName === 'videos')
+      (pageName === 'music' || pageName === 'projects' || pageName === 'videos')
     ) {
       MediaPlayer.init();
     }

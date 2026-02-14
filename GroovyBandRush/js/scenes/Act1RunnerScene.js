@@ -797,15 +797,15 @@ var Act1RunnerScene = new Phaser.Class({
       ease: 'Back.easeOut'
     });
 
-    // Eugene portrait flies in (SVG 200x300, target ~0.7 scale)
+    // Eugene portrait flies in
     var eugenePortrait = this.add.image(this.W / 2, this.H * 0.55, 'member_0')
       .setScale(0)
       .setDepth(50);
 
     this.tweens.add({
       targets: eugenePortrait,
-      scaleX: 0.7,
-      scaleY: 0.7,
+      scaleX: 0.45,
+      scaleY: 0.45,
       duration: 800,
       delay: 400,
       ease: 'Back.easeOut'

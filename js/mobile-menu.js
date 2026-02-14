@@ -93,6 +93,27 @@ const MobileMenu = {
         this.close();
       }
     });
+
+    // Mobile dropdown toggle (Gallery → Photos / Videos)
+    const dropdownTriggers = document.querySelectorAll('.mobile-menu-dropdown-trigger');
+    dropdownTriggers.forEach((trigger) => {
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const dropdown = trigger.closest('.mobile-menu-dropdown');
+        if (dropdown) {
+          dropdown.classList.toggle('open');
+        }
+      });
+    });
+
+    // Sub-links inside dropdown should close the menu after navigating
+    const subLinks = document.querySelectorAll('.mobile-menu-sub-link');
+    subLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        this.close();
+      });
+    });
   },
 
   /**

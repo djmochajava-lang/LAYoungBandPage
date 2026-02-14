@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" width="120" height="160">
+  <defs>
+    <linearGradient id="la2bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8751a"/>
+      <stop offset="100%" stop-color="#d4681a"/>
+    </linearGradient>
+    <linearGradient id="la2top" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8751a"/>
+      <stop offset="100%" stop-color="#d4681a"/>
+    </linearGradient>
+    <linearGradient id="la2pants" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8751a"/>
+      <stop offset="100%" stop-color="#c45e15"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background -->
+  <rect x="2" y="2" width="116" height="156" rx="10" fill="url(#la2bg)"/>
+  <rect x="6" y="6" width="108" height="148" rx="8" fill="#1a1a2e" opacity="0.85"/>
+  <!-- Outfit on hanger -->
+  <g transform="translate(60, 20)">
+    <!-- Hanger -->
+    <path d="M-20 5 Q0 -8 20 5" stroke="#C0C0C0" stroke-width="2.5" fill="none"/>
+    <circle cx="0" cy="-8" r="3" fill="#C0C0C0"/>
+    <!-- Gold hoop earrings near shoulder area -->
+    <circle cx="-24" cy="8" r="4" fill="none" stroke="#ffd700" stroke-width="1.5"/>
+    <circle cx="-24" cy="8" r="4" fill="none" stroke="#daa520" stroke-width="0.5"/>
+    <circle cx="24" cy="8" r="4" fill="none" stroke="#ffd700" stroke-width="1.5"/>
+    <circle cx="24" cy="8" r="4" fill="none" stroke="#daa520" stroke-width="0.5"/>
+    <!-- Halter straps (tie behind neck) -->
+    <line x1="-3" y1="-3" x2="-12" y2="12" stroke="#e8751a" stroke-width="1.5"/>
+    <line x1="3" y1="-3" x2="12" y2="12" stroke="#e8751a" stroke-width="1.5"/>
+    <!-- Small tie knot at neck -->
+    <path d="M-3 -3 Q0 -5 3 -3" stroke="#d4681a" stroke-width="1" fill="none"/>
+    <!-- Orange crop top - halter style -->
+    <path d="M-12 12 L-16 14 L-18 20 L-17 34 L-14 36 L14 36 L17 34 L18 20 L16 14 L12 12 L6 18 L0 20 L-6 18 Z" fill="url(#la2top)" stroke="#b85c15" stroke-width="0.5"/>
+    <!-- Halter V-neckline detail -->
+    <path d="M-12 12 L-6 18 L0 20 L6 18 L12 12" fill="none" stroke="#b85c15" stroke-width="0.4" opacity="0.5"/>
+    <!-- Crop top fabric folds -->
+    <path d="M-8 22 Q-6 28 -8 34" stroke="#b85c15" stroke-width="0.3" fill="none" opacity="0.4"/>
+    <path d="M8 22 Q6 28 8 34" stroke="#b85c15" stroke-width="0.3" fill="none" opacity="0.4"/>
+    <!-- Midriff gap (skin-colored strip) -->
+    <rect x="-16" y="36" width="32" height="7" rx="1" fill="#c68642" opacity="0.7"/>
+    <!-- Belly button hint -->
+    <circle cx="0" cy="39.5" r="0.8" fill="#a0673a" opacity="0.5"/>
+    <!-- High-waisted bell-bottom pants -->
+    <path d="M-18 43 L-16 60 L-17 75 L-20 90 L-28 115 L-30 120 L-2 120 L-1 90 L0 75 L1 90 L2 120 L30 120 L28 115 L20 90 L17 75 L16 60 L18 43 Z" fill="url(#la2pants)" stroke="#b85c15" stroke-width="0.5"/>
+    <!-- Gold chain belt on high waist -->
+    <path d="M-17 43 Q-12 44.5 -6 43 Q0 42 6 43 Q12 44.5 17 43" stroke="#ffd700" stroke-width="1.2" fill="none"/>
+    <path d="M-17 45 Q-12 46.5 -6 45 Q0 44 6 45 Q12 46.5 17 45" stroke="#ffd700" stroke-width="0.8" fill="none" opacity="0.7"/>
+    <!-- Chain links detail -->
+    <circle cx="-12" cy="43.5" r="1" fill="none" stroke="#daa520" stroke-width="0.5"/>
+    <circle cx="-6" cy="43" r="1" fill="none" stroke="#daa520" stroke-width="0.5"/>
+    <circle cx="0" cy="42.5" r="1" fill="none" stroke="#daa520" stroke-width="0.5"/>
+    <circle cx="6" cy="43" r="1" fill="none" stroke="#daa520" stroke-width="0.5"/>
+    <circle cx="12" cy="43.5" r="1" fill="none" stroke="#daa520" stroke-width="0.5"/>
+    <!-- Small dangling chain from belt -->
+    <path d="M-2 45 L-3 50 L-1 50 L-2 54" stroke="#ffd700" stroke-width="0.6" fill="none"/>
+    <!-- Pant crease lines -->
+    <line x1="-14" y1="48" x2="-16" y2="118" stroke="#b85c15" stroke-width="0.5" opacity="0.4"/>
+    <line x1="14" y1="48" x2="16" y2="118" stroke="#b85c15" stroke-width="0.5" opacity="0.4"/>
+    <!-- Bell-bottom flare lines -->
+    <path d="M-18 85 Q-22 100 -28 115" stroke="#b85c15" stroke-width="0.3" fill="none" opacity="0.3"/>
+    <path d="M18 85 Q22 100 28 115" stroke="#b85c15" stroke-width="0.3" fill="none" opacity="0.3"/>
+    <path d="M-14 90 Q-18 105 -24 118" stroke="#b85c15" stroke-width="0.25" fill="none" opacity="0.2"/>
+    <path d="M14 90 Q18 105 24 118" stroke="#b85c15" stroke-width="0.25" fill="none" opacity="0.2"/>
+    <!-- Star/sparkle accents scattered -->
+    <path d="M-10 50 L-10 48 M-11 49 L-9 49" stroke="#ffd700" stroke-width="0.6" opacity="0.8"/>
+    <path d="M15 55 L15 53 M14 54 L16 54" stroke="#ffd700" stroke-width="0.6" opacity="0.7"/>
+    <path d="M-20 70 L-20 68 M-21 69 L-19 69" stroke="#ffd700" stroke-width="0.6" opacity="0.75"/>
+    <path d="M8 80 L8 78 M7 79 L9 79" stroke="#ffd700" stroke-width="0.6" opacity="0.8"/>
+    <path d="M-24 95 L-24 93 M-25 94 L-23 94" stroke="#ffd700" stroke-width="0.6" opacity="0.7"/>
+    <path d="M22 100 L22 98 M21 99 L23 99" stroke="#ffd700" stroke-width="0.6" opacity="0.75"/>
+    <path d="M-6 105 L-6 103 M-7 104 L-5 104" stroke="#ffd700" stroke-width="0.6" opacity="0.8"/>
+    <!-- Orange platform shoes with thick soles -->
+    <path d="M-26 118 L-30 120 L-30 122 L-4 122 L-4 120 Z" fill="#d4681a" stroke="#b85c15" stroke-width="0.4"/>
+    <rect x="-30" y="122" width="26" height="4" rx="1" fill="#b85c15" stroke="#a04e10" stroke-width="0.3"/>
+    <path d="M26 118 L30 120 L30 122 L4 122 L4 120 Z" fill="#d4681a" stroke="#b85c15" stroke-width="0.4"/>
+    <rect x="4" y="122" width="26" height="4" rx="1" fill="#b85c15" stroke="#a04e10" stroke-width="0.3"/>
+    <!-- Platform heel blocks -->
+    <rect x="-30" y="126" width="6" height="3" rx="0.5" fill="#a04e10"/>
+    <rect x="24" y="126" width="6" height="3" rx="0.5" fill="#a04e10"/>
+  </g>
+</svg>

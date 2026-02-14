@@ -104,73 +104,86 @@ var VictoryScene = new Phaser.Class({
       }
     });
 
-    // Band members display
-    this.add.text(width / 2, height * 0.40, 'THE BAND', {
+    // === STAGE SETUP ===
+    // Draw stage platform
+    var stageGfx = this.add.graphics();
+    var stageY = height * 0.58;
+    // Stage floor
+    stageGfx.fillStyle(0x2c1810, 1);
+    stageGfx.fillRoundedRect(20, stageY, width - 40, 8, 4);
+    // Stage front edge highlight
+    stageGfx.fillStyle(0xffd700, 0.3);
+    stageGfx.fillRect(20, stageY, width - 40, 2);
+    // Spotlight cones from above
+    var spotGfx = this.add.graphics();
+    spotGfx.fillStyle(0xffd700, 0.04);
+    spotGfx.fillTriangle(width / 2, 0, width / 2 - 120, stageY, width / 2 + 120, stageY);
+    spotGfx.fillStyle(0x3498db, 0.03);
+    spotGfx.fillTriangle(width * 0.25, 0, width * 0.25 - 80, stageY, width * 0.25 + 80, stageY);
+    spotGfx.fillStyle(0xe63946, 0.03);
+    spotGfx.fillTriangle(width * 0.75, 0, width * 0.75 - 80, stageY, width * 0.75 + 80, stageY);
+
+    // "ON STAGE" label
+    this.add.text(width / 2, height * 0.37, 'ON STAGE', {
       fontFamily: GBR.FONTS.display,
-      fontSize: '24px',
+      fontSize: '22px',
       color: '#ffd700'
     }).setOrigin(0.5);
 
-    // Show all 5 band members with their info
-    var memberStartX = width / 2 - 160;
-    for (var i = 0; i < 5; i++) {
-      var member = GBR.BAND[i];
-      var memberX = memberStartX + i * 80;
-      var memberY = height * 0.52;
+    // Band formation — staggered rows for depth
+    // Back row: Kevin Walker (1, bass) left, Jimmy Carney (3, drums) right
+    // Mid row: Eugene Chapman (0, sax) left, Kevin Robinson (2, guitar) right
+    // Front center: L.A. Young (4, vocals)
+    var stagePositions = [
+      { idx: 1, x: width * 0.22, y: stageY - 62, scale: 0.18 },  // Kevin W. back-left
+      { idx: 3, x: width * 0.78, y: stageY - 62, scale: 0.18 },  // Jimmy back-right
+      { idx: 0, x: width * 0.32, y: stageY - 50, scale: 0.20 },  // Eugene mid-left
+      { idx: 2, x: width * 0.68, y: stageY - 50, scale: 0.20 },  // Kevin R. mid-right
+      { idx: 4, x: width * 0.50, y: stageY - 42, scale: 0.23 }   // L.A. Young front-center
+    ];
 
-      // Member portrait (SVG 200x300, scale down for lineup)
-      var portrait = this.add.image(memberX, memberY, 'member_' + i).setScale(0.35);
+    for (var s = 0; s < stagePositions.length; s++) {
+      (function (pos, order) {
+        var member = GBR.BAND[pos.idx];
+        var portrait = self.add.image(pos.x, pos.y, 'member_' + pos.idx).setScale(pos.scale);
 
-      // Entrance animation - staggered
-      portrait.setAlpha(0);
-      portrait.y += 30;
-      this.tweens.add({
-        targets: portrait,
-        alpha: 1,
-        y: memberY,
-        duration: 500,
-        delay: 500 + i * 300,
-        ease: 'Back.easeOut'
-      });
+        // Entrance animation - staggered
+        portrait.setAlpha(0);
+        portrait.y += 25;
+        self.tweens.add({
+          targets: portrait,
+          alpha: 1,
+          y: pos.y,
+          duration: 500,
+          delay: 500 + order * 250,
+          ease: 'Back.easeOut'
+        });
 
-      // Bounce animation after entrance
-      this.tweens.add({
-        targets: portrait,
-        y: memberY - 5,
-        duration: 800 + i * 100,
-        yoyo: true,
-        repeat: -1,
-        delay: 2500,
-        ease: 'Sine.easeInOut'
-      });
+        // Gentle sway after entrance
+        self.tweens.add({
+          targets: portrait,
+          y: pos.y - 3,
+          duration: 900 + order * 80,
+          yoyo: true,
+          repeat: -1,
+          delay: 2200,
+          ease: 'Sine.easeInOut'
+        });
 
-      // Name
-      var nameText = this.add.text(memberX, memberY + 55, member.name.split(' ')[0], {
-        fontFamily: GBR.FONTS.fun,
-        fontSize: '11px',
-        color: member.colorHex
-      }).setOrigin(0.5).setAlpha(0);
+        // Name below
+        var nameText = self.add.text(pos.x, pos.y + 30 + pos.scale * 100, member.name.split(' ')[0], {
+          fontFamily: GBR.FONTS.fun,
+          fontSize: '10px',
+          color: member.colorHex
+        }).setOrigin(0.5).setAlpha(0);
 
-      this.tweens.add({
-        targets: nameText,
-        alpha: 1,
-        delay: 800 + i * 300,
-        duration: 300
-      });
-
-      // Role
-      var roleText = this.add.text(memberX, memberY + 68, member.role, {
-        fontFamily: GBR.FONTS.body,
-        fontSize: '9px',
-        color: '#999999'
-      }).setOrigin(0.5).setAlpha(0);
-
-      this.tweens.add({
-        targets: roleText,
-        alpha: 1,
-        delay: 900 + i * 300,
-        duration: 300
-      });
+        self.tweens.add({
+          targets: nameText,
+          alpha: 1,
+          delay: 700 + order * 250,
+          duration: 300
+        });
+      })(stagePositions[s], s);
     }
 
     // Act scores breakdown

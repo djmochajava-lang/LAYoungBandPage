@@ -4,6 +4,7 @@ const Router = {
     home: 'pages/home.html',
     bio: 'pages/bio.html',
     music: 'pages/music.html',
+    projects: 'pages/projects.html',
     videos: 'pages/videos.html',
     gallery: 'pages/gallery.html',
     performances: 'pages/performances.html', // CHANGED: tour → performances

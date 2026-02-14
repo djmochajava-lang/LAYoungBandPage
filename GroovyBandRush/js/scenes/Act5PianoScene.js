@@ -7,6 +7,12 @@ var Act5PianoScene = new Phaser.Class({
     Phaser.Scene.call(this, { key: 'Act5PianoScene' });
   },
 
+  init: function (data) {
+    // When returning from SingerOutfitScene, resume at genre choice
+    this.resumeAtGenre = (data && data.resumeAtGenre) || false;
+    this.resumeActDollars = (data && data.actDollars) || 0;
+  },
+
   create: function () {
     var width = this.cameras.main.width;
     var height = this.cameras.main.height;
@@ -23,7 +29,7 @@ var Act5PianoScene = new Phaser.Class({
     this.currentRound = 0;
     this.playerIndex = 0;
     this.pianoInputEnabled = false;
-    this.actDollars = 0;
+    this.actDollars = this.resumeActDollars || 0;
     this.continueShown = false;
     this.selectedDress = -1;
     this.selectedGenre = '';
@@ -57,6 +63,14 @@ var Act5PianoScene = new Phaser.Class({
 
     // --- Container for phase content (so we can clear phases) ---
     this.phaseContainer = this.add.container(0, 0);
+
+    // If resuming from SingerOutfitScene, skip straight to genre choice
+    if (this.resumeAtGenre) {
+      this.resumeAtGenre = false;
+      this.startGenreChoice();
+      TransitionHelper.fadeIn(this, 600);
+      return; // skip piano setup
+    }
 
     // --- Start Phase A ---
     this.startPianoIntro();
@@ -447,11 +461,19 @@ var Act5PianoScene = new Phaser.Class({
         self.startMelodyPlayback();
       });
     } else {
-      // Piano game complete! Move to Phase B
+      // Piano game complete → transition to SingerOutfitScene for L.A.'s outfit choice
       this.time.delayedCall(2000, function () {
         // Store act score
         GBR.state.actScores[4] = self.actDollars;
-        self.startDressTransition();
+
+        // Stop HUD before leaving — it will relaunch when we return
+        self.scene.stop('HUDScene');
+
+        // Go to SingerOutfitScene, then come back here for genre choice
+        TransitionHelper.fadeToScene(self, 'SingerOutfitScene', {
+          nextScene: 'Act5PianoScene',
+          nextData: { resumeAtGenre: true, actDollars: self.actDollars }
+        });
       });
     }
   },
@@ -567,18 +589,18 @@ var Act5PianoScene = new Phaser.Class({
       ease: 'Sine.easeInOut'
     });
 
-    // Large L.A. Young portrait
-    this.singerPortrait = this.add.image(width / 2, height * 0.34, 'member_4').setScale(3.5);
+    // L.A. Young portrait
+    this.singerPortrait = this.add.image(width / 2, height * 0.34, 'member_4').setScale(0.45);
     this.phaseContainer.add(this.singerPortrait);
 
     // Entrance animation
     this.singerPortrait.setAlpha(0);
-    this.singerPortrait.setScale(0.5);
+    this.singerPortrait.setScale(0);
     this.tweens.add({
       targets: this.singerPortrait,
       alpha: 1,
-      scaleX: 3.5,
-      scaleY: 3.5,
+      scaleX: 0.45,
+      scaleY: 0.45,
       duration: 600,
       ease: 'Back.easeOut'
     });
@@ -963,7 +985,7 @@ var Act5PianoScene = new Phaser.Class({
 
         self.time.delayedCall(delay, function () {
           var member = GBR.BAND[mIdx];
-          var sprite = self.add.image(pos.fromX, pos.y, 'member_' + mIdx).setScale(2.2);
+          var sprite = self.add.image(pos.fromX, pos.y, 'member_' + mIdx).setScale(1.3);
           self.phaseContainer.add(sprite);
 
           // Apply outfit tint for L.A. Young
@@ -1021,7 +1043,7 @@ var Act5PianoScene = new Phaser.Class({
 
           // Name tag
           self.time.delayedCall(900, function () {
-            var nameTag = self.add.text(pos.x, pos.y + 55, member.emoji + ' ' + member.name, {
+            var nameTag = self.add.text(pos.x, pos.y + 40, member.emoji + ' ' + member.name, {
               fontFamily: GBR.FONTS.fun,
               fontSize: '11px',
               color: member.colorHex,
@@ -1222,7 +1244,7 @@ var Act5PianoScene = new Phaser.Class({
         // Stop HUD before transitioning
         self.scene.stop('HUDScene');
 
-        // Transition to VictoryScene
+        // Transition to VictoryScene (outfit was already chosen before genre)
         TransitionHelper.fadeToScene(self, 'VictoryScene', {
           totalDollars: GBR.state.totalDollars,
           songGenre: self.selectedGenre

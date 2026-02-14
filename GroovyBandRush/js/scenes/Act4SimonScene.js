@@ -147,7 +147,7 @@ var Act4SimonScene = new Phaser.Class({
 
     // --- Jimmy Carney portrait (small, in corner) ---
     var jimmyPortrait = this.add.image(70, height - 60, 'member_3')
-      .setScale(1.8)
+      .setScale(0.35)
       .setAlpha(0.7);
 
     this.add.text(70, height - 20, 'JIMMY', {

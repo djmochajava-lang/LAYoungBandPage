@@ -114,6 +114,63 @@
   color: var(--color-primary);
 }
 
+/* === NAV DROPDOWN (Gallery → Photos / Videos) === */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown-trigger {
+  cursor: pointer;
+}
+
+.nav-dropdown-trigger::after {
+  /* Override the underline from .main-nav a::after —
+     we still want it, so let it inherit */
+}
+
+.nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(26, 26, 46, 0.97);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 8px;
+  padding: 0.4rem 0;
+  min-width: 120px;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+  z-index: 1000;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.nav-dropdown:hover .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+}
+
+.nav-dropdown-menu a {
+  display: block;
+  padding: 0.5rem 1.2rem;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-size: clamp(0.7rem, 0.85vw, 0.9rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.nav-dropdown-menu a::after {
+  display: none; /* No underline on dropdown items */
+}
+
+.nav-dropdown-menu a:hover {
+  color: var(--color-primary);
+  background: rgba(255, 215, 0, 0.08);
+}
+
 /* === GAME BUTTON IN HEADER NAV === */
 .main-nav .nav-game-btn {
   padding: 0.4rem 1rem;

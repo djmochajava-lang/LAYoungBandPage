@@ -163,6 +163,56 @@
   outline-offset: -2px;
 }
 
+/* === MOBILE MENU DROPDOWN (Gallery → Photos / Videos) === */
+.mobile-menu-dropdown {
+  display: flex;
+  flex-direction: column;
+}
+
+.mobile-menu-dropdown-trigger {
+  cursor: pointer;
+}
+
+/* Chevron indicator on the Gallery trigger */
+.mobile-menu-dropdown-trigger::after {
+  content: '▸' !important;
+  margin-left: auto;
+  font-size: 1rem;
+  transition: transform 0.3s ease;
+  width: auto;
+  height: auto;
+  background: none;
+  position: static;
+}
+
+.mobile-menu-dropdown.open .mobile-menu-dropdown-trigger::after {
+  transform: rotate(90deg);
+}
+
+/* Sub-links hidden by default */
+.mobile-menu-dropdown-items {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.mobile-menu-dropdown.open .mobile-menu-dropdown-items {
+  max-height: 200px;
+}
+
+/* Indent sub-links */
+.mobile-menu-sub-link {
+  padding-left: 3.5rem !important;
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+.mobile-menu-sub-link::before {
+  content: '›' !important;
+  font-size: 1.4rem;
+  color: var(--color-primary);
+}
+
 /* Dancing Animation Keyframes */
 @keyframes musicNoteDance {
   0%,

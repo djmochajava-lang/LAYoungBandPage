@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" width="120" height="160">
+  <!-- Outfit 1-2: Groove King - Green & purple dashiki tunic, matching pants -->
+  <defs>
+    <linearGradient id="kw2bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2ecc71"/>
+      <stop offset="100%" stop-color="#9b59b6"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="116" height="156" rx="10" fill="url(#kw2bg)"/>
+  <rect x="6" y="6" width="108" height="148" rx="8" fill="#1a1a2e" opacity="0.85"/>
+  <g transform="translate(60, 20)">
+    <!-- Hanger -->
+    <path d="M-20 5 Q0 -8 20 5" stroke="#C0C0C0" stroke-width="2.5" fill="none"/>
+    <circle cx="0" cy="-8" r="3" fill="#C0C0C0"/>
+    <!-- Dashiki tunic body -->
+    <path d="M-30 10 L-34 80 L34 80 L30 10 Z" fill="#27ae60"/>
+    <!-- Wide dashiki neckline -->
+    <path d="M-14 8 Q0 14 14 8" stroke="#ffd700" stroke-width="2" fill="none"/>
+    <!-- Gold embroidered collar/chest pattern -->
+    <rect x="-16" y="12" width="32" height="30" rx="2" fill="none" stroke="#ffd700" stroke-width="1.5"/>
+    <!-- Inner diamond pattern -->
+    <path d="M0 14 L8 27 L0 40 L-8 27 Z" fill="none" stroke="#ffd700" stroke-width="1"/>
+    <!-- Zigzag pattern within -->
+    <path d="M-12 20 L-6 16 L0 20 L6 16 L12 20" stroke="#ffd700" stroke-width="0.8" fill="none"/>
+    <path d="M-12 34 L-6 30 L0 34 L6 30 L12 34" stroke="#ffd700" stroke-width="0.8" fill="none"/>
+    <!-- Purple horizontal bands -->
+    <rect x="-34" y="50" width="68" height="8" fill="#8e44ad" opacity="0.7"/>
+    <rect x="-34" y="66" width="68" height="8" fill="#8e44ad" opacity="0.7"/>
+    <!-- Green horizontal bands -->
+    <rect x="-34" y="42" width="68" height="8" fill="#2ecc71" opacity="0.5"/>
+    <rect x="-34" y="58" width="68" height="8" fill="#2ecc71" opacity="0.5"/>
+    <!-- Gold arm band -->
+    <rect x="-34" y="35" width="6" height="3" rx="1" fill="#ffd700"/>
+    <rect x="28" y="35" width="6" height="3" rx="1" fill="#ffd700"/>
+    <!-- Dark green loose pants -->
+    <path d="M-25 82 L-28 115 L-6 115 L-2 90 L2 90 L6 115 L28 115 L25 82 Z" fill="#1e8449"/>
+    <!-- Brown leather sandals -->
+    <path d="M-28 113 L-4 113 L-4 118 L-28 118 Z" fill="#8B4513"/>
+    <path d="M6 113 L28 113 L28 118 L6 118 Z" fill="#8B4513"/>
+    <line x1="-16" y1="113" x2="-16" y2="118" stroke="#6d3811" stroke-width="1.5"/>
+    <line x1="16" y1="113" x2="16" y2="118" stroke="#6d3811" stroke-width="1.5"/>
+  </g>
+</svg>

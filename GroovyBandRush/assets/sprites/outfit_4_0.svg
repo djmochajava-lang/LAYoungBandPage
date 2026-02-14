@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" width="120" height="160">
+  <defs>
+    <linearGradient id="la0bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd700"/>
+      <stop offset="100%" stop-color="#daa520"/>
+    </linearGradient>
+    <linearGradient id="la0dress" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd700"/>
+      <stop offset="100%" stop-color="#c8a415"/>
+    </linearGradient>
+  </defs>
+  <!-- Card background -->
+  <rect x="2" y="2" width="116" height="156" rx="10" fill="url(#la0bg)"/>
+  <rect x="6" y="6" width="108" height="148" rx="8" fill="#1a1a2e" opacity="0.85"/>
+  <!-- Outfit on hanger -->
+  <g transform="translate(60, 20)">
+    <!-- Hanger -->
+    <path d="M-20 5 Q0 -8 20 5" stroke="#C0C0C0" stroke-width="2.5" fill="none"/>
+    <circle cx="0" cy="-8" r="3" fill="#C0C0C0"/>
+    <!-- Spaghetti straps -->
+    <line x1="-14" y1="4" x2="-8" y2="14" stroke="#e6c200" stroke-width="1.2"/>
+    <line x1="14" y1="4" x2="8" y2="14" stroke="#e6c200" stroke-width="1.2"/>
+    <!-- Gold sequin floor-length gown - A-line silhouette -->
+    <!-- Deep V-neckline bodice -->
+    <path d="M-8 14 L-14 14 L-18 30 L-20 50 L-24 75 L-30 115 L30 115 L24 75 L20 50 L18 30 L14 14 L8 14 L0 26 L-8 14 Z" fill="url(#la0dress)" stroke="#b8941a" stroke-width="0.5"/>
+    <!-- V-neckline inner shadow for depth -->
+    <path d="M-8 14 L0 26 L8 14" fill="none" stroke="#b8941a" stroke-width="0.6"/>
+    <!-- Diamond/crystal at V-point -->
+    <path d="M0 25 L-2.5 28 L0 31 L2.5 28 Z" fill="#fff8dc" stroke="#ffd700" stroke-width="0.4"/>
+    <path d="M0 26 L-1.5 28 L0 30 L1.5 28 Z" fill="#ffffff" opacity="0.8"/>
+    <!-- Waistline definition -->
+    <path d="M-17 35 Q0 32 17 35" stroke="#b8941a" stroke-width="0.6" fill="none" opacity="0.6"/>
+    <!-- A-line flare lines -->
+    <line x1="-19" y1="45" x2="-27" y2="113" stroke="#b8941a" stroke-width="0.4" opacity="0.3"/>
+    <line x1="19" y1="45" x2="27" y2="113" stroke="#b8941a" stroke-width="0.4" opacity="0.3"/>
+    <!-- Center fold line -->
+    <line x1="0" y1="35" x2="0" y2="113" stroke="#b8941a" stroke-width="0.3" opacity="0.25"/>
+    <!-- Sequin sparkles scattered across dress -->
+    <circle cx="-10" cy="20" r="0.8" fill="#fff8dc" opacity="0.9"/>
+    <circle cx="6" cy="22" r="0.7" fill="#ffffff" opacity="0.8"/>
+    <circle cx="-5" cy="35" r="0.9" fill="#fff8dc" opacity="0.85"/>
+    <circle cx="10" cy="38" r="0.7" fill="#ffffff" opacity="0.7"/>
+    <circle cx="-12" cy="42" r="0.8" fill="#fff8dc" opacity="0.9"/>
+    <circle cx="3" cy="45" r="0.6" fill="#ffffff" opacity="0.8"/>
+    <circle cx="-8" cy="55" r="0.9" fill="#fff8dc" opacity="0.85"/>
+    <circle cx="14" cy="52" r="0.7" fill="#ffffff" opacity="0.75"/>
+    <circle cx="-16" cy="65" r="0.8" fill="#fff8dc" opacity="0.8"/>
+    <circle cx="8" cy="60" r="0.9" fill="#ffffff" opacity="0.7"/>
+    <circle cx="-3" cy="68" r="0.7" fill="#fff8dc" opacity="0.9"/>
+    <circle cx="18" cy="70" r="0.8" fill="#ffffff" opacity="0.75"/>
+    <circle cx="-20" cy="80" r="0.9" fill="#fff8dc" opacity="0.8"/>
+    <circle cx="5" cy="78" r="0.7" fill="#ffffff" opacity="0.85"/>
+    <circle cx="-10" cy="85" r="0.8" fill="#fff8dc" opacity="0.7"/>
+    <circle cx="12" cy="88" r="0.6" fill="#ffffff" opacity="0.9"/>
+    <circle cx="-22" cy="95" r="0.9" fill="#fff8dc" opacity="0.75"/>
+    <circle cx="0" cy="92" r="0.8" fill="#ffffff" opacity="0.8"/>
+    <circle cx="20" cy="98" r="0.7" fill="#fff8dc" opacity="0.85"/>
+    <circle cx="-15" cy="100" r="0.8" fill="#ffffff" opacity="0.7"/>
+    <circle cx="10" cy="105" r="0.9" fill="#fff8dc" opacity="0.8"/>
+    <circle cx="-25" cy="108" r="0.7" fill="#ffffff" opacity="0.75"/>
+    <circle cx="25" cy="110" r="0.8" fill="#fff8dc" opacity="0.9"/>
+    <!-- Hemline slight curve -->
+    <path d="M-30 115 Q0 118 30 115" fill="url(#la0dress)" stroke="#b8941a" stroke-width="0.4"/>
+    <!-- Gold high heels peeking out -->
+    <path d="M-10 116 L-14 122 L-6 122 Z" fill="#daa520" stroke="#b8941a" stroke-width="0.4"/>
+    <ellipse cx="-10" cy="122" rx="5" ry="2" fill="#daa520" stroke="#b8941a" stroke-width="0.3"/>
+    <path d="M10 116 L6 122 L14 122 Z" fill="#daa520" stroke="#b8941a" stroke-width="0.4"/>
+    <ellipse cx="10" cy="122" rx="5" ry="2" fill="#daa520" stroke="#b8941a" stroke-width="0.3"/>
+    <!-- Heel stilettos -->
+    <line x1="-12" y1="122" x2="-14" y2="127" stroke="#b8941a" stroke-width="1"/>
+    <line x1="12" y1="122" x2="14" y2="127" stroke="#b8941a" stroke-width="1"/>
+  </g>
+</svg>

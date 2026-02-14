@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 160" width="120" height="160">
+  <!-- Outfit 0-2: Street Jazz - Black leather jacket, blue tee, aviator sunglasses -->
+  <defs>
+    <linearGradient id="e2bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1a1a1a"/>
+      <stop offset="100%" stop-color="#333333"/>
+    </linearGradient>
+    <linearGradient id="e2jacket" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2a2a2a"/>
+      <stop offset="50%" stop-color="#1a1a1a"/>
+      <stop offset="100%" stop-color="#111111"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="116" height="156" rx="10" fill="url(#e2bg)"/>
+  <rect x="6" y="6" width="108" height="148" rx="8" fill="#1a1a2e" opacity="0.85"/>
+  <g transform="translate(60, 20)">
+    <!-- Hanger -->
+    <path d="M-20 5 Q0 -8 20 5" stroke="#C0C0C0" stroke-width="2.5" fill="none"/>
+    <circle cx="0" cy="-8" r="3" fill="#C0C0C0"/>
+    <!-- Blue t-shirt visible underneath -->
+    <path d="M-12 14 L-12 35 L12 35 L12 14 Q0 8 -12 14" fill="#3498db"/>
+    <path d="M-8 12 Q0 7 8 12" stroke="#2980b9" stroke-width="1" fill="none"/>
+    <!-- Aviator sunglasses on collar -->
+    <path d="M-6 16 L-10 20 L-6 20 Z" fill="#ffd700" opacity="0.8"/>
+    <path d="M6 16 L10 20 L6 20 Z" fill="#ffd700" opacity="0.8"/>
+    <ellipse cx="-8" cy="19" rx="4" ry="3" fill="#333" opacity="0.7"/>
+    <ellipse cx="8" cy="19" rx="4" ry="3" fill="#333" opacity="0.7"/>
+    <line x1="-4" y1="19" x2="4" y2="19" stroke="#ffd700" stroke-width="0.8"/>
+    <!-- Black leather jacket -->
+    <path d="M-33 12 L-37 72 L-14 72 L-14 30 L14 30 L14 72 L37 72 L33 12 Z" fill="url(#e2jacket)"/>
+    <!-- Raised collar -->
+    <path d="M-16 10 L-12 18 L-6 12" fill="#333"/>
+    <path d="M16 10 L12 18 L6 12" fill="#333"/>
+    <!-- Silver zipper -->
+    <line x1="-1" y1="30" x2="-1" y2="72" stroke="#C0C0C0" stroke-width="1.5"/>
+    <!-- Zipper teeth -->
+    <line x1="-3" y1="35" x2="1" y2="35" stroke="#999" stroke-width="0.5"/>
+    <line x1="-3" y1="42" x2="1" y2="42" stroke="#999" stroke-width="0.5"/>
+    <line x1="-3" y1="49" x2="1" y2="49" stroke="#999" stroke-width="0.5"/>
+    <line x1="-3" y1="56" x2="1" y2="56" stroke="#999" stroke-width="0.5"/>
+    <line x1="-3" y1="63" x2="1" y2="63" stroke="#999" stroke-width="0.5"/>
+    <!-- Pocket zippers -->
+    <line x1="-28" y1="45" x2="-18" y2="45" stroke="#999" stroke-width="1"/>
+    <line x1="18" y1="45" x2="28" y2="45" stroke="#999" stroke-width="1"/>
+    <!-- Dark blue jeans -->
+    <path d="M-26 74 L-28 115 L-8 115 L-2 82 L2 82 L8 115 L28 115 L26 74 Z" fill="#2c5f8a"/>
+    <!-- Belt -->
+    <rect x="-27" y="72" width="54" height="4" rx="2" fill="#1a1a1a"/>
+    <rect x="-3" y="71" width="6" height="6" rx="1" fill="#C0C0C0"/>
+    <!-- Black boots -->
+    <path d="M-28 112 L-6 112 L-4 120 L-30 120 Z" fill="#111"/>
+    <path d="M8 112 L28 112 L30 120 L6 120 Z" fill="#111"/>
+    <rect x="-30" y="117" width="26" height="3" rx="1" fill="#1a1a1a"/>
+    <rect x="6" y="117" width="26" height="3" rx="1" fill="#1a1a1a"/>
+  </g>
+</svg>
