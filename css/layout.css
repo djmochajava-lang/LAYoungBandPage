@@ -360,24 +360,24 @@
   min-height: calc(100vh - 136px);
 }
 
-/* === MOBILE RESPONSIVE === */
-@media (max-width: 768px) {
-  /* Show hamburger on mobile */
+/* === MOBILE LAYOUT ===
+   Triggered by EITHER:
+   1. Small screen (max-width: 768px) — catches phones
+   2. Portrait orientation — catch-all for any device held upright (tablets, etc.)
+*/
+@media (max-width: 768px), (orientation: portrait) {
   .menu-toggle {
     display: flex;
   }
 
-  /* Hide desktop navigation on mobile */
   .main-nav {
     display: none;
   }
 
-  /* Hide EPK button on mobile */
   .epk-button {
     display: none;
   }
 
-  /* Adjust site title for mobile */
   .site-title-wrapper {
     flex-direction: column;
     gap: 0.25rem;
@@ -394,41 +394,39 @@
 
   .page-content {
     margin-top: 120px;
-    margin-bottom: 0; /* Remove bottom margin on mobile */
+    margin-bottom: 0;
   }
 
-  /* Hide the fixed footer on mobile */
   .site-footer {
     display: none;
   }
 
-  /* Show page-level footer on mobile */
   .page-footer {
     display: block !important;
   }
 }
 
-/* === TABLET RESPONSIVE === */
-@media (max-width: 1024px) and (min-width: 769px) {
+/* === TABLET LANDSCAPE (iPads sideways — use desktop nav) === */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
   .banner-content {
-    gap: 1rem; /* Tighter spacing on tablets */
+    gap: 1rem;
   }
 
   .main-nav {
-    gap: 0.8rem; /* Closer nav items */
+    gap: 0.8rem;
   }
 
   .main-nav a {
-    font-size: 0.8rem; /* Smaller text */
-    letter-spacing: 0.05em; /* Tighter letter spacing */
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
   }
 
   .epk-button {
-    padding: 0.5rem 1.2rem; /* Smaller button */
+    padding: 0.5rem 1.2rem;
     font-size: 0.75rem;
   }
 
   .site-title-wrapper {
-    gap: 1rem; /* Tighter gap */
+    gap: 1rem;
   }
 }
