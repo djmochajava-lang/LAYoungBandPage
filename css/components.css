@@ -29,14 +29,16 @@
 }
 
 .btn-secondary {
-  background: transparent;
+  background: rgba(0, 0, 0, 0.85);
   color: var(--color-primary);
-  border: var(--border-gold);
+  border: 2px solid var(--color-primary);
 }
 
 .btn-secondary:hover {
-  background: rgba(255, 215, 0, 0.1);
+  background: rgba(0, 0, 0, 1);
   border-color: var(--color-primary);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
 }
 
 .btn-large {

@@ -7,7 +7,8 @@ const Router = {
     projects: 'pages/projects.html',
     videos: 'pages/videos.html',
     gallery: 'pages/gallery.html',
-    performances: 'pages/performances.html', // CHANGED: tour → performances
+    shows: 'pages/shows.html',
+    performances: 'pages/performances.html',
     merch: 'pages/merch.html',
     contact: 'pages/contact.html',
   },
