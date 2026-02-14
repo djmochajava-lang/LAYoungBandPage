@@ -213,6 +213,17 @@
   color: var(--color-primary);
 }
 
+/* Disabled nav item (grayed-out placeholder) */
+.mobile-menu-sub-link.nav-disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+}
+
+.mobile-menu-sub-link.nav-disabled::before {
+  color: rgba(255, 255, 255, 0.3);
+}
+
 /* Dancing Animation Keyframes */
 @keyframes musicNoteDance {
   0%,

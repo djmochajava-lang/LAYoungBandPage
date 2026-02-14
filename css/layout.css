@@ -182,6 +182,17 @@
   background: rgba(255, 215, 0, 0.08);
 }
 
+/* Disabled nav item (grayed-out placeholder) */
+.nav-dropdown-menu .nav-disabled {
+  display: block;
+  padding: 0.6rem 1rem;
+  color: rgba(255, 255, 255, 0.25);
+  font-size: var(--font-size-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: default;
+}
+
 /* === GAME BUTTON IN HEADER NAV === */
 .main-nav .nav-game-btn {
   padding: 0.4rem 1rem;
