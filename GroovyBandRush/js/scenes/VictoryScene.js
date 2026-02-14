@@ -118,12 +118,8 @@ var VictoryScene = new Phaser.Class({
       var memberX = memberStartX + i * 80;
       var memberY = height * 0.52;
 
-      // Member portrait with outfit tint
-      var portrait = this.add.image(memberX, memberY, 'member_' + i).setScale(1.5);
-      var outfitIndex = GBR.state.bandMembers[i].outfit;
-      if (outfitIndex >= 0 && GBR.OUTFITS[outfitIndex]) {
-        portrait.setTint(GBR.OUTFITS[outfitIndex].color);
-      }
+      // Member portrait (SVG 200x300, scale down for lineup)
+      var portrait = this.add.image(memberX, memberY, 'member_' + i).setScale(0.35);
 
       // Entrance animation - staggered
       portrait.setAlpha(0);

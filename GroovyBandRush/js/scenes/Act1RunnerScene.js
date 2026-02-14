@@ -542,12 +542,12 @@ var Act1RunnerScene = new Phaser.Class({
     var sprite = this.add.image(x, -40 + yOffset, textureKey).setDepth(8);
 
     if (isEugene) {
-      sprite.setScale(1.2);
+      sprite.setScale(0.28);
       // Glowing pulse for Eugene
       this.tweens.add({
         targets: sprite,
-        scaleX: { from: 1.2, to: 1.5 },
-        scaleY: { from: 1.2, to: 1.5 },
+        scaleX: { from: 0.28, to: 0.35 },
+        scaleY: { from: 0.28, to: 0.35 },
         duration: 400,
         yoyo: true,
         repeat: -1,
@@ -797,15 +797,15 @@ var Act1RunnerScene = new Phaser.Class({
       ease: 'Back.easeOut'
     });
 
-    // Eugene portrait flies in
+    // Eugene portrait flies in (SVG 200x300, target ~0.7 scale)
     var eugenePortrait = this.add.image(this.W / 2, this.H * 0.55, 'member_0')
       .setScale(0)
       .setDepth(50);
 
     this.tweens.add({
       targets: eugenePortrait,
-      scaleX: 3,
-      scaleY: 3,
+      scaleX: 0.7,
+      scaleY: 0.7,
       duration: 800,
       delay: 400,
       ease: 'Back.easeOut'

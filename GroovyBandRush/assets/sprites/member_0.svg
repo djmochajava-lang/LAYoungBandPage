@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Eugene Chapman - Saxophone Player (Male) -->
+  <defs>
+    <linearGradient id="bg0" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3498db" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#2980b9" stop-opacity="0.1"/>
+    </linearGradient>
+    <linearGradient id="skin0" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B6914"/>
+      <stop offset="100%" stop-color="#7A5C12"/>
+    </linearGradient>
+    <linearGradient id="shirt0" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3498db"/>
+      <stop offset="100%" stop-color="#2471a3"/>
+    </linearGradient>
+    <linearGradient id="sax0" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="50%" stop-color="#DAA520"/>
+      <stop offset="100%" stop-color="#B8860B"/>
+    </linearGradient>
+    <filter id="shadow0" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Body -->
+  <g filter="url(#shadow0)">
+    <!-- Legs -->
+    <rect x="72" y="220" width="22" height="60" rx="8" fill="#1a1a2e"/>
+    <rect x="106" y="220" width="22" height="60" rx="8" fill="#1a1a2e"/>
+    <!-- Shoes -->
+    <ellipse cx="83" cy="280" rx="18" ry="10" fill="#2c3e50"/>
+    <ellipse cx="117" cy="280" rx="18" ry="10" fill="#2c3e50"/>
+    <ellipse cx="83" cy="278" rx="16" ry="6" fill="#34495e"/>
+    <ellipse cx="117" cy="278" rx="16" ry="6" fill="#34495e"/>
+
+    <!-- Torso -->
+    <path d="M68 130 Q65 180 70 220 L130 220 Q135 180 132 130 Z" fill="url(#shirt0)"/>
+    <!-- Shirt detail - collar -->
+    <path d="M85 130 L100 150 L115 130" fill="none" stroke="#2471a3" stroke-width="2"/>
+    <!-- Shirt buttons -->
+    <circle cx="100" cy="160" r="3" fill="#ffd700"/>
+    <circle cx="100" cy="178" r="3" fill="#ffd700"/>
+    <circle cx="100" cy="196" r="3" fill="#ffd700"/>
+    <!-- Belt -->
+    <rect x="68" y="214" width="64" height="8" rx="2" fill="#2c3e50"/>
+    <rect x="94" y="213" width="12" height="10" rx="2" fill="#ffd700"/>
+
+    <!-- Left arm (behind sax) -->
+    <path d="M68 135 Q45 170 55 200" stroke="url(#shirt0)" stroke-width="20" stroke-linecap="round" fill="none"/>
+    <!-- Left hand -->
+    <circle cx="55" cy="202" r="10" fill="url(#skin0)"/>
+
+    <!-- Saxophone -->
+    <g transform="translate(40, 140) rotate(-15)">
+      <!-- Sax body curve -->
+      <path d="M30 0 Q35 30 32 60 Q28 90 40 110 Q55 135 50 155" stroke="url(#sax0)" stroke-width="14" stroke-linecap="round" fill="none"/>
+      <!-- Sax bell -->
+      <ellipse cx="50" cy="162" rx="22" ry="16" fill="url(#sax0)"/>
+      <ellipse cx="50" cy="160" rx="18" ry="12" fill="#B8860B" opacity="0.5"/>
+      <!-- Sax mouthpiece -->
+      <rect x="25" y="-12" width="10" height="16" rx="3" fill="#2c3e50"/>
+      <!-- Sax keys -->
+      <circle cx="33" cy="25" r="4" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
+      <circle cx="35" cy="45" r="4" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
+      <circle cx="33" cy="65" r="4" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
+      <circle cx="36" cy="85" r="3.5" fill="#FFD700" stroke="#B8860B" stroke-width="1"/>
+    </g>
+
+    <!-- Right arm (in front, holding sax) -->
+    <path d="M132 135 Q150 165 135 195" stroke="url(#shirt0)" stroke-width="20" stroke-linecap="round" fill="none"/>
+    <!-- Right hand on sax -->
+    <circle cx="134" cy="197" r="10" fill="url(#skin0)"/>
+
+    <!-- Neck -->
+    <rect x="88" y="112" width="24" height="22" rx="6" fill="url(#skin0)"/>
+
+    <!-- Head -->
+    <ellipse cx="100" cy="90" rx="38" ry="40" fill="url(#skin0)"/>
+
+    <!-- Hair - short afro style -->
+    <ellipse cx="100" cy="62" rx="42" ry="30" fill="#1a1a1a"/>
+    <ellipse cx="100" cy="70" rx="40" ry="22" fill="#2c2c2c"/>
+
+    <!-- Sunglasses -->
+    <rect x="68" y="80" width="26" height="18" rx="6" fill="#1a1a1a"/>
+    <rect x="106" y="80" width="26" height="18" rx="6" fill="#1a1a1a"/>
+    <line x1="94" y1="89" x2="106" y2="89" stroke="#1a1a1a" stroke-width="3"/>
+    <!-- Sunglasses shine -->
+    <rect x="72" y="83" width="8" height="4" rx="2" fill="#ffffff" opacity="0.3"/>
+    <rect x="110" y="83" width="8" height="4" rx="2" fill="#ffffff" opacity="0.3"/>
+
+    <!-- Smile -->
+    <path d="M85 105 Q100 118 115 105" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Ear -->
+    <ellipse cx="62" cy="92" rx="8" ry="10" fill="url(#skin0)"/>
+    <ellipse cx="138" cy="92" rx="8" ry="10" fill="url(#skin0)"/>
+
+    <!-- Sax strap around neck -->
+    <path d="M90 128 Q85 90 88 75" stroke="#2c3e50" stroke-width="4" fill="none"/>
+    <path d="M110 128 Q115 90 112 75" stroke="#2c3e50" stroke-width="4" fill="none"/>
+  </g>
+</svg>

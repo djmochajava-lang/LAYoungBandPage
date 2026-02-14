@@ -14,34 +14,96 @@
   <link rel="stylesheet" href="css/game.css" />
 </head>
 <body>
+
+  <!-- Fullscreen Toggle (mobile only) -->
+  <button class="fullscreen-toggle" id="fsToggle" onclick="toggleFullscreen()">FULLSCREEN</button>
+
+  <!-- Official Site Header -->
+  <header class="site-header">
+    <div style="display: flex; align-items: center; gap: 2rem">
+      <a href="../index.html" class="logo">L.A. YOUNG <span>Soul in Full Color</span></a>
+      <a href="../index.html" class="back-btn">&larr; Band Page</a>
+    </div>
+    <nav>
+      <a href="../index.html#music">Music</a>
+      <a href="../index.html#videos">Videos</a>
+      <a href="../index.html#performances">Performances</a>
+      <a href="../index.html" class="active">Band Page</a>
+    </nav>
+  </header>
+
+  <!-- Phaser Game Container -->
   <div id="game-container"></div>
+
+  <!-- Official Site Footer -->
+  <footer class="site-footer">
+    &copy; 2026 LA Young Band |
+    <a href="../index.html">Powered by Gold Bottom Entertainment LLC</a> |
+    All rights reserved.
+  </footer>
+
+  <!-- Fullscreen Toggle Script -->
+  <script>
+    function toggleFullscreen() {
+      var body = document.body;
+      var btn = document.getElementById('fsToggle');
+      body.classList.toggle('fullscreen-game');
+      if (body.classList.contains('fullscreen-game')) {
+        btn.textContent = 'EXIT';
+        document.body.style.overflow = 'hidden';
+        // Force Phaser to resize into fullscreen container
+        if (window.game && window.game.scale) {
+          setTimeout(function() { window.game.scale.refresh(); }, 100);
+        }
+      } else {
+        btn.textContent = 'FULLSCREEN';
+        document.body.style.overflow = '';
+        if (window.game && window.game.scale) {
+          setTimeout(function() { window.game.scale.refresh(); }, 100);
+        }
+      }
+    }
+
+    // Auto-show fullscreen toggle hint on mobile
+    if (window.innerWidth <= 768) {
+      document.addEventListener('DOMContentLoaded', function() {
+        var btn = document.getElementById('fsToggle');
+        if (btn) {
+          // Pulse animation after a short delay to draw attention
+          setTimeout(function() {
+            btn.style.animation = 'pulse 2s ease-in-out 3';
+          }, 2000);
+        }
+      });
+    }
+  </script>
 
   <!-- Phaser 3 from CDN -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 
   <!-- Helpers -->
-  <script src="js/helpers/AudioSynth.js?v=5"></script>
-  <script src="js/helpers/MatchEngine.js?v=5"></script>
-  <script src="js/helpers/PatternEngine.js?v=5"></script>
+  <script src="js/helpers/AudioSynth.js?v=7"></script>
+  <script src="js/helpers/MatchEngine.js?v=7"></script>
+  <script src="js/helpers/PatternEngine.js?v=7"></script>
 
   <!-- UI Components -->
-  <script src="js/ui/Button.js?v=5"></script>
-  <script src="js/ui/TransitionHelper.js?v=5"></script>
+  <script src="js/ui/Button.js?v=7"></script>
+  <script src="js/ui/TransitionHelper.js?v=7"></script>
 
   <!-- Scenes -->
-  <script src="js/scenes/BootScene.js?v=5"></script>
-  <script src="js/scenes/MainMenuScene.js?v=5"></script>
-  <script src="js/scenes/StoryScene.js?v=5"></script>
-  <script src="js/scenes/HUDScene.js?v=5"></script>
-  <script src="js/scenes/Act1RunnerScene.js?v=5"></script>
-  <script src="js/scenes/Act2RhythmScene.js?v=5"></script>
-  <script src="js/scenes/Act3MatchScene.js?v=5"></script>
-  <script src="js/scenes/Act4SimonScene.js?v=5"></script>
-  <script src="js/scenes/Act5PianoScene.js?v=5"></script>
-  <script src="js/scenes/OutfitScene.js?v=5"></script>
-  <script src="js/scenes/VictoryScene.js?v=5"></script>
+  <script src="js/scenes/BootScene.js?v=7"></script>
+  <script src="js/scenes/MainMenuScene.js?v=7"></script>
+  <script src="js/scenes/StoryScene.js?v=7"></script>
+  <script src="js/scenes/HUDScene.js?v=7"></script>
+  <script src="js/scenes/Act1RunnerScene.js?v=7"></script>
+  <script src="js/scenes/Act2RhythmScene.js?v=7"></script>
+  <script src="js/scenes/Act3MatchScene.js?v=7"></script>
+  <script src="js/scenes/Act4SimonScene.js?v=7"></script>
+  <script src="js/scenes/Act5PianoScene.js?v=7"></script>
+  <script src="js/scenes/OutfitScene.js?v=7"></script>
+  <script src="js/scenes/VictoryScene.js?v=7"></script>
 
   <!-- Config (creates game instance - must be last) -->
-  <script src="js/config.js?v=5"></script>
+  <script src="js/config.js?v=7"></script>
 </body>
 </html>

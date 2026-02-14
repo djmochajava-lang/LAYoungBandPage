@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Kevin Robinson - Guitar Player (Male) - Rastafarian Bob Marley style -->
+  <defs>
+    <linearGradient id="skin2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B6914"/>
+      <stop offset="100%" stop-color="#7A5C12"/>
+    </linearGradient>
+    <linearGradient id="shirt2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e74c3c"/>
+      <stop offset="100%" stop-color="#c0392b"/>
+    </linearGradient>
+    <linearGradient id="guitar2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#e74c3c"/>
+      <stop offset="50%" stop-color="#c0392b"/>
+      <stop offset="100%" stop-color="#a93226"/>
+    </linearGradient>
+    <filter id="shadow2" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow2)">
+    <!-- Legs - wider stance -->
+    <rect x="66" y="220" width="22" height="58" rx="8" fill="#1a1a2e" transform="rotate(-5, 77, 220)"/>
+    <rect x="112" y="220" width="22" height="58" rx="8" fill="#1a1a2e" transform="rotate(5, 123, 220)"/>
+    <!-- Shoes -->
+    <path d="M58 272 Q77 290 96 275 L80 268 Z" fill="#5D4037"/>
+    <path d="M104 275 Q123 290 142 272 L120 268 Z" fill="#5D4037"/>
+
+    <!-- Torso - open shirt/vest rasta style -->
+    <path d="M66 130 Q62 178 66 220 L134 220 Q138 178 134 130 Z" fill="url(#shirt2)"/>
+    <!-- Open shirt showing chest -->
+    <path d="M85 130 L100 165 L115 130" fill="url(#skin2)"/>
+    <!-- Rasta stripe detail on shirt -->
+    <rect x="66" y="190" width="68" height="5" rx="1" fill="#2ecc71"/>
+    <rect x="66" y="197" width="68" height="5" rx="1" fill="#ffd700"/>
+    <rect x="66" y="204" width="68" height="5" rx="1" fill="#e74c3c"/>
+    <!-- Rasta necklace / beads -->
+    <path d="M88 132 Q100 148 112 132" stroke="#2ecc71" stroke-width="3" fill="none"/>
+    <path d="M90 136 Q100 150 110 136" stroke="#ffd700" stroke-width="3" fill="none"/>
+    <path d="M92 140 Q100 152 108 140" stroke="#e74c3c" stroke-width="3" fill="none"/>
+    <!-- Peace medallion -->
+    <circle cx="100" cy="155" r="8" fill="#ffd700"/>
+    <circle cx="100" cy="155" r="6" fill="#ffd700" stroke="#B8860B" stroke-width="1"/>
+    <line x1="100" y1="149" x2="100" y2="161" stroke="#B8860B" stroke-width="1.5"/>
+    <line x1="94" y1="155" x2="106" y2="155" stroke="#B8860B" stroke-width="1.5"/>
+    <circle cx="100" cy="155" r="6" fill="none" stroke="#B8860B" stroke-width="1.5"/>
+    <!-- Belt -->
+    <rect x="64" y="214" width="72" height="8" rx="2" fill="#5D4037"/>
+    <rect x="94" y="213" width="12" height="10" rx="2" fill="#ffd700"/>
+
+    <!-- Electric Guitar -->
+    <g transform="translate(45, 140) rotate(-30)">
+      <!-- Neck -->
+      <rect x="-4" y="-95" width="8" height="130" rx="2" fill="#3E2723"/>
+      <!-- Frets -->
+      <line x1="-3" y1="-75" x2="3" y2="-75" stroke="#C0C0C0" stroke-width="1"/>
+      <line x1="-3" y1="-55" x2="3" y2="-55" stroke="#C0C0C0" stroke-width="1"/>
+      <line x1="-3" y1="-35" x2="3" y2="-35" stroke="#C0C0C0" stroke-width="1"/>
+      <line x1="-3" y1="-15" x2="3" y2="-15" stroke="#C0C0C0" stroke-width="1"/>
+      <!-- Fret dots -->
+      <circle cx="0" cy="-65" r="2" fill="#ffd700"/>
+      <circle cx="0" cy="-25" r="2" fill="#ffd700"/>
+      <!-- Strings -->
+      <line x1="-2" y1="-90" x2="-2" y2="40" stroke="#E0E0E0" stroke-width="0.5"/>
+      <line x1="0" y1="-90" x2="0" y2="40" stroke="#E0E0E0" stroke-width="0.7"/>
+      <line x1="2" y1="-90" x2="2" y2="40" stroke="#E0E0E0" stroke-width="0.5"/>
+      <!-- Headstock -->
+      <rect x="-8" y="-105" width="16" height="14" rx="4" fill="#1a1a1a"/>
+      <circle cx="-6" cy="-100" r="2.5" fill="#C0C0C0"/>
+      <circle cx="6" cy="-100" r="2.5" fill="#C0C0C0"/>
+      <circle cx="-6" cy="-93" r="2.5" fill="#C0C0C0"/>
+      <circle cx="6" cy="-93" r="2.5" fill="#C0C0C0"/>
+      <!-- Body - SG style -->
+      <path d="M-28 35 Q-35 50 -30 70 Q-25 85 -10 90 Q0 92 10 90 Q25 85 30 70 Q35 50 28 35 Z" fill="url(#guitar2)"/>
+      <path d="M-20 30 Q-28 35 -28 45" fill="none" stroke="url(#guitar2)" stroke-width="8"/>
+      <path d="M20 30 Q28 35 28 45" fill="none" stroke="url(#guitar2)" stroke-width="8"/>
+      <!-- Pickups -->
+      <rect x="-12" y="48" width="24" height="8" rx="3" fill="#1a1a1a"/>
+      <rect x="-12" y="65" width="24" height="8" rx="3" fill="#1a1a1a"/>
+      <!-- Bridge -->
+      <rect x="-8" y="78" width="16" height="4" rx="1" fill="#C0C0C0"/>
+      <!-- Knobs -->
+      <circle cx="-18" cy="72" r="4" fill="#1a1a1a"/>
+      <circle cx="18" cy="72" r="4" fill="#1a1a1a"/>
+    </g>
+
+    <!-- Left arm (fretting hand) -->
+    <path d="M66 136 Q30 155 25 120" stroke="url(#shirt2)" stroke-width="20" stroke-linecap="round" fill="none"/>
+    <circle cx="24" cy="118" r="10" fill="url(#skin2)"/>
+
+    <!-- Right arm (strumming) -->
+    <path d="M134 136 Q148 175 120 200" stroke="url(#shirt2)" stroke-width="20" stroke-linecap="round" fill="none"/>
+    <circle cx="118" cy="202" r="10" fill="url(#skin2)"/>
+
+    <!-- Neck -->
+    <rect x="86" y="110" width="28" height="24" rx="6" fill="url(#skin2)"/>
+
+    <!-- Head -->
+    <ellipse cx="100" cy="86" rx="38" ry="42" fill="url(#skin2)"/>
+
+    <!-- DREADLOCKS - Bob Marley style, flowing behind/beside head (not over face) -->
+    <g fill="#1a1a1a">
+      <!-- Hair mass on top -->
+      <ellipse cx="100" cy="55" rx="46" ry="28" fill="#1a1a1a"/>
+      <!-- Left side dreads - flow out to the left, BEHIND/OUTSIDE the face -->
+      <path d="M54 60 Q44 80 38 115 Q34 140 40 160 Q42 164 46 160 Q42 135 46 110 Q50 82 56 64 Z"/>
+      <path d="M50 58 Q38 78 32 110 Q28 140 34 168 Q36 174 40 170 Q36 142 40 115 Q44 85 52 62 Z"/>
+      <path d="M48 55 Q34 76 28 108 Q24 138 28 172 Q29 180 34 176 Q30 145 34 115 Q40 82 50 58 Z"/>
+      <path d="M56 52 Q46 72 42 100 Q38 128 42 158 Q43 166 48 162 Q44 132 48 105 Q52 78 58 56 Z"/>
+      <!-- Right side dreads - flow out to the right, BEHIND/OUTSIDE the face -->
+      <path d="M146 60 Q156 80 162 115 Q166 140 160 160 Q158 164 154 160 Q158 135 154 110 Q150 82 144 64 Z"/>
+      <path d="M150 58 Q162 78 168 110 Q172 140 166 168 Q164 174 160 170 Q164 142 160 115 Q156 85 148 62 Z"/>
+      <path d="M152 55 Q166 76 172 108 Q176 138 172 172 Q171 180 166 176 Q170 145 166 115 Q160 82 150 58 Z"/>
+      <path d="M144 52 Q154 72 158 100 Q162 128 158 158 Q157 166 152 162 Q156 132 152 105 Q148 78 142 56 Z"/>
+      <!-- Back dreads - flow down behind the head, visible on sides only -->
+      <path d="M60 65 Q50 90 46 125 Q42 155 46 180 Q47 186 52 182 Q48 150 52 125 Q56 95 62 68 Z"/>
+      <path d="M140 65 Q150 90 154 125 Q158 155 154 180 Q153 186 148 182 Q152 150 148 125 Q144 95 138 68 Z"/>
+    </g>
+
+    <!-- Rasta tam/beret on top -->
+    <ellipse cx="100" cy="48" rx="34" ry="16" fill="#e74c3c"/>
+    <ellipse cx="100" cy="45" rx="30" ry="12" fill="#ffd700"/>
+    <ellipse cx="100" cy="42" rx="26" ry="8" fill="#2ecc71"/>
+    <ellipse cx="100" cy="40" rx="18" ry="5" fill="#1a1a1a"/>
+
+    <!-- Eyes - relaxed/chill -->
+    <ellipse cx="84" cy="86" rx="8" ry="7" fill="white"/>
+    <ellipse cx="116" cy="86" rx="8" ry="7" fill="white"/>
+    <circle cx="85" cy="87" r="5" fill="#4a2800"/>
+    <circle cx="117" cy="87" r="5" fill="#4a2800"/>
+    <circle cx="86" cy="85" r="2" fill="white"/>
+    <circle cx="118" cy="85" r="2" fill="white"/>
+
+    <!-- Eyebrows - relaxed -->
+    <path d="M74 78 Q84 74 94 78" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M106 78 Q116 74 126 78" stroke="#1a1a1a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Nose -->
+    <ellipse cx="100" cy="96" rx="7" ry="5" fill="#7A5C12" opacity="0.6"/>
+
+    <!-- Warm smile -->
+    <path d="M84 108 Q100 120 116 108" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Thin beard/goatee -->
+    <path d="M78 108 Q80 118 86 120 Q100 126 114 120 Q120 118 122 108" stroke="#1a1a1a" stroke-width="2" fill="none"/>
+
+    <!-- Ears -->
+    <ellipse cx="62" cy="88" rx="7" ry="10" fill="url(#skin2)"/>
+    <ellipse cx="138" cy="88" rx="7" ry="10" fill="url(#skin2)"/>
+
+    <!-- Guitar strap - rasta colors -->
+    <line x1="78" y1="130" x2="120" y2="210" stroke="#2ecc71" stroke-width="6"/>
+    <line x1="79" y1="132" x2="121" y2="212" stroke="#ffd700" stroke-width="2"/>
+  </g>
+</svg>

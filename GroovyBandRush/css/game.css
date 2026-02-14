@@ -1,36 +1,246 @@
 /* GroovyBandRush/css/game.css */
 
-* {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-html, body {
+:root {
+  --gold: #ffd700;
+  --gold-dim: rgba(255, 215, 0, 0.3);
+  --red: #e63946;
+  --bg-dark: #0a0a0a;
+  --bg-navy: #1a1a2e;
+  --funk-orange: #e8751a;
+  --funk-pink: #e84393;
+  --funk-purple: #6c3483;
+  --text-primary: #fff;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  --font-display: 'Bangers', 'Fredoka One', cursive;
+  --font-body: 'Playfair Display', 'Georgia', serif;
+  --font-fun: 'Righteous', 'Fredoka One', cursive;
+  --header-height: 70px;
+}
+
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #0a0a0a;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: var(--font-body);
   overscroll-behavior: none;
-  position: fixed;
-  top: 0;
-  left: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-#game-container {
-  width: 100vw;
-  height: 100vh;
-  height: 100dvh;
-  touch-action: none;
-  -ms-touch-action: none;
+/* === HEADER === */
+.site-header {
   position: fixed;
   top: 0;
   left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--gold-dim);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 2rem;
+  height: var(--header-height);
+  flex-shrink: 0;
+}
+
+.site-header .logo {
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.site-header .logo span {
+  color: var(--gold);
+  font-style: italic;
+  display: block;
+  font-size: 0.7rem;
+  letter-spacing: 1px;
+}
+
+.site-header nav a {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-left: 1.5rem;
+  transition: color 0.3s;
+}
+
+.site-header nav a:hover,
+.site-header nav a.active {
+  color: var(--gold);
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--gold);
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: opacity 0.3s;
+}
+
+.back-btn:hover {
+  opacity: 0.7;
+}
+
+/* === GAME CONTAINER === */
+#game-container {
+  width: 100%;
+  flex: 1;
+  margin-top: var(--header-height);
+  touch-action: none;
+  -ms-touch-action: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
 }
 
 #game-container canvas {
   touch-action: none;
   -ms-touch-action: none;
   display: block;
+}
+
+/* === FOOTER === */
+.site-footer {
+  padding: 1rem 2rem;
+  text-align: center;
+  border-top: 1px solid var(--gold-dim);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  background: var(--bg-dark);
+  flex-shrink: 0;
+}
+
+.site-footer a {
+  color: var(--gold);
+  text-decoration: none;
+}
+
+/* === FULLSCREEN TOGGLE BUTTON === */
+.fullscreen-toggle {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-family: var(--font-fun);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  cursor: pointer;
+  display: none;
+  transition: all 0.3s;
+}
+
+.fullscreen-toggle:hover {
+  background: rgba(255, 215, 0, 0.15);
+}
+
+@media (max-width: 768px) {
+  .fullscreen-toggle {
+    display: block;
+  }
+}
+
+/* === FULLSCREEN MODE === */
+body.fullscreen-game {
+  overflow: hidden;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+body.fullscreen-game .site-header,
+body.fullscreen-game .site-footer {
+  display: none !important;
+}
+
+body.fullscreen-game #game-container {
+  margin-top: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+body.fullscreen-game #game-container canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  touch-action: none;
+  -ms-touch-action: none;
+}
+
+/* === MOBILE ADJUSTMENTS === */
+@media (max-width: 600px) {
+  :root {
+    --header-height: 60px;
+  }
+
+  .site-header {
+    padding: 0.6rem 1rem;
+    height: 60px;
+  }
+
+  .site-header nav {
+    display: none;
+  }
+
+  .site-footer {
+    padding: 0.8rem 1rem;
+    font-size: 0.7rem;
+  }
+}
+
+/* === PULSE ANIMATION (for fullscreen button hint) === */
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px 5px rgba(255, 215, 0, 0.3);
+  }
 }

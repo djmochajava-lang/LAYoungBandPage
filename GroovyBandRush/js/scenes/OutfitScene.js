@@ -52,18 +52,18 @@ var OutfitScene = new Phaser.Class({
       color: '#e8751a'
     }).setOrigin(0.5);
 
-    // Large character portrait
+    // Large character portrait (SVG is 200x300, display ~0.7x)
     var portrait = this.add.image(width / 2, height * 0.34, 'member_' + this.memberIndex)
-      .setScale(3);
+      .setScale(0.7);
 
     // Entrance animation
     portrait.setAlpha(0);
-    portrait.setScale(0.5);
+    portrait.setScale(0.15);
     this.tweens.add({
       targets: portrait,
       alpha: 1,
-      scaleX: 3,
-      scaleY: 3,
+      scaleX: 0.7,
+      scaleY: 0.7,
       duration: 600,
       ease: 'Back.easeOut'
     });
@@ -147,16 +147,16 @@ var OutfitScene = new Phaser.Class({
           border.setAlpha(1);
           self.tweens.add({ targets: card, scaleX: 1.1, scaleY: 1.1, duration: 150 });
 
-          // Update portrait tint to match outfit color
+          // Flash the portrait briefly with outfit color, then clear
           portrait.setTint(outfit.color);
+          self.time.delayedCall(200, function () { portrait.clearTint(); });
         });
 
         outfitCards.push(card);
       })(i);
     }
 
-    // Tint portrait to default outfit color
-    portrait.setTint(GBR.OUTFITS[0].color);
+    // Portrait displays with natural SVG colors (no tint by default)
 
     // =============================================
     // CONTINUE button - ALWAYS created in create()

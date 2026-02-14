@@ -1,0 +1,197 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- L.A. Young - Female Singer/Vocalist - Big Afro, Pretty Face -->
+  <defs>
+    <linearGradient id="skin4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B5E3C"/>
+      <stop offset="100%" stop-color="#6B3A2A"/>
+    </linearGradient>
+    <linearGradient id="skinHi4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#A0704A"/>
+      <stop offset="100%" stop-color="#8B5E3C"/>
+    </linearGradient>
+    <linearGradient id="dress4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e8751a"/>
+      <stop offset="50%" stop-color="#d4681a"/>
+      <stop offset="100%" stop-color="#c05a15"/>
+    </linearGradient>
+    <linearGradient id="mic4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C0C0C0"/>
+      <stop offset="100%" stop-color="#808080"/>
+    </linearGradient>
+    <filter id="shadow4" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+    <filter id="glow4">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow4)">
+    <!-- Legs -->
+    <rect x="80" y="232" width="16" height="46" rx="6" fill="url(#skin4)"/>
+    <rect x="104" y="232" width="16" height="46" rx="6" fill="url(#skin4)"/>
+    <!-- High heels -->
+    <path d="M74 274 L98 274 L96 278 Q88 284 78 278 Z" fill="#e8751a"/>
+    <path d="M80 278 L78 290 L82 290 L84 278" fill="#e8751a"/>
+    <path d="M102 274 L126 274 L124 278 Q116 284 106 278 Z" fill="#e8751a"/>
+    <path d="M108 278 L106 290 L110 290 L112 278" fill="#e8751a"/>
+
+    <!-- Dress - flowing A-line -->
+    <path d="M74 140 Q70 175 60 232 L140 232 Q130 175 126 140 Z" fill="url(#dress4)"/>
+    <!-- Dress shine/fold lines -->
+    <path d="M87 165 Q90 195 80 228" stroke="#d4681a" stroke-width="1.5" fill="none" opacity="0.5"/>
+    <path d="M113 165 Q110 195 120 228" stroke="#d4681a" stroke-width="1.5" fill="none" opacity="0.5"/>
+    <!-- Dress sparkles -->
+    <circle cx="92" cy="185" r="2" fill="#ffd700" opacity="0.8"/>
+    <circle cx="108" cy="200" r="2" fill="#ffd700" opacity="0.8"/>
+    <circle cx="78" cy="215" r="2" fill="#ffd700" opacity="0.8"/>
+    <circle cx="122" cy="175" r="2" fill="#ffd700" opacity="0.8"/>
+    <circle cx="100" cy="210" r="1.5" fill="#ffd700" opacity="0.6"/>
+    <circle cx="73" cy="195" r="1.5" fill="#ffd700" opacity="0.6"/>
+    <circle cx="127" cy="220" r="1.5" fill="#ffd700" opacity="0.6"/>
+    <circle cx="95" cy="170" r="1.5" fill="#ffd700" opacity="0.7"/>
+
+    <!-- Neckline - sweetheart -->
+    <path d="M78 140 Q90 132 100 140 Q110 132 122 140" fill="url(#skin4)"/>
+    <!-- Gold necklace -->
+    <path d="M82 138 Q100 148 118 138" stroke="#ffd700" stroke-width="2" fill="none"/>
+    <circle cx="100" cy="146" r="4" fill="#ffd700"/>
+    <circle cx="100" cy="146" r="2.5" fill="#e8751a"/>
+
+    <!-- Left arm (at side, graceful) -->
+    <path d="M74 145 Q56 168 50 198" stroke="url(#skin4)" stroke-width="14" stroke-linecap="round" fill="none"/>
+    <circle cx="49" cy="200" r="7" fill="url(#skin4)"/>
+    <!-- Bracelet -->
+    <ellipse cx="52" cy="190" rx="9" ry="3.5" fill="none" stroke="#ffd700" stroke-width="2"/>
+
+    <!-- Right arm (holding mic up) -->
+    <path d="M126 145 Q146 132 150 108" stroke="url(#skin4)" stroke-width="14" stroke-linecap="round" fill="none"/>
+    <circle cx="151" cy="106" r="7" fill="url(#skin4)"/>
+
+    <!-- Microphone -->
+    <g transform="translate(154, 76)">
+      <ellipse cx="0" cy="0" rx="9" ry="12" fill="#505050"/>
+      <line x1="-5" y1="-7" x2="-5" y2="7" stroke="#666" stroke-width="0.7"/>
+      <line x1="-2" y1="-9" x2="-2" y2="9" stroke="#666" stroke-width="0.7"/>
+      <line x1="1" y1="-10" x2="1" y2="10" stroke="#666" stroke-width="0.7"/>
+      <line x1="4" y1="-9" x2="4" y2="9" stroke="#666" stroke-width="0.7"/>
+      <ellipse cx="0" cy="11" rx="7" ry="2.5" fill="#C0C0C0"/>
+      <rect x="-3.5" y="13" width="7" height="18" rx="3" fill="url(#mic4)"/>
+    </g>
+
+    <!-- ====== LAYER 1: AFRO (drawn first, behind face) ====== -->
+    <!-- BIG AFRO - organic bumpy cloud shape like reference art -->
+    <path d="M100 6
+      Q122 2 140 10 Q156 18 164 34 Q172 48 174 62
+      Q178 72 176 84 Q174 96 168 104
+      Q160 110 150 104 Q144 100 138 104
+      Q130 108 124 104
+      L76 104
+      Q70 108 62 104 Q56 100 50 104
+      Q40 110 32 104
+      Q26 96 24 84
+      Q22 72 26 62 Q28 48 36 34
+      Q44 18 60 10 Q78 2 100 6 Z" fill="#1a1a1a"/>
+
+    <!-- Afro top volume bumps -->
+    <circle cx="62" cy="18" r="16" fill="#1a1a1a"/>
+    <circle cx="82" cy="8" r="14" fill="#1a1a1a"/>
+    <circle cx="100" cy="4" r="15" fill="#1a1a1a"/>
+    <circle cx="118" cy="8" r="14" fill="#1a1a1a"/>
+    <circle cx="138" cy="18" r="16" fill="#1a1a1a"/>
+    <!-- Side bumps -->
+    <circle cx="30" cy="50" r="14" fill="#1a1a1a"/>
+    <circle cx="24" cy="70" r="13" fill="#1a1a1a"/>
+    <circle cx="26" cy="90" r="12" fill="#1a1a1a"/>
+    <circle cx="170" cy="50" r="14" fill="#1a1a1a"/>
+    <circle cx="176" cy="70" r="13" fill="#1a1a1a"/>
+    <circle cx="174" cy="90" r="12" fill="#1a1a1a"/>
+    <!-- Top corner bumps -->
+    <circle cx="46" cy="24" r="13" fill="#1a1a1a"/>
+    <circle cx="154" cy="24" r="13" fill="#1a1a1a"/>
+    <!-- Extra bump fill -->
+    <circle cx="36" cy="36" r="12" fill="#1a1a1a"/>
+    <circle cx="164" cy="36" r="12" fill="#1a1a1a"/>
+
+    <!-- Hair texture highlights -->
+    <circle cx="75" cy="16" r="8" fill="#2a2a2a" opacity="0.5"/>
+    <circle cx="128" cy="14" r="7" fill="#2a2a2a" opacity="0.4"/>
+    <circle cx="48" cy="44" r="6" fill="#2a2a2a" opacity="0.4"/>
+    <circle cx="155" cy="42" r="6" fill="#2a2a2a" opacity="0.4"/>
+    <circle cx="100" cy="10" r="8" fill="#2a2a2a" opacity="0.3"/>
+
+    <!-- Gold hair pick sticking out the top right -->
+    <g transform="translate(148, 20) rotate(25)">
+      <rect x="-2" y="-16" width="4" height="20" rx="1" fill="#ffd700"/>
+      <rect x="-5" y="-20" width="10" height="7" rx="2" fill="#ffd700"/>
+      <rect x="-4" y="-28" width="2" height="10" rx="0.5" fill="#ffd700"/>
+      <rect x="-1" y="-30" width="2" height="12" rx="0.5" fill="#ffd700"/>
+      <rect x="2" y="-28" width="2" height="10" rx="0.5" fill="#ffd700"/>
+    </g>
+
+    <!-- ====== LAYER 2: NECK (behind head) ====== -->
+    <rect x="90" y="118" width="20" height="24" rx="6" fill="url(#skin4)"/>
+
+    <!-- ====== LAYER 3: HEAD/FACE (on top of afro) ====== -->
+    <ellipse cx="100" cy="94" rx="34" ry="36" fill="url(#skin4)"/>
+    <!-- Face highlight -->
+    <ellipse cx="96" cy="88" rx="20" ry="22" fill="url(#skinHi4)" opacity="0.2"/>
+
+    <!-- Hairline at top of forehead - soft curved edge -->
+    <path d="M68 80 Q78 66 100 64 Q122 66 132 80" fill="#1a1a1a"/>
+    <path d="M72 78 Q80 68 100 66 Q120 68 128 78" fill="#1a1a1a"/>
+
+    <!-- ===== PRETTY FACE ===== -->
+
+    <!-- Eyebrows - defined arches -->
+    <path d="M78 82 Q87 76 96 82" stroke="#2a1a0a" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M104 82 Q113 76 122 82" stroke="#2a1a0a" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+
+    <!-- Eyes - large almond/cat-eye shape -->
+    <ellipse cx="87" cy="90" rx="10" ry="7" fill="white"/>
+    <ellipse cx="113" cy="90" rx="10" ry="7" fill="white"/>
+    <!-- Upper lid - bold dark line -->
+    <path d="M77 86 Q87 81 97 87" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M103 87 Q113 81 123 86" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- Iris -->
+    <circle cx="89" cy="90" r="5" fill="#3E2723"/>
+    <circle cx="115" cy="90" r="5" fill="#3E2723"/>
+    <!-- Pupil -->
+    <circle cx="89" cy="90" r="2.8" fill="#1a1a1a"/>
+    <circle cx="115" cy="90" r="2.8" fill="#1a1a1a"/>
+    <!-- Eye sparkle -->
+    <circle cx="91" cy="88" r="2" fill="white"/>
+    <circle cx="117" cy="88" r="2" fill="white"/>
+    <!-- Bold lashes at outer corners -->
+    <path d="M77 85 L74 81" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/>
+    <path d="M123 85 L126 81" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round"/>
+
+    <!-- Nose - subtle -->
+    <path d="M97 99 Q100 103 103 99" stroke="#5C3520" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+
+    <!-- Lips - full, prominent, dark red like references -->
+    <path d="M88 109 Q93 105 100 107 Q107 105 112 109" fill="#8B2020"/>
+    <path d="M88 109 Q100 118 112 109" fill="#A83030"/>
+    <!-- Lip highlight -->
+    <ellipse cx="100" cy="110" rx="5" ry="2" fill="#C04040" opacity="0.4"/>
+
+    <!-- Cheek highlights -->
+    <ellipse cx="75" cy="99" rx="6" ry="3.5" fill="#A0704A" opacity="0.3"/>
+    <ellipse cx="125" cy="99" rx="6" ry="3.5" fill="#A0704A" opacity="0.3"/>
+
+    <!-- Gold hoop earrings - large, at jawline -->
+    <ellipse cx="64" cy="108" rx="8" ry="12" fill="none" stroke="#ffd700" stroke-width="3"/>
+    <ellipse cx="136" cy="108" rx="8" ry="12" fill="none" stroke="#ffd700" stroke-width="3"/>
+
+    <!-- Music notes floating (singing!) -->
+    <g filter="url(#glow4)" opacity="0.7">
+      <text x="162" y="60" font-size="16" fill="#ffd700">&#9835;</text>
+      <text x="172" y="44" font-size="12" fill="#e8751a">&#9834;</text>
+      <text x="150" y="50" font-size="10" fill="#ffd700">&#9833;</text>
+    </g>
+  </g>
+</svg>

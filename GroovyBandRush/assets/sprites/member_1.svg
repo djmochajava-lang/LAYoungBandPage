@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Kevin Walker - Bass Player (Male) -->
+  <defs>
+    <linearGradient id="skin1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B6914"/>
+      <stop offset="100%" stop-color="#7A5C12"/>
+    </linearGradient>
+    <linearGradient id="shirt1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#9b59b6"/>
+      <stop offset="100%" stop-color="#7d3c98"/>
+    </linearGradient>
+    <linearGradient id="bass1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#5D4037"/>
+      <stop offset="50%" stop-color="#6D4C41"/>
+      <stop offset="100%" stop-color="#4E342E"/>
+    </linearGradient>
+    <filter id="shadow1" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow1)">
+    <!-- Legs -->
+    <rect x="72" y="222" width="22" height="58" rx="8" fill="#1a1a2e"/>
+    <rect x="106" y="222" width="22" height="58" rx="8" fill="#1a1a2e"/>
+    <!-- Shoes -->
+    <ellipse cx="83" cy="280" rx="18" ry="10" fill="#8e44ad"/>
+    <ellipse cx="117" cy="280" rx="18" ry="10" fill="#8e44ad"/>
+    <ellipse cx="83" cy="278" rx="15" ry="6" fill="#9b59b6"/>
+    <ellipse cx="117" cy="278" rx="15" ry="6" fill="#9b59b6"/>
+
+    <!-- Torso - bigger build -->
+    <path d="M62 132 Q58 178 64 222 L136 222 Q142 178 138 132 Z" fill="url(#shirt1)"/>
+    <!-- Vest over shirt -->
+    <path d="M70 132 L70 215 L92 215 L92 145 Z" fill="#2c3e50" opacity="0.7"/>
+    <path d="M130 132 L130 215 L108 215 L108 145 Z" fill="#2c3e50" opacity="0.7"/>
+    <!-- Vest buttons -->
+    <circle cx="92" cy="165" r="3" fill="#ffd700"/>
+    <circle cx="92" cy="185" r="3" fill="#ffd700"/>
+    <!-- Belt -->
+    <rect x="62" y="216" width="76" height="8" rx="2" fill="#2c3e50"/>
+    <rect x="94" y="215" width="12" height="10" rx="2" fill="#C0C0C0"/>
+
+    <!-- Bass Guitar -->
+    <g transform="translate(135, 100) rotate(25)">
+      <!-- Neck -->
+      <rect x="-5" y="-90" width="10" height="140" rx="3" fill="#4E342E"/>
+      <!-- Frets -->
+      <line x1="-4" y1="-70" x2="4" y2="-70" stroke="#C0C0C0" stroke-width="1.5"/>
+      <line x1="-4" y1="-50" x2="4" y2="-50" stroke="#C0C0C0" stroke-width="1.5"/>
+      <line x1="-4" y1="-30" x2="4" y2="-30" stroke="#C0C0C0" stroke-width="1.5"/>
+      <line x1="-4" y1="-10" x2="4" y2="-10" stroke="#C0C0C0" stroke-width="1.5"/>
+      <!-- Strings -->
+      <line x1="-2" y1="-85" x2="-2" y2="50" stroke="#E0E0E0" stroke-width="0.8"/>
+      <line x1="0" y1="-85" x2="0" y2="50" stroke="#E0E0E0" stroke-width="1"/>
+      <line x1="2" y1="-85" x2="2" y2="50" stroke="#E0E0E0" stroke-width="1.2"/>
+      <!-- Tuning pegs -->
+      <circle cx="-8" cy="-85" r="4" fill="#C0C0C0"/>
+      <circle cx="8" cy="-88" r="4" fill="#C0C0C0"/>
+      <circle cx="-8" cy="-78" r="4" fill="#C0C0C0"/>
+      <!-- Body -->
+      <ellipse cx="0" cy="65" rx="30" ry="38" fill="url(#bass1)"/>
+      <ellipse cx="0" cy="45" rx="25" ry="28" fill="url(#bass1)"/>
+      <!-- Pickguard -->
+      <ellipse cx="-5" cy="60" rx="15" ry="20" fill="#3E2723" opacity="0.5"/>
+      <!-- Pickups -->
+      <rect x="-10" y="50" width="20" height="6" rx="2" fill="#1a1a1a"/>
+      <rect x="-10" y="65" width="20" height="6" rx="2" fill="#1a1a1a"/>
+      <!-- Bridge -->
+      <rect x="-8" y="80" width="16" height="4" rx="1" fill="#C0C0C0"/>
+      <!-- Knobs -->
+      <circle cx="15" cy="75" r="4" fill="#1a1a1a"/>
+      <circle cx="15" cy="85" r="4" fill="#1a1a1a"/>
+    </g>
+
+    <!-- Left arm -->
+    <path d="M62 138 Q38 170 45 205" stroke="url(#shirt1)" stroke-width="22" stroke-linecap="round" fill="none"/>
+    <circle cx="45" cy="207" r="10" fill="url(#skin1)"/>
+
+    <!-- Right arm (on bass neck) -->
+    <path d="M138 138 Q160 160 155 130" stroke="url(#shirt1)" stroke-width="22" stroke-linecap="round" fill="none"/>
+    <circle cx="156" cy="128" r="10" fill="url(#skin1)"/>
+
+    <!-- Neck -->
+    <rect x="86" y="112" width="28" height="24" rx="6" fill="url(#skin1)"/>
+    <!-- Chain necklace -->
+    <path d="M88 128 Q100 138 112 128" stroke="#ffd700" stroke-width="2.5" fill="none"/>
+
+    <!-- Head -->
+    <ellipse cx="100" cy="88" rx="40" ry="42" fill="url(#skin1)"/>
+
+    <!-- Hair - flat top -->
+    <rect x="62" y="50" width="76" height="28" rx="4" fill="#1a1a1a"/>
+    <rect x="65" y="55" width="70" height="8" rx="2" fill="#2c2c2c"/>
+
+    <!-- Eyes -->
+    <ellipse cx="84" cy="88" rx="8" ry="9" fill="white"/>
+    <ellipse cx="116" cy="88" rx="8" ry="9" fill="white"/>
+    <circle cx="86" cy="89" r="5" fill="#2c3e50"/>
+    <circle cx="118" cy="89" r="5" fill="#2c3e50"/>
+    <circle cx="87" cy="87" r="2" fill="white"/>
+    <circle cx="119" cy="87" r="2" fill="white"/>
+
+    <!-- Eyebrows -->
+    <path d="M74 78 Q84 73 94 78" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M106 78 Q116 73 126 78" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+    <!-- Nose -->
+    <ellipse cx="100" cy="98" rx="6" ry="4" fill="#7A5C12" opacity="0.6"/>
+
+    <!-- Big smile -->
+    <path d="M82 108 Q100 122 118 108" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+    <!-- Goatee -->
+    <path d="M93 115 Q100 125 107 115" fill="#1a1a1a"/>
+
+    <!-- Ears -->
+    <ellipse cx="60" cy="90" rx="8" ry="10" fill="url(#skin1)"/>
+    <ellipse cx="140" cy="90" rx="8" ry="10" fill="url(#skin1)"/>
+    <!-- Earring -->
+    <circle cx="60" cy="100" r="3" fill="#ffd700"/>
+
+    <!-- Guitar strap -->
+    <line x1="80" y1="132" x2="140" y2="200" stroke="#9b59b6" stroke-width="5"/>
+  </g>
+</svg>

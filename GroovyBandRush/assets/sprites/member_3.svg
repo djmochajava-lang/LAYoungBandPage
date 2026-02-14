@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 300" width="200" height="300">
+  <!-- Jimmy Carney - Drums Player (Male) -->
+  <defs>
+    <linearGradient id="skin3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8B6914"/>
+      <stop offset="100%" stop-color="#7A5C12"/>
+    </linearGradient>
+    <linearGradient id="shirt3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2ecc71"/>
+      <stop offset="100%" stop-color="#27ae60"/>
+    </linearGradient>
+    <linearGradient id="drum3" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C0C0C0"/>
+      <stop offset="50%" stop-color="#A0A0A0"/>
+      <stop offset="100%" stop-color="#808080"/>
+    </linearGradient>
+    <filter id="shadow3" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="2" dy="3" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <g filter="url(#shadow3)">
+    <!-- Drum stool -->
+    <rect x="85" y="240" width="30" height="8" rx="4" fill="#808080"/>
+    <rect x="78" y="248" width="6" height="32" rx="2" fill="#606060" transform="rotate(-10, 81, 248)"/>
+    <rect x="116" y="248" width="6" height="32" rx="2" fill="#606060" transform="rotate(10, 119, 248)"/>
+    <rect x="96" y="248" width="8" height="35" rx="2" fill="#606060"/>
+
+    <!-- Legs - seated position -->
+    <path d="M78 225 Q65 250 60 275" stroke="#1a1a2e" stroke-width="22" stroke-linecap="round" fill="none"/>
+    <path d="M122 225 Q135 250 140 275" stroke="#1a1a2e" stroke-width="22" stroke-linecap="round" fill="none"/>
+    <!-- Shoes -->
+    <ellipse cx="58" cy="278" rx="16" ry="8" fill="#27ae60"/>
+    <ellipse cx="142" cy="278" rx="16" ry="8" fill="#27ae60"/>
+
+    <!-- Snare drum (between legs) -->
+    <ellipse cx="100" cy="240" rx="32" ry="8" fill="#C0C0C0"/>
+    <rect x="68" y="232" width="64" height="16" rx="2" fill="url(#drum3)"/>
+    <ellipse cx="100" cy="232" rx="32" ry="8" fill="white"/>
+    <ellipse cx="100" cy="232" rx="28" ry="6" fill="#f5f5f5"/>
+    <!-- Snare drum rim -->
+    <ellipse cx="100" cy="232" rx="32" ry="8" fill="none" stroke="#ffd700" stroke-width="2"/>
+
+    <!-- Hi-hat (left) -->
+    <g transform="translate(30, 180)">
+      <rect x="-2" y="0" width="4" height="70" rx="1" fill="#808080"/>
+      <ellipse cx="0" cy="2" rx="18" ry="4" fill="#DAA520"/>
+      <ellipse cx="0" cy="-2" rx="18" ry="4" fill="#FFD700"/>
+    </g>
+
+    <!-- Cymbal (right) -->
+    <g transform="translate(170, 170)">
+      <rect x="-2" y="0" width="4" height="75" rx="1" fill="#808080"/>
+      <ellipse cx="0" cy="0" rx="24" ry="5" fill="#FFD700"/>
+      <ellipse cx="0" cy="-1" rx="20" ry="3" fill="#DAA520"/>
+      <circle cx="0" cy="0" r="4" fill="#808080"/>
+    </g>
+
+    <!-- Torso - tank top style -->
+    <path d="M68 130 Q64 178 68 225 L132 225 Q136 178 132 130 Z" fill="url(#shirt3)"/>
+    <!-- Tank top cut -->
+    <path d="M68 130 Q78 145 88 130" fill="url(#skin3)"/>
+    <path d="M132 130 Q122 145 112 130" fill="url(#skin3)"/>
+    <!-- Shirt text area -->
+    <text x="100" y="185" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="bold" fill="#1a5e32">GROOVE</text>
+
+    <!-- Left arm (raised with drumstick) -->
+    <path d="M68 138 Q40 145 30 170" stroke="url(#shirt3)" stroke-width="20" stroke-linecap="round" fill="none"/>
+    <circle cx="28" cy="172" r="10" fill="url(#skin3)"/>
+    <!-- Left drumstick -->
+    <line x1="22" y1="168" x2="55" y2="210" stroke="#8B6914" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="55" cy="210" r="3" fill="#DAA520"/>
+
+    <!-- Right arm (raised with drumstick) -->
+    <path d="M132 138 Q160 145 170 165" stroke="url(#shirt3)" stroke-width="20" stroke-linecap="round" fill="none"/>
+    <circle cx="172" cy="167" r="10" fill="url(#skin3)"/>
+    <!-- Right drumstick -->
+    <line x1="178" y1="162" x2="145" y2="210" stroke="#8B6914" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="145" cy="210" r="3" fill="#DAA520"/>
+
+    <!-- Neck -->
+    <rect x="86" y="110" width="28" height="24" rx="6" fill="url(#skin3)"/>
+
+    <!-- Head -->
+    <ellipse cx="100" cy="86" rx="38" ry="42" fill="url(#skin3)"/>
+
+    <!-- Hair - short buzz cut -->
+    <ellipse cx="100" cy="56" rx="40" ry="24" fill="#1a1a1a"/>
+    <ellipse cx="100" cy="60" rx="38" ry="16" fill="#2c2c2c"/>
+
+    <!-- Headband -->
+    <path d="M60 68 Q100 58 140 68" stroke="#2ecc71" stroke-width="6" fill="none"/>
+    <path d="M60 68 Q100 58 140 68" stroke="#ffd700" stroke-width="2" fill="none"/>
+
+    <!-- Eyes - excited -->
+    <ellipse cx="84" cy="86" rx="9" ry="10" fill="white"/>
+    <ellipse cx="116" cy="86" rx="9" ry="10" fill="white"/>
+    <circle cx="86" cy="87" r="6" fill="#2c3e50"/>
+    <circle cx="118" cy="87" r="6" fill="#2c3e50"/>
+    <circle cx="88" cy="85" r="2.5" fill="white"/>
+    <circle cx="120" cy="85" r="2.5" fill="white"/>
+
+    <!-- Eyebrows - raised excited -->
+    <path d="M74 72 Q84 66 94 72" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M106 72 Q116 66 126 72" stroke="#1a1a1a" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+    <!-- Nose -->
+    <ellipse cx="100" cy="97" rx="7" ry="4" fill="#7A5C12" opacity="0.6"/>
+
+    <!-- Big open mouth smile -->
+    <path d="M82 106 Q100 125 118 106" stroke="#1a1a1a" stroke-width="2" fill="#1a1a1a"/>
+    <path d="M85 106 Q100 112 115 106" fill="white"/>
+
+    <!-- Ears -->
+    <ellipse cx="62" cy="88" rx="8" ry="10" fill="url(#skin3)"/>
+    <ellipse cx="138" cy="88" rx="8" ry="10" fill="url(#skin3)"/>
+
+    <!-- Sweat drops (energy!) -->
+    <path d="M145 78 Q148 85 145 88" fill="#87CEEB" opacity="0.7"/>
+    <path d="M55 82 Q52 89 55 92" fill="#87CEEB" opacity="0.7"/>
+  </g>
+</svg>

@@ -114,6 +114,30 @@
   color: var(--color-primary);
 }
 
+/* === GAME BUTTON IN HEADER NAV === */
+.main-nav .nav-game-btn {
+  padding: 0.4rem 1rem;
+  background: linear-gradient(135deg, #e8751a, #d4681a);
+  color: white !important;
+  border-radius: 20px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: 2px solid #ffd700;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.main-nav .nav-game-btn::after {
+  display: none; /* No underline effect */
+}
+
+.main-nav .nav-game-btn:hover {
+  background: linear-gradient(135deg, #ffd700, #e8751a);
+  color: #1a1a2e !important;
+  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+  transform: scale(1.05);
+}
+
 /* === EPK BUTTON IN HEADER === */
 .epk-button {
   padding: 0.6rem 1.5rem;

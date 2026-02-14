@@ -36,8 +36,15 @@ var BootScene = new Phaser.Class({
       loadingText.destroy();
     });
 
-    // Load any real assets here in the future
-    // For now we generate placeholders in create()
+    // Load band member character art (SVG)
+    for (var i = 0; i < 5; i++) {
+      this.load.svg('member_' + i, 'assets/sprites/member_' + i + '.svg', { width: 200, height: 300 });
+    }
+
+    // Load outfit card art (SVG)
+    for (var o = 0; o < 3; o++) {
+      this.load.svg('outfit_' + o, 'assets/sprites/outfit_' + o + '.svg', { width: 120, height: 160 });
+    }
   },
 
   create: function () {
@@ -96,17 +103,8 @@ var BootScene = new Phaser.Class({
     g.generateTexture('instrument', 36, 36);
     g.destroy();
 
-    // --- Band member placeholder (generic) ---
-    var memberColors = [0x3498db, 0x9b59b6, 0xe74c3c, 0x2ecc71, 0xe8751a];
-    for (var i = 0; i < 5; i++) {
-      g = this.make.graphics({ x: 0, y: 0, add: false });
-      g.fillStyle(memberColors[i]);
-      g.fillRoundedRect(0, 0, 48, 64, 10);
-      g.fillStyle(0xffffff);
-      g.fillCircle(24, 18, 12);
-      g.generateTexture('member_' + i, 48, 64);
-      g.destroy();
-    }
+    // Band member textures loaded from SVG in preload()
+    // (member_0 through member_4)
 
     // --- Drum pads (4 colors) ---
     var drumColors = [0xe63946, 0x3498db, 0x2ecc71, 0xffd700];
@@ -203,19 +201,8 @@ var BootScene = new Phaser.Class({
     g.generateTexture('btn_gold', 240, 64);
     g.destroy();
 
-    // --- Outfit cards (3 color variants per member) ---
-    var outfitColors = [
-      [0xe63946, 0x3498db, 0x2ecc71],  // Funky, Classic, Wild
-    ];
-    for (var oc = 0; oc < 3; oc++) {
-      g = this.make.graphics({ x: 0, y: 0, add: false });
-      g.fillStyle(outfitColors[0][oc]);
-      g.fillRoundedRect(0, 0, 120, 160, 12);
-      g.fillStyle(0xffffff, 0.2);
-      g.fillRoundedRect(8, 8, 104, 80, 8);
-      g.generateTexture('outfit_' + oc, 120, 160);
-      g.destroy();
-    }
+    // Outfit card textures loaded from SVG in preload()
+    // (outfit_0, outfit_1, outfit_2)
 
     // --- Road stripe ---
     g = this.make.graphics({ x: 0, y: 0, add: false });
