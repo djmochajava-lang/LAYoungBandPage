@@ -11,7 +11,7 @@ var OutfitScene = new Phaser.Class({
     this.memberIndex = data.memberIndex !== undefined ? data.memberIndex : 0;
     this.nextScene = data.nextScene || 'MainMenuScene';
     this.nextData = data.nextData || {};
-    this.selectedOutfit = -1;
+    this.selectedOutfit = 0; // Default to first outfit
   },
 
   create: function () {
@@ -38,7 +38,7 @@ var OutfitScene = new Phaser.Class({
     }).setOrigin(0.5);
 
     // Member name and role
-    this.add.text(width / 2, height * 0.14, member.name, {
+    this.add.text(width / 2, height * 0.12, member.name, {
       fontFamily: GBR.FONTS.display,
       fontSize: '36px',
       color: member.colorHex,
@@ -46,14 +46,14 @@ var OutfitScene = new Phaser.Class({
       strokeThickness: 2
     }).setOrigin(0.5);
 
-    this.add.text(width / 2, height * 0.20, member.role, {
+    this.add.text(width / 2, height * 0.18, member.role, {
       fontFamily: GBR.FONTS.fun,
       fontSize: '18px',
       color: '#e8751a'
     }).setOrigin(0.5);
 
     // Large character portrait
-    var portrait = this.add.image(width / 2, height * 0.38, 'member_' + this.memberIndex)
+    var portrait = this.add.image(width / 2, height * 0.34, 'member_' + this.memberIndex)
       .setScale(3);
 
     // Entrance animation
@@ -84,19 +84,20 @@ var OutfitScene = new Phaser.Class({
     });
 
     // Dress them up label
-    this.add.text(width / 2, height * 0.56, 'DRESS ' + member.name.toUpperCase() + ' FOR THE GIG!', {
+    this.add.text(width / 2, height * 0.51, 'PICK A LOOK FOR THE GIG!', {
       fontFamily: GBR.FONTS.display,
-      fontSize: '22px',
+      fontSize: '20px',
       color: '#ffffff'
     }).setOrigin(0.5);
 
-    // Outfit cards
+    // Outfit cards - positioned higher to leave room for button
     var outfitCards = [];
     var outfitBorders = [];
     var cardSpacing = Math.min(140, (width - 60) / 3);
     var cardStartX = width / 2 - cardSpacing;
-    var cardY = height * 0.72;
+    var cardY = height * 0.65;
 
+    // Pre-select first outfit border
     for (var i = 0; i < 3; i++) {
       (function (index) {
         var cardX = cardStartX + index * cardSpacing - 60;
@@ -106,17 +107,17 @@ var OutfitScene = new Phaser.Class({
         var card = self.add.image(cardX + 60, cardY, 'outfit_' + index).setScale(1);
 
         // Outfit label
-        var label = self.add.text(cardX + 60, cardY + 95, outfit.name, {
+        self.add.text(cardX + 60, cardY + 90, outfit.name, {
           fontFamily: GBR.FONTS.fun,
-          fontSize: '14px',
+          fontSize: '13px',
           color: '#ffffff'
         }).setOrigin(0.5);
 
-        // Selection border (hidden initially)
+        // Selection border (first one visible by default)
         var border = self.add.graphics();
         border.lineStyle(4, 0xffd700, 1);
         border.strokeRoundedRect(cardX, cardY - 80, 120, 160, 12);
-        border.setAlpha(0);
+        border.setAlpha(index === 0 ? 1 : 0);
         outfitBorders.push(border);
 
         // Make interactive
@@ -148,56 +149,35 @@ var OutfitScene = new Phaser.Class({
 
           // Update portrait tint to match outfit color
           portrait.setTint(outfit.color);
-
-          // Show continue button if not already shown
-          if (!self.continueShown) {
-            self.showContinue();
-          }
         });
 
         outfitCards.push(card);
       })(i);
     }
 
-    // Fade in
-    TransitionHelper.fadeIn(this, 600);
-  },
+    // Tint portrait to default outfit color
+    portrait.setTint(GBR.OUTFITS[0].color);
 
-  showContinue: function () {
-    var width = this.cameras.main.width;
-    var height = this.cameras.main.height;
-    var self = this;
-
-    // "LOOKING GOOD!" text
-    var lookingGood = this.add.text(width / 2, height * 0.85, 'LOOKING GOOD!', {
-      fontFamily: GBR.FONTS.display,
-      fontSize: '20px',
-      color: '#ffd700'
-    }).setOrigin(0.5).setAlpha(0).setDepth(10);
-
-    this.tweens.add({
-      targets: lookingGood,
-      alpha: 1,
-      duration: 300
-    });
-
-    // Continue button - create immediately (no delay needed for this scene)
-    var btn = createButton(self, width / 2, height * 0.93, 'CONTINUE', function () {
-      // Save outfit choice
+    // =============================================
+    // CONTINUE button - ALWAYS created in create()
+    // No conditional, no setTimeout, no guard
+    // =============================================
+    var btn = createButton(this, width / 2, height * 0.88, 'CONTINUE', function () {
       GBR.state.bandMembers[self.memberIndex].outfit = self.selectedOutfit;
       TransitionHelper.fadeToScene(self, self.nextScene, self.nextData);
     }, {
       bgColor: 0x2ecc71,
-      width: 200,
-      height: 50,
-      fontSize: '24px'
+      width: 220,
+      height: 55,
+      fontSize: '26px'
     });
 
-    // Set depth so button is above outfit cards
-    if (btn.bg) btn.bg.setDepth(10);
-    if (btn.text) btn.text.setDepth(11);
-    if (btn.hitZone) btn.hitZone.setDepth(11);
+    // Ensure button renders above everything
+    btn.bg.setDepth(20);
+    btn.text.setDepth(21);
+    btn.hitZone.setDepth(21);
 
-    this.continueShown = true;
+    // Fade in
+    TransitionHelper.fadeIn(this, 600);
   }
 });
