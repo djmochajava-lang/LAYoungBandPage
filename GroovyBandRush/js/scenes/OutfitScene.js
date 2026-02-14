@@ -167,14 +167,13 @@ var OutfitScene = new Phaser.Class({
     var width = this.cameras.main.width;
     var height = this.cameras.main.height;
     var self = this;
-    this.continueShown = true;
 
     // "LOOKING GOOD!" text
-    var lookingGood = this.add.text(width / 2, height * 0.82, 'LOOKING GOOD!', {
+    var lookingGood = this.add.text(width / 2, height * 0.85, 'LOOKING GOOD!', {
       fontFamily: GBR.FONTS.display,
       fontSize: '20px',
       color: '#ffd700'
-    }).setOrigin(0.5).setAlpha(0);
+    }).setOrigin(0.5).setAlpha(0).setDepth(10);
 
     this.tweens.add({
       targets: lookingGood,
@@ -182,19 +181,23 @@ var OutfitScene = new Phaser.Class({
       duration: 300
     });
 
-    // Continue button - use setTimeout to avoid Phaser timer throttling
-    setTimeout(function () {
-      if (!self.scene.isActive()) return; // guard if scene was stopped
-      createButton(self, width / 2, height * 0.90, 'CONTINUE', function () {
-        // Save outfit choice
-        GBR.state.bandMembers[self.memberIndex].outfit = self.selectedOutfit;
-        TransitionHelper.fadeToScene(self, self.nextScene, self.nextData);
-      }, {
-        bgColor: 0x2ecc71,
-        width: 200,
-        height: 50,
-        fontSize: '24px'
-      });
-    }, 500);
+    // Continue button - create immediately (no delay needed for this scene)
+    var btn = createButton(self, width / 2, height * 0.93, 'CONTINUE', function () {
+      // Save outfit choice
+      GBR.state.bandMembers[self.memberIndex].outfit = self.selectedOutfit;
+      TransitionHelper.fadeToScene(self, self.nextScene, self.nextData);
+    }, {
+      bgColor: 0x2ecc71,
+      width: 200,
+      height: 50,
+      fontSize: '24px'
+    });
+
+    // Set depth so button is above outfit cards
+    if (btn.bg) btn.bg.setDepth(10);
+    if (btn.text) btn.text.setDepth(11);
+    if (btn.hitZone) btn.hitZone.setDepth(11);
+
+    this.continueShown = true;
   }
 });

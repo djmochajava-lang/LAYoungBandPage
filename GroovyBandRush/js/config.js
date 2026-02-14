@@ -87,11 +87,11 @@ GBR.STORIES = [
 // --- Act Tuning Parameters ---
 GBR.ACT1 = {
   lanes: 3,
-  startSpeed: 2,
-  maxSpeed: 6,
-  speedRamp: 0.001,
-  obstacleRate: 180,       // frames between obstacles (decreases over time)
-  minObstacleRate: 70,
+  startSpeed: 1.4,
+  maxSpeed: 4.5,
+  speedRamp: 0.0006,
+  obstacleRate: 220,       // frames between obstacles (decreases over time)
+  minObstacleRate: 100,
   lives: 5,
   dollarValue: 50,
   instrumentValue: 200,
