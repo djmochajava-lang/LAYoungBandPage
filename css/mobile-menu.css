@@ -468,8 +468,8 @@ body.mobile-menu-open {
   }
 }
 
-/* Desktop - Hide Mobile Menu */
-@media (min-width: 769px) {
+/* Desktop - Hide Mobile Menu (only in landscape; portrait uses mobile menu) */
+@media (min-width: 769px) and (orientation: landscape) {
   .mobile-menu-overlay {
     display: none;
   }
