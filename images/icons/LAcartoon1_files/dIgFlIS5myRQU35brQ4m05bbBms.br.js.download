@@ -1,0 +1,1 @@
+var ClassUtil=ClassUtil||function(){function n(n,t){if(n&&n.className){var i=" "+n.className+" ";return i.indexOf(" "+t+" ")!==-1}return!1}function t(t,i){t&&!n(t,i)&&(t.className+=" "+i)}function i(t,i){if(n(t,i)){var r=new RegExp("(\\s|^)"+i+"(\\s|$)","g");t.className=t.className.replace(r," ")}}return{addClass:t,removeClass:i}}()

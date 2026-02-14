@@ -1,0 +1,1 @@
+var BnpGetElementByClassUtil=BnpGetElementByClassUtil||function(){function n(n,t,i){var r,f,u;if(i=i||_d,i.getElementsByClassName)return f=i.getElementsByClassName(n),f.length>0?f[0]:null;for(t=t||"div",u=i.getElementsByTagName(t),r=0;r<u.length;r++)if(u[r].className.indexOf(n)>-1)return u[r];return null}return{_gc:n}}()

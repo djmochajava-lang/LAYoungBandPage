@@ -1,0 +1,1 @@
+(function(){function n(){_w.CopilotAnswerFeedback&&CopilotAnswerFeedback.initCopFeedback();const n=_d.querySelector(".gs_infobbl a");n&&sj_be(n,"keydown",function(n){n.which==27&&this.blur()})}_w.sj_evt&&sj_evt.bind("onP1",n)})()

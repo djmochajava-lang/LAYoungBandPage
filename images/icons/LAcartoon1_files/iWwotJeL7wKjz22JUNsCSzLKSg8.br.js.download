@@ -1,0 +1,1 @@
+var Bnp=Bnp||{};Bnp.Events=Bnp.Events||{Render:function(n){sj_evt.fire("onBnpRender",n)},Close:function(n){sj_evt.fire("onBnpClose",n)}}
