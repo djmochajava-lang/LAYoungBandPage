@@ -51,12 +51,17 @@
           </div>
           <!-- CHANGED: Tour → Performances -->
           <a href="#performances" class="mobile-menu-link">Performances</a>
-          <a href="#merch" class="mobile-menu-link">Merch</a>
-          <a href="#contact" class="mobile-menu-link">Connect</a>
-          <a href="GroovyBandRush/index.html" class="mobile-menu-link mobile-menu-game">Game</a>
+          <div class="mobile-menu-dropdown">
+            <a href="#merch" class="mobile-menu-link mobile-menu-dropdown-trigger">Store</a>
+            <div class="mobile-menu-dropdown-items">
+              <a href="#merch" class="mobile-menu-link mobile-menu-sub-link">Merch</a>
+              <a href="#contact" class="mobile-menu-link mobile-menu-sub-link">Connect</a>
+            </div>
+          </div>
         </nav>
 
         <div class="mobile-menu-footer">
+          <a href="GroovyBandRush/index.html" class="mobile-menu-game">Game</a>
           <a
             href="https://www.layoungepk.com"
             class="mobile-menu-epk"
@@ -64,6 +69,7 @@
           >
             EPK
           </a>
+          <p class="mobile-menu-copyright">&copy; 2026 LA Young Band<br>Powered by <strong>Gold Bottom Entertainment LLC</strong><br>All rights reserved.</p>
         </div>
       </div>
     </div>
@@ -108,8 +114,13 @@
           </div>
           <!-- CHANGED: Tour → Performances -->
           <a href="#performances" data-page="performances">Performances</a>
-          <a href="#merch" data-page="merch">Merch</a>
-          <a href="#contact" data-page="contact">Connect</a>
+          <div class="nav-dropdown">
+            <a href="#merch" data-page="merch" class="nav-dropdown-trigger">Store</a>
+            <div class="nav-dropdown-menu">
+              <a href="#merch" data-page="merch">Merch</a>
+              <a href="#contact" data-page="contact">Connect</a>
+            </div>
+          </div>
           <a href="GroovyBandRush/index.html" class="nav-game-btn">Game</a>
         </nav>
 

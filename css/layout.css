@@ -70,6 +70,7 @@
 /* === MAIN NAVIGATION (DESKTOP) === */
 .main-nav {
   display: flex;
+  align-items: center; /* Vertically center all nav items */
   gap: clamp(0.5rem, 1.5vw, 2rem); /* Responsive gap between nav items */
   flex: 1;
   justify-content: center;
@@ -117,15 +118,12 @@
 /* === NAV DROPDOWN (Gallery → Photos / Videos) === */
 .nav-dropdown {
   position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .nav-dropdown-trigger {
   cursor: pointer;
-}
-
-.nav-dropdown-trigger::after {
-  /* Override the underline from .main-nav a::after —
-     we still want it, so let it inherit */
 }
 
 .nav-dropdown-menu {
@@ -160,10 +158,23 @@
   text-transform: uppercase;
   white-space: nowrap;
   transition: color 0.2s ease, background 0.2s ease;
+  position: relative;
 }
 
 .nav-dropdown-menu a::after {
-  display: none; /* No underline on dropdown items */
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0.5rem;
+  right: 0.5rem;
+  width: 0;
+  height: 2px;
+  background: var(--color-primary);
+  transition: width 0.2s ease;
+}
+
+.nav-dropdown-menu a:hover::after {
+  width: calc(100% - 1rem);
 }
 
 .nav-dropdown-menu a:hover {

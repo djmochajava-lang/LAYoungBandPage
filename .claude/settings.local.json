@@ -9,7 +9,9 @@
       "Bash(git branch:*)",
       "WebFetch(domain:www.freepik.com)",
       "Bash(git push:*)",
-      "Bash(python -c:*)"
+      "Bash(python -c:*)",
+      "Bash(git stash pop:*)",
+      "Bash(git stash drop:*)"
     ]
   }
 }

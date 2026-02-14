@@ -177,7 +177,7 @@
 .mobile-menu-dropdown-trigger::after {
   content: '▸' !important;
   margin-left: auto;
-  font-size: 1rem;
+  font-size: 1.6rem;
   transition: transform 0.3s ease;
   width: auto;
   height: auto;
@@ -256,43 +256,54 @@
   content: '♩';
 }
 
-/* Game Link - Special Styling */
+/* Game Link - Colorful Button (matches desktop nav-game-btn) */
 .mobile-menu-game {
-  margin-top: 0.5rem;
-  background: linear-gradient(135deg, rgba(232, 117, 26, 0.3), rgba(212, 104, 26, 0.3));
-  border-top: 1px solid rgba(255, 215, 0, 0.3);
-  border-bottom: 1px solid rgba(255, 215, 0, 0.3);
+  display: inline-block;
+  margin: 0 auto 1rem;
+  background: linear-gradient(135deg, #e8751a, #d4681a);
+  color: white !important;
+  text-decoration: none;
+  border: 2px solid #ffd700;
+  border-radius: 20px;
   font-weight: 700;
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 0.45rem 1.4rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  box-shadow: 0 3px 10px rgba(232, 117, 26, 0.4);
+  transition: all 0.3s ease;
 }
 
-.mobile-menu-game::before {
-  content: '🎮' !important;
-  animation: none !important;
-}
-
-.mobile-menu-game:hover {
-  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(232, 117, 26, 0.3)) !important;
+.mobile-menu-game:hover,
+.mobile-menu-game:active {
+  background: linear-gradient(135deg, #ffd700, #e8751a);
+  color: #1a1a2e !important;
+  box-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
 }
 
 /* Menu Footer */
 .mobile-menu-footer {
-  padding: 2rem;
-  border-top: 1px solid rgba(255, 215, 0, 0.2);
+  padding: 1.5rem 2rem;
+  text-align: center;
+  border-top: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 .mobile-menu-epk {
-  display: block;
+  display: inline-block;
+  margin: 0 auto;
   text-align: center;
-  padding: 1rem 2rem;
+  padding: 0.45rem 1.4rem;
   background: rgba(230, 57, 70, 0.9);
   color: white;
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 0.8rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  border: 1px solid rgba(255, 215, 0, 0.3);
+  border: 2px solid #ffd700;
   transition: all 0.3s ease;
-  border-radius: 4px;
+  border-radius: 20px;
+  font-weight: 700;
 }
 
 .mobile-menu-epk:hover,
@@ -306,6 +317,18 @@
 .mobile-menu-epk:focus {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
+}
+
+.mobile-menu-copyright {
+  margin-top: 1.2rem;
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  letter-spacing: 0.05em;
+}
+
+.mobile-menu-copyright strong {
+  color: var(--color-primary);
 }
 
 /* Backdrop */

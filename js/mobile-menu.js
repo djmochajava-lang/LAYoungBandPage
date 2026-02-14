@@ -65,10 +65,11 @@ const MobileMenu = {
       });
     }
 
-    // Close menu when a link is clicked
+    // Close menu when a link is clicked (but not dropdown triggers)
     if (this.menuLinks) {
       this.menuLinks.forEach((link) => {
         link.addEventListener('click', () => {
+          if (link.classList.contains('mobile-menu-dropdown-trigger')) return;
           console.log('🔗 Menu link clicked - Closing menu');
           this.close();
         });
@@ -147,6 +148,10 @@ const MobileMenu = {
       if (this.hamburger) {
         this.hamburger.classList.remove('active');
       }
+
+      // Collapse all open dropdowns so menu resets on next open
+      const openDropdowns = this.menu.querySelectorAll('.mobile-menu-dropdown.open');
+      openDropdowns.forEach((dd) => dd.classList.remove('open'));
 
       console.log('✅ Mobile menu closed');
     }
