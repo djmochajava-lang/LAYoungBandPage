@@ -241,58 +241,84 @@ const SwipeNavigation = {
     if (this.isAnimating) return;
 
     this.isAnimating = true;
-    const mainContent =
-      document.querySelector('main') || document.querySelector('.page-content');
+    const container = document.getElementById('app-container');
 
-    if (!mainContent) {
-      // Fallback: just navigate
-      window.location.hash = `#${targetPage}`;
+    if (!container) {
+      // Fallback: use Router directly
+      if (typeof Router !== 'undefined') {
+        Router.navigateTo(targetPage);
+      } else {
+        window.location.hash = `#${targetPage}`;
+      }
       this.isAnimating = false;
       return;
     }
 
-    // Add turning class
+    // Add turning class to block interactions
     document.body.classList.add('page-turning');
-
-    // Apply animation based on direction
-    if (direction === 'next') {
-      // Swipe left = slide out to left
-      mainContent.classList.add('slide-out-left');
-    } else {
-      // Swipe right = slide out to right
-      mainContent.classList.add('slide-out-right');
-    }
 
     // Play sound effect
     if (typeof SoundEffects !== 'undefined') {
       SoundEffects.play('whoosh');
     }
 
-    // After animation, navigate
-    setTimeout(() => {
-      // Remove animation classes
-      mainContent.classList.remove('slide-out-left', 'slide-out-right');
+    // Prevent horizontal scrollbar during slide
+    document.body.style.overflowX = 'hidden';
 
-      // Navigate to new page
-      window.location.hash = `#${targetPage}`;
+    // Slide out current content (override the base.css transition on #app-container)
+    container.style.transition = 'transform 0.35s ease-in, opacity 0.35s ease-in';
+    container.style.opacity = '0';
+    container.style.transform = direction === 'next'
+      ? 'translateX(-30%)'
+      : 'translateX(30%)';
 
-      // Add slide-in animation
-      if (direction === 'next') {
-        mainContent.classList.add('slide-in-right');
+    // After slide-out, load new page then slide in
+    setTimeout(async () => {
+      // Load the new page content via Router (skip its fade, we handle it)
+      if (typeof Router !== 'undefined' && typeof PageLoader !== 'undefined') {
+        // Temporarily override PageLoader's fade so it doesn't double-animate
+        const origFadeOut = PageLoader.fadeOut;
+        const origFadeIn = PageLoader.fadeIn;
+        PageLoader.fadeOut = () => Promise.resolve();
+        PageLoader.fadeIn = () => Promise.resolve();
+
+        await Router.navigateTo(targetPage);
+
+        // Restore original fade methods
+        PageLoader.fadeOut = origFadeOut;
+        PageLoader.fadeIn = origFadeIn;
       } else {
-        mainContent.classList.add('slide-in-left');
+        window.location.hash = `#${targetPage}`;
       }
 
-      // Clean up after animation
+      // Set starting position for slide-in
+      container.style.transition = 'none';
+      container.style.transform = direction === 'next'
+        ? 'translateX(30%)'
+        : 'translateX(-30%)';
+      container.style.opacity = '0';
+
+      // Force reflow so the position takes effect before animating
+      container.offsetHeight;
+
+      // Slide in the new content
+      container.style.transition = 'transform 0.35s ease-out, opacity 0.35s ease-out';
+      container.style.opacity = '1';
+      container.style.transform = 'translateX(0)';
+
+      // Clean up after slide-in
       setTimeout(() => {
-        mainContent.classList.remove('slide-in-right', 'slide-in-left');
+        container.style.transition = '';
+        container.style.transform = '';
+        container.style.opacity = '';
+        document.body.style.overflowX = '';
         document.body.classList.remove('page-turning');
         this.isAnimating = false;
-      }, 500);
-    }, 500);
+      }, 400);
+    }, 350);
 
     console.log(
-      `${direction === 'next' ? '👉' : '👈'} Navigate to ${targetPage}`,
+      `${direction === 'next' ? '👉' : '👈'} Swiping to ${targetPage}`,
     );
   },
 };
