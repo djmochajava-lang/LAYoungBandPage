@@ -65,9 +65,108 @@ var BootScene = new Phaser.Class({
 
   create: function () {
     this.generatePlaceholders();
+
+    // Post-process van texture: remove checkered/white background if present
+    this.cleanVanBackground();
+
     // Use game.scene (global SceneManager) - scene plugin's start() is unreliable from create()
     this.game.scene.stop('BootScene');
     this.game.scene.start('MainMenuScene');
+  },
+
+  // Strip non-transparent background from the van PNG (handles baked-in checkerboard)
+  cleanVanBackground: function () {
+    var vanTex = this.textures.get('van');
+    if (!vanTex || vanTex.key === '__MISSING') return;
+
+    var source = vanTex.getSourceImage();
+    var w = source.width;
+    var h = source.height;
+
+    var canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    var ctx = canvas.getContext('2d');
+    ctx.drawImage(source, 0, 0);
+
+    var imageData = ctx.getImageData(0, 0, w, h);
+    var data = imageData.data;
+
+    // Check corner pixels to detect background color
+    // Sample top-left 4x4 area
+    var bgR = data[0], bgG = data[1], bgB = data[2], bgA = data[3];
+
+    // If corners are already fully transparent, image is fine
+    if (bgA === 0) return;
+
+    // Flood-fill from all 4 corners to remove background
+    var visited = new Uint8Array(w * h);
+    var stack = [];
+    var tolerance = 60; // color distance tolerance
+
+    function colorDist(i) {
+      var r = data[i], g = data[i + 1], b = data[i + 2];
+      return Math.abs(r - bgR) + Math.abs(g - bgG) + Math.abs(b - bgB);
+    }
+
+    // Also detect checkered pattern: alternating light/dark gray squares
+    function isCheckerOrBg(i) {
+      var r = data[i], g = data[i + 1], b = data[i + 2], a = data[i + 3];
+      if (a === 0) return true;
+      // Match the background color
+      if (colorDist(i) < tolerance) return true;
+      // Match common checkerboard colors (light gray ~204 and white ~255)
+      var isLightGray = (r > 180 && g > 180 && b > 180 && Math.abs(r - g) < 15 && Math.abs(g - b) < 15);
+      return isLightGray;
+    }
+
+    // Seed from all 4 corners
+    var seeds = [
+      [0, 0], [w - 1, 0], [0, h - 1], [w - 1, h - 1],
+      // Also seed from edges every 10px
+    ];
+    for (var ex = 0; ex < w; ex += 10) {
+      seeds.push([ex, 0]);
+      seeds.push([ex, h - 1]);
+    }
+    for (var ey = 0; ey < h; ey += 10) {
+      seeds.push([0, ey]);
+      seeds.push([w - 1, ey]);
+    }
+
+    for (var s = 0; s < seeds.length; s++) {
+      var sx = seeds[s][0], sy = seeds[s][1];
+      var si = (sy * w + sx);
+      if (visited[si]) continue;
+      var pi = si * 4;
+      if (!isCheckerOrBg(pi)) continue;
+      stack.push(sx, sy);
+    }
+
+    while (stack.length > 0) {
+      var cy = stack.pop();
+      var cx = stack.pop();
+      var ci = cy * w + cx;
+      if (cx < 0 || cx >= w || cy < 0 || cy >= h) continue;
+      if (visited[ci]) continue;
+      var idx = ci * 4;
+      if (!isCheckerOrBg(idx)) continue;
+      visited[ci] = 1;
+      // Make transparent
+      data[idx + 3] = 0;
+      // Spread to neighbors
+      stack.push(cx - 1, cy);
+      stack.push(cx + 1, cy);
+      stack.push(cx, cy - 1);
+      stack.push(cx, cy + 1);
+    }
+
+    ctx.putImageData(imageData, 0, 0);
+
+    // Replace the Phaser texture with the cleaned canvas
+    this.textures.remove('van');
+    this.textures.addCanvas('van', canvas);
+    console.log('🚙 Van background cleaned');
   },
 
   generatePlaceholders: function () {
