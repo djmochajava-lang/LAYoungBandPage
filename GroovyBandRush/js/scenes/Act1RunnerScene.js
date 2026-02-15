@@ -232,44 +232,34 @@ var Act1RunnerScene = new Phaser.Class({
     this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    // --- Full-screen touch zone ---
-    var fullZone = this.add.zone(0, 0, this.W, this.H)
-      .setOrigin(0)
-      .setInteractive()
-      .setDepth(100);
-
-    // Track touch for drag and tap detection
+    // --- Scene-level input (works everywhere, no zone needed) ---
     this.touchStartX = 0;
     this.touchStartY = 0;
     this.touchStartTime = 0;
-    this.lastDragLane = -1;  // Track which lane we last dragged to
     this.isDragging = false;
 
-    fullZone.on('pointerdown', function (pointer) {
+    this.input.on('pointerdown', function (pointer) {
       self.touchStartX = pointer.x;
       self.touchStartY = pointer.y;
-      self.touchStartTime = pointer.downTime;
+      self.touchStartTime = Date.now();
       self.isDragging = false;
-      self.lastDragLane = self.currentLane;
     });
 
-    // Real-time drag: van follows finger across lanes
-    fullZone.on('pointermove', function (pointer) {
+    this.input.on('pointermove', function (pointer) {
       if (!pointer.isDown) return;
       if (self.gameState !== 'playing') return;
 
       var diffX = pointer.x - self.touchStartX;
-      var diffY = pointer.y - self.touchStartY;
 
-      // Only start dragging after moving > 15px (prevents jitter)
+      // Start dragging after moving > 15px horizontally
       if (!self.isDragging && Math.abs(diffX) > 15) {
         self.isDragging = true;
       }
 
       if (!self.isDragging) return;
 
-      // Determine which lane the finger is closest to
-      var targetLane = 1; // default center
+      // Find which lane the finger is closest to
+      var targetLane = 1;
       var closestDist = Infinity;
       for (var i = 0; i < self.laneXPositions.length; i++) {
         var dist = Math.abs(pointer.x - self.laneXPositions[i]);
@@ -279,20 +269,19 @@ var Act1RunnerScene = new Phaser.Class({
         }
       }
 
-      // Move van to that lane if it changed
+      // Move van to that lane
       if (targetLane !== self.currentLane) {
         self.currentLane = targetLane;
         self.animatePlayerToLane();
-        self.lastDragLane = targetLane;
       }
     });
 
-    fullZone.on('pointerup', function (pointer) {
-      var diffY = pointer.y - self.touchStartY;
+    this.input.on('pointerup', function (pointer) {
       var diffX = pointer.x - self.touchStartX;
-      var elapsed = pointer.upTime - self.touchStartTime;
+      var diffY = pointer.y - self.touchStartY;
+      var elapsed = Date.now() - self.touchStartTime;
 
-      // If we were dragging, don't also trigger tap/swipe
+      // If we were dragging, just stop — don't trigger tap
       if (self.isDragging) {
         self.isDragging = false;
         return;
@@ -302,14 +291,13 @@ var Act1RunnerScene = new Phaser.Class({
       if (diffY < -30 && Math.abs(diffY) > Math.abs(diffX)) {
         self.doJump();
       }
-      // Quick tap = tap zones (left/right/center)
+      // Quick tap
       else if (elapsed < 300 && Math.abs(diffX) < 20 && Math.abs(diffY) < 20) {
         if (pointer.x < self.W * 0.33) {
           self.moveLeft();
         } else if (pointer.x > self.W * 0.67) {
           self.moveRight();
         } else {
-          // Tap center = jump
           self.doJump();
         }
       }
