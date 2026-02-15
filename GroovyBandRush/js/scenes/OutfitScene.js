@@ -52,18 +52,19 @@ var OutfitScene = new Phaser.Class({
       color: '#e8751a'
     }).setOrigin(0.5);
 
-    // Large character portrait (SVG is 200x300, display ~0.7x)
+    // Large character portrait (use setDisplaySize for consistent sizing)
+    var portraitW = 140, portraitH = 210;
     var portrait = this.add.image(width / 2, height * 0.34, 'member_' + this.memberIndex)
-      .setScale(0.7);
+      .setDisplaySize(portraitW, portraitH);
 
     // Entrance animation
     portrait.setAlpha(0);
-    portrait.setScale(0.15);
+    portrait.setDisplaySize(30, 45);
     this.tweens.add({
       targets: portrait,
       alpha: 1,
-      scaleX: 0.7,
-      scaleY: 0.7,
+      displayWidth: portraitW,
+      displayHeight: portraitH,
       duration: 600,
       ease: 'Back.easeOut'
     });

@@ -590,17 +590,19 @@ var Act5PianoScene = new Phaser.Class({
     });
 
     // L.A. Young portrait
-    this.singerPortrait = this.add.image(width / 2, height * 0.34, 'member_4').setScale(0.45);
+    var portraitW = 80;
+    var portraitH = 120;
+    this.singerPortrait = this.add.image(width / 2, height * 0.34, 'member_4').setDisplaySize(portraitW, portraitH);
     this.phaseContainer.add(this.singerPortrait);
 
     // Entrance animation
     this.singerPortrait.setAlpha(0);
-    this.singerPortrait.setScale(0);
+    this.singerPortrait.setDisplaySize(10, 15);
     this.tweens.add({
       targets: this.singerPortrait,
       alpha: 1,
-      scaleX: 0.45,
-      scaleY: 0.45,
+      displayWidth: portraitW,
+      displayHeight: portraitH,
       duration: 600,
       ease: 'Back.easeOut'
     });
@@ -894,6 +896,57 @@ var Act5PianoScene = new Phaser.Class({
     }
     this.phaseContainer.add(floorGfx);
 
+    // --- Audience silhouettes ---
+    var audienceGfx = this.add.graphics();
+    // Near row (smallest, closest to stage — just below the edge)
+    var nearY = height * 0.76;
+    audienceGfx.fillStyle(0x080808, 0.6);
+    for (var an = 0; an < 25; an++) {
+      var anx = (an * (width / 24)) + Phaser.Math.Between(-4, 4);
+      var anHeadR = Phaser.Math.Between(5, 8);
+      audienceGfx.fillCircle(anx, nearY - 8, anHeadR);
+      audienceGfx.fillRoundedRect(anx - 9, nearY - 1, 18, 14, 3);
+    }
+    // Middle row
+    var audienceY = height * 0.82;
+    audienceGfx.fillStyle(0x0a0a0a, 0.7);
+    for (var ab = 0; ab < 22; ab++) {
+      var abx = (ab * (width / 21)) + Phaser.Math.Between(-5, 5);
+      var abHeadR = Phaser.Math.Between(7, 10);
+      audienceGfx.fillCircle(abx, audienceY - 12, abHeadR);
+      audienceGfx.fillRoundedRect(abx - 12, audienceY - 4, 24, 20, 4);
+    }
+    // Front row (largest, closest to viewer)
+    audienceGfx.fillStyle(0x111111, 0.8);
+    var frontY = height * 0.88;
+    for (var af = 0; af < 18; af++) {
+      var afx = (af * (width / 17)) + Phaser.Math.Between(-8, 8);
+      var afHeadR = Phaser.Math.Between(9, 13);
+      audienceGfx.fillCircle(afx, frontY - 16, afHeadR);
+      audienceGfx.fillRoundedRect(afx - 15, frontY - 5, 30, 25, 5);
+    }
+    // Fill bottom with solid dark to blend
+    audienceGfx.fillStyle(0x080808, 0.9);
+    audienceGfx.fillRect(0, height * 0.93, width, height * 0.07);
+    this.phaseContainer.add(audienceGfx);
+
+    // Occasional phone flashlights in audience
+    for (var ph = 0; ph < 6; ph++) {
+      var phoneX = Phaser.Math.Between(40, width - 40);
+      var phoneY = Phaser.Math.Between(audienceY - 5, frontY + 5);
+      var phoneDot = this.add.circle(phoneX, phoneY, 2, 0xffffff, 0);
+      this.phaseContainer.add(phoneDot);
+      this.tweens.add({
+        targets: phoneDot,
+        alpha: { from: 0, to: 0.8 },
+        duration: Phaser.Math.Between(400, 800),
+        yoyo: true,
+        repeat: -1,
+        delay: Phaser.Math.Between(0, 4000),
+        hold: Phaser.Math.Between(500, 2000)
+      });
+    }
+
     // Left curtain
     var curtainLeft = this.add.graphics();
     curtainLeft.fillStyle(scheme.primary, 0.7);
@@ -969,11 +1022,11 @@ var Act5PianoScene = new Phaser.Class({
 
     // --- Band members walk on stage ---
     var memberPositions = [
-      { x: width * 0.15, y: height * 0.58, fromX: -80 },     // Eugene - Sax - from left
-      { x: width * 0.35, y: height * 0.60, fromX: -80 },     // Kevin W - Bass - from left
-      { x: width * 0.65, y: height * 0.60, fromX: width + 80 }, // Kevin R - Guitar - from right
-      { x: width * 0.85, y: height * 0.58, fromX: width + 80 }, // Jimmy - Drums - from right
-      { x: width / 2, y: height * 0.52, fromX: width / 2 }     // L.A. Young - center (drops in)
+      { x: width * 0.14, y: height * 0.50, fromX: -100, dw: 140, dh: 210 },     // Eugene - Sax - from left
+      { x: width * 0.34, y: height * 0.52, fromX: -100, dw: 140, dh: 210 },     // Kevin W - Bass - from left
+      { x: width * 0.66, y: height * 0.52, fromX: width + 100, dw: 140, dh: 210 }, // Kevin R - Guitar - from right
+      { x: width * 0.86, y: height * 0.50, fromX: width + 100, dw: 140, dh: 210 }, // Jimmy - Drums - from right
+      { x: width / 2, y: height * 0.50, fromX: width / 2, dw: 160, dh: 240 }     // L.A. Young - center (drops in, star)
     ];
 
     this.bandSprites = [];
@@ -985,7 +1038,7 @@ var Act5PianoScene = new Phaser.Class({
 
         self.time.delayedCall(delay, function () {
           var member = GBR.BAND[mIdx];
-          var sprite = self.add.image(pos.fromX, pos.y, 'member_' + mIdx).setScale(1.3);
+          var sprite = self.add.image(pos.fromX, pos.y, 'member_' + mIdx).setDisplaySize(pos.dw, pos.dh);
           self.phaseContainer.add(sprite);
 
           // Apply outfit tint for L.A. Young
@@ -1043,7 +1096,7 @@ var Act5PianoScene = new Phaser.Class({
 
           // Name tag
           self.time.delayedCall(900, function () {
-            var nameTag = self.add.text(pos.x, pos.y + 40, member.emoji + ' ' + member.name, {
+            var nameTag = self.add.text(pos.x, pos.y + pos.dh / 2 + 8, member.emoji + ' ' + member.name, {
               fontFamily: GBR.FONTS.fun,
               fontSize: '11px',
               color: member.colorHex,

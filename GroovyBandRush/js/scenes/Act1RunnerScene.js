@@ -42,18 +42,26 @@ var Act1RunnerScene = new Phaser.Class({
     this.W = width;
     this.H = height;
 
-    // Lane X positions (3 lanes centered on road)
-    var roadLeft = width * 0.2;
-    var roadRight = width * 0.8;
-    var roadWidth = roadRight - roadLeft;
-    var laneWidth = roadWidth / 3;
+    // Perspective road geometry (Pole Position style)
+    this.vanishX = width * 0.5;
+    this.vanishY = height * 0.30;            // horizon line (matches skyline)
+    this.roadBottomLeft = width * 0.12;      // wide at bottom
+    this.roadBottomRight = width * 0.88;
+    this.roadTopLeft = this.vanishX - width * 0.03;   // narrow at horizon
+    this.roadTopRight = this.vanishX + width * 0.03;
+
+    // Lane positions at player Y (bottom of road) — used for player positioning
+    var playerRoadLeft = this.getRoadLeftAtY(height - 100);
+    var playerRoadRight = this.getRoadRightAtY(height - 100);
+    var playerRoadWidth = playerRoadRight - playerRoadLeft;
+    var laneWidth = playerRoadWidth / 3;
     this.laneXPositions = [
-      roadLeft + laneWidth * 0.5,
-      roadLeft + laneWidth * 1.5,
-      roadLeft + laneWidth * 2.5
+      playerRoadLeft + laneWidth * 0.5,
+      playerRoadLeft + laneWidth * 1.5,
+      playerRoadLeft + laneWidth * 2.5
     ];
-    this.roadLeft = roadLeft;
-    this.roadRight = roadRight;
+    this.roadLeft = playerRoadLeft;    // keep for building layout compat
+    this.roadRight = playerRoadRight;
     this.laneWidth = laneWidth;
 
     // Player Y position (near bottom)
@@ -65,7 +73,7 @@ var Act1RunnerScene = new Phaser.Class({
 
     // --- Player SUV (top-down view, already facing up) ---
     this.player = this.add.image(this.laneXPositions[1], this.playerY, 'van');
-    this.player.setDisplaySize(this.laneWidth * 0.85, this.laneWidth * 1.2);
+    this.player.setDisplaySize(this.laneWidth * 0.55, this.laneWidth * 0.85);
     this.player.setDepth(10);
     // Store base scale for jump animation
     this.playerBaseScaleX = this.player.scaleX;
@@ -96,6 +104,31 @@ var Act1RunnerScene = new Phaser.Class({
 
     // Resume audio
     AudioSynth.resume();
+  },
+
+  // =============== PERSPECTIVE HELPERS ===============
+
+  getRoadLeftAtY: function (y) {
+    var t = Math.max(0, Math.min(1, (y - this.vanishY) / (this.H - this.vanishY)));
+    return this.roadTopLeft + (this.roadBottomLeft - this.roadTopLeft) * t;
+  },
+
+  getRoadRightAtY: function (y) {
+    var t = Math.max(0, Math.min(1, (y - this.vanishY) / (this.H - this.vanishY)));
+    return this.roadTopRight + (this.roadBottomRight - this.roadTopRight) * t;
+  },
+
+  getLaneXAtY: function (lane, y) {
+    var left = this.getRoadLeftAtY(y);
+    var right = this.getRoadRightAtY(y);
+    var lw = (right - left) / 3;
+    return left + lw * (lane + 0.5);
+  },
+
+  getScaleAtY: function (y) {
+    var t = Math.max(0, Math.min(1, (y - this.vanishY) / (this.H - this.vanishY)));
+    // Entities at horizon are 0.25x, at player Y are 1.0x
+    return 0.25 + t * 0.75;
   },
 
   // =============== BACKGROUND ===============
@@ -149,59 +182,284 @@ var Act1RunnerScene = new Phaser.Class({
       });
     }
 
-    // Vibrant city skyline
+    // ===== WASHINGTON DC SKYLINE =====
     var skylineY = height * 0.30;
+    var roadL = this.roadLeft;
+    var roadR = this.roadRight;
     var skyline = this.add.graphics();
     skyline.setDepth(1);
-
-    // Generate dynamic buildings across full width
-    var buildings = [];
-    var bx = 0;
-    while (bx < width + 10) {
-      var bw = Phaser.Math.Between(18, 42);
-      var bh = Phaser.Math.Between(50, 140);
-      buildings.push({ x: bx, w: bw, h: bh });
-      bx += bw + Phaser.Math.Between(0, 4);
-    }
-
-    // Building silhouettes (darker base)
-    for (var b = 0; b < buildings.length; b++) {
-      var bld = buildings[b];
-      // Slight color variety per building
-      var bldShade = Phaser.Math.Between(8, 18);
-      skyline.fillStyle(Phaser.Display.Color.GetColor(bldShade, bldShade, bldShade + 8), 0.95);
-      skyline.fillRect(bld.x, skylineY - bld.h, bld.w - 2, bld.h + 20);
-    }
-
-    // Colorful lit windows (multi-color, not just gold)
+    var belowH = (height - skylineY) + 20;
     var windowColors = [0xffd700, 0x00e5ff, 0xe84393, 0xffffff, 0xe8751a, 0x3498db];
-    for (var bw = 0; bw < buildings.length; bw++) {
-      var bl = buildings[bw];
-      for (var wy = skylineY - bl.h + 6; wy < skylineY - 2; wy += 9) {
-        for (var wx = bl.x + 3; wx < bl.x + bl.w - 5; wx += 7) {
-          if (Math.random() > 0.35) {
+
+    // ---------- LEFT SIDE: Washington Monument + Government Buildings ----------
+
+    // Helper: draw a rectangular building with shade
+    var drawBuilding = function (gfx, bx, by, bw, bh, shade) {
+      gfx.fillStyle(Phaser.Display.Color.GetColor(shade, shade, shade + 8), 0.95);
+      gfx.fillRect(bx, by, bw, bh);
+    };
+
+    // Helper: draw windows on a building face
+    var drawWindows = function (gfx, bx, bw, topY, bottomY, spacing, prob) {
+      for (var wy = topY + 5; wy < bottomY - 3; wy += (spacing || 9)) {
+        for (var wx = bx + 3; wx < bx + bw - 4; wx += 7) {
+          if (Math.random() > (prob || 0.35)) {
             var wc = Phaser.Math.RND.pick(windowColors);
-            var wa = Phaser.Math.FloatBetween(0.08, 0.35);
-            skyline.fillStyle(wc, wa);
-            skyline.fillRect(wx, wy, 3, 5);
+            gfx.fillStyle(wc, Phaser.Math.FloatBetween(0.06, 0.30));
+            gfx.fillRect(wx, wy, 3, 4);
+          }
+        }
+      }
+    };
+
+    // Helper: draw classical pediment (triangle on top of building)
+    var drawPediment = function (gfx, bx, bw, topY, pedH, shade) {
+      gfx.fillStyle(Phaser.Display.Color.GetColor(shade + 3, shade + 3, shade + 10), 0.95);
+      gfx.beginPath();
+      gfx.moveTo(bx + bw / 2, topY - pedH);
+      gfx.lineTo(bx - 1, topY);
+      gfx.lineTo(bx + bw + 1, topY);
+      gfx.closePath();
+      gfx.fillPath();
+    };
+
+    // Helper: draw columns on a building face
+    var drawColumns = function (gfx, bx, bw, topY, colH, count) {
+      var spacing = bw / (count + 1);
+      gfx.lineStyle(1, 0x222233, 0.4);
+      for (var c = 1; c <= count; c++) {
+        var cx = bx + spacing * c;
+        gfx.lineBetween(cx, topY, cx, topY + colH);
+      }
+    };
+
+    // ---- Left side buildings (0 to roadL) ----
+    var leftZoneW = roadL;
+
+    // Far-left government office
+    var lb1x = 0, lb1w = leftZoneW * 0.22, lb1h = 55;
+    drawBuilding(skyline, lb1x, skylineY - lb1h, lb1w, lb1h + belowH, 12);
+    drawWindows(skyline, lb1x, lb1w, skylineY - lb1h, skylineY, 9, 0.4);
+
+    // Smithsonian-style museum (wider, with pediment)
+    var lb2x = lb1w + 3, lb2w = leftZoneW * 0.28, lb2h = 75;
+    drawBuilding(skyline, lb2x, skylineY - lb2h, lb2w, lb2h + belowH, 10);
+    drawPediment(skyline, lb2x, lb2w, skylineY - lb2h, 10, 10);
+    drawColumns(skyline, lb2x, lb2w, skylineY - lb2h, lb2h * 0.6, 4);
+    drawWindows(skyline, lb2x, lb2w, skylineY - lb2h + 8, skylineY, 10, 0.45);
+
+    // Another government building
+    var lb3x = lb2x + lb2w + 2, lb3w = leftZoneW * 0.18, lb3h = 60;
+    drawBuilding(skyline, lb3x, skylineY - lb3h, lb3w, lb3h + belowH, 14);
+    drawWindows(skyline, lb3x, lb3w, skylineY - lb3h, skylineY, 9, 0.4);
+
+    // === WASHINGTON MONUMENT (tall obelisk near road edge) ===
+    var monW = 14;
+    var monH = 190;
+    var monX = roadL - monW - 6;
+    var monShade = 16;
+    // Obelisk shaft
+    drawBuilding(skyline, monX, skylineY - monH, monW, monH + belowH, monShade);
+    // Pyramidal cap (pointed top)
+    skyline.fillStyle(Phaser.Display.Color.GetColor(monShade + 4, monShade + 4, monShade + 12), 0.95);
+    skyline.beginPath();
+    skyline.moveTo(monX + monW / 2, skylineY - monH - 18);  // pointed tip
+    skyline.lineTo(monX - 1, skylineY - monH);
+    skyline.lineTo(monX + monW + 1, skylineY - monH);
+    skyline.closePath();
+    skyline.fillPath();
+    // Subtle observation slits near top
+    skyline.fillStyle(0xffd700, 0.12);
+    skyline.fillRect(monX + 5, skylineY - monH + 8, 4, 3);
+    skyline.fillRect(monX + 5, skylineY - monH + 14, 4, 3);
+    // Slight highlight on one side (moonlight)
+    skyline.fillStyle(0xffffff, 0.03);
+    skyline.fillRect(monX + monW - 3, skylineY - monH, 3, monH);
+
+    // Blinking red aviation warning light at the tip
+    var monTipX = monX + monW / 2;
+    var monTipY = skylineY - monH - 18;
+    var redLight = this.add.circle(monTipX, monTipY, 2.5, 0xff0000, 0.9).setDepth(1);
+    this.tweens.add({
+      targets: redLight,
+      alpha: { from: 0.9, to: 0.05 },
+      duration: 1500,
+      yoyo: true, repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
+    // Red glow halo around light
+    var redGlow = this.add.circle(monTipX, monTipY, 6, 0xff0000, 0.15).setDepth(1);
+    this.tweens.add({
+      targets: redGlow,
+      alpha: { from: 0.15, to: 0.0 },
+      duration: 1500,
+      yoyo: true, repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
+
+    // Street-level windows on left buildings (below skyline, sparser)
+    var leftBuildings = [
+      { x: lb1x, w: lb1w }, { x: lb2x, w: lb2w }, { x: lb3x, w: lb3w }
+    ];
+    for (var li = 0; li < leftBuildings.length; li++) {
+      var lb = leftBuildings[li];
+      for (var lwy = skylineY + 10; lwy < height - 20; lwy += 18) {
+        for (var lwx = lb.x + 3; lwx < lb.x + lb.w - 5; lwx += 9) {
+          if (Math.random() > 0.55) {
+            skyline.fillStyle(Phaser.Math.RND.pick(windowColors), Phaser.Math.FloatBetween(0.04, 0.15));
+            skyline.fillRect(lwx, lwy, 3, 5);
           }
         }
       }
     }
 
-    // Neon rooftop signs on random tall buildings
+    // ---------- RIGHT SIDE: Office Buildings (background) + US Capitol (foreground near road) ----------
+
+    var rightStart = roadR;
+    var rightZoneW = width - roadR;
+
+    // ----- Office buildings in the BACK (far right, drawn first so Capitol overlaps) -----
+    var rb1x = rightStart + rightZoneW * 0.55;
+    var rb1w = rightZoneW * 0.22;
+    var rb1h = 60;
+    drawBuilding(skyline, rb1x, skylineY - rb1h, rb1w, rb1h + belowH, 11);
+    drawPediment(skyline, rb1x, rb1w, skylineY - rb1h, 8, 11);
+    drawWindows(skyline, rb1x, rb1w, skylineY - rb1h, skylineY, 9, 0.40);
+
+    var rb2x = rb1x + rb1w + 3;
+    var rb2w = rightZoneW * 0.20;
+    var rb2h = 50;
+    drawBuilding(skyline, rb2x, skylineY - rb2h, rb2w, rb2h + belowH, 9);
+    drawWindows(skyline, rb2x, rb2w, skylineY - rb2h, skylineY, 9, 0.45);
+
+    // Fill any remaining gap to screen edge
+    if (rb2x + rb2w < width + 10) {
+      var rb3x = rb2x + rb2w + 2;
+      var rb3w = width - rb3x + 10;
+      drawBuilding(skyline, rb3x, skylineY - 45, rb3w, 45 + belowH, 8);
+      drawWindows(skyline, rb3x, rb3w, skylineY - 45, skylineY, 10, 0.50);
+    }
+
+    // === US CAPITOL BUILDING (foreground, right next to road edge — mirrors Monument placement) ===
+    var capMainW = rightZoneW * 0.42;
+    var capMainH = 80;
+    var capX = rightStart + 6;   // right next to road, like Monument on the left
+    var capShade = 14;
+
+    // Main rectangular body
+    drawBuilding(skyline, capX, skylineY - capMainH, capMainW, capMainH + belowH, capShade);
+
+    // Right wing (extending away from road)
+    var wingW = capMainW * 0.3;
+    var wingH = capMainH * 0.55;
+    drawBuilding(skyline, capX + capMainW - 2, skylineY - wingH, wingW, wingH + belowH, capShade - 2);
+
+    // Dome drum (cylindrical base for dome — rectangular)
+    var drumW = capMainW * 0.35;
+    var drumH = 20;
+    var drumX = capX + (capMainW - drumW) / 2;
+    var drumY = skylineY - capMainH - drumH;
+    drawBuilding(skyline, drumX, drumY, drumW, drumH, capShade + 2);
+    // Small windows on drum
+    skyline.fillStyle(0xffd700, 0.15);
+    for (var dw = drumX + 3; dw < drumX + drumW - 3; dw += 5) {
+      skyline.fillRect(dw, drumY + 4, 2, 6);
+    }
+
+    // Dome (half-ellipse drawn with arc path)
+    var domeW = drumW * 1.05;
+    var domeRise = 35;
+    var domeCX = drumX + drumW / 2;
+    var domeBaseY = drumY;
+    skyline.fillStyle(Phaser.Display.Color.GetColor(capShade + 4, capShade + 4, capShade + 12), 0.95);
+    skyline.beginPath();
+    skyline.moveTo(domeCX - domeW / 2, domeBaseY);
+    for (var a = Math.PI; a >= 0; a -= 0.08) {
+      var dx = domeCX + (domeW / 2) * Math.cos(a);
+      var dy = domeBaseY - domeRise * Math.sin(a);
+      skyline.lineTo(dx, dy);
+    }
+    skyline.lineTo(domeCX + domeW / 2, domeBaseY);
+    skyline.closePath();
+    skyline.fillPath();
+
+    // Dome highlight (subtle shine on left side from road glow)
+    skyline.fillStyle(0xffffff, 0.04);
+    skyline.beginPath();
+    skyline.moveTo(domeCX, domeBaseY);
+    for (var a2 = Math.PI * 0.9; a2 >= Math.PI * 0.4; a2 -= 0.1) {
+      var dx2 = domeCX + (domeW / 2 - 3) * Math.cos(a2);
+      var dy2 = domeBaseY - (domeRise - 3) * Math.sin(a2);
+      skyline.lineTo(dx2, dy2);
+    }
+    skyline.closePath();
+    skyline.fillPath();
+
+    // Cupola (lantern on top of dome — small rectangle + tiny dome)
+    var cupW = 6;
+    var cupH = 10;
+    var cupX = domeCX - cupW / 2;
+    var cupY = domeBaseY - domeRise - cupH;
+    skyline.fillStyle(Phaser.Display.Color.GetColor(capShade + 5, capShade + 5, capShade + 14), 0.95);
+    skyline.fillRect(cupX, cupY, cupW, cupH);
+    // Tiny dome on cupola
+    skyline.beginPath();
+    skyline.moveTo(cupX, cupY);
+    for (var a3 = Math.PI; a3 >= 0; a3 -= 0.2) {
+      skyline.lineTo(cupX + cupW / 2 + (cupW / 2) * Math.cos(a3), cupY - 4 * Math.sin(a3));
+    }
+    skyline.closePath();
+    skyline.fillPath();
+
+    // Statue of Freedom on top (tiny vertical line + dot)
+    skyline.lineStyle(1, 0xcccccc, 0.5);
+    skyline.lineBetween(domeCX, cupY - 4, domeCX, cupY - 10);
+    var statueTop = this.add.circle(domeCX, cupY - 11, 1.5, 0xcccccc, 0.5).setDepth(1);
+
+    // Capitol windows — main body
+    drawWindows(skyline, capX, capMainW, skylineY - capMainH, skylineY, 9, 0.35);
+    // Capitol windows — right wing
+    drawWindows(skyline, capX + capMainW - 2, wingW, skylineY - wingH, skylineY, 9, 0.40);
+
+    // Columns on Capitol front
+    drawColumns(skyline, capX, capMainW, skylineY - capMainH, capMainH * 0.5, 6);
+
+    // Street-level windows on right buildings (below skyline)
+    var rightBuildings = [
+      { x: capX, w: capMainW },
+      { x: capX + capMainW - 2, w: wingW },
+      { x: rb1x, w: rb1w },
+      { x: rb2x, w: rb2w }
+    ];
+    for (var ri = 0; ri < rightBuildings.length; ri++) {
+      var rb = rightBuildings[ri];
+      for (var rwy = skylineY + 10; rwy < height - 20; rwy += 18) {
+        for (var rwx = rb.x + 3; rwx < rb.x + rb.w - 5; rwx += 9) {
+          if (Math.random() > 0.55) {
+            skyline.fillStyle(Phaser.Math.RND.pick(windowColors), Phaser.Math.FloatBetween(0.04, 0.15));
+            skyline.fillRect(rwx, rwy, 3, 5);
+          }
+        }
+      }
+    }
+
+    // ---------- NEON SIGNS (office buildings only, not landmarks) ----------
     var neonColors = [0xe63946, 0x00e5ff, 0xe84393, 0xffd700, 0x2ecc71];
     var neonGfx = this.add.graphics().setDepth(1);
-    for (var ns = 0; ns < buildings.length; ns++) {
-      if (buildings[ns].h > 90 && Math.random() > 0.6) {
-        var nb = buildings[ns];
+    var neonTargets = [
+      { x: lb1x, w: lb1w, h: 55 },
+      { x: lb3x, w: lb3w, h: 60 },
+      { x: rb1x, w: rb1w, h: rb1h },
+      { x: rb2x, w: rb2w, h: rb2h }
+    ];
+    for (var ns = 0; ns < neonTargets.length; ns++) {
+      if (Math.random() > 0.4) {
+        var nt = neonTargets[ns];
         var nc = Phaser.Math.RND.pick(neonColors);
-        // Neon bar on rooftop
-        neonGfx.fillStyle(nc, 0.8);
-        neonGfx.fillRect(nb.x + 2, skylineY - nb.h - 4, nb.w - 6, 3);
-        // Glow above
-        neonGfx.fillStyle(nc, 0.12);
-        neonGfx.fillRect(nb.x - 2, skylineY - nb.h - 10, nb.w + 2, 10);
+        neonGfx.fillStyle(nc, 0.7);
+        neonGfx.fillRect(nt.x + 2, skylineY - nt.h - 4, nt.w - 6, 3);
+        neonGfx.fillStyle(nc, 0.10);
+        neonGfx.fillRect(nt.x - 2, skylineY - nt.h - 10, nt.w + 2, 10);
       }
     }
 
@@ -226,50 +484,102 @@ var Act1RunnerScene = new Phaser.Class({
   },
 
   drawRoad: function () {
-    var width = this.W;
-    var height = this.H;
+    var W = this.W;
+    var H = this.H;
 
-    // Road surface
-    this.roadGraphics = this.add.graphics();
-    this.roadGraphics.setDepth(2);
-
-    // Dark road
+    // Road surface — filled perspective trapezoid
+    this.roadGraphics = this.add.graphics().setDepth(2);
     this.roadGraphics.fillStyle(0x1a1a2e, 1);
-    this.roadGraphics.fillRect(this.roadLeft, height * 0.3, this.roadRight - this.roadLeft, height * 0.7);
+    this.roadGraphics.beginPath();
+    this.roadGraphics.moveTo(this.roadTopLeft, this.vanishY);
+    this.roadGraphics.lineTo(this.roadTopRight, this.vanishY);
+    this.roadGraphics.lineTo(this.roadBottomRight, H);
+    this.roadGraphics.lineTo(this.roadBottomLeft, H);
+    this.roadGraphics.closePath();
+    this.roadGraphics.fillPath();
 
-    // Neon road edges
+    // Neon road edges — diagonal lines converging at horizon
     this.roadGraphics.lineStyle(3, 0xe8751a, 0.8);
-    this.roadGraphics.lineBetween(this.roadLeft, height * 0.3, this.roadLeft, height);
-    this.roadGraphics.lineBetween(this.roadRight, height * 0.3, this.roadRight, height);
+    this.roadGraphics.lineBetween(this.roadTopLeft, this.vanishY, this.roadBottomLeft, H);
+    this.roadGraphics.lineBetween(this.roadTopRight, this.vanishY, this.roadBottomRight, H);
 
-    // Neon lane dividers (dashed lines will be drawn as sprites for scrolling)
+    // Lane dividers — perspective lines converging at vanish point
+    var div1TopX = this.roadTopLeft + (this.roadTopRight - this.roadTopLeft) / 3;
+    var div1BotX = this.roadBottomLeft + (this.roadBottomRight - this.roadBottomLeft) / 3;
+    var div2TopX = this.roadTopLeft + (this.roadTopRight - this.roadTopLeft) * 2 / 3;
+    var div2BotX = this.roadBottomLeft + (this.roadBottomRight - this.roadBottomLeft) * 2 / 3;
+
+    // Store divider endpoints for stripe positioning
+    this.div1TopX = div1TopX;
+    this.div1BotX = div1BotX;
+    this.div2TopX = div2TopX;
+    this.div2BotX = div2BotX;
+
     this.roadGraphics.lineStyle(1, 0xffd700, 0.2);
-    var lane1X = this.roadLeft + this.laneWidth;
-    var lane2X = this.roadLeft + this.laneWidth * 2;
-    this.roadGraphics.lineBetween(lane1X, height * 0.3, lane1X, height);
-    this.roadGraphics.lineBetween(lane2X, height * 0.3, lane2X, height);
+    this.roadGraphics.lineBetween(div1TopX, this.vanishY, div1BotX, H);
+    this.roadGraphics.lineBetween(div2TopX, this.vanishY, div2BotX, H);
 
-    // Road side terrain (dark)
-    var sideBg = this.add.graphics();
-    sideBg.setDepth(1);
-    sideBg.fillStyle(0x0a0a12, 1);
-    sideBg.fillRect(0, height * 0.3, this.roadLeft, height * 0.7);
-    sideBg.fillRect(this.roadRight, height * 0.3, width - this.roadRight, height * 0.7);
+    // Horizon glow bar — warm orange/gold at vanishing point
+    var horizonGfx = this.add.graphics().setDepth(2);
+    var hWidth = this.roadTopRight - this.roadTopLeft;
+    horizonGfx.fillStyle(0xe8751a, 0.25);
+    horizonGfx.fillRect(this.roadTopLeft - 10, this.vanishY - 3, hWidth + 20, 6);
+    horizonGfx.fillStyle(0xffd700, 0.15);
+    horizonGfx.fillRect(this.roadTopLeft - 20, this.vanishY - 1, hWidth + 40, 3);
+    // Wider ambient glow
+    horizonGfx.fillStyle(0xe8751a, 0.06);
+    horizonGfx.fillRect(this.roadTopLeft - 40, this.vanishY - 8, hWidth + 80, 16);
 
-    // Side neon strips
-    sideBg.fillStyle(0xe8751a, 0.04);
-    sideBg.fillRect(this.roadLeft - 8, height * 0.3, 8, height * 0.7);
-    sideBg.fillRect(this.roadRight, height * 0.3, 8, height * 0.7);
+    // Sidewalk strips — perspective trapezoids flanking the road
+    var sideBg = this.add.graphics().setDepth(1);
+    sideBg.fillStyle(0x222230, 0.8);
+    // Left sidewalk
+    sideBg.beginPath();
+    sideBg.moveTo(this.roadTopLeft - 2, this.vanishY);
+    sideBg.lineTo(this.roadTopLeft, this.vanishY);
+    sideBg.lineTo(this.roadBottomLeft, H);
+    sideBg.lineTo(this.roadBottomLeft - 8, H);
+    sideBg.closePath();
+    sideBg.fillPath();
+    // Right sidewalk
+    sideBg.beginPath();
+    sideBg.moveTo(this.roadTopRight, this.vanishY);
+    sideBg.lineTo(this.roadTopRight + 2, this.vanishY);
+    sideBg.lineTo(this.roadBottomRight + 8, H);
+    sideBg.lineTo(this.roadBottomRight, H);
+    sideBg.closePath();
+    sideBg.fillPath();
+    // Side neon glow strips
+    sideBg.fillStyle(0xe8751a, 0.06);
+    sideBg.beginPath();
+    sideBg.moveTo(this.roadTopLeft - 6, this.vanishY);
+    sideBg.lineTo(this.roadTopLeft, this.vanishY);
+    sideBg.lineTo(this.roadBottomLeft, H);
+    sideBg.lineTo(this.roadBottomLeft - 12, H);
+    sideBg.closePath();
+    sideBg.fillPath();
+    sideBg.beginPath();
+    sideBg.moveTo(this.roadTopRight, this.vanishY);
+    sideBg.lineTo(this.roadTopRight + 6, this.vanishY);
+    sideBg.lineTo(this.roadBottomRight + 12, H);
+    sideBg.lineTo(this.roadBottomRight, H);
+    sideBg.closePath();
+    sideBg.fillPath();
 
-    // Create scrolling stripe sprites (in each lane divider)
+    // Create scrolling stripe sprites along lane dividers — positioned by perspective
     this.stripeContainer = this.add.group();
-    var stripePositions = [lane1X - 4, lane2X - 4];
-    for (var s = 0; s < stripePositions.length; s++) {
-      for (var sy = height * 0.3; sy < height + 60; sy += 80) {
-        var stripe = this.add.image(stripePositions[s], sy, 'road_stripe')
-          .setAlpha(0.4)
+    for (var sy = this.vanishY; sy < H + 60; sy += 50) {
+      for (var d = 0; d < 2; d++) {
+        var dtX = d === 0 ? div1TopX : div2TopX;
+        var dbX = d === 0 ? div1BotX : div2BotX;
+        var t = Math.max(0, (sy - this.vanishY) / (H - this.vanishY));
+        var sx = dtX + (dbX - dtX) * t;
+        var stripe = this.add.image(sx, sy, 'road_stripe')
+          .setAlpha(0.1 + t * 0.4)
           .setTint(0xffd700)
-          .setDepth(3);
+          .setDepth(3)
+          .setScale(0.3 + t * 0.7);
+        stripe.laneDiv = d;
         this.roadStripes.push(stripe);
       }
     }
@@ -568,14 +878,30 @@ var Act1RunnerScene = new Phaser.Class({
 
   scrollRoad: function () {
     var scrollSpeed = this.gameState === 'countdown' ? 1.5 : this.speed;
+    var H = this.H;
 
-    // Move road stripes down
     for (var i = 0; i < this.roadStripes.length; i++) {
       var stripe = this.roadStripes[i];
       stripe.y += scrollSpeed;
-      if (stripe.y > this.H + 40) {
-        stripe.y -= (Math.ceil((this.H * 0.7 + 100) / 80)) * 80;
+
+      // Wrap around to horizon
+      if (stripe.y > H + 30) {
+        stripe.y = this.vanishY;
       }
+
+      // Recalculate X and scale based on Y (perspective)
+      var t = Math.max(0, (stripe.y - this.vanishY) / (H - this.vanishY));
+      var divTopX, divBotX;
+      if (stripe.laneDiv === 0) {
+        divTopX = this.div1TopX;
+        divBotX = this.div1BotX;
+      } else {
+        divTopX = this.div2TopX;
+        divBotX = this.div2BotX;
+      }
+      stripe.x = divTopX + (divBotX - divTopX) * t;
+      stripe.setScale(0.3 + t * 0.7);
+      stripe.setAlpha(0.1 + t * 0.4);
     }
   },
 
@@ -607,19 +933,21 @@ var Act1RunnerScene = new Phaser.Class({
 
   spawnObstacle: function () {
     var lane = Phaser.Math.Between(0, 2);
-    var x = this.laneXPositions[lane];
+    var spawnY = this.vanishY + 10;
+    var x = this.getLaneXAtY(lane, spawnY);
 
-    // Pick a random car variant (3 colors)
-    var carIdx = Phaser.Math.Between(0, 2);
-    var obstacle = this.add.image(x, -60, 'obstacle_car_' + carIdx).setDepth(8);
-    // Scale to fit lane nicely
-    obstacle.setDisplaySize(this.laneWidth * 0.55, this.laneWidth * 0.85);
+    // Pick a random car variant (5 types: red sedan, orange SUV, grey coupe, yellow taxi, green muscle)
+    var carIdx = Phaser.Math.Between(0, 4);
+    var obstacle = this.add.image(x, spawnY, 'obstacle_car_' + carIdx).setDepth(8);
+    // Flip Y so we see the rear of the car (taillights toward player)
+    obstacle.setFlipY(true);
+    // Scale to fit lane — perspective-adjusted at spawn point
+    var initScale = this.getScaleAtY(spawnY);
+    obstacle.setDisplaySize(this.laneWidth * 0.55 * initScale, this.laneWidth * 0.85 * initScale);
 
-    // Headlight glow effect (small yellow ellipse in front of car)
-    var headlight = this.add.graphics().setDepth(7);
-    headlight.fillStyle(0xffffaa, 0.15);
-    headlight.fillEllipse(x, -60 - 12, 30, 10);
-    obstacle.headlightGfx = headlight;
+    // Taillight glow (red, behind the car driving away)
+    var taillight = this.add.graphics().setDepth(7);
+    obstacle.headlightGfx = taillight;
 
     this.obstacles.push({
       sprite: obstacle,
@@ -631,7 +959,9 @@ var Act1RunnerScene = new Phaser.Class({
 
   spawnCollectible: function () {
     var lane = Phaser.Math.Between(0, 2);
-    var x = this.laneXPositions[lane];
+    var spawnY = this.vanishY + 10;
+    var x = this.getLaneXAtY(lane, spawnY);
+    var initScale = this.getScaleAtY(spawnY);
     var type;
     var textureKey;
     var value;
@@ -662,22 +992,22 @@ var Act1RunnerScene = new Phaser.Class({
       yOffset = -40;
     }
 
-    var sprite = this.add.image(x, -40 + yOffset, textureKey).setDepth(8);
+    var sprite = this.add.image(x, spawnY + yOffset, textureKey).setDepth(8);
 
     if (isEugene) {
-      sprite.setScale(0.28);
+      sprite.setScale(0.28 * initScale);
       // Glowing pulse for Eugene
       this.tweens.add({
         targets: sprite,
-        scaleX: { from: 0.28, to: 0.35 },
-        scaleY: { from: 0.28, to: 0.35 },
+        scaleX: { from: 0.28 * initScale, to: 0.35 * initScale },
+        scaleY: { from: 0.28 * initScale, to: 0.35 * initScale },
         duration: 400,
         yoyo: true,
         repeat: -1,
         ease: 'Sine.easeInOut'
       });
       // Add golden glow circle behind
-      var eugeneGlow = this.add.circle(x, -40, 40, 0xffd700, 0.3).setDepth(7);
+      var eugeneGlow = this.add.circle(x, spawnY, 40 * initScale, 0xffd700, 0.3).setDepth(7);
       this.tweens.add({
         targets: eugeneGlow,
         alpha: { from: 0.3, to: 0.6 },
@@ -689,7 +1019,7 @@ var Act1RunnerScene = new Phaser.Class({
       });
       sprite.eugeneGlow = eugeneGlow;
     } else if (type === 'instrument') {
-      sprite.setScale(1.3);
+      sprite.setScale(1.3 * initScale);
       // Golden shimmer + gentle spin
       this.tweens.add({
         targets: sprite,
@@ -701,7 +1031,7 @@ var Act1RunnerScene = new Phaser.Class({
         ease: 'Sine.easeInOut'
       });
     } else {
-      sprite.setScale(1.3);
+      sprite.setScale(1.3 * initScale);
       // Dollar bill float + gentle bob
       this.tweens.add({
         targets: sprite,
@@ -731,14 +1061,25 @@ var Act1RunnerScene = new Phaser.Class({
   moveEntities: function () {
     var self = this;
 
-    // Move obstacles down
+    // Move obstacles down with perspective
     for (var i = this.obstacles.length - 1; i >= 0; i--) {
       var obs = this.obstacles[i];
       obs.sprite.y += this.speed;
-      // Move headlight glow with car
+
+      // Update X position to follow lane's perspective line
+      obs.sprite.x = this.getLaneXAtY(obs.lane, obs.sprite.y);
+
+      // Scale up as it approaches (perspective)
+      var s = this.getScaleAtY(obs.sprite.y);
+      obs.sprite.setDisplaySize(this.laneWidth * 0.55 * s, this.laneWidth * 0.85 * s);
+
+      // Redraw taillight glow (red, behind the car driving away)
       if (obs.sprite.headlightGfx) {
-        obs.sprite.headlightGfx.y += this.speed;
+        obs.sprite.headlightGfx.clear();
+        obs.sprite.headlightGfx.fillStyle(0xff3333, 0.15 * s);
+        obs.sprite.headlightGfx.fillEllipse(obs.sprite.x, obs.sprite.y - 30 * s, 30 * s, 10 * s);
       }
+
       // Remove if off screen
       if (obs.sprite.y > this.H + 60) {
         if (obs.sprite.headlightGfx) obs.sprite.headlightGfx.destroy();
@@ -747,14 +1088,27 @@ var Act1RunnerScene = new Phaser.Class({
       }
     }
 
-    // Move collectibles down
+    // Move collectibles down with perspective
     for (var c = this.collectibles.length - 1; c >= 0; c--) {
       var col = this.collectibles[c];
       col.sprite.y += this.speed;
+
+      // Update X position to follow lane perspective
+      col.sprite.x = this.getLaneXAtY(col.lane, col.sprite.y);
+
+      // Scale collectibles with perspective
+      var cs = this.getScaleAtY(col.sprite.y);
+      // Don't override scale for Eugene (has pulsing tween) — just update X
+      if (!col.isEugene) {
+        col.sprite.setScale(1.3 * cs);
+      }
+
       // Move eugene glow too
       if (col.sprite.eugeneGlow) {
-        col.sprite.eugeneGlow.y += this.speed;
+        col.sprite.eugeneGlow.x = col.sprite.x;
+        col.sprite.eugeneGlow.y = col.sprite.y;
       }
+
       // Remove if off screen
       if (col.sprite.y > this.H + 60) {
         if (col.sprite.eugeneGlow) col.sprite.eugeneGlow.destroy();

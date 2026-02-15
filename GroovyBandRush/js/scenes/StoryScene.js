@@ -185,7 +185,7 @@ var StoryScene = new Phaser.Class({
       var found = GBR.state.bandMembers[slot.idx].found;
 
       var peeker = this.add.image(mx, my, 'member_' + slot.idx)
-        .setScale(0.22)
+        .setDisplaySize(30, 45)
         .setOrigin(0.5, 1)
         .setAlpha(found ? 0.85 : 0.45)
         .setDepth(3);
@@ -562,7 +562,7 @@ var StoryScene = new Phaser.Class({
       var found = GBR.state.bandMembers[slot.idx].found;
 
       var peeker = this.add.image(mx, my, 'member_' + slot.idx)
-        .setScale(0.22)
+        .setDisplaySize(30, 45)
         .setOrigin(0.5, 1)
         .setAlpha(found ? 0.85 : 0.45)
         .setDepth(3);
@@ -657,7 +657,7 @@ var StoryScene = new Phaser.Class({
 
       // Band member sprite flies in from right
       var foundMember = this.add.image(W + 100, memberTargetY, 'member_' + foundMemberIdx)
-        .setScale(0.35)
+        .setDisplaySize(46, 69)
         .setOrigin(0.5, 1)
         .setDepth(10);
 
@@ -698,7 +698,7 @@ var StoryScene = new Phaser.Class({
       // Glow behind found member
       var memberGlow = this.add.graphics().setDepth(9);
       memberGlow.fillStyle(memberInfo.color, 0.15);
-      memberGlow.fillEllipse(memberX, memberTargetY - 40, 80, 120);
+      memberGlow.fillEllipse(memberX, memberTargetY - 25, 55, 80);
       memberGlow.setAlpha(0);
       this.tweens.add({
         targets: memberGlow,

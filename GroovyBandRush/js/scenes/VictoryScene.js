@@ -123,6 +123,55 @@ var VictoryScene = new Phaser.Class({
     spotGfx.fillStyle(0xe63946, 0.03);
     spotGfx.fillTriangle(width * 0.75, 0, width * 0.75 - 80, stageY, width * 0.75 + 80, stageY);
 
+    // --- Audience silhouettes ---
+    var audienceGfx = this.add.graphics();
+    // Near row (closest to stage)
+    var audienceNearY = stageY + 16;
+    audienceGfx.fillStyle(0x080808, 0.6);
+    for (var an = 0; an < 22; an++) {
+      var anx = (an * (width / 21)) + Phaser.Math.Between(-4, 4);
+      var anHeadR = Phaser.Math.Between(4, 7);
+      audienceGfx.fillCircle(anx, audienceNearY - 7, anHeadR);
+      audienceGfx.fillRoundedRect(anx - 8, audienceNearY - 1, 16, 12, 3);
+    }
+    // Middle row
+    var audienceBackY = stageY + 30;
+    audienceGfx.fillStyle(0x0a0a0a, 0.7);
+    for (var ab = 0; ab < 20; ab++) {
+      var abx = (ab * (width / 19)) + Phaser.Math.Between(-5, 5);
+      var abHeadR = Phaser.Math.Between(6, 9);
+      audienceGfx.fillCircle(abx, audienceBackY - 10, abHeadR);
+      audienceGfx.fillRoundedRect(abx - 10, audienceBackY - 2, 20, 16, 3);
+    }
+    // Front row
+    audienceGfx.fillStyle(0x111111, 0.8);
+    var audienceFrontY = stageY + 50;
+    for (var af = 0; af < 16; af++) {
+      var afx = (af * (width / 15)) + Phaser.Math.Between(-8, 8);
+      var afHeadR = Phaser.Math.Between(8, 11);
+      audienceGfx.fillCircle(afx, audienceFrontY - 14, afHeadR);
+      audienceGfx.fillRoundedRect(afx - 13, audienceFrontY - 4, 26, 20, 4);
+    }
+    // Fill bottom blend
+    audienceGfx.fillStyle(0x080808, 0.9);
+    audienceGfx.fillRect(0, stageY + 62, width, height - stageY - 62);
+
+    // Phone flashlights
+    for (var ph = 0; ph < 5; ph++) {
+      var phoneX = Phaser.Math.Between(40, width - 40);
+      var phoneY = Phaser.Math.Between(audienceBackY - 5, audienceFrontY + 5);
+      var phoneDot = this.add.circle(phoneX, phoneY, 2, 0xffffff, 0);
+      this.tweens.add({
+        targets: phoneDot,
+        alpha: { from: 0, to: 0.7 },
+        duration: Phaser.Math.Between(400, 800),
+        yoyo: true,
+        repeat: -1,
+        delay: Phaser.Math.Between(0, 3000),
+        hold: Phaser.Math.Between(500, 2000)
+      });
+    }
+
     // "ON STAGE" label
     this.add.text(width / 2, height * 0.37, 'ON STAGE', {
       fontFamily: GBR.FONTS.display,
@@ -135,17 +184,17 @@ var VictoryScene = new Phaser.Class({
     // Mid row: Eugene Chapman (0, sax) left, Kevin Robinson (2, guitar) right
     // Front center: L.A. Young (4, vocals)
     var stagePositions = [
-      { idx: 1, x: width * 0.22, y: stageY - 62, scale: 0.18 },  // Kevin W. back-left
-      { idx: 3, x: width * 0.78, y: stageY - 62, scale: 0.18 },  // Jimmy back-right
-      { idx: 0, x: width * 0.32, y: stageY - 50, scale: 0.20 },  // Eugene mid-left
-      { idx: 2, x: width * 0.68, y: stageY - 50, scale: 0.20 },  // Kevin R. mid-right
-      { idx: 4, x: width * 0.50, y: stageY - 42, scale: 0.23 }   // L.A. Young front-center
+      { idx: 1, x: width * 0.16, y: stageY - 85, dw: 80, dh: 120 },  // Kevin W. back-left
+      { idx: 3, x: width * 0.84, y: stageY - 85, dw: 80, dh: 120 },  // Jimmy back-right
+      { idx: 0, x: width * 0.28, y: stageY - 80, dw: 86, dh: 130 },  // Eugene mid-left
+      { idx: 2, x: width * 0.72, y: stageY - 80, dw: 86, dh: 130 },  // Kevin R. mid-right
+      { idx: 4, x: width * 0.50, y: stageY - 100, dw: 100, dh: 150 }   // L.A. Young front-center (star of show)
     ];
 
     for (var s = 0; s < stagePositions.length; s++) {
       (function (pos, order) {
         var member = GBR.BAND[pos.idx];
-        var portrait = self.add.image(pos.x, pos.y, 'member_' + pos.idx).setScale(pos.scale);
+        var portrait = self.add.image(pos.x, pos.y, 'member_' + pos.idx).setDisplaySize(pos.dw, pos.dh);
 
         // Entrance animation - staggered
         portrait.setAlpha(0);
@@ -171,7 +220,7 @@ var VictoryScene = new Phaser.Class({
         });
 
         // Name below
-        var nameText = self.add.text(pos.x, pos.y + 30 + pos.scale * 100, member.name.split(' ')[0], {
+        var nameText = self.add.text(pos.x, pos.y + pos.dh / 2 + 6, member.name.split(' ')[0], {
           fontFamily: GBR.FONTS.fun,
           fontSize: '10px',
           color: member.colorHex

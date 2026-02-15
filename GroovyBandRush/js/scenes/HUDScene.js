@@ -40,7 +40,7 @@ var HUDScene = new Phaser.Class({
     var memberStartX = width - 170;
     for (var m = 0; m < 5; m++) {
       var icon = this.add.image(memberStartX + m * 32, 22, 'member_' + m)
-        .setScale(0.4)
+        .setDisplaySize(20, 30)
         .setAlpha(0.2);
       this.memberIcons.push(icon);
     }

@@ -127,7 +127,8 @@ var MainMenuScene = new Phaser.Class({
     //  LAYER 3 — Band members ON the stage (bigger, brighter)
     // ============================================================
     var memberTopY = stageY + 12;
-    var memberScale = 0.42;
+    var memberDispW = 84;    // target display size (was 200 * 0.42)
+    var memberDispH = 126;   // target display size (was 300 * 0.42)
     var memberPositions = [
       { x: cx - spotSpacing * 1.7, idx: 0 },
       { x: cx - spotSpacing * 0.6, idx: 1 },
@@ -139,9 +140,9 @@ var MainMenuScene = new Phaser.Class({
       var mp = memberPositions[m];
       var bandInfo = GBR.BAND[mp.idx];
 
-      // Character sprite — NO tint so original art colors show properly
+      // Character sprite — use setDisplaySize for consistent sizing across different image resolutions
       var member = this.add.image(mp.x, memberTopY, 'member_' + mp.idx)
-        .setScale(memberScale)
+        .setDisplaySize(memberDispW, memberDispH)
         .setOrigin(0.5, 0);
 
       // Subtle sway animation
@@ -156,7 +157,7 @@ var MainMenuScene = new Phaser.Class({
       });
 
       // Instrument label below each member's feet
-      var memberBottomY = memberTopY + (300 * memberScale); // SVG is 300px tall
+      var memberBottomY = memberTopY + memberDispH;
       this.add.text(mp.x, memberBottomY + 4, bandInfo.emoji + ' ' + bandInfo.role, {
         fontFamily: GBR.FONTS.fun,
         fontSize: '11px',
