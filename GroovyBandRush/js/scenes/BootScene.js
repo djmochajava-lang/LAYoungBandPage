@@ -59,8 +59,8 @@ var BootScene = new Phaser.Class({
     this.load.image('la_outfit_1', '../images/artist/LAYoungPink.JPG');
     this.load.image('la_outfit_2', '../images/artist/laPowerSister.png');
 
-    // Load SUV image for Act1 player vehicle
-    this.load.image('van', '../images/cartoon/suv.png');
+    // Player vehicle is now generated procedurally in generatePlaceholders()
+    // this.load.image('van', '../images/cartoon/suv.png');
 
     // Load L.A. Young headshot for main menu
     this.load.image('la_headshot', '../images/artist/headshot3.jpg');
@@ -79,38 +79,137 @@ var BootScene = new Phaser.Class({
   generatePlaceholders: function () {
     var g;
 
-    // Van is now loaded as an image (suv.png) in preload()
-
-    // --- Obstacle (rock) ---
+    // --- Player car (top-down, blue, facing UP) ---
     g = this.make.graphics({ x: 0, y: 0, add: false });
-    g.fillStyle(0x666666);
-    g.fillCircle(20, 20, 20);
-    g.fillStyle(0x888888);
-    g.fillCircle(16, 14, 8);
-    g.generateTexture('obstacle', 40, 40);
+    // Car body
+    g.fillStyle(0x2266dd);
+    g.fillRoundedRect(8, 4, 44, 82, { tl: 14, tr: 14, bl: 8, br: 8 });
+    // Darker side panels
+    g.fillStyle(0x1a55bb, 0.6);
+    g.fillRect(8, 20, 8, 50);
+    g.fillRect(44, 20, 8, 50);
+    // Windshield (at top = front of car facing up)
+    g.fillStyle(0x88ccff, 0.8);
+    g.fillRoundedRect(14, 10, 32, 18, { tl: 8, tr: 8, bl: 3, br: 3 });
+    // Rear window
+    g.fillStyle(0x334466, 0.7);
+    g.fillRoundedRect(16, 66, 28, 12, { tl: 3, tr: 3, bl: 6, br: 6 });
+    // Roof highlight
+    g.fillStyle(0x66aaff, 0.3);
+    g.fillRoundedRect(18, 32, 24, 28, 4);
+    // Hood line
+    g.lineStyle(1, 0x4488ee, 0.5);
+    g.lineBetween(30, 12, 30, 28);
+    // Headlights (top = front)
+    g.fillStyle(0xffffcc);
+    g.fillCircle(16, 8, 4);
+    g.fillCircle(44, 8, 4);
+    // Taillights (bottom = rear)
+    g.fillStyle(0xff3333);
+    g.fillRect(12, 82, 8, 4);
+    g.fillRect(40, 82, 8, 4);
+    // Side mirrors
+    g.fillStyle(0x2266dd);
+    g.fillRect(4, 22, 6, 8);
+    g.fillRect(50, 22, 6, 8);
+    // Neon underglow
+    g.fillStyle(0x00e5ff, 0.15);
+    g.fillRoundedRect(6, 6, 48, 78, 10);
+    g.generateTexture('van', 60, 90);
     g.destroy();
 
-    // --- Dollar collectible ---
+    // --- Obstacle: oncoming car (top-down, 3 color variants) ---
+    var obsCols = [0xe63946, 0xcc5500, 0x888888]; // red, orange, grey
+    for (var oi = 0; oi < obsCols.length; oi++) {
+      g = this.make.graphics({ x: 0, y: 0, add: false });
+      var oc = obsCols[oi];
+      // Car body (facing DOWN = oncoming)
+      g.fillStyle(oc);
+      g.fillRoundedRect(6, 2, 28, 56, { tl: 10, tr: 10, bl: 6, br: 6 });
+      // Windshield (near top since car faces us)
+      g.fillStyle(0x88ccff, 0.7);
+      g.fillRoundedRect(10, 6, 20, 12, 4);
+      // Rear window
+      g.fillStyle(0x334455, 0.6);
+      g.fillRoundedRect(12, 44, 16, 8, 3);
+      // Headlights (at top = facing us)
+      g.fillStyle(0xffffaa);
+      g.fillCircle(10, 6, 3);
+      g.fillCircle(30, 6, 3);
+      // Taillights (at bottom)
+      g.fillStyle(0xff2222);
+      g.fillRect(8, 54, 6, 3);
+      g.fillRect(26, 54, 6, 3);
+      // Side highlight
+      g.fillStyle(0xffffff, 0.15);
+      g.fillRoundedRect(8, 8, 10, 42, 3);
+      g.generateTexture('obstacle_car_' + oi, 40, 60);
+      g.destroy();
+    }
+    // Default obstacle key still works (pick random in runner scene)
+    // Generate a fallback 'obstacle' using the red car
     g = this.make.graphics({ x: 0, y: 0, add: false });
-    g.fillStyle(0x32cd32);
-    g.fillCircle(16, 16, 16);
+    g.fillStyle(0xe63946);
+    g.fillRoundedRect(6, 2, 28, 56, { tl: 10, tr: 10, bl: 6, br: 6 });
+    g.fillStyle(0x88ccff, 0.7);
+    g.fillRoundedRect(10, 6, 20, 12, 4);
+    g.fillStyle(0x334455, 0.6);
+    g.fillRoundedRect(12, 44, 16, 8, 3);
+    g.fillStyle(0xffffaa);
+    g.fillCircle(10, 6, 3);
+    g.fillCircle(30, 6, 3);
+    g.fillStyle(0xff2222);
+    g.fillRect(8, 54, 6, 3);
+    g.fillRect(26, 54, 6, 3);
+    g.fillStyle(0xffffff, 0.15);
+    g.fillRoundedRect(8, 8, 10, 42, 3);
+    g.generateTexture('obstacle', 40, 60);
+    g.destroy();
+
+    // --- Dollar collectible (green bill with $ sign) ---
+    g = this.make.graphics({ x: 0, y: 0, add: false });
+    // Bill background
+    g.fillStyle(0x1a8a3a);
+    g.fillRoundedRect(0, 4, 40, 24, 3);
+    // Inner border
+    g.lineStyle(1, 0x2ecc71, 0.8);
+    g.strokeRoundedRect(2, 6, 36, 20, 2);
+    // Light green center strip
+    g.fillStyle(0x2ecc71, 0.4);
+    g.fillRect(4, 10, 32, 12);
+    // $ symbol in center
     g.fillStyle(0xffffff);
-    g.fillRect(12, 6, 2, 20);
-    g.fillRect(14, 6, 6, 2);
-    g.fillRect(14, 14, 4, 2);
-    g.fillRect(14, 24, 6, 2);
-    g.generateTexture('dollar', 32, 32);
+    g.fillRect(18, 8, 4, 16);     // vertical bar
+    g.fillRect(14, 8, 12, 3);     // top horizontal
+    g.fillRect(14, 14, 12, 3);    // middle horizontal
+    g.fillRect(14, 21, 12, 3);    // bottom horizontal
+    g.fillRect(14, 8, 4, 9);      // top-left curve
+    g.fillRect(22, 14, 4, 10);    // bottom-right curve
+    // Sparkle corners
+    g.fillStyle(0xffd700);
+    g.fillCircle(4, 4, 3);
+    g.fillCircle(36, 4, 3);
+    g.generateTexture('dollar', 40, 32);
     g.destroy();
 
-    // --- Instrument collectible ---
+    // --- Instrument collectible (golden sax silhouette) ---
     g = this.make.graphics({ x: 0, y: 0, add: false });
+    // Golden glow circle
+    g.fillStyle(0xffd700, 0.3);
+    g.fillCircle(20, 20, 20);
+    // Inner bright circle
     g.fillStyle(0xffd700);
-    g.fillCircle(18, 18, 18);
-    g.fillStyle(0x1a1a2e);
-    g.fillCircle(18, 18, 10);
-    g.fillStyle(0xffd700);
-    g.fillCircle(18, 18, 4);
-    g.generateTexture('instrument', 36, 36);
+    g.fillCircle(20, 20, 14);
+    // Music note symbol
+    g.fillStyle(0x1a0a2e);
+    g.fillCircle(16, 24, 5);     // note head
+    g.fillRect(20, 8, 3, 16);    // stem
+    g.fillRect(20, 8, 8, 3);     // flag top
+    g.fillRect(25, 8, 3, 8);     // flag side
+    // Shine
+    g.fillStyle(0xffffff, 0.5);
+    g.fillCircle(14, 14, 4);
+    g.generateTexture('instrument', 40, 40);
     g.destroy();
 
     // Band member textures loaded from SVG in preload()

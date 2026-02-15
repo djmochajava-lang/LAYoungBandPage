@@ -103,27 +103,26 @@ var Act1RunnerScene = new Phaser.Class({
   drawBackground: function () {
     var width = this.W;
     var height = this.H;
+    var self = this;
 
-    // Dark sky gradient
+    // Deep night sky gradient (richer purple)
     var sky = this.add.graphics();
     sky.setDepth(0);
-    sky.fillGradientStyle(0x0a0a1e, 0x0a0a1e, 0x1a1a3e, 0x1a1a3e);
+    sky.fillGradientStyle(0x030308, 0x050510, 0x0c1038, 0x14183e);
     sky.fillRect(0, 0, width, height);
 
-    // Stars in sky
-    for (var i = 0; i < 50; i++) {
-      var star = this.add.circle(
-        Phaser.Math.Between(0, width),
-        Phaser.Math.Between(0, height * 0.35),
-        Phaser.Math.Between(1, 2),
-        0xffffff,
-        Phaser.Math.FloatBetween(0.3, 0.9)
-      );
+    // Stars in sky (more, with color variety)
+    for (var i = 0; i < 70; i++) {
+      var sx = Phaser.Math.Between(0, width);
+      var sy = Phaser.Math.Between(0, height * 0.35);
+      var sr = Phaser.Math.FloatBetween(0.5, 2.2);
+      var sa = Phaser.Math.FloatBetween(0.2, 0.9);
+      var star = this.add.circle(sx, sy, sr, 0xffffff, sa);
       star.setDepth(0);
       this.tweens.add({
         targets: star,
-        alpha: { from: star.alpha, to: 0.1 },
-        duration: Phaser.Math.Between(800, 2500),
+        alpha: { from: sa, to: 0.05 },
+        duration: Phaser.Math.Between(600, 2200),
         yoyo: true,
         repeat: -1,
         delay: Phaser.Math.Between(0, 2000)
@@ -131,47 +130,99 @@ var Act1RunnerScene = new Phaser.Class({
       this.bgStars.push(star);
     }
 
-    // Parallax city skyline
+    // Colored accent stars
+    var starTints = [0xffd700, 0x00e5ff, 0xe84393, 0xff6b6b];
+    for (var cs = 0; cs < 6; cs++) {
+      var cstar = this.add.circle(
+        Phaser.Math.Between(0, width),
+        Phaser.Math.Between(0, height * 0.28),
+        Phaser.Math.FloatBetween(1, 2.5),
+        Phaser.Math.RND.pick(starTints),
+        Phaser.Math.FloatBetween(0.3, 0.7)
+      ).setDepth(0);
+      this.tweens.add({
+        targets: cstar,
+        alpha: 0.05,
+        duration: Phaser.Math.Between(1000, 2500),
+        yoyo: true, repeat: -1,
+        delay: Phaser.Math.Between(0, 1500)
+      });
+    }
+
+    // Vibrant city skyline
     var skylineY = height * 0.30;
     var skyline = this.add.graphics();
     skyline.setDepth(1);
 
-    // Building silhouettes
-    skyline.fillStyle(0x0f0f1a, 0.9);
-    var buildings = [
-      { x: 0, w: 30, h: 65 }, { x: 25, w: 22, h: 100 }, { x: 45, w: 28, h: 55 },
-      { x: 70, w: 18, h: 115 }, { x: 85, w: 30, h: 75 }, { x: 110, w: 22, h: 110 },
-      { x: 130, w: 30, h: 68 }, { x: 155, w: 22, h: 125 }, { x: 175, w: 28, h: 82 },
-      { x: 200, w: 20, h: 95 }, { x: 218, w: 28, h: 60 }, { x: 242, w: 22, h: 115 },
-      { x: 262, w: 30, h: 78 }, { x: 290, w: 20, h: 105 }, { x: 308, w: 28, h: 65 },
-      { x: 333, w: 24, h: 120 }, { x: 355, w: 28, h: 72 }, { x: 380, w: 22, h: 98 },
-      { x: 400, w: 28, h: 58 }, { x: 425, w: 25, h: 112 }
-    ];
+    // Generate dynamic buildings across full width
+    var buildings = [];
+    var bx = 0;
+    while (bx < width + 10) {
+      var bw = Phaser.Math.Between(18, 42);
+      var bh = Phaser.Math.Between(50, 140);
+      buildings.push({ x: bx, w: bw, h: bh });
+      bx += bw + Phaser.Math.Between(0, 4);
+    }
+
+    // Building silhouettes (darker base)
     for (var b = 0; b < buildings.length; b++) {
       var bld = buildings[b];
+      // Slight color variety per building
+      var bldShade = Phaser.Math.Between(8, 18);
+      skyline.fillStyle(Phaser.Display.Color.GetColor(bldShade, bldShade, bldShade + 8), 0.95);
       skyline.fillRect(bld.x, skylineY - bld.h, bld.w - 2, bld.h + 20);
     }
 
-    // Neon building windows
-    skyline.fillStyle(0xffd700, 0.08);
+    // Colorful lit windows (multi-color, not just gold)
+    var windowColors = [0xffd700, 0x00e5ff, 0xe84393, 0xffffff, 0xe8751a, 0x3498db];
     for (var bw = 0; bw < buildings.length; bw++) {
       var bl = buildings[bw];
-      for (var wy = skylineY - bl.h + 8; wy < skylineY; wy += 10) {
-        for (var wx = bl.x + 4; wx < bl.x + bl.w - 6; wx += 8) {
-          if (Math.random() > 0.5) {
-            skyline.fillRect(wx, wy, 4, 5);
+      for (var wy = skylineY - bl.h + 6; wy < skylineY - 2; wy += 9) {
+        for (var wx = bl.x + 3; wx < bl.x + bl.w - 5; wx += 7) {
+          if (Math.random() > 0.35) {
+            var wc = Phaser.Math.RND.pick(windowColors);
+            var wa = Phaser.Math.FloatBetween(0.08, 0.35);
+            skyline.fillStyle(wc, wa);
+            skyline.fillRect(wx, wy, 3, 5);
           }
         }
       }
     }
 
-    // Horizon glow
+    // Neon rooftop signs on random tall buildings
+    var neonColors = [0xe63946, 0x00e5ff, 0xe84393, 0xffd700, 0x2ecc71];
+    var neonGfx = this.add.graphics().setDepth(1);
+    for (var ns = 0; ns < buildings.length; ns++) {
+      if (buildings[ns].h > 90 && Math.random() > 0.6) {
+        var nb = buildings[ns];
+        var nc = Phaser.Math.RND.pick(neonColors);
+        // Neon bar on rooftop
+        neonGfx.fillStyle(nc, 0.8);
+        neonGfx.fillRect(nb.x + 2, skylineY - nb.h - 4, nb.w - 6, 3);
+        // Glow above
+        neonGfx.fillStyle(nc, 0.12);
+        neonGfx.fillRect(nb.x - 2, skylineY - nb.h - 10, nb.w + 2, 10);
+      }
+    }
+
+    // Animated neon sign pulse
+    this.tweens.add({
+      targets: neonGfx,
+      alpha: { from: 1, to: 0.4 },
+      duration: 1200,
+      yoyo: true, repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
+
+    // Horizon glow (warmer, brighter)
     var glow = this.add.graphics();
     glow.setDepth(1);
-    glow.fillStyle(0xe8751a, 0.06);
-    glow.fillRect(0, skylineY - 10, width, 30);
-    glow.fillStyle(0xffd700, 0.04);
-    glow.fillRect(0, skylineY + 10, width, 20);
+    glow.fillStyle(0xe8751a, 0.10);
+    glow.fillRect(0, skylineY - 8, width, 20);
+    glow.fillStyle(0xffd700, 0.06);
+    glow.fillRect(0, skylineY + 8, width, 15);
+    glow.fillStyle(0xe84393, 0.04);
+    glow.fillRect(0, skylineY - 15, width, 10);
   },
 
   drawRoad: function () {
@@ -557,19 +608,24 @@ var Act1RunnerScene = new Phaser.Class({
   spawnObstacle: function () {
     var lane = Phaser.Math.Between(0, 2);
     var x = this.laneXPositions[lane];
-    var obstacle = this.add.image(x, -40, 'obstacle').setDepth(8).setScale(1.2);
 
-    // Slight rotation for variety
-    obstacle.rotation = Phaser.Math.FloatBetween(-0.3, 0.3);
+    // Pick a random car variant (3 colors)
+    var carIdx = Phaser.Math.Between(0, 2);
+    var obstacle = this.add.image(x, -60, 'obstacle_car_' + carIdx).setDepth(8);
+    // Scale to fit lane nicely
+    obstacle.setDisplaySize(this.laneWidth * 0.55, this.laneWidth * 0.85);
 
-    // Red glow tint
-    obstacle.setTint(0xff4444);
+    // Headlight glow effect (small yellow ellipse in front of car)
+    var headlight = this.add.graphics().setDepth(7);
+    headlight.fillStyle(0xffffaa, 0.15);
+    headlight.fillEllipse(x, -60 - 12, 30, 10);
+    obstacle.headlightGfx = headlight;
 
     this.obstacles.push({
       sprite: obstacle,
       lane: lane,
-      hitWidth: 28,   // Smaller hitbox for forgiveness
-      hitHeight: 28
+      hitWidth: 24,
+      hitHeight: 32
     });
   },
 
@@ -633,21 +689,24 @@ var Act1RunnerScene = new Phaser.Class({
       });
       sprite.eugeneGlow = eugeneGlow;
     } else if (type === 'instrument') {
-      sprite.setScale(1.1);
-      // Golden shimmer
+      sprite.setScale(1.3);
+      // Golden shimmer + gentle spin
       this.tweens.add({
         targets: sprite,
         alpha: { from: 1, to: 0.6 },
-        duration: 300,
+        angle: { from: -5, to: 5 },
+        duration: 400,
         yoyo: true,
-        repeat: -1
+        repeat: -1,
+        ease: 'Sine.easeInOut'
       });
     } else {
-      sprite.setScale(1);
-      // Gentle bob
+      sprite.setScale(1.3);
+      // Dollar bill float + gentle bob
       this.tweens.add({
         targets: sprite,
-        angle: { from: -10, to: 10 },
+        y: sprite.y - 5,
+        angle: { from: -8, to: 8 },
         duration: 500,
         yoyo: true,
         repeat: -1,
@@ -676,8 +735,13 @@ var Act1RunnerScene = new Phaser.Class({
     for (var i = this.obstacles.length - 1; i >= 0; i--) {
       var obs = this.obstacles[i];
       obs.sprite.y += this.speed;
+      // Move headlight glow with car
+      if (obs.sprite.headlightGfx) {
+        obs.sprite.headlightGfx.y += this.speed;
+      }
       // Remove if off screen
       if (obs.sprite.y > this.H + 60) {
+        if (obs.sprite.headlightGfx) obs.sprite.headlightGfx.destroy();
         obs.sprite.destroy();
         this.obstacles.splice(i, 1);
       }
@@ -744,7 +808,8 @@ var Act1RunnerScene = new Phaser.Class({
   hitObstacle: function (index) {
     var obs = this.obstacles[index];
 
-    // Remove obstacle
+    // Remove obstacle and headlight
+    if (obs.sprite.headlightGfx) obs.sprite.headlightGfx.destroy();
     obs.sprite.destroy();
     this.obstacles.splice(index, 1);
 
