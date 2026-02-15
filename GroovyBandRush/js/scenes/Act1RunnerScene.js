@@ -232,32 +232,51 @@ var Act1RunnerScene = new Phaser.Class({
     this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    // Touch/click input zones
-    var leftZone = this.add.zone(0, 0, this.W * 0.33, this.H)
+    // --- Full-screen touch zone for swipe + tap detection ---
+    var fullZone = this.add.zone(0, 0, this.W, this.H)
       .setOrigin(0)
       .setInteractive()
       .setDepth(100);
 
-    var rightZone = this.add.zone(this.W * 0.67, 0, this.W * 0.33, this.H)
-      .setOrigin(0)
-      .setInteractive()
-      .setDepth(100);
+    // Track touch start for swipe detection
+    this.touchStartX = 0;
+    this.touchStartY = 0;
+    this.touchStartTime = 0;
 
-    var topZone = this.add.zone(this.W * 0.33, 0, this.W * 0.34, this.H * 0.4)
-      .setOrigin(0)
-      .setInteractive()
-      .setDepth(100);
-
-    leftZone.on('pointerdown', function () {
-      self.moveLeft();
+    fullZone.on('pointerdown', function (pointer) {
+      self.touchStartX = pointer.x;
+      self.touchStartY = pointer.y;
+      self.touchStartTime = pointer.downTime;
     });
 
-    rightZone.on('pointerdown', function () {
-      self.moveRight();
-    });
+    fullZone.on('pointerup', function (pointer) {
+      var diffX = pointer.x - self.touchStartX;
+      var diffY = pointer.y - self.touchStartY;
+      var elapsed = pointer.upTime - self.touchStartTime;
 
-    topZone.on('pointerdown', function () {
-      self.doJump();
+      // Swipe detection: moved > 30px horizontally, more horizontal than vertical
+      if (Math.abs(diffX) > 30 && Math.abs(diffX) > Math.abs(diffY)) {
+        if (diffX < 0) {
+          self.moveLeft();
+        } else {
+          self.moveRight();
+        }
+      }
+      // Swipe up = jump (moved > 30px upward, more vertical than horizontal)
+      else if (diffY < -30 && Math.abs(diffY) > Math.abs(diffX)) {
+        self.doJump();
+      }
+      // Quick tap (< 200ms, barely moved) = use tap zones
+      else if (elapsed < 200 && Math.abs(diffX) < 15 && Math.abs(diffY) < 15) {
+        if (pointer.x < self.W * 0.33) {
+          self.moveLeft();
+        } else if (pointer.x > self.W * 0.67) {
+          self.moveRight();
+        } else {
+          // Tap center = jump
+          self.doJump();
+        }
+      }
     });
   },
 
