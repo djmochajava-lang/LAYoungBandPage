@@ -242,7 +242,8 @@ var MainMenuScene = new Phaser.Class({
       color: '#ffd700',
       stroke: '#000000',
       strokeThickness: 6,
-      shadow: { offsetX: 3, offsetY: 3, color: '#e84393', blur: 8, fill: true }
+      shadow: { offsetX: 3, offsetY: 3, color: '#e84393', blur: 8, fill: true },
+      padding: { left: 12, right: 12, top: 4, bottom: 4 }
     }).setOrigin(0.5);
 
     // "BAND RUSH"
@@ -252,7 +253,8 @@ var MainMenuScene = new Phaser.Class({
       color: '#ffffff',
       stroke: '#e8751a',
       strokeThickness: 5,
-      shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 6, fill: false }
+      shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 6, fill: false },
+      padding: { left: 10, right: 10, top: 4, bottom: 4 }
     }).setOrigin(0.5);
 
     // Pop-in animations
