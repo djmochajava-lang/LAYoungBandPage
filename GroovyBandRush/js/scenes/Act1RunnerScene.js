@@ -237,6 +237,7 @@ var Act1RunnerScene = new Phaser.Class({
     this.touchStartY = 0;
     this.touchStartTime = 0;
     this.isDragging = false;
+    this.dragJumped = false;
     this.pointerWasDown = false;
 
     // Record where touch starts (for tap vs drag detection on release)
@@ -245,6 +246,7 @@ var Act1RunnerScene = new Phaser.Class({
       self.touchStartY = pointer.y;
       self.touchStartTime = Date.now();
       self.isDragging = false;
+      self.dragJumped = false;
       self.pointerWasDown = true;
     });
 
@@ -279,19 +281,26 @@ var Act1RunnerScene = new Phaser.Class({
     });
   },
 
-  // Poll pointer every frame for reliable drag-to-steer
+  // Poll pointer every frame for reliable drag-to-steer and drag-up-to-jump
   pollTouchDrag: function () {
     var pointer = this.input.activePointer;
     if (!pointer || !pointer.isDown) return;
 
     var diffX = pointer.x - this.touchStartX;
+    var diffY = pointer.y - this.touchStartY;
 
-    // Start dragging after 15px horizontal movement
-    if (!this.isDragging && Math.abs(diffX) > 15) {
+    // Start dragging after 15px movement in any direction
+    if (!this.isDragging && (Math.abs(diffX) > 15 || Math.abs(diffY) > 15)) {
       this.isDragging = true;
     }
 
     if (!this.isDragging) return;
+
+    // Drag up = jump (once per touch, when finger moves 40px+ upward)
+    if (!this.dragJumped && diffY < -40) {
+      this.doJump();
+      this.dragJumped = true;
+    }
 
     // Find closest lane to finger
     var targetLane = 1;
