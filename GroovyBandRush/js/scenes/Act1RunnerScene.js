@@ -232,42 +232,78 @@ var Act1RunnerScene = new Phaser.Class({
     this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    // --- Full-screen touch zone for swipe + tap detection ---
+    // --- Full-screen touch zone ---
     var fullZone = this.add.zone(0, 0, this.W, this.H)
       .setOrigin(0)
       .setInteractive()
       .setDepth(100);
 
-    // Track touch start for swipe detection
+    // Track touch for drag and tap detection
     this.touchStartX = 0;
     this.touchStartY = 0;
     this.touchStartTime = 0;
+    this.lastDragLane = -1;  // Track which lane we last dragged to
+    this.isDragging = false;
 
     fullZone.on('pointerdown', function (pointer) {
       self.touchStartX = pointer.x;
       self.touchStartY = pointer.y;
       self.touchStartTime = pointer.downTime;
+      self.isDragging = false;
+      self.lastDragLane = self.currentLane;
+    });
+
+    // Real-time drag: van follows finger across lanes
+    fullZone.on('pointermove', function (pointer) {
+      if (!pointer.isDown) return;
+      if (self.gameState !== 'playing') return;
+
+      var diffX = pointer.x - self.touchStartX;
+      var diffY = pointer.y - self.touchStartY;
+
+      // Only start dragging after moving > 15px (prevents jitter)
+      if (!self.isDragging && Math.abs(diffX) > 15) {
+        self.isDragging = true;
+      }
+
+      if (!self.isDragging) return;
+
+      // Determine which lane the finger is closest to
+      var targetLane = 1; // default center
+      var closestDist = Infinity;
+      for (var i = 0; i < self.laneXPositions.length; i++) {
+        var dist = Math.abs(pointer.x - self.laneXPositions[i]);
+        if (dist < closestDist) {
+          closestDist = dist;
+          targetLane = i;
+        }
+      }
+
+      // Move van to that lane if it changed
+      if (targetLane !== self.currentLane) {
+        self.currentLane = targetLane;
+        self.animatePlayerToLane();
+        self.lastDragLane = targetLane;
+      }
     });
 
     fullZone.on('pointerup', function (pointer) {
-      var diffX = pointer.x - self.touchStartX;
       var diffY = pointer.y - self.touchStartY;
+      var diffX = pointer.x - self.touchStartX;
       var elapsed = pointer.upTime - self.touchStartTime;
 
-      // Swipe detection: moved > 30px horizontally, more horizontal than vertical
-      if (Math.abs(diffX) > 30 && Math.abs(diffX) > Math.abs(diffY)) {
-        if (diffX < 0) {
-          self.moveLeft();
-        } else {
-          self.moveRight();
-        }
+      // If we were dragging, don't also trigger tap/swipe
+      if (self.isDragging) {
+        self.isDragging = false;
+        return;
       }
-      // Swipe up = jump (moved > 30px upward, more vertical than horizontal)
-      else if (diffY < -30 && Math.abs(diffY) > Math.abs(diffX)) {
+
+      // Swipe up = jump
+      if (diffY < -30 && Math.abs(diffY) > Math.abs(diffX)) {
         self.doJump();
       }
-      // Quick tap (< 200ms, barely moved) = use tap zones
-      else if (elapsed < 200 && Math.abs(diffX) < 15 && Math.abs(diffY) < 15) {
+      // Quick tap = tap zones (left/right/center)
+      else if (elapsed < 300 && Math.abs(diffX) < 20 && Math.abs(diffY) < 20) {
         if (pointer.x < self.W * 0.33) {
           self.moveLeft();
         } else if (pointer.x > self.W * 0.67) {
