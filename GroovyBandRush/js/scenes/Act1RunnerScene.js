@@ -131,6 +131,17 @@ var Act1RunnerScene = new Phaser.Class({
     return 0.25 + t * 0.75;
   },
 
+  getCarAngleAtY: function (lane, y) {
+    // Cars on left/right lanes angle toward vanishing point
+    // At horizon (t=0) the angle is strongest, at bottom (t=1) it's nearly straight
+    var t = Math.max(0, Math.min(1, (y - this.vanishY) / (this.H - this.vanishY)));
+    var maxAngle = 12;  // degrees at horizon
+    var angle = maxAngle * (1 - t);  // fades as car approaches
+    if (lane === 0) return -angle;   // left lane: angled left (toward vanish)
+    if (lane === 2) return angle;    // right lane: angled right
+    return 0;                        // center lane: straight
+  },
+
   // =============== BACKGROUND ===============
 
   drawBackground: function () {
@@ -138,18 +149,41 @@ var Act1RunnerScene = new Phaser.Class({
     var height = this.H;
     var self = this;
 
-    // Deep night sky gradient (richer purple)
+    // Vibrant night sky — deep purple-to-blue gradient (clean, no warm bleed below)
     var sky = this.add.graphics();
     sky.setDepth(0);
-    sky.fillGradientStyle(0x030308, 0x050510, 0x0c1038, 0x14183e);
-    sky.fillRect(0, 0, width, height);
+    var skylineY_approx = height * 0.30;  // where the skyline sits
+    // Top: deep midnight, Bottom at skyline: rich navy-purple
+    sky.fillGradientStyle(0x050518, 0x080520, 0x1a1048, 0x201450);
+    sky.fillRect(0, 0, width, skylineY_approx);
+    // Below skyline: clean dark navy (no warm tones — buildings/road cover this)
+    sky.fillStyle(0x0a0a18);
+    sky.fillRect(0, skylineY_approx, width, height - skylineY_approx);
+
+    // City glow — smooth gradient bands ABOVE skyline only (no bleed below)
+    var cityGlow = this.add.graphics().setDepth(0);
+    // Warm orange wash near skyline (ends AT skyline, not below)
+    var glowTop = height * 0.20;
+    var glowH = skylineY_approx - glowTop;  // stops at skyline
+    cityGlow.fillGradientStyle(0xe8751a, 0xe8751a, 0xe8751a, 0xe8751a, 0.02, 0.02, 0.08, 0.08);
+    cityGlow.fillRect(0, glowTop, width, glowH);
+    // Purple ambient haze just above skyline
+    var hazeTop = height * 0.22;
+    var hazeH = skylineY_approx - hazeTop;
+    cityGlow.fillGradientStyle(0x6c3483, 0x6c3483, 0x6c3483, 0x6c3483, 0.01, 0.01, 0.06, 0.06);
+    cityGlow.fillRect(0, hazeTop, width, hazeH);
+    // Gold warm wash just above skyline
+    var goldTop = height * 0.24;
+    var goldH = skylineY_approx - goldTop;
+    cityGlow.fillGradientStyle(0xffd700, 0xffd700, 0xffd700, 0xffd700, 0.0, 0.0, 0.05, 0.05);
+    cityGlow.fillRect(0, goldTop, width, goldH);
 
     // Stars in sky (more, with color variety)
-    for (var i = 0; i < 70; i++) {
+    for (var i = 0; i < 80; i++) {
       var sx = Phaser.Math.Between(0, width);
       var sy = Phaser.Math.Between(0, height * 0.35);
-      var sr = Phaser.Math.FloatBetween(0.5, 2.2);
-      var sa = Phaser.Math.FloatBetween(0.2, 0.9);
+      var sr = Phaser.Math.FloatBetween(0.5, 2.5);
+      var sa = Phaser.Math.FloatBetween(0.3, 1.0);
       var star = this.add.circle(sx, sy, sr, 0xffffff, sa);
       star.setDepth(0);
       this.tweens.add({
@@ -163,20 +197,20 @@ var Act1RunnerScene = new Phaser.Class({
       this.bgStars.push(star);
     }
 
-    // Colored accent stars
-    var starTints = [0xffd700, 0x00e5ff, 0xe84393, 0xff6b6b];
-    for (var cs = 0; cs < 6; cs++) {
+    // Colored accent stars (more of them, brighter)
+    var starTints = [0xffd700, 0x00e5ff, 0xe84393, 0xff6b6b, 0x2ecc71, 0x9b59b6];
+    for (var cs = 0; cs < 10; cs++) {
       var cstar = this.add.circle(
         Phaser.Math.Between(0, width),
-        Phaser.Math.Between(0, height * 0.28),
-        Phaser.Math.FloatBetween(1, 2.5),
+        Phaser.Math.Between(0, height * 0.30),
+        Phaser.Math.FloatBetween(1.2, 3.0),
         Phaser.Math.RND.pick(starTints),
-        Phaser.Math.FloatBetween(0.3, 0.7)
+        Phaser.Math.FloatBetween(0.4, 0.85)
       ).setDepth(0);
       this.tweens.add({
         targets: cstar,
-        alpha: 0.05,
-        duration: Phaser.Math.Between(1000, 2500),
+        alpha: 0.08,
+        duration: Phaser.Math.Between(800, 2200),
         yoyo: true, repeat: -1,
         delay: Phaser.Math.Between(0, 1500)
       });
@@ -205,7 +239,7 @@ var Act1RunnerScene = new Phaser.Class({
         for (var wx = bx + 3; wx < bx + bw - 4; wx += 7) {
           if (Math.random() > (prob || 0.35)) {
             var wc = Phaser.Math.RND.pick(windowColors);
-            gfx.fillStyle(wc, Phaser.Math.FloatBetween(0.06, 0.30));
+            gfx.fillStyle(wc, Phaser.Math.FloatBetween(0.15, 0.55));
             gfx.fillRect(wx, wy, 3, 4);
           }
         }
@@ -238,26 +272,26 @@ var Act1RunnerScene = new Phaser.Class({
 
     // Far-left government office
     var lb1x = 0, lb1w = leftZoneW * 0.22, lb1h = 55;
-    drawBuilding(skyline, lb1x, skylineY - lb1h, lb1w, lb1h + belowH, 12);
+    drawBuilding(skyline, lb1x, skylineY - lb1h, lb1w, lb1h + belowH, 35);
     drawWindows(skyline, lb1x, lb1w, skylineY - lb1h, skylineY, 9, 0.4);
 
     // Smithsonian-style museum (wider, with pediment)
     var lb2x = lb1w + 3, lb2w = leftZoneW * 0.28, lb2h = 75;
-    drawBuilding(skyline, lb2x, skylineY - lb2h, lb2w, lb2h + belowH, 10);
-    drawPediment(skyline, lb2x, lb2w, skylineY - lb2h, 10, 10);
+    drawBuilding(skyline, lb2x, skylineY - lb2h, lb2w, lb2h + belowH, 30);
+    drawPediment(skyline, lb2x, lb2w, skylineY - lb2h, 10, 30);
     drawColumns(skyline, lb2x, lb2w, skylineY - lb2h, lb2h * 0.6, 4);
     drawWindows(skyline, lb2x, lb2w, skylineY - lb2h + 8, skylineY, 10, 0.45);
 
     // Another government building
     var lb3x = lb2x + lb2w + 2, lb3w = leftZoneW * 0.18, lb3h = 60;
-    drawBuilding(skyline, lb3x, skylineY - lb3h, lb3w, lb3h + belowH, 14);
+    drawBuilding(skyline, lb3x, skylineY - lb3h, lb3w, lb3h + belowH, 38);
     drawWindows(skyline, lb3x, lb3w, skylineY - lb3h, skylineY, 9, 0.4);
 
     // === WASHINGTON MONUMENT (tall obelisk near road edge) ===
     var monW = 14;
     var monH = 190;
     var monX = roadL - monW - 6;
-    var monShade = 16;
+    var monShade = 42;
     // Obelisk shaft
     drawBuilding(skyline, monX, skylineY - monH, monW, monH + belowH, monShade);
     // Pyramidal cap (pointed top)
@@ -306,75 +340,91 @@ var Act1RunnerScene = new Phaser.Class({
       for (var lwy = skylineY + 10; lwy < height - 20; lwy += 18) {
         for (var lwx = lb.x + 3; lwx < lb.x + lb.w - 5; lwx += 9) {
           if (Math.random() > 0.55) {
-            skyline.fillStyle(Phaser.Math.RND.pick(windowColors), Phaser.Math.FloatBetween(0.04, 0.15));
+            skyline.fillStyle(Phaser.Math.RND.pick(windowColors), Phaser.Math.FloatBetween(0.10, 0.35));
             skyline.fillRect(lwx, lwy, 3, 5);
           }
         }
       }
     }
 
-    // ---------- RIGHT SIDE: Office Buildings (background) + US Capitol (foreground near road) ----------
+    // ---------- RIGHT SIDE: US Capitol Building (wide & low, prominent dome) ----------
 
     var rightStart = roadR;
     var rightZoneW = width - roadR;
 
-    // ----- Office buildings in the BACK (far right, drawn first so Capitol overlaps) -----
-    var rb1x = rightStart + rightZoneW * 0.55;
-    var rb1w = rightZoneW * 0.22;
-    var rb1h = 60;
-    drawBuilding(skyline, rb1x, skylineY - rb1h, rb1w, rb1h + belowH, 11);
-    drawPediment(skyline, rb1x, rb1w, skylineY - rb1h, 8, 11);
-    drawWindows(skyline, rb1x, rb1w, skylineY - rb1h, skylineY, 9, 0.40);
+    // === US CAPITOL BUILDING ===
+    // The real Capitol is VERY wide and low — about 3:1 width-to-height ratio
+    // It should span the entire right zone and even overflow off-screen to the right
+    var capTotalW = rightZoneW * 1.3;  // wider than zone — right side goes off screen
+    var capX = rightStart + 4;   // start just past road edge
+    var capShade = 42;
 
-    var rb2x = rb1x + rb1w + 3;
-    var rb2w = rightZoneW * 0.20;
-    var rb2h = 50;
-    drawBuilding(skyline, rb2x, skylineY - rb2h, rb2w, rb2h + belowH, 9);
-    drawWindows(skyline, rb2x, rb2w, skylineY - rb2h, skylineY, 9, 0.45);
+    // Wing dimensions — wings are the widest, lowest parts
+    var wingH = 40;   // short wings
+    var lwingW = capTotalW * 0.30;   // left wing (closer to road, fully visible)
+    var rwingW = capTotalW * 0.30;   // right wing (extends off screen)
 
-    // Fill any remaining gap to screen edge
-    if (rb2x + rb2w < width + 10) {
-      var rb3x = rb2x + rb2w + 2;
-      var rb3w = width - rb3x + 10;
-      drawBuilding(skyline, rb3x, skylineY - 45, rb3w, 45 + belowH, 8);
-      drawWindows(skyline, rb3x, rb3w, skylineY - 45, skylineY, 10, 0.50);
+    // Central body — taller but narrower than wings combined
+    var mainBodyW = capTotalW * 0.28;
+    var mainBodyH = 55;   // taller than wings but still LOW compared to old version
+    var mainBodyX = capX + lwingW - 2;
+
+    // Right wing position
+    var rwingX = mainBodyX + mainBodyW - 2;
+
+    // Draw left wing (fully visible, closer to road)
+    drawBuilding(skyline, capX, skylineY - wingH, lwingW, wingH + belowH, capShade - 4);
+    // Pediment on left wing (triangular classical facade)
+    skyline.fillStyle(Phaser.Display.Color.GetColor(capShade, capShade, capShade + 8), 0.9);
+    skyline.beginPath();
+    skyline.moveTo(capX + lwingW * 0.15, skylineY - wingH);
+    skyline.lineTo(capX + lwingW * 0.5, skylineY - wingH - 10);
+    skyline.lineTo(capX + lwingW * 0.85, skylineY - wingH);
+    skyline.closePath();
+    skyline.fillPath();
+
+    // Draw main central body (taller section under dome)
+    drawBuilding(skyline, mainBodyX, skylineY - mainBodyH, mainBodyW, mainBodyH + belowH, capShade);
+
+    // Draw right wing (extends off screen — that's fine, it gets clipped)
+    drawBuilding(skyline, rwingX, skylineY - wingH, rwingW, wingH + belowH, capShade - 6);
+    // Pediment on right wing
+    skyline.fillStyle(Phaser.Display.Color.GetColor(capShade - 2, capShade - 2, capShade + 6), 0.9);
+    skyline.beginPath();
+    skyline.moveTo(rwingX + rwingW * 0.15, skylineY - wingH);
+    skyline.lineTo(rwingX + rwingW * 0.5, skylineY - wingH - 10);
+    skyline.lineTo(rwingX + rwingW * 0.85, skylineY - wingH);
+    skyline.closePath();
+    skyline.fillPath();
+
+    // Stepped base between wings and center (connecting terraces)
+    var stepH = (mainBodyH - wingH) * 0.4;
+    var stepLeftX = capX + lwingW - 8;
+    drawBuilding(skyline, stepLeftX, skylineY - wingH - stepH, 12, stepH + wingH + belowH, capShade - 2);
+    var stepRightX = rwingX - 4;
+    drawBuilding(skyline, stepRightX, skylineY - wingH - stepH, 12, stepH + wingH + belowH, capShade - 2);
+
+    // Dome drum (wide cylindrical base for dome)
+    var drumW = mainBodyW * 0.65;
+    var drumH = 18;
+    var drumX = mainBodyX + (mainBodyW - drumW) / 2;
+    var drumY = skylineY - mainBodyH - drumH;
+    drawBuilding(skyline, drumX, drumY, drumW, drumH, capShade + 3);
+    // Small windows on drum (peristyle)
+    skyline.fillStyle(0xffd700, 0.18);
+    for (var dw = drumX + 3; dw < drumX + drumW - 3; dw += 4) {
+      skyline.fillRect(dw, drumY + 3, 2, 8);
     }
 
-    // === US CAPITOL BUILDING (foreground, right next to road edge — mirrors Monument placement) ===
-    var capMainW = rightZoneW * 0.42;
-    var capMainH = 80;
-    var capX = rightStart + 6;   // right next to road, like Monument on the left
-    var capShade = 14;
-
-    // Main rectangular body
-    drawBuilding(skyline, capX, skylineY - capMainH, capMainW, capMainH + belowH, capShade);
-
-    // Right wing (extending away from road)
-    var wingW = capMainW * 0.3;
-    var wingH = capMainH * 0.55;
-    drawBuilding(skyline, capX + capMainW - 2, skylineY - wingH, wingW, wingH + belowH, capShade - 2);
-
-    // Dome drum (cylindrical base for dome — rectangular)
-    var drumW = capMainW * 0.35;
-    var drumH = 20;
-    var drumX = capX + (capMainW - drumW) / 2;
-    var drumY = skylineY - capMainH - drumH;
-    drawBuilding(skyline, drumX, drumY, drumW, drumH, capShade + 2);
-    // Small windows on drum
-    skyline.fillStyle(0xffd700, 0.15);
-    for (var dw = drumX + 3; dw < drumX + drumW - 3; dw += 5) {
-      skyline.fillRect(dw, drumY + 4, 2, 6);
-    }
-
-    // Dome (half-ellipse drawn with arc path)
-    var domeW = drumW * 1.05;
-    var domeRise = 35;
+    // Dome (half-ellipse — wider and taller for prominence)
+    var domeW = drumW * 1.20;
+    var domeRise = 48;   // taller dome for visibility
     var domeCX = drumX + drumW / 2;
     var domeBaseY = drumY;
-    skyline.fillStyle(Phaser.Display.Color.GetColor(capShade + 4, capShade + 4, capShade + 12), 0.95);
+    skyline.fillStyle(Phaser.Display.Color.GetColor(capShade + 6, capShade + 6, capShade + 14), 0.95);
     skyline.beginPath();
     skyline.moveTo(domeCX - domeW / 2, domeBaseY);
-    for (var a = Math.PI; a >= 0; a -= 0.08) {
+    for (var a = Math.PI; a >= 0; a -= 0.06) {
       var dx = domeCX + (domeW / 2) * Math.cos(a);
       var dy = domeBaseY - domeRise * Math.sin(a);
       skyline.lineTo(dx, dy);
@@ -383,11 +433,18 @@ var Act1RunnerScene = new Phaser.Class({
     skyline.closePath();
     skyline.fillPath();
 
+    // Dome ribs (subtle vertical lines on dome)
+    skyline.lineStyle(1, Phaser.Display.Color.GetColor(capShade + 12, capShade + 12, capShade + 20), 0.12);
+    for (var rib = -2; rib <= 2; rib++) {
+      var ribX = domeCX + rib * (domeW / 8);
+      skyline.lineBetween(ribX, domeBaseY, ribX, domeBaseY - domeRise * 0.85);
+    }
+
     // Dome highlight (subtle shine on left side from road glow)
-    skyline.fillStyle(0xffffff, 0.04);
+    skyline.fillStyle(0xffffff, 0.05);
     skyline.beginPath();
-    skyline.moveTo(domeCX, domeBaseY);
-    for (var a2 = Math.PI * 0.9; a2 >= Math.PI * 0.4; a2 -= 0.1) {
+    skyline.moveTo(domeCX - 2, domeBaseY);
+    for (var a2 = Math.PI * 0.9; a2 >= Math.PI * 0.45; a2 -= 0.08) {
       var dx2 = domeCX + (domeW / 2 - 3) * Math.cos(a2);
       var dy2 = domeBaseY - (domeRise - 3) * Math.sin(a2);
       skyline.lineTo(dx2, dy2);
@@ -395,48 +452,51 @@ var Act1RunnerScene = new Phaser.Class({
     skyline.closePath();
     skyline.fillPath();
 
-    // Cupola (lantern on top of dome — small rectangle + tiny dome)
-    var cupW = 6;
-    var cupH = 10;
+    // Cupola / lantern on top of dome
+    var cupW = 10;
+    var cupH = 14;
     var cupX = domeCX - cupW / 2;
     var cupY = domeBaseY - domeRise - cupH;
-    skyline.fillStyle(Phaser.Display.Color.GetColor(capShade + 5, capShade + 5, capShade + 14), 0.95);
+    skyline.fillStyle(Phaser.Display.Color.GetColor(capShade + 6, capShade + 6, capShade + 16), 0.95);
     skyline.fillRect(cupX, cupY, cupW, cupH);
     // Tiny dome on cupola
     skyline.beginPath();
     skyline.moveTo(cupX, cupY);
-    for (var a3 = Math.PI; a3 >= 0; a3 -= 0.2) {
-      skyline.lineTo(cupX + cupW / 2 + (cupW / 2) * Math.cos(a3), cupY - 4 * Math.sin(a3));
+    for (var a3 = Math.PI; a3 >= 0; a3 -= 0.15) {
+      skyline.lineTo(cupX + cupW / 2 + (cupW / 2) * Math.cos(a3), cupY - 6 * Math.sin(a3));
     }
     skyline.closePath();
     skyline.fillPath();
 
     // Statue of Freedom on top (tiny vertical line + dot)
-    skyline.lineStyle(1, 0xcccccc, 0.5);
-    skyline.lineBetween(domeCX, cupY - 4, domeCX, cupY - 10);
-    var statueTop = this.add.circle(domeCX, cupY - 11, 1.5, 0xcccccc, 0.5).setDepth(1);
+    skyline.lineStyle(1.5, 0xcccccc, 0.6);
+    skyline.lineBetween(domeCX, cupY - 6, domeCX, cupY - 14);
+    var statueTop = this.add.circle(domeCX, cupY - 15, 2, 0xcccccc, 0.55).setDepth(1);
 
+    // Capitol windows — left wing (tall arched windows, classical)
+    drawWindows(skyline, capX, lwingW, skylineY - wingH, skylineY, 8, 0.45);
     // Capitol windows — main body
-    drawWindows(skyline, capX, capMainW, skylineY - capMainH, skylineY, 9, 0.35);
+    drawWindows(skyline, mainBodyX, mainBodyW, skylineY - mainBodyH, skylineY, 8, 0.40);
     // Capitol windows — right wing
-    drawWindows(skyline, capX + capMainW - 2, wingW, skylineY - wingH, skylineY, 9, 0.40);
+    drawWindows(skyline, rwingX, rwingW, skylineY - wingH, skylineY, 8, 0.45);
 
-    // Columns on Capitol front
-    drawColumns(skyline, capX, capMainW, skylineY - capMainH, capMainH * 0.5, 6);
+    // Columns on Capitol main body (prominent)
+    drawColumns(skyline, mainBodyX, mainBodyW, skylineY - mainBodyH, mainBodyH * 0.6, 8);
+    // Columns on left wing
+    drawColumns(skyline, capX + 4, lwingW - 8, skylineY - wingH, wingH * 0.5, 5);
 
     // Street-level windows on right buildings (below skyline)
     var rightBuildings = [
-      { x: capX, w: capMainW },
-      { x: capX + capMainW - 2, w: wingW },
-      { x: rb1x, w: rb1w },
-      { x: rb2x, w: rb2w }
+      { x: capX, w: lwingW },
+      { x: mainBodyX, w: mainBodyW },
+      { x: rwingX, w: rwingW }
     ];
     for (var ri = 0; ri < rightBuildings.length; ri++) {
       var rb = rightBuildings[ri];
       for (var rwy = skylineY + 10; rwy < height - 20; rwy += 18) {
         for (var rwx = rb.x + 3; rwx < rb.x + rb.w - 5; rwx += 9) {
           if (Math.random() > 0.55) {
-            skyline.fillStyle(Phaser.Math.RND.pick(windowColors), Phaser.Math.FloatBetween(0.04, 0.15));
+            skyline.fillStyle(Phaser.Math.RND.pick(windowColors), Phaser.Math.FloatBetween(0.10, 0.35));
             skyline.fillRect(rwx, rwy, 3, 5);
           }
         }
@@ -448,9 +508,7 @@ var Act1RunnerScene = new Phaser.Class({
     var neonGfx = this.add.graphics().setDepth(1);
     var neonTargets = [
       { x: lb1x, w: lb1w, h: 55 },
-      { x: lb3x, w: lb3w, h: 60 },
-      { x: rb1x, w: rb1w, h: rb1h },
-      { x: rb2x, w: rb2w, h: rb2h }
+      { x: lb3x, w: lb3w, h: 60 }
     ];
     for (var ns = 0; ns < neonTargets.length; ns++) {
       if (Math.random() > 0.4) {
@@ -472,15 +530,35 @@ var Act1RunnerScene = new Phaser.Class({
       ease: 'Sine.easeInOut'
     });
 
-    // Horizon glow (warmer, brighter)
+    // Vibrant horizon glow — warm band ABOVE skyline only (no bleed below)
     var glow = this.add.graphics();
     glow.setDepth(1);
-    glow.fillStyle(0xe8751a, 0.10);
-    glow.fillRect(0, skylineY - 8, width, 20);
-    glow.fillStyle(0xffd700, 0.06);
-    glow.fillRect(0, skylineY + 8, width, 15);
-    glow.fillStyle(0xe84393, 0.04);
-    glow.fillRect(0, skylineY - 15, width, 10);
+    // Orange core glow (centered on skyline, slight bleed below is ok — just 2px)
+    glow.fillStyle(0xe8751a, 0.18);
+    glow.fillRect(0, skylineY - 8, width, 10);
+    // Gold band (right at skyline)
+    glow.fillStyle(0xffd700, 0.14);
+    glow.fillRect(0, skylineY - 3, width, 5);
+    // Pink/magenta accent above
+    glow.fillStyle(0xe84393, 0.08);
+    glow.fillRect(0, skylineY - 20, width, 14);
+    // Wide warm ambient spread (ABOVE skyline only)
+    glow.fillStyle(0xe8751a, 0.05);
+    glow.fillRect(0, skylineY - 35, width, 35);
+    // Red underline at horizon (thin, right at line)
+    glow.fillStyle(0xe63946, 0.12);
+    glow.fillRect(0, skylineY - 2, width, 3);
+    // Animated horizon pulse (above skyline)
+    var glowPulse = this.add.graphics().setDepth(1);
+    glowPulse.fillStyle(0xffd700, 0.06);
+    glowPulse.fillRect(0, skylineY - 12, width, 14);
+    this.tweens.add({
+      targets: glowPulse,
+      alpha: { from: 1, to: 0.3 },
+      duration: 2000,
+      yoyo: true, repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
   },
 
   drawRoad: function () {
@@ -532,37 +610,56 @@ var Act1RunnerScene = new Phaser.Class({
 
     // Sidewalk strips — perspective trapezoids flanking the road
     var sideBg = this.add.graphics().setDepth(1);
-    sideBg.fillStyle(0x222230, 0.8);
+    sideBg.fillStyle(0x2a2240, 0.85);
     // Left sidewalk
     sideBg.beginPath();
     sideBg.moveTo(this.roadTopLeft - 2, this.vanishY);
     sideBg.lineTo(this.roadTopLeft, this.vanishY);
     sideBg.lineTo(this.roadBottomLeft, H);
-    sideBg.lineTo(this.roadBottomLeft - 8, H);
+    sideBg.lineTo(this.roadBottomLeft - 10, H);
     sideBg.closePath();
     sideBg.fillPath();
     // Right sidewalk
     sideBg.beginPath();
     sideBg.moveTo(this.roadTopRight, this.vanishY);
     sideBg.lineTo(this.roadTopRight + 2, this.vanishY);
-    sideBg.lineTo(this.roadBottomRight + 8, H);
+    sideBg.lineTo(this.roadBottomRight + 10, H);
     sideBg.lineTo(this.roadBottomRight, H);
     sideBg.closePath();
     sideBg.fillPath();
-    // Side neon glow strips
-    sideBg.fillStyle(0xe8751a, 0.06);
+
+    // Vibrant neon glow strips along road edges (orange + pink)
+    // Orange outer glow — left
+    sideBg.fillStyle(0xe8751a, 0.12);
     sideBg.beginPath();
-    sideBg.moveTo(this.roadTopLeft - 6, this.vanishY);
+    sideBg.moveTo(this.roadTopLeft - 8, this.vanishY);
     sideBg.lineTo(this.roadTopLeft, this.vanishY);
     sideBg.lineTo(this.roadBottomLeft, H);
-    sideBg.lineTo(this.roadBottomLeft - 12, H);
+    sideBg.lineTo(this.roadBottomLeft - 16, H);
+    sideBg.closePath();
+    sideBg.fillPath();
+    // Orange outer glow — right
+    sideBg.beginPath();
+    sideBg.moveTo(this.roadTopRight, this.vanishY);
+    sideBg.lineTo(this.roadTopRight + 8, this.vanishY);
+    sideBg.lineTo(this.roadBottomRight + 16, H);
+    sideBg.lineTo(this.roadBottomRight, H);
+    sideBg.closePath();
+    sideBg.fillPath();
+    // Pink ambient wash on sides (further out from road)
+    sideBg.fillStyle(0xe84393, 0.05);
+    sideBg.beginPath();
+    sideBg.moveTo(this.roadTopLeft - 20, this.vanishY);
+    sideBg.lineTo(this.roadTopLeft - 8, this.vanishY);
+    sideBg.lineTo(this.roadBottomLeft - 16, H);
+    sideBg.lineTo(this.roadBottomLeft - 35, H);
     sideBg.closePath();
     sideBg.fillPath();
     sideBg.beginPath();
-    sideBg.moveTo(this.roadTopRight, this.vanishY);
-    sideBg.lineTo(this.roadTopRight + 6, this.vanishY);
-    sideBg.lineTo(this.roadBottomRight + 12, H);
-    sideBg.lineTo(this.roadBottomRight, H);
+    sideBg.moveTo(this.roadTopRight + 8, this.vanishY);
+    sideBg.lineTo(this.roadTopRight + 20, this.vanishY);
+    sideBg.lineTo(this.roadBottomRight + 35, H);
+    sideBg.lineTo(this.roadBottomRight + 16, H);
     sideBg.closePath();
     sideBg.fillPath();
 
@@ -945,6 +1042,10 @@ var Act1RunnerScene = new Phaser.Class({
     var initScale = this.getScaleAtY(spawnY);
     obstacle.setDisplaySize(this.laneWidth * 0.55 * initScale, this.laneWidth * 0.85 * initScale);
 
+    // Angle car toward vanishing point based on lane
+    var carAngle = this.getCarAngleAtY(lane, spawnY);
+    obstacle.setAngle(carAngle);
+
     // Taillight glow (red, behind the car driving away)
     var taillight = this.add.graphics().setDepth(7);
     obstacle.headlightGfx = taillight;
@@ -1032,10 +1133,9 @@ var Act1RunnerScene = new Phaser.Class({
       });
     } else {
       sprite.setScale(1.3 * initScale);
-      // Dollar bill float + gentle bob
+      // Dollar bill gentle wobble (do NOT tween y — moveEntities handles y movement)
       this.tweens.add({
         targets: sprite,
-        y: sprite.y - 5,
         angle: { from: -8, to: 8 },
         duration: 500,
         yoyo: true,
@@ -1072,6 +1172,9 @@ var Act1RunnerScene = new Phaser.Class({
       // Scale up as it approaches (perspective)
       var s = this.getScaleAtY(obs.sprite.y);
       obs.sprite.setDisplaySize(this.laneWidth * 0.55 * s, this.laneWidth * 0.85 * s);
+
+      // Update angle to follow road perspective
+      obs.sprite.setAngle(this.getCarAngleAtY(obs.lane, obs.sprite.y));
 
       // Redraw taillight glow (red, behind the car driving away)
       if (obs.sprite.headlightGfx) {
