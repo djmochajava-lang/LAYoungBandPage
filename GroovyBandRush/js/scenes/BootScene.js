@@ -64,6 +64,9 @@ var BootScene = new Phaser.Class({
 
     // Load L.A. Young headshot for main menu
     this.load.image('la_headshot', '../images/artist/headshot3.jpg');
+
+    // Load L.A. Young cartoon illustration for Prologue Hero Splash
+    this.load.image('la_cartoon', '../images/cartoon/LAYoungCartoon3.png');
   },
 
   create: function () {
