@@ -221,13 +221,9 @@ document.addEventListener('DOMContentLoaded', function () {
   // Clamp width: min 450 (original), max 900 (very wide landscape)
   gameWidth = Math.max(450, Math.min(900, gameWidth));
 
-  // Safari/iOS WebGL has PNG alpha issues — use Canvas renderer on iOS
-  var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  var renderType = isIOS ? Phaser.CANVAS : Phaser.AUTO;
-
+  // Use Canvas renderer for reliable PNG transparency on all devices
   var config = {
-    type: renderType,
+    type: Phaser.CANVAS,
     width: gameWidth,
     height: gameHeight,
     parent: 'game-container',
