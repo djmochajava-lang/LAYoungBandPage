@@ -404,17 +404,8 @@
   }
 
   .page-content {
-    margin-top: 0;
+    margin-top: 120px;
     margin-bottom: 0;
-    padding-bottom: 0;
-  }
-
-  /* Section fills full viewport behind the fixed header */
-  .section,
-  .hero {
-    width: 100vw;
-    min-height: 100vh;
-    padding-top: 120px; /* push content below fixed header */
   }
 
   .site-footer {

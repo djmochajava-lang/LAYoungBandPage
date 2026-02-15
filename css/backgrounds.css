@@ -120,7 +120,7 @@
 }
 
 /* Mobile: disable fixed attachment for better scrolling/performance */
-@media (max-width: 768px), (orientation: portrait) {
+@media (max-width: 768px) {
   .section,
   .hero {
     background-attachment: scroll;

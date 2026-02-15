@@ -230,8 +230,21 @@ body.fullscreen-game #game-container canvas {
   }
 
   .site-footer {
-    padding: 0.8rem 1rem;
-    font-size: 0.7rem;
+    display: none;
+  }
+
+  /* Game fills full width, stretches to remaining viewport height */
+  #game-container {
+    margin-top: var(--header-height);
+    width: 100vw;
+    height: calc(100vh - var(--header-height));
+    height: calc(100dvh - var(--header-height));
+  }
+
+  #game-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain;
   }
 }
 
