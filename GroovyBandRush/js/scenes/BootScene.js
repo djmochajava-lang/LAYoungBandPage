@@ -58,6 +58,9 @@ var BootScene = new Phaser.Class({
     this.load.image('la_outfit_0', '../images/artist/LAPopSinger.jpeg');
     this.load.image('la_outfit_1', '../images/artist/LAYoungPink.JPG');
     this.load.image('la_outfit_2', '../images/artist/laPowerSister.png');
+
+    // Load SUV image for Act1 player vehicle
+    this.load.image('van', '../images/cartoon/suv.avif');
   },
 
   create: function () {
@@ -70,19 +73,7 @@ var BootScene = new Phaser.Class({
   generatePlaceholders: function () {
     var g;
 
-    // --- Van (player vehicle) ---
-    g = this.make.graphics({ x: 0, y: 0, add: false });
-    g.fillGradientStyle(0xe8751a, 0xffd700, 0xe84393, 0xffd700);
-    g.fillRoundedRect(0, 0, 44, 60, 8);
-    g.fillStyle(0x64c8ff, 0.5);
-    g.fillRoundedRect(6, 5, 32, 18, 3);
-    g.fillStyle(0xffffff, 0.5);
-    g.fillRect(0, 28, 44, 3);
-    g.fillStyle(0xff4444);
-    g.fillCircle(8, 55, 4);
-    g.fillCircle(36, 55, 4);
-    g.generateTexture('van', 44, 60);
-    g.destroy();
+    // Van is now loaded as an image (suv.avif) in preload()
 
     // --- Obstacle (rock) ---
     g = this.make.graphics({ x: 0, y: 0, add: false });

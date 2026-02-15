@@ -63,9 +63,13 @@ var Act1RunnerScene = new Phaser.Class({
     this.drawBackground();
     this.drawRoad();
 
-    // --- Player van ---
-    this.player = this.add.image(this.laneXPositions[1], this.playerY, 'van').setScale(1.8);
+    // --- Player SUV ---
+    this.player = this.add.image(this.laneXPositions[1], this.playerY, 'van');
+    this.player.setDisplaySize(this.laneWidth * 0.85, this.laneWidth * 1.2);
     this.player.setDepth(10);
+    // Store base scale for jump animation
+    this.playerBaseScaleX = this.player.scaleX;
+    this.playerBaseScaleY = this.player.scaleY;
 
     // Glow effect under player
     this.playerGlow = this.add.graphics();
@@ -375,16 +379,17 @@ var Act1RunnerScene = new Phaser.Class({
       }
     });
 
-    // Scale squash and stretch
+    // Scale squash and stretch (relative to base size)
     this.tweens.add({
       targets: this.player,
-      scaleX: 1.5,
-      scaleY: 2.1,
+      scaleX: this.playerBaseScaleX * 0.85,
+      scaleY: this.playerBaseScaleY * 1.2,
       duration: 250,
       ease: 'Power2.easeOut',
       yoyo: true,
       onComplete: function () {
-        self.player.setScale(1.8);
+        self.player.scaleX = self.playerBaseScaleX;
+        self.player.scaleY = self.playerBaseScaleY;
       }
     });
   },
