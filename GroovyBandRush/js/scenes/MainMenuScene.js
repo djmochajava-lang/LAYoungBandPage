@@ -124,12 +124,22 @@ var MainMenuScene = new Phaser.Class({
       color: '#e8751a'
     }).setOrigin(0.5);
 
-    // --- Van icon ---
-    var van = this.add.image(width / 2, height * 0.55, 'van');
-    van.setDisplaySize(80, 120);
+    // --- L.A. Young headshot (circular crop) ---
+    var photoY = height * 0.55;
+    var headshot = this.add.image(0, 0, 'la_headshot');
+    headshot.setDisplaySize(160, 160);
+    // Gold ring around photo
+    var ring = this.add.circle(0, 0, 82, 0x000000, 0).setStrokeStyle(3, 0xffd700);
+    // Group in container so mask + ring float together
+    var photoContainer = this.add.container(width / 2, photoY, [headshot, ring]);
+    // Circular mask (centered on container position)
+    var maskGfx = this.make.graphics({ x: 0, y: 0, add: false });
+    maskGfx.fillCircle(width / 2, photoY, 80);
+    headshot.setMask(maskGfx.createGeometryMask());
+    // Gentle float
     this.tweens.add({
-      targets: van,
-      y: { from: van.y - 5, to: van.y + 5 },
+      targets: [photoContainer, maskGfx],
+      y: '-=5',
       duration: 2000,
       yoyo: true,
       repeat: -1,

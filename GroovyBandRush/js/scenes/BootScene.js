@@ -61,6 +61,9 @@ var BootScene = new Phaser.Class({
 
     // Load SUV image for Act1 player vehicle
     this.load.image('van', '../images/cartoon/suv.png');
+
+    // Load L.A. Young headshot for main menu
+    this.load.image('la_headshot', '../images/artist/headshot1.jpg');
   },
 
   create: function () {
