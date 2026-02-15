@@ -63,6 +63,14 @@
   background-attachment: fixed;
 }
 
+/* Projects */
+#projects {
+  background-image: url('../images/backgrounds/ribbonmic3.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
 /* Videos */
 #videos {
   background-image: url('../images/backgrounds/photostudio.jpg');
@@ -82,6 +90,14 @@
 /* Tour */
 #tour {
   background-image: url('../images/backgrounds/connect-dark-curtains.gif');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* Shows */
+#shows {
+  background-image: url('../images/backgrounds/photostudio4.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;

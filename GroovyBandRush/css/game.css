@@ -170,7 +170,7 @@ body {
   background: rgba(255, 215, 0, 0.15);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (orientation: portrait) {
   .fullscreen-toggle {
     display: block;
   }
@@ -214,7 +214,8 @@ body.fullscreen-game #game-container canvas {
 }
 
 /* === MOBILE ADJUSTMENTS === */
-@media (max-width: 600px) {
+/* Portrait orientation = always mobile layout (same rule as main site) */
+@media (max-width: 600px), (orientation: portrait) {
   :root {
     --header-height: 60px;
   }

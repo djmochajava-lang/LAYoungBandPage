@@ -64,8 +64,8 @@
       }
     }
 
-    // Auto-show fullscreen toggle hint on mobile
-    if (window.innerWidth <= 768) {
+    // Auto-show fullscreen toggle hint on mobile or portrait
+    if (window.innerWidth <= 768 || window.innerHeight > window.innerWidth) {
       document.addEventListener('DOMContentLoaded', function() {
         var btn = document.getElementById('fsToggle');
         if (btn) {
