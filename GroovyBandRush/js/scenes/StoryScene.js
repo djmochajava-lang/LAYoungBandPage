@@ -1,4 +1,4 @@
-/* GroovyBandRush/js/scenes/StoryScene.js — V6 HERO SPLASH PROLOGUE */
+/* GroovyBandRush/js/scenes/StoryScene.js — V7 HERO SPLASH ALL ACTS */
 
 var StoryScene = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -500,22 +500,22 @@ var StoryScene = new Phaser.Class({
   },
 
   // ================================================================
-  //  V5 COMIC LAYOUT (Acts 1-4)
+  //  HERO SPLASH LAYOUT (Acts 1-4) — Same dramatic style as Prologue
   // ================================================================
   _createComicLayout: function (W, H, cx, story, theme) {
     var self = this;
 
     // ============================================================
-    //  LAYER 2 — City skyline
+    //  LAYER 2 — Compressed city skyline (behind hero)
     // ============================================================
-    var skylineBase = H * 0.58;
-    var skyGfx = this.add.graphics();
+    var skylineBase = H * 0.62;
+    var skyGfx = this.add.graphics().setDepth(1);
 
     var blds = [];
     var bx = 0;
     while (bx < W + 10) {
       var bw = Phaser.Math.Between(22, 45);
-      var bh = Phaser.Math.Between(60, 185);
+      var bh = Phaser.Math.Between(40, 100);
       blds.push({ x: bx, w: bw, h: bh });
       bx += bw + Phaser.Math.Between(0, 5);
     }
@@ -538,57 +538,21 @@ var StoryScene = new Phaser.Class({
       }
     }
 
-    // Ground area
-    var road = this.add.graphics();
-    road.fillStyle(0x0e0e16, 1);
-    road.fillRect(0, skylineBase + 2, W, H - skylineBase);
-    road.fillStyle(theme.glow, 0.07);
-    road.fillRect(0, skylineBase + 2, W, 25);
-    road.fillStyle(0x080810, 1);
-    road.fillRect(0, skylineBase + 40, W, H - skylineBase - 40);
-    road.fillStyle(0xffd700, 0.06);
-    for (var dx = 10; dx < W; dx += 40) {
-      road.fillRect(dx, skylineBase + 60, 20, 3);
-    }
-    road.fillStyle(theme.glow, 0.02);
-    road.fillRect(0, skylineBase + 40, W, 80);
-
-    // Street lamps
-    var lampGfx = this.add.graphics().setDepth(1);
-    for (var lp = 0; lp < 5; lp++) {
-      var lpx = W * 0.12 + lp * (W * 0.20);
-      lampGfx.fillStyle(0x333344, 0.6);
-      lampGfx.fillRect(lpx - 1, skylineBase - 30, 3, 30);
-      lampGfx.fillStyle(0xffd700, 0.4);
-      lampGfx.fillCircle(lpx, skylineBase - 33, 4);
-      lampGfx.fillStyle(0xffd700, 0.03);
-      lampGfx.fillEllipse(lpx, skylineBase + 15, 50, 20);
-    }
-
-    // City reflection
-    var reflGfx = this.add.graphics().setDepth(0);
-    reflGfx.fillStyle(0xffd700, 0.015);
-    for (var ri = 0; ri < blds.length; ri++) {
-      var rb = blds[ri];
-      if (rb.x > W) break;
-      reflGfx.fillRect(rb.x, skylineBase + 42, rb.w - 2, Math.min(rb.h * 0.3, 40));
-    }
-
-    road.fillStyle(0x222233, 0.4);
-    road.fillRect(0, skylineBase + 38, W, 2);
-
-    var bottomGrad = this.add.graphics().setDepth(0);
-    bottomGrad.fillStyle(theme.glow, 0.02);
-    bottomGrad.fillRect(0, H * 0.85, W, H * 0.15);
+    // Ground fill below skyline
+    var ground = this.add.graphics().setDepth(1);
+    ground.fillStyle(0x080810, 1);
+    ground.fillRect(0, skylineBase, W, H - skylineBase);
+    ground.fillStyle(theme.glow, 0.05);
+    ground.fillRect(0, skylineBase, W, 20);
 
     // ============================================================
-    //  LAYER 3 — Band members
+    //  LAYER 3 — Band members (pushed to edges)
     // ============================================================
     var memberSlots = [
-      { pct: 0.10, idx: 0 },
-      { pct: 0.32, idx: 1 },
-      { pct: 0.55, idx: 2 },
-      { pct: 0.78, idx: 3 }
+      { pct: 0.06, idx: 0 },
+      { pct: 0.22, idx: 1 },
+      { pct: 0.78, idx: 2 },
+      { pct: 0.94, idx: 3 }
     ];
 
     for (var mp = 0; mp < memberSlots.length; mp++) {
@@ -598,15 +562,15 @@ var StoryScene = new Phaser.Class({
       var found = GBR.state.bandMembers[slot.idx].found;
 
       var peeker = this.add.image(mx, my, 'member_' + slot.idx)
-        .setScale(0.25)
+        .setScale(0.22)
         .setOrigin(0.5, 1)
-        .setAlpha(found ? 0.95 : 0.55)
+        .setAlpha(found ? 0.85 : 0.45)
         .setDepth(3);
 
       if (!found) {
-        var qmark = this.add.text(mx, my - 90, '?', {
+        var qmark = this.add.text(mx, my - 80, '?', {
           fontFamily: GBR.FONTS.display,
-          fontSize: '26px',
+          fontSize: '22px',
           color: '#ffd700',
           stroke: '#000000',
           strokeThickness: 3
@@ -621,9 +585,9 @@ var StoryScene = new Phaser.Class({
           delay: mp * 280
         });
       } else {
-        this.add.text(mx, my - 90, '\u2713', {
+        this.add.text(mx, my - 80, '\u2713', {
           fontFamily: GBR.FONTS.display,
-          fontSize: '24px',
+          fontSize: '20px',
           color: '#2ecc71',
           stroke: '#000000',
           strokeThickness: 3
@@ -632,7 +596,7 @@ var StoryScene = new Phaser.Class({
 
       this.tweens.add({
         targets: peeker,
-        x: mx + (mp % 2 === 0 ? 6 : -6),
+        x: mx + (mp % 2 === 0 ? 5 : -5),
         duration: Phaser.Math.Between(1500, 2500),
         yoyo: true, repeat: -1,
         ease: 'Sine.easeInOut',
@@ -641,273 +605,269 @@ var StoryScene = new Phaser.Class({
     }
 
     // ============================================================
-    //  LAYER 4 — L.A. Young portrait (LEFT side)
+    //  LAYER 4 — HERO IMAGE: L.A. Cartoon (centerpiece)
     // ============================================================
-    var portraitX = W * 0.22;
-    var portraitY = H * 0.38;
+    var heroTargetY = H * 0.92;
+    var heroScale = (H * 0.65) / 1536;
+    heroScale = Math.max(0.28, Math.min(0.42, heroScale));
 
-    var laSpot = this.add.graphics().setDepth(5);
-    laSpot.fillStyle(theme.glow, 0.10);
-    laSpot.fillEllipse(portraitX, portraitY, 260, 290);
-    laSpot.fillStyle(0xffffff, 0.04);
-    laSpot.fillEllipse(portraitX, portraitY, 200, 230);
+    var hero = this.add.image(cx, H + 200, 'la_cartoon')
+      .setOrigin(0.5, 1)
+      .setScale(heroScale * 0.8)
+      .setDepth(8);
 
-    var glowEllipse = this.add.graphics().setDepth(5);
-    glowEllipse.fillStyle(theme.glow, 0.16);
-    glowEllipse.fillEllipse(portraitX, portraitY, 210, 240);
+    // Hero Slam entrance
+    var heroSlamDuration = 500;
     this.tweens.add({
-      targets: glowEllipse,
-      scaleX: 1.12, scaleY: 1.12, alpha: 0.02,
-      duration: 1600, yoyo: true, repeat: -1,
-      ease: 'Sine.easeInOut'
-    });
+      targets: hero,
+      y: heroTargetY,
+      scaleX: heroScale,
+      scaleY: heroScale,
+      duration: heroSlamDuration,
+      ease: 'Back.easeOut',
+      onComplete: function () {
+        TransitionHelper.flash(self, 150);
+        TransitionHelper.shake(self, 150, 0.008);
 
-    var face = LAFace.create(this, portraitX, portraitY);
-    face.container.setDepth(6);
+        self._createActionLines(W, H, cx, heroTargetY - (1536 * heroScale * 0.45), theme);
 
-    this.tweens.add({
-      targets: [glowEllipse, laSpot],
-      y: '-=3',
-      duration: 2000, yoyo: true, repeat: -1,
-      ease: 'Sine.easeInOut'
-    });
-
-    // ============================================================
-    //  LAYER 5 — Act badge + Title
-    // ============================================================
-    var titleCX = W * 0.64;
-
-    var actLabel = '\u2B50 ACT ' + this.actNumber + ' \u2B50';
-    var badge = this.add.text(titleCX, H * 0.06, actLabel, {
-      fontFamily: GBR.FONTS.fun,
-      fontSize: '15px',
-      color: '#1a0a2e',
-      backgroundColor: '#ffd700',
-      padding: { x: 18, y: 5 }
-    }).setOrigin(0.5).setDepth(10);
-    badge.setScale(0);
-    this.tweens.add({ targets: badge, scaleX: 1, scaleY: 1, duration: 400, ease: 'Back.easeOut', delay: 100 });
-    this.tweens.add({
-      targets: badge,
-      scaleX: { from: 1, to: 1.04 }, scaleY: { from: 1, to: 1.04 },
-      duration: 900, yoyo: true, repeat: -1,
-      ease: 'Sine.easeInOut', delay: 600
-    });
-
-    var titleText = this.add.text(titleCX, H * 0.14, story.title, {
-      fontFamily: GBR.FONTS.display,
-      fontSize: '42px',
-      color: '#ffd700',
-      stroke: '#000000',
-      strokeThickness: 4,
-      shadow: { offsetX: 0, offsetY: 0, color: theme.accentHex, blur: 14, fill: true },
-      padding: { left: 14, right: 14, top: 4, bottom: 4 }
-    }).setOrigin(0.5).setDepth(10);
-    titleText.setScale(0);
-    this.tweens.add({ targets: titleText, scaleX: 1, scaleY: 1, duration: 500, ease: 'Back.easeOut', delay: 200 });
-
-    // ============================================================
-    //  LAYER 6 — Comic speech bubble
-    // ============================================================
-    var bubbleLeft = W * 0.36;
-    var bubbleW = W * 0.60;
-    var bubbleTop = H * 0.24;
-    var bubbleH = H * 0.17;
-
-    var speakerText = this.add.text(bubbleLeft + 14, bubbleTop - 20, story.speaker, {
-      fontFamily: GBR.FONTS.fun,
-      fontSize: '17px',
-      color: '#1a0a2e',
-      backgroundColor: theme.accentHex,
-      padding: { x: 12, y: 4 }
-    }).setOrigin(0, 0.5).setDepth(12);
-    speakerText.setScale(0);
-    this.tweens.add({ targets: speakerText, scaleX: 1, scaleY: 1, duration: 350, ease: 'Back.easeOut', delay: 300 });
-
-    var bubble = this.add.graphics().setDepth(10);
-    bubble.fillStyle(0xffffff, 0.95);
-    bubble.fillRoundedRect(bubbleLeft, bubbleTop, bubbleW, bubbleH, 18);
-    bubble.lineStyle(3, 0x1a1a2e, 1);
-    bubble.strokeRoundedRect(bubbleLeft, bubbleTop, bubbleW, bubbleH, 18);
-
-    var tailBaseX = bubbleLeft;
-    var tailBaseY = bubbleTop + bubbleH * 0.40;
-    bubble.fillStyle(0xffffff, 0.95);
-    bubble.fillTriangle(
-      tailBaseX, tailBaseY - 12,
-      tailBaseX, tailBaseY + 12,
-      tailBaseX - 22, tailBaseY + 8
-    );
-    bubble.lineStyle(3, 0x1a1a2e, 1);
-    bubble.lineBetween(tailBaseX - 22, tailBaseY + 8, tailBaseX, tailBaseY - 12);
-    bubble.lineBetween(tailBaseX - 22, tailBaseY + 8, tailBaseX, tailBaseY + 12);
-
-    bubble.setScale(0.85);
-    bubble.setAlpha(0);
-    this.tweens.add({
-      targets: bubble,
-      scaleX: 1, scaleY: 1, alpha: 1,
-      duration: 400, ease: 'Back.easeOut', delay: 350
-    });
-
-    var dialogText = this.add.text(bubbleLeft + 18, bubbleTop + 14, '', {
-      fontFamily: GBR.FONTS.body,
-      fontSize: '16px',
-      color: '#1a1a2e',
-      wordWrap: { width: bubbleW - 36 },
-      lineSpacing: 6
-    }).setDepth(11);
-
-    var fullText = story.text;
-    var charIndex = 0;
-    face.startTalking();
-
-    var typeTimer = this.time.addEvent({
-      delay: 28,
-      callback: function () {
-        charIndex++;
-        dialogText.setText(fullText.substring(0, charIndex));
-        if (charIndex >= fullText.length) {
-          typeTimer.destroy();
-          face.stopTalking();
-          face.setExpression('excited');
-        }
-      },
-      repeat: fullText.length - 1
-    });
-
-    this.input.once('pointerdown', function () {
-      if (charIndex < fullText.length) {
-        typeTimer.destroy();
-        charIndex = fullText.length;
-        dialogText.setText(fullText);
-        face.stopTalking();
-        face.setExpression('excited');
+        // Idle breathing
+        self.tweens.add({
+          targets: hero,
+          scaleX: heroScale * 1.015,
+          scaleY: heroScale * 1.015,
+          y: heroTargetY - 3,
+          duration: 2500,
+          yoyo: true, repeat: -1,
+          ease: 'Sine.easeInOut'
+        });
       }
     });
 
-    this.events.once('shutdown', function () {
-      face.destroy();
-    });
+    // ============================================================
+    //  LAYER 4b — Found band member celebration (flies in beside L.A.)
+    // ============================================================
+    // The previous act found a member (actNumber 1 = member 0, etc.)
+    var foundMemberIdx = this.actNumber - 1;
+    if (foundMemberIdx >= 0 && foundMemberIdx < 4) {
+      var memberInfo = GBR.BAND[foundMemberIdx];
+      var heroImgW = 1024 * heroScale;
+      var memberX = cx + heroImgW / 2 + 30;
+      var memberTargetY = H * 0.70;
 
-    // ============================================================
-    //  LAYER 7 — Venue marquee
-    // ============================================================
-    var venueX = W * 0.88;
-    var venueY = skylineBase;
-    var venueW = 60;
-    var venueH = 120;
-    var venue = this.add.graphics().setDepth(2);
-    venue.fillStyle(0x12121a, 1);
-    venue.fillRect(venueX - venueW / 2, venueY - venueH, venueW, venueH + 20);
-    venue.fillStyle(theme.accent, 0.9);
-    venue.fillRect(venueX - venueW / 2 - 5, venueY - venueH - 2, venueW + 10, 18);
-    venue.fillStyle(0xffd700, 0.15);
-    venue.fillRect(venueX - 8, venueY - 22, 16, 22);
-    for (var ml = 0; ml < 6; ml++) {
-      var lx = venueX - venueW / 2 - 2 + ml * 11;
-      var bulb = this.add.circle(lx, venueY - venueH - 6, 2.5, 0xffd700, 0.8).setDepth(2);
+      // Band member sprite flies in from right
+      var foundMember = this.add.image(W + 100, memberTargetY, 'member_' + foundMemberIdx)
+        .setScale(0.35)
+        .setOrigin(0.5, 1)
+        .setDepth(10);
+
       this.tweens.add({
-        targets: bulb,
-        alpha: { from: 0.8, to: 0.15 },
-        duration: 400,
-        yoyo: true, repeat: -1,
-        delay: ml * 120,
-        ease: 'Sine.easeInOut'
+        targets: foundMember,
+        x: memberX,
+        duration: 600,
+        delay: heroSlamDuration + 200,
+        ease: 'Back.easeOut',
+        onComplete: function () {
+          // Bounce idle
+          self.tweens.add({
+            targets: foundMember,
+            y: memberTargetY - 6,
+            duration: 1800,
+            yoyo: true, repeat: -1,
+            ease: 'Sine.easeInOut'
+          });
+        }
+      });
+
+      // Member name tag
+      var memberTag = this.add.text(memberX, memberTargetY + 8, memberInfo.emoji + ' ' + memberInfo.role, {
+        fontFamily: GBR.FONTS.fun,
+        fontSize: '12px',
+        color: '#ffffff',
+        backgroundColor: memberInfo.colorHex,
+        padding: { x: 8, y: 3 }
+      }).setOrigin(0.5, 0).setDepth(11).setAlpha(0);
+
+      this.tweens.add({
+        targets: memberTag,
+        alpha: 1,
+        delay: heroSlamDuration + 600,
+        duration: 300
+      });
+
+      // Glow behind found member
+      var memberGlow = this.add.graphics().setDepth(9);
+      memberGlow.fillStyle(memberInfo.color, 0.15);
+      memberGlow.fillEllipse(memberX, memberTargetY - 40, 80, 120);
+      memberGlow.setAlpha(0);
+      this.tweens.add({
+        targets: memberGlow,
+        alpha: 1,
+        delay: heroSlamDuration + 200,
+        duration: 400
       });
     }
-    var tonightText = this.add.text(venueX, venueY - venueH + 6, 'TONIGHT', {
+
+    // ============================================================
+    //  LAYER 5 — Dialogue text (floating, same as Prologue)
+    // ============================================================
+    var panelY = H * 0.05;
+    var panelW = W - 40;
+
+    var textContainer = this.add.container(0, -H * 0.3).setDepth(16);
+
+    // Act badge — white on theme color
+    var actLabel = '\u2B50 ACT ' + this.actNumber + ' \u2B50';
+    var badge = this.add.text(cx, panelY + 18, actLabel, {
       fontFamily: GBR.FONTS.fun,
-      fontSize: '9px',
-      color: '#ffd700'
-    }).setOrigin(0.5).setDepth(3);
+      fontSize: '13px',
+      color: '#ffffff',
+      backgroundColor: theme.accentHex,
+      padding: { x: 14, y: 4 }
+    }).setOrigin(0.5);
+    textContainer.add(badge);
+
+    // Title
+    var titleText = this.add.text(cx, panelY + 46, story.title, {
+      fontFamily: GBR.FONTS.display,
+      fontSize: '36px',
+      color: '#ffd700',
+      stroke: '#000000',
+      strokeThickness: 3,
+      shadow: { offsetX: 0, offsetY: 0, color: theme.accentHex, blur: 12, fill: true },
+      padding: { left: 8, right: 8, top: 8, bottom: 8 }
+    }).setOrigin(0.5);
+    textContainer.add(titleText);
+
+    // Speaker chip on hero photo top-right corner
+    var heroImgW2 = 1024 * heroScale;
+    var heroImgH2 = 1536 * heroScale;
+    var chipX = cx + heroImgW2 / 2 - 8;
+    var chipY = heroTargetY - heroImgH2 + 8;
+    var speakerText = this.add.text(chipX, chipY, story.speaker, {
+      fontFamily: GBR.FONTS.fun,
+      fontSize: '14px',
+      color: '#1a0a2e',
+      backgroundColor: theme.accentHex,
+      padding: { x: 10, y: 3 }
+    }).setOrigin(1, 0).setDepth(12);
+
+    // Dialogue text (centered typewriter)
+    var dialogText = this.add.text(cx, panelY + 72, '', {
+      fontFamily: GBR.FONTS.body,
+      fontSize: '15px',
+      color: '#ffffff',
+      wordWrap: { width: panelW - 40 },
+      lineSpacing: 5,
+      align: 'center'
+    }).setOrigin(0.5, 0);
+    textContainer.add(dialogText);
+
+    // Slide text container down
     this.tweens.add({
-      targets: tonightText,
-      alpha: { from: 1, to: 0.3 },
-      duration: 700, yoyo: true, repeat: -1,
-      ease: 'Sine.easeInOut'
+      targets: textContainer,
+      y: 0,
+      duration: 500,
+      ease: 'Back.easeOut',
+      delay: heroSlamDuration + 100,
+      onComplete: function () {
+        self._startTypewriter(dialogText, story.text);
+      }
     });
 
     // ============================================================
-    //  LAYER 8 — LET'S GO button
+    //  LAYER 7 — LET'S GO button (3D pressable, same as Prologue)
     // ============================================================
-    var btnY = skylineBase + 120;
-    btnY = Math.min(btnY, H * 0.88);
-    btnY = Math.max(btnY, H * 0.72);
-
-    var btnSpot = this.add.graphics().setDepth(14);
-    btnSpot.fillStyle(theme.glow, 0.08);
-    btnSpot.fillEllipse(cx, btnY, 280, 60);
+    var btnY = H * 0.83;
+    var btnW = 180;
+    var btnH = 44;
+    var btnR = 22;
 
     setTimeout(function () {
       if (!self.scene || !self.scene.isActive()) return;
 
-      self.tweens.add({
-        targets: btnSpot,
-        alpha: { from: 1, to: 0.2 },
-        duration: 900, yoyo: true, repeat: -1,
-        ease: 'Sine.easeInOut'
-      });
+      // 3D button: shadow layer
+      var btnShadow = self.add.graphics().setDepth(18);
+      btnShadow.fillStyle(0xb8860b, 1);
+      btnShadow.fillRoundedRect(cx - btnW / 2, btnY - btnH / 2 + 4, btnW, btnH, btnR);
 
-      var goBtn = self.add.image(cx, btnY, 'btn_gold').setScale(1.2).setDepth(16);
-      var goText = self.add.text(cx, btnY, "\u25B6  LET'S GO!", {
+      // 3D button: main face
+      var btnFace = self.add.graphics().setDepth(19);
+      btnFace.fillStyle(0xffd700, 1);
+      btnFace.fillRoundedRect(cx - btnW / 2, btnY - btnH / 2, btnW, btnH, btnR);
+      btnFace.fillStyle(0xffec80, 0.5);
+      btnFace.fillRoundedRect(cx - btnW / 2 + 4, btnY - btnH / 2 + 2, btnW - 8, btnH / 2 - 2, { tl: btnR - 2, tr: btnR - 2, bl: 0, br: 0 });
+
+      // Hit area
+      var hitZone = self.add.rectangle(cx, btnY, btnW, btnH + 8)
+        .setOrigin(0.5)
+        .setInteractive({ useHandCursor: true })
+        .setAlpha(0.001)
+        .setDepth(22);
+
+      var goText = self.add.text(cx, btnY - 1, "\u25B6 LET'S GO!", {
         fontFamily: GBR.FONTS.display,
-        fontSize: '30px',
+        fontSize: '22px',
         color: '#1a0a2e',
-        stroke: '#ffd700',
-        strokeThickness: 1,
-        padding: { left: 8, right: 8 }
-      }).setOrigin(0.5).setDepth(17);
+        padding: { left: 6, right: 6 }
+      }).setOrigin(0.5).setDepth(21);
 
-      goBtn.setInteractive({ useHandCursor: true });
-
-      goBtn.setScale(0);
+      // Pop-in
+      btnShadow.setScale(0);
+      btnFace.setScale(0);
       goText.setScale(0);
-      self.tweens.add({ targets: goBtn, scaleX: 1.2, scaleY: 1.2, duration: 500, ease: 'Back.easeOut' });
+      self.tweens.add({ targets: btnShadow, scaleX: 1, scaleY: 1, duration: 500, ease: 'Back.easeOut' });
+      self.tweens.add({ targets: btnFace, scaleX: 1, scaleY: 1, duration: 500, ease: 'Back.easeOut' });
       self.tweens.add({ targets: goText, scaleX: 1, scaleY: 1, duration: 500, ease: 'Back.easeOut' });
 
+      // Gentle float
       self.tweens.add({
-        targets: [goBtn, goText, btnSpot],
+        targets: [btnShadow, btnFace, goText, hitZone],
         y: '-=3',
         duration: 1000, yoyo: true, repeat: -1,
         ease: 'Sine.easeInOut', delay: 600
       });
 
-      goBtn.on('pointerover', function () {
-        self.tweens.add({ targets: goBtn, scaleX: 1.35, scaleY: 1.35, duration: 120 });
-        self.tweens.add({ targets: goText, scaleX: 1.08, scaleY: 1.08, duration: 120 });
+      // Hover
+      hitZone.on('pointerover', function () {
+        self.tweens.add({ targets: [btnFace, goText], y: '-=2', duration: 100 });
       });
-      goBtn.on('pointerout', function () {
-        self.tweens.add({ targets: goBtn, scaleX: 1.2, scaleY: 1.2, duration: 120 });
-        self.tweens.add({ targets: goText, scaleX: 1, scaleY: 1, duration: 120 });
+      hitZone.on('pointerout', function () {
+        self.tweens.add({ targets: [btnFace, goText], y: '+=2', duration: 100 });
       });
-      goBtn.on('pointerdown', function () {
-        AudioSynth.resume();
-        AudioSynth.playCollect();
-        GBR.state.currentAct = self.actNumber + 1;
-        TransitionHelper.fadeToScene(self, self.nextScene);
+
+      // Press
+      hitZone.on('pointerdown', function () {
+        self.tweens.add({ targets: [btnFace, goText], y: '+=3', duration: 50 });
+        setTimeout(function () {
+          AudioSynth.resume();
+          AudioSynth.playCollect();
+          GBR.state.currentAct = self.actNumber + 1;
+          TransitionHelper.fadeToScene(self, self.nextScene);
+        }, 120);
       });
     }, 1200);
 
     // ============================================================
-    //  LAYER 9 — Sparkle particles
+    //  LAYER 8 — Sparkle particles around L.A.
     // ============================================================
     if (this.add.particles) {
       try {
-        this.add.particles(portraitX, portraitY, 'star', {
+        var particleCY = heroTargetY - (1536 * heroScale * 0.55);
+        this.add.particles(cx, particleCY, 'star', {
           speed: { min: 8, max: 25 },
           angle: { min: 0, max: 360 },
-          scale: { start: 0.25, end: 0 },
-          alpha: { start: 0.45, end: 0 },
-          lifespan: 1600,
-          frequency: 500,
-          tint: [0xffd700, theme.accent, 0xffffff],
+          scale: { start: 0.3, end: 0 },
+          alpha: { start: 0.5, end: 0 },
+          lifespan: 1800,
+          frequency: 400,
+          tint: [0xffd700, theme.accent, 0xffffff, 0x00e5ff],
           blendMode: 'ADD',
           emitZone: {
             type: 'random',
-            source: new Phaser.Geom.Rectangle(-80, -90, 160, 180)
+            source: new Phaser.Geom.Rectangle(-120, -150, 240, 300)
           }
-        }).setDepth(7);
+        }).setDepth(9);
       } catch (e) { /* fail silently */ }
     }
   }
