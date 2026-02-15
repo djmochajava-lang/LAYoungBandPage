@@ -232,60 +232,35 @@ var Act1RunnerScene = new Phaser.Class({
     this.keyW = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    // --- Scene-level input (works everywhere, no zone needed) ---
+    // --- Touch state tracked for drag detection ---
     this.touchStartX = 0;
     this.touchStartY = 0;
     this.touchStartTime = 0;
     this.isDragging = false;
+    this.pointerWasDown = false;
 
+    // Record where touch starts (for tap vs drag detection on release)
     this.input.on('pointerdown', function (pointer) {
       self.touchStartX = pointer.x;
       self.touchStartY = pointer.y;
       self.touchStartTime = Date.now();
       self.isDragging = false;
+      self.pointerWasDown = true;
     });
 
-    this.input.on('pointermove', function (pointer) {
-      if (!pointer.isDown) return;
-      if (self.gameState !== 'playing') return;
-
-      var diffX = pointer.x - self.touchStartX;
-
-      // Start dragging after moving > 15px horizontally
-      if (!self.isDragging && Math.abs(diffX) > 15) {
-        self.isDragging = true;
-      }
-
-      if (!self.isDragging) return;
-
-      // Find which lane the finger is closest to
-      var targetLane = 1;
-      var closestDist = Infinity;
-      for (var i = 0; i < self.laneXPositions.length; i++) {
-        var dist = Math.abs(pointer.x - self.laneXPositions[i]);
-        if (dist < closestDist) {
-          closestDist = dist;
-          targetLane = i;
-        }
-      }
-
-      // Move van to that lane
-      if (targetLane !== self.currentLane) {
-        self.currentLane = targetLane;
-        self.animatePlayerToLane();
-      }
-    });
-
+    // On release: handle tap and swipe-up (drag is handled in update loop)
     this.input.on('pointerup', function (pointer) {
-      var diffX = pointer.x - self.touchStartX;
-      var diffY = pointer.y - self.touchStartY;
-      var elapsed = Date.now() - self.touchStartTime;
+      self.pointerWasDown = false;
 
-      // If we were dragging, just stop — don't trigger tap
+      // If we were dragging, just stop
       if (self.isDragging) {
         self.isDragging = false;
         return;
       }
+
+      var diffX = pointer.x - self.touchStartX;
+      var diffY = pointer.y - self.touchStartY;
+      var elapsed = Date.now() - self.touchStartTime;
 
       // Swipe up = jump
       if (diffY < -30 && Math.abs(diffY) > Math.abs(diffX)) {
@@ -302,6 +277,38 @@ var Act1RunnerScene = new Phaser.Class({
         }
       }
     });
+  },
+
+  // Poll pointer every frame for reliable drag-to-steer
+  pollTouchDrag: function () {
+    var pointer = this.input.activePointer;
+    if (!pointer || !pointer.isDown) return;
+
+    var diffX = pointer.x - this.touchStartX;
+
+    // Start dragging after 15px horizontal movement
+    if (!this.isDragging && Math.abs(diffX) > 15) {
+      this.isDragging = true;
+    }
+
+    if (!this.isDragging) return;
+
+    // Find closest lane to finger
+    var targetLane = 1;
+    var closestDist = Infinity;
+    for (var i = 0; i < this.laneXPositions.length; i++) {
+      var dist = Math.abs(pointer.x - this.laneXPositions[i]);
+      if (dist < closestDist) {
+        closestDist = dist;
+        targetLane = i;
+      }
+    }
+
+    // Move van if lane changed
+    if (targetLane !== this.currentLane) {
+      this.currentLane = targetLane;
+      this.animatePlayerToLane();
+    }
   },
 
   moveLeft: function () {
@@ -445,6 +452,9 @@ var Act1RunnerScene = new Phaser.Class({
     if (this.gameState !== 'playing') return;
 
     this.frameCount++;
+
+    // Poll touch drag every frame for reliable steering
+    this.pollTouchDrag();
 
     // Keyboard polling
     if (Phaser.Input.Keyboard.JustDown(this.cursors.left) || Phaser.Input.Keyboard.JustDown(this.keyA)) {
