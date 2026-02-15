@@ -63,7 +63,7 @@ var BootScene = new Phaser.Class({
     this.load.image('van', '../images/cartoon/suv.png');
 
     // Load L.A. Young headshot for main menu
-    this.load.image('la_headshot', '../images/artist/headshot1.jpg');
+    this.load.image('la_headshot', '../images/artist/headshot3.jpg');
   },
 
   create: function () {
