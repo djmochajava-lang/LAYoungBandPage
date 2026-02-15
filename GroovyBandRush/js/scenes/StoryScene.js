@@ -1,4 +1,4 @@
-/* GroovyBandRush/js/scenes/StoryScene.js — V2 HIGH-ENERGY STORY CUTSCENE */
+/* GroovyBandRush/js/scenes/StoryScene.js — V3 NIGHT SKY + SHOW LIGHTS */
 
 var StoryScene = new Phaser.Class({
   Extends: Phaser.Scene,
@@ -23,61 +23,82 @@ var StoryScene = new Phaser.Class({
     AudioSynth.resume();
 
     // ============================================================
-    //  PER-ACT ACCENT COLORS (keeps each act feeling fresh)
+    //  PER-ACT ACCENT COLORS
     // ============================================================
     var actThemes = [
-      { grad1: 0x2d1b69, grad2: 0xe84393, grad3: 0xfd7014, accent: 0xe8751a, accentHex: '#e8751a', glow: 0xffd700 },  // Prologue: purple→pink→orange
-      { grad1: 0x1a3a5c, grad2: 0x2196f3, grad3: 0x00e5ff, accent: 0x3498db, accentHex: '#3498db', glow: 0x00e5ff },  // Act 1: blue tones
-      { grad1: 0x1a4a2e, grad2: 0x2ecc71, grad3: 0xf1c40f, accent: 0x2ecc71, accentHex: '#2ecc71', glow: 0x2ecc71 },  // Act 2: green tones
-      { grad1: 0x3a1a5c, grad2: 0x9b59b6, grad3: 0xe84393, accent: 0x9b59b6, accentHex: '#9b59b6', glow: 0xe84393 },  // Act 3: purple tones
-      { grad1: 0x5c1a1a, grad2: 0xe63946, grad3: 0xfd7014, accent: 0xe63946, accentHex: '#e63946', glow: 0xff6b6b },  // Act 4: red tones
-      { grad1: 0x2d1b69, grad2: 0xffd700, grad3: 0xe8751a, accent: 0xffd700, accentHex: '#ffd700', glow: 0xffd700 }   // Act 5: gold celebration
+      { accent: 0xe8751a, accentHex: '#e8751a', glow: 0xffd700, light1: 0xe84393, light2: 0x00e5ff, light3: 0xffd700 },
+      { accent: 0x3498db, accentHex: '#3498db', glow: 0x00e5ff, light1: 0x3498db, light2: 0x2ecc71, light3: 0x00e5ff },
+      { accent: 0x2ecc71, accentHex: '#2ecc71', glow: 0x2ecc71, light1: 0x2ecc71, light2: 0xffd700, light3: 0x00e5ff },
+      { accent: 0x9b59b6, accentHex: '#9b59b6', glow: 0xe84393, light1: 0x9b59b6, light2: 0xe84393, light3: 0x3498db },
+      { accent: 0xe63946, accentHex: '#e63946', glow: 0xff6b6b, light1: 0xe63946, light2: 0xffd700, light3: 0xe84393 },
+      { accent: 0xffd700, accentHex: '#ffd700', glow: 0xffd700, light1: 0xffd700, light2: 0xe8751a, light3: 0xe84393 }
     ];
     var theme = actThemes[Math.min(this.actNumber, actThemes.length - 1)];
 
     // ============================================================
     //  LAYOUT MAP (800px height):
     //
-    //  0.04  (32)   ACT badge (PROLOGUE / ACT 1 / etc)
-    //  0.13  (104)  Title ("THE MISSION" etc)
-    //  0.30  (240)  L.A. Young portrait center (r=80, spans 160-320)
-    //  0.48  (384)  Speaker name
-    //  0.52–0.72    Dialogue box
-    //  0.78  (624)  LET'S GO! button
-    //  0.90–0.97    Band progress icons
+    //  0.04  (32)   ACT badge
+    //  0.13  (104)  Title
+    //  0.30  (240)  L.A. Young portrait center
+    //  0.46  (368)  Speaker name
+    //  0.51–0.72    Dialogue box
+    //  0.80  (640)  LET'S GO! button
+    //  0.93  (744)  Band progress icons
     // ============================================================
 
     // ============================================================
-    //  LAYER 0 — Vibrant gradient background
+    //  LAYER 0 — Deep night sky gradient
     // ============================================================
     var bg = this.add.graphics();
-    bg.fillGradientStyle(theme.grad1, theme.grad1, theme.grad2, theme.grad3);
+    bg.fillGradientStyle(0x050510, 0x050510, 0x0a1628, 0x0d1f3c);
     bg.fillRect(0, 0, W, H);
 
-    // Radial spotlight glow behind portrait
-    var spotlight = this.add.graphics();
-    spotlight.fillStyle(theme.glow, 0.08);
-    spotlight.fillCircle(cx, H * 0.30, 250);
-    spotlight.fillStyle(theme.glow, 0.04);
-    spotlight.fillCircle(cx, H * 0.30, 380);
+    // Subtle deep blue vignette glow at center
+    var vignette = this.add.graphics();
+    vignette.fillStyle(0x1a2a4a, 0.15);
+    vignette.fillCircle(cx, H * 0.4, 350);
 
     // ============================================================
-    //  LAYER 1 — Sparkle particles + floating music notes
+    //  LAYER 1 — Twinkling starfield
     // ============================================================
-    for (var i = 0; i < 18; i++) {
-      var s = this.add.image(
-        Phaser.Math.Between(0, W),
-        Phaser.Math.Between(0, H),
+    for (var i = 0; i < 55; i++) {
+      var starX = Phaser.Math.Between(0, W);
+      var starY = Phaser.Math.Between(0, H);
+      var starSize = Phaser.Math.FloatBetween(0.5, 2.5);
+      var starAlpha = Phaser.Math.FloatBetween(0.15, 0.85);
+
+      var star = this.add.circle(starX, starY, starSize, 0xffffff, starAlpha);
+
+      // Twinkle animation — varied speeds for realistic feel
+      this.tweens.add({
+        targets: star,
+        alpha: { from: starAlpha, to: Phaser.Math.FloatBetween(0.02, 0.15) },
+        duration: Phaser.Math.Between(800, 3000),
+        yoyo: true,
+        repeat: -1,
+        delay: Phaser.Math.Between(0, 2500),
+        ease: 'Sine.easeInOut'
+      });
+    }
+
+    // A few bright colored accent stars
+    var accentStarColors = [0xffd700, 0x00e5ff, 0xe84393, 0xff6b6b, 0x2ecc71];
+    for (var a = 0; a < 8; a++) {
+      var astar = this.add.image(
+        Phaser.Math.Between(20, W - 20),
+        Phaser.Math.Between(10, H * 0.5),
         'star'
-      ).setAlpha(Phaser.Math.FloatBetween(0.2, 0.7))
-       .setScale(Phaser.Math.FloatBetween(0.4, 1.2))
-       .setTint(Phaser.Math.RND.pick([0xffd700, 0xffffff, theme.accent, 0x00e5ff]));
+      ).setScale(Phaser.Math.FloatBetween(0.4, 1.0))
+       .setAlpha(Phaser.Math.FloatBetween(0.3, 0.7))
+       .setTint(Phaser.Math.RND.pick(accentStarColors));
 
       this.tweens.add({
-        targets: s,
-        y: s.y - Phaser.Math.Between(15, 45),
+        targets: astar,
         alpha: 0.05,
-        duration: Phaser.Math.Between(1500, 3500),
+        scaleX: astar.scaleX * 0.6,
+        scaleY: astar.scaleY * 0.6,
+        duration: Phaser.Math.Between(1200, 2800),
         yoyo: true,
         repeat: -1,
         delay: Phaser.Math.Between(0, 2000),
@@ -85,38 +106,53 @@ var StoryScene = new Phaser.Class({
       });
     }
 
-    // Rising music notes
-    var noteChars = ['\u266A', '\u266B', '\u2669', '\u266C'];
-    var noteColors = ['#ffd700', '#00e5ff', '#e84393', '#ff6b6b', '#2ecc71', '#ffffff'];
-    for (var n = 0; n < 8; n++) {
-      var noteX = Phaser.Math.Between(20, W - 20);
-      var noteStartY = H + Phaser.Math.Between(20, 60);
-      var noteText = this.add.text(noteX, noteStartY, Phaser.Math.RND.pick(noteChars), {
-        fontSize: Phaser.Math.Between(14, 28) + 'px',
-        color: Phaser.Math.RND.pick(noteColors)
-      }).setOrigin(0.5).setAlpha(0.5);
+    // ============================================================
+    //  LAYER 2 — Animated show lights (sweeping color beams)
+    // ============================================================
+    var lightsGfx = this.add.graphics();
+    lightsGfx.setAlpha(0.12);
+    lightsGfx.setBlendMode(Phaser.BlendModes.ADD);
 
+    // Draw 3 triangular light beams from top
+    var lightBeams = [
+      { originX: W * 0.15, color: theme.light1, angle: 0, speed: 2200 },
+      { originX: W * 0.5,  color: theme.light2, angle: 0, speed: 3000 },
+      { originX: W * 0.85, color: theme.light3, angle: 0, speed: 2600 }
+    ];
+
+    // Use a container to hold light beam graphics so we can animate them
+    var beamObjects = [];
+    for (var b = 0; b < lightBeams.length; b++) {
+      var beam = lightBeams[b];
+      var beamGfx = this.add.graphics();
+      beamGfx.setAlpha(0.08);
+      beamGfx.setBlendMode(Phaser.BlendModes.ADD);
+
+      // Wide triangle from origin point downward
+      beamGfx.fillStyle(beam.color, 1);
+      beamGfx.fillTriangle(
+        beam.originX, 0,
+        beam.originX - 100, H * 0.7,
+        beam.originX + 100, H * 0.7
+      );
+
+      beamObjects.push(beamGfx);
+
+      // Sway the beam left-right
       this.tweens.add({
-        targets: noteText,
-        y: -30,
-        x: noteX + Phaser.Math.Between(-40, 40),
-        alpha: 0,
-        angle: Phaser.Math.Between(-20, 20),
-        duration: Phaser.Math.Between(6000, 10000),
+        targets: beamGfx,
+        x: { from: -40, to: 40 },
+        alpha: { from: 0.08, to: 0.14 },
+        duration: beam.speed,
+        yoyo: true,
         repeat: -1,
-        delay: Phaser.Math.Between(0, 4000),
-        ease: 'Sine.easeOut',
-        onRepeat: function (tween, target) {
-          target.x = Phaser.Math.Between(20, W - 20);
-          target.y = H + 30;
-          target.alpha = 0.5;
-          target.angle = 0;
-        }
+        ease: 'Sine.easeInOut',
+        delay: b * 400
       });
     }
 
     // ============================================================
-    //  LAYER 2 — Act badge
+    //  LAYER 3 — Act badge
     // ============================================================
     var actLabel = this.actNumber === 0 ? '\u2B50 PROLOGUE \u2B50' : '\u2B50 ACT ' + this.actNumber + ' \u2B50';
     var badge = this.add.text(cx, H * 0.04, actLabel, {
@@ -136,16 +172,16 @@ var StoryScene = new Phaser.Class({
     });
 
     // ============================================================
-    //  LAYER 3 — Title (big, bold, with effects)
+    //  LAYER 4 — Title (big, bold, glowing on dark)
     // ============================================================
     var titleText = this.add.text(cx, H * 0.12, story.title, {
       fontFamily: GBR.FONTS.display,
       fontSize: '48px',
       color: '#ffd700',
       stroke: '#000000',
-      strokeThickness: 5,
-      shadow: { offsetX: 3, offsetY: 3, color: theme.accentHex, blur: 8, fill: true },
-      padding: { left: 12, right: 12, top: 4, bottom: 4 }
+      strokeThickness: 4,
+      shadow: { offsetX: 0, offsetY: 0, color: theme.accentHex, blur: 16, fill: true },
+      padding: { left: 16, right: 16, top: 6, bottom: 6 }
     }).setOrigin(0.5);
 
     // Pop-in animation
@@ -161,44 +197,42 @@ var StoryScene = new Phaser.Class({
     });
 
     // ============================================================
-    //  LAYER 4 — L.A. Young portrait (glowing, prominent)
+    //  LAYER 5 — L.A. Young portrait (spotlight glow)
     // ============================================================
     var photoY = H * 0.30;
     var photoRadius = 80;
 
-    // Pulsing glow rings (themed)
-    var glowRing = this.add.circle(cx, photoY, photoRadius + 18, theme.glow, 0.12);
+    // Soft spotlight glow behind portrait (looks like a stage light hitting her)
+    var portraitSpot = this.add.graphics();
+    portraitSpot.fillStyle(theme.glow, 0.06);
+    portraitSpot.fillCircle(cx, photoY, photoRadius + 60);
+    portraitSpot.fillStyle(0xffffff, 0.03);
+    portraitSpot.fillCircle(cx, photoY, photoRadius + 35);
+
+    // Pulsing glow ellipse (matches LAFace elliptical shape: 170w x 200h)
+    var glowEllipse = this.add.graphics();
+    glowEllipse.fillStyle(theme.glow, 0.12);
+    glowEllipse.fillEllipse(cx, photoY, 200, 230);
     this.tweens.add({
-      targets: glowRing,
-      scaleX: 1.15, scaleY: 1.15, alpha: 0.03,
-      duration: 1200, yoyo: true, repeat: -1,
+      targets: glowEllipse,
+      scaleX: 1.12, scaleY: 1.12, alpha: 0.02,
+      duration: 1400, yoyo: true, repeat: -1,
       ease: 'Sine.easeInOut'
     });
-    var glowRing2 = this.add.circle(cx, photoY, photoRadius + 10, theme.accent, 0.10);
-    this.tweens.add({
-      targets: glowRing2,
-      scaleX: 1.1, scaleY: 1.1, alpha: 0.02,
-      duration: 1500, yoyo: true, repeat: -1,
-      ease: 'Sine.easeInOut', delay: 400
-    });
 
-    // Animated talking face (L.A. Young)
+    // Animated talking face (L.A. Young) — includes its own bold gold elliptical border
     var face = LAFace.create(this, cx, photoY);
 
-    // Gold + accent double ring around portrait
-    var outerRing = this.add.circle(cx, photoY, photoRadius + 5, 0x000000, 0).setStrokeStyle(4, 0xffd700);
-    var outerRing2 = this.add.circle(cx, photoY, photoRadius + 9, 0x000000, 0).setStrokeStyle(2, 0xffffff, 0.25);
-
-    // Gentle float for rings (face already floats via LAFace)
+    // Gentle float for glow + spotlight (face already floats via LAFace)
     this.tweens.add({
-      targets: [glowRing, glowRing2, outerRing, outerRing2],
-      y: photoY - 3,
+      targets: [glowEllipse, portraitSpot],
+      y: '-=3',
       duration: 2000, yoyo: true, repeat: -1,
       ease: 'Sine.easeInOut'
     });
 
     // ============================================================
-    //  LAYER 5 — Speaker name
+    //  LAYER 6 — Speaker name
     // ============================================================
     var speakerText = this.add.text(cx, H * 0.46, story.speaker, {
       fontFamily: GBR.FONTS.fun,
@@ -212,30 +246,30 @@ var StoryScene = new Phaser.Class({
     this.tweens.add({ targets: speakerText, scaleX: 1, scaleY: 1, duration: 400, ease: 'Back.easeOut', delay: 350 });
 
     // ============================================================
-    //  LAYER 6 — Dialogue box (stylish speech bubble)
+    //  LAYER 7 — Dialogue box (dark glass panel)
     // ============================================================
     var dialogX = W * 0.08;
     var dialogW = W * 0.84;
     var dialogY = H * 0.51;
     var dialogH = H * 0.21;
 
-    // Gradient-filled dialog background
     var dialogBg = this.add.graphics();
-    dialogBg.fillStyle(0x000000, 0.55);
-    dialogBg.fillRoundedRect(dialogX, dialogY, dialogW, dialogH, 20);
-    // Themed border
-    dialogBg.lineStyle(2, theme.glow, 0.5);
-    dialogBg.strokeRoundedRect(dialogX, dialogY, dialogW, dialogH, 20);
-    // Inner subtle highlight
-    dialogBg.lineStyle(1, 0xffffff, 0.08);
-    dialogBg.strokeRoundedRect(dialogX + 3, dialogY + 3, dialogW - 6, dialogH - 6, 17);
+    // Dark semi-transparent panel
+    dialogBg.fillStyle(0x0a0e1a, 0.75);
+    dialogBg.fillRoundedRect(dialogX, dialogY, dialogW, dialogH, 16);
+    // Gold accent border
+    dialogBg.lineStyle(2, 0xffd700, 0.35);
+    dialogBg.strokeRoundedRect(dialogX, dialogY, dialogW, dialogH, 16);
+    // Subtle inner highlight (top edge glow)
+    dialogBg.lineStyle(1, 0xffffff, 0.06);
+    dialogBg.strokeRoundedRect(dialogX + 2, dialogY + 2, dialogW - 4, dialogH - 4, 14);
 
-    // Small speech triangle pointing up toward speaker
-    dialogBg.fillStyle(0x000000, 0.55);
-    dialogBg.fillTriangle(cx - 10, dialogY, cx + 10, dialogY, cx, dialogY - 12);
-    dialogBg.lineStyle(2, theme.glow, 0.5);
-    dialogBg.lineBetween(cx - 10, dialogY, cx, dialogY - 12);
-    dialogBg.lineBetween(cx, dialogY - 12, cx + 10, dialogY);
+    // Speech triangle pointing up toward speaker
+    dialogBg.fillStyle(0x0a0e1a, 0.75);
+    dialogBg.fillTriangle(cx - 8, dialogY, cx + 8, dialogY, cx, dialogY - 10);
+    dialogBg.lineStyle(2, 0xffd700, 0.35);
+    dialogBg.lineBetween(cx - 8, dialogY, cx, dialogY - 10);
+    dialogBg.lineBetween(cx, dialogY - 10, cx + 8, dialogY);
 
     // Pop-in dialog box
     dialogBg.setScale(0.9);
@@ -250,7 +284,7 @@ var StoryScene = new Phaser.Class({
     var dialogText = this.add.text(dialogX + 24, dialogY + 18, '', {
       fontFamily: GBR.FONTS.body,
       fontSize: '16px',
-      color: '#ffffff',
+      color: '#e0e0e0',
       wordWrap: { width: dialogW - 48 },
       lineSpacing: 7
     });
@@ -292,13 +326,13 @@ var StoryScene = new Phaser.Class({
     });
 
     // ============================================================
-    //  LAYER 7 — LET'S GO! MEGA BUTTON (matching intro page style)
+    //  LAYER 8 — LET'S GO! button (gold on dark = pops nicely)
     // ============================================================
     var btnY = H * 0.80;
 
     // Glow behind button
     var btnGlow = this.add.graphics();
-    btnGlow.fillStyle(theme.glow, 0.15);
+    btnGlow.fillStyle(theme.glow, 0.10);
     btnGlow.fillRoundedRect(cx - 140, btnY - 35, 280, 70, 35);
 
     setTimeout(function () {
@@ -307,20 +341,19 @@ var StoryScene = new Phaser.Class({
       // Glow pulse
       self.tweens.add({
         targets: btnGlow,
-        alpha: { from: 1, to: 0.25 },
-        duration: 800, yoyo: true, repeat: -1,
+        alpha: { from: 1, to: 0.2 },
+        duration: 900, yoyo: true, repeat: -1,
         ease: 'Sine.easeInOut'
       });
 
-      // Button background
-      var goBtn = self.add.image(cx, btnY, 'btn_orange').setScale(1.2);
+      // Button — use gold button on dark background for contrast
+      var goBtn = self.add.image(cx, btnY, 'btn_gold').setScale(1.15);
       var goText = self.add.text(cx, btnY, "\u25B6  LET'S GO!", {
         fontFamily: GBR.FONTS.display,
-        fontSize: '32px',
-        color: '#ffffff',
+        fontSize: '30px',
+        color: '#1a0a2e',
         stroke: '#000000',
-        strokeThickness: 3,
-        shadow: { offsetX: 2, offsetY: 2, color: '#000000', blur: 4, fill: false },
+        strokeThickness: 1,
         padding: { left: 8, right: 8 }
       }).setOrigin(0.5);
 
@@ -329,7 +362,7 @@ var StoryScene = new Phaser.Class({
       // Bounce-in entrance
       goBtn.setScale(0);
       goText.setScale(0);
-      self.tweens.add({ targets: goBtn, scaleX: 1.2, scaleY: 1.2, duration: 500, ease: 'Back.easeOut' });
+      self.tweens.add({ targets: goBtn, scaleX: 1.15, scaleY: 1.15, duration: 500, ease: 'Back.easeOut' });
       self.tweens.add({ targets: goText, scaleX: 1, scaleY: 1, duration: 500, ease: 'Back.easeOut' });
 
       // Continuous pulse
@@ -341,11 +374,11 @@ var StoryScene = new Phaser.Class({
       });
 
       goBtn.on('pointerover', function () {
-        self.tweens.add({ targets: goBtn, scaleX: 1.35, scaleY: 1.35, duration: 120 });
-        self.tweens.add({ targets: goText, scaleX: 1.08, scaleY: 1.08, duration: 120 });
+        self.tweens.add({ targets: goBtn, scaleX: 1.3, scaleY: 1.3, duration: 120 });
+        self.tweens.add({ targets: goText, scaleX: 1.06, scaleY: 1.06, duration: 120 });
       });
       goBtn.on('pointerout', function () {
-        self.tweens.add({ targets: goBtn, scaleX: 1.2, scaleY: 1.2, duration: 120 });
+        self.tweens.add({ targets: goBtn, scaleX: 1.15, scaleY: 1.15, duration: 120 });
         self.tweens.add({ targets: goText, scaleX: 1, scaleY: 1, duration: 120 });
       });
       goBtn.on('pointerdown', function () {
@@ -357,7 +390,7 @@ var StoryScene = new Phaser.Class({
     }, 1200);
 
     // ============================================================
-    //  LAYER 8 — Band progress (bottom, styled)
+    //  LAYER 9 — Band progress (bottom, with glow)
     // ============================================================
     var progressY = H * 0.93;
     var progSpacing = Math.min(W / 6, 80);
@@ -370,10 +403,10 @@ var StoryScene = new Phaser.Class({
 
       // Glow circle behind found members
       if (found) {
-        var progGlow = this.add.circle(mx, progressY, 22, member.color, 0.15);
+        var progGlow = this.add.circle(mx, progressY, 22, member.color, 0.18);
         this.tweens.add({
           targets: progGlow,
-          alpha: { from: 0.15, to: 0.05 },
+          alpha: { from: 0.18, to: 0.05 },
           scaleX: { from: 1, to: 1.2 }, scaleY: { from: 1, to: 1.2 },
           duration: 1000, yoyo: true, repeat: -1,
           ease: 'Sine.easeInOut', delay: m * 200
@@ -381,36 +414,35 @@ var StoryScene = new Phaser.Class({
       }
 
       // Member icon
-      var icon = this.add.image(mx, progressY, 'member_' + m)
+      this.add.image(mx, progressY, 'member_' + m)
         .setScale(found ? 0.14 : 0.12)
-        .setAlpha(found ? 1 : 0.25);
+        .setAlpha(found ? 1 : 0.2);
 
       // Emoji label below
       this.add.text(mx, progressY + 24, member.emoji, {
         fontSize: '12px'
-      }).setOrigin(0.5).setAlpha(found ? 0.8 : 0.2);
+      }).setOrigin(0.5).setAlpha(found ? 0.8 : 0.15);
     }
 
     // ============================================================
-    //  LAYER 9 — Sparkle emitter around portrait area
+    //  LAYER 10 — Sparkle emitter near portrait
     // ============================================================
     if (this.add.particles) {
       try {
-        var emitter = this.add.particles(cx, photoY, 'star', {
-          speed: { min: 10, max: 40 },
+        this.add.particles(cx, photoY, 'star', {
+          speed: { min: 8, max: 30 },
           angle: { min: 0, max: 360 },
-          scale: { start: 0.4, end: 0 },
-          alpha: { start: 0.6, end: 0 },
-          lifespan: 1800,
-          frequency: 350,
+          scale: { start: 0.35, end: 0 },
+          alpha: { start: 0.5, end: 0 },
+          lifespan: 2000,
+          frequency: 400,
           tint: [0xffd700, theme.accent, 0xffffff],
           blendMode: 'ADD',
           emitZone: {
             type: 'random',
-            source: new Phaser.Geom.Rectangle(-100, -100, 200, 200)
+            source: new Phaser.Geom.Rectangle(-90, -90, 180, 180)
           }
-        });
-        emitter.setDepth(0);
+        }).setDepth(0);
       } catch (e) { /* fail silently */ }
     }
 

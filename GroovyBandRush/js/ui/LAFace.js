@@ -138,8 +138,11 @@ var LAFace = (function () {
 
     // ========== 3. GOLD BORDER ==========
     var border = scene.add.graphics({ x: x, y: y });
-    border.lineStyle(3, 0xffd700, 0.35);
-    border.strokeEllipse(0, 0, maskW + 6, maskH + 6);
+    border.lineStyle(4, 0xffd700, 0.85);
+    border.strokeEllipse(0, 0, maskW + 8, maskH + 8);
+    // Outer subtle glow ring
+    border.lineStyle(2, 0xffffff, 0.12);
+    border.strokeEllipse(0, 0, maskW + 14, maskH + 14);
 
     // ========== ASSEMBLE ==========
     var container = scene.add.container(x, y, [avatar]);

@@ -82,7 +82,7 @@ GBR.STORIES = [
   {
     title: 'THE MISSION',
     speaker: 'L.A. Young',
-    text: "Hey there, little star! I'm L.A. Young and I need YOUR help!\nThe big show is tonight but my band is all over the city!\nHop in the van and let's go find them!",
+    text: "Hey there, little star! I'm L.A. Young and I need YOUR help!\nThe big show is tonight but my band is all over the city!\nHelp me collect all my band members by winning these mini games!",
     nextScene: 'Act1RunnerScene'
   },
   {
