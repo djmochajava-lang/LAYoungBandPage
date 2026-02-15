@@ -231,12 +231,14 @@ img {
 @media (max-width: 768px) {
   .section {
     padding: var(--spacing-lg) 0;
+    padding-top: 120px; /* push content below fixed header */
     padding-bottom: calc(6rem + 0.25in);
   }
 
   .page-content {
-    margin-top: 110px;
-    margin-bottom: 80px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
   }
 
   .contact-form-section {
