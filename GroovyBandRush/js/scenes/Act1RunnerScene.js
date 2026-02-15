@@ -63,9 +63,10 @@ var Act1RunnerScene = new Phaser.Class({
     this.drawBackground();
     this.drawRoad();
 
-    // --- Player SUV ---
+    // --- Player SUV (image faces right, rotate -90° to face up the road) ---
     this.player = this.add.image(this.laneXPositions[1], this.playerY, 'van');
-    this.player.setDisplaySize(this.laneWidth * 0.85, this.laneWidth * 1.2);
+    this.player.setAngle(-90);
+    this.player.setDisplaySize(this.laneWidth * 1.2, this.laneWidth * 0.85);
     this.player.setDepth(10);
     // Store base scale for jump animation
     this.playerBaseScaleX = this.player.scaleX;
