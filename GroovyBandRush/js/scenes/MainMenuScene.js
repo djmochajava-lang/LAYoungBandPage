@@ -125,7 +125,8 @@ var MainMenuScene = new Phaser.Class({
     }).setOrigin(0.5);
 
     // --- Van icon ---
-    var van = this.add.image(width / 2, height * 0.55, 'van').setScale(2.5);
+    var van = this.add.image(width / 2, height * 0.55, 'van');
+    van.setDisplaySize(80, 120);
     this.tweens.add({
       targets: van,
       y: { from: van.y - 5, to: van.y + 5 },

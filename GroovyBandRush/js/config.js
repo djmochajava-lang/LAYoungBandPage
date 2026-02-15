@@ -221,9 +221,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // Clamp width: min 450 (original), max 900 (very wide landscape)
   gameWidth = Math.max(450, Math.min(900, gameWidth));
 
-  // Use Canvas renderer for reliable PNG transparency on all devices
   var config = {
-    type: Phaser.CANVAS,
+    type: Phaser.AUTO,
     width: gameWidth,
     height: gameHeight,
     parent: 'game-container',
