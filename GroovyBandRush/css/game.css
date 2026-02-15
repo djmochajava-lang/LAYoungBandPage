@@ -233,7 +233,7 @@ body.fullscreen-game #game-container canvas {
     display: none;
   }
 
-  /* Game fills full width, stretches to remaining viewport height */
+  /* Game fills full viewport below header */
   #game-container {
     margin-top: var(--header-height);
     width: 100vw;
@@ -242,9 +242,7 @@ body.fullscreen-game #game-container canvas {
   }
 
   #game-container canvas {
-    width: 100% !important;
-    height: 100% !important;
-    object-fit: contain;
+    display: block;
   }
 }
 

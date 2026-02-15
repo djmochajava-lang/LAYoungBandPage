@@ -210,10 +210,21 @@ GBR.resetState = function () {
 // --- Phaser Game Configuration ---
 // (Created after all scene scripts are loaded)
 document.addEventListener('DOMContentLoaded', function () {
+  // Use container dimensions to set game size so it fills the screen
+  // Keep height at 800 as the base, scale width to match container aspect ratio
+  var container = document.getElementById('game-container');
+  var containerW = container.clientWidth || window.innerWidth;
+  var containerH = container.clientHeight || window.innerHeight;
+  var gameHeight = 800;
+  var gameWidth = Math.round((containerW / containerH) * gameHeight);
+
+  // Clamp width: min 450 (original), max 900 (very wide landscape)
+  gameWidth = Math.max(450, Math.min(900, gameWidth));
+
   var config = {
     type: Phaser.AUTO,
-    width: 450,
-    height: 800,
+    width: gameWidth,
+    height: gameHeight,
     parent: 'game-container',
     backgroundColor: '#0a0a0a',
     physics: {
@@ -250,5 +261,6 @@ document.addEventListener('DOMContentLoaded', function () {
     ].filter(Boolean)
   };
 
+  console.log('🎮 Game size: ' + gameWidth + 'x' + gameHeight + ' (container: ' + containerW + 'x' + containerH + ')');
   window.game = new Phaser.Game(config);
 });
