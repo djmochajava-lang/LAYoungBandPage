@@ -59,15 +59,57 @@ var BootScene = new Phaser.Class({
     this.load.image('la_outfit_1', '../images/artist/LAYoungPink.JPG');
     this.load.image('la_outfit_2', '../images/artist/laPowerSister.png');
 
-    // Load SUV image for Act1 player vehicle
-    this.load.image('van', '../images/cartoon/suv.avif');
+    // SUV is loaded manually in create() via native Image (AVIF not supported by Phaser loader)
   },
 
   create: function () {
     this.generatePlaceholders();
-    // Use game.scene (global SceneManager) - scene plugin's start() is unreliable from create()
-    this.game.scene.stop('BootScene');
-    this.game.scene.start('MainMenuScene');
+    var game = this.game; // save ref before scene is destroyed
+
+    // Load SUV image via native HTML Image (browser supports AVIF, Phaser loader does not)
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function () {
+      // Draw to canvas and register as Phaser texture
+      var canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      game.textures.addCanvas('van', canvas);
+      console.log('🚙 SUV texture loaded: ' + canvas.width + 'x' + canvas.height);
+      // Now safe to start main menu
+      game.scene.stop('BootScene');
+      game.scene.start('MainMenuScene');
+    };
+    img.onerror = function () {
+      console.warn('⚠️ SUV image failed to load, generating placeholder van');
+      // Generate fallback van texture via canvas (no Phaser scene needed)
+      var canvas = document.createElement('canvas');
+      canvas.width = 60;
+      canvas.height = 90;
+      var ctx = canvas.getContext('2d');
+      // Orange body
+      ctx.fillStyle = '#e8751a';
+      ctx.beginPath();
+      ctx.roundRect(0, 0, 60, 90, 8);
+      ctx.fill();
+      // Gold windshield
+      ctx.fillStyle = '#ffd700';
+      ctx.beginPath();
+      ctx.roundRect(8, 4, 44, 22, 6);
+      ctx.fill();
+      // Wheels
+      ctx.fillStyle = '#222222';
+      ctx.beginPath();
+      ctx.arc(14, 82, 8, 0, Math.PI * 2);
+      ctx.arc(46, 82, 8, 0, Math.PI * 2);
+      ctx.fill();
+      game.textures.addCanvas('van', canvas);
+      game.scene.stop('BootScene');
+      game.scene.start('MainMenuScene');
+    };
+    img.src = '../images/cartoon/suv.avif';
   },
 
   generatePlaceholders: function () {
