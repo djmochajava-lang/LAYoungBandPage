@@ -77,19 +77,20 @@
 .bio-image {
   width: 100%;
   max-width: 400px;
+  height: 520px;
   margin: 0 auto;
   overflow: hidden;
   border-radius: 20px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
   border: 3px solid rgba(255, 215, 0, 0.4);
-  display: flex; /* Use flexbox */
 }
 
 .bio-portrait-image {
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
   object-fit: cover;
+  object-position: top center;
   border-radius: 17px; /* Inner radius to fit inside border */
   transition:
     transform 0.3s ease,
