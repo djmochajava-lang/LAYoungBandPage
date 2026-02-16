@@ -7,16 +7,795 @@
     <div class="music-content">
       <!-- Featured Track -->
       <div class="featured-track scroll-reveal delay-1">
-        <h3>"No One Can Love You More"</h3>
-        <p class="track-description">
-          Chart-topping single - #1 on UK FM Radio
-        </p>
 
-        <div class="placeholder-player">
-          <p>[Spotify/SoundCloud Player]</p>
-          <p class="placeholder-text">
-            Embed Spotify or SoundCloud player here
+        <!-- Album + Vinyl -->
+        <div class="album-cover-wrap">
+          <div class="vinyl-package">
+            <!-- Vinyl Record (behind sleeve) -->
+            <div class="vinyl-disc">
+              <div class="vinyl-grooves"></div>
+              <div class="vinyl-label">
+                <span class="vinyl-label-name">Gold Bottom Ent.</span>
+                <span class="vinyl-label-title">No One Can Love You More</span>
+                <div class="vinyl-hole"></div>
+              </div>
+              <div class="vinyl-shine"></div>
+            </div>
+            <!-- Album Sleeve (on top) -->
+            <div class="album-cover-art">
+              <img src="../images/artist/headshot3.jpg" alt="L.A. Young — No One Can Love You More" class="album-photo" />
+              <div class="album-overlay"></div>
+              <div class="album-text-top">
+                <p class="album-artist-top">L.A. Young</p>
+                <span class="album-type-corner">Single</span>
+              </div>
+              <div class="album-text">
+                <h3 class="album-title">No One Can<br>Love You More</h3>
+              </div>
+              <div class="album-shine"></div>
+            </div>
+          </div>
+          <p class="track-description">
+            Written by Skip Scarborough &bull; A Phyllis Hyman tribute
           </p>
+        </div>
+
+        <div class="track-player">
+          <audio id="featuredTrack" preload="metadata"
+                 src="../Media/no_one_can_love_you_more.mp3"></audio>
+          <div class="player-controls">
+            <button class="player-btn" id="playBtn" onclick="toggleTrack()">&#x25B6;</button>
+            <div class="player-progress-wrap" id="progressWrap" onclick="seekTrack(event)">
+              <div class="player-progress" id="progressBar"></div>
+            </div>
+            <span class="player-time" id="playerTime">0:00 / 0:00</span>
+            <div class="player-volume">
+              <button class="volume-icon-btn" id="volumeBtn" onclick="toggleMute()">&#x1F50A;</button>
+              <input type="range" class="volume-slider" id="volumeSlider"
+                     min="0" max="100" value="80" oninput="setVolume(this.value)">
+            </div>
+          </div>
+        </div>
+        <style>
+          /* --- Album + Vinyl Package --- */
+          .album-cover-wrap {
+            max-width: 520px;
+            margin: 0 auto 10px;
+            text-align: center;
+          }
+          .vinyl-package {
+            position: relative;
+            width: 100%;
+            /* sleeve is ~73% of package width, vinyl peeks right */
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+          }
+
+          /* --- Vinyl Record --- */
+          .vinyl-disc {
+            position: absolute;
+            right: 0;
+            width: 72%;
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            background:
+              radial-gradient(circle at 50% 50%, #1a1a1a 0%, #111 20%, #1a1a1a 21%, #0d0d0d 22%,
+                #1a1a1a 30%, #111 31%, #181818 40%, #0f0f0f 41%,
+                #1a1a1a 50%, #111 51%, #171717 60%, #0e0e0e 61%,
+                #1a1a1a 70%, #111 71%, #161616 80%, #0d0d0d 81%,
+                #1a1a1a 90%, #111 91%, #151515 100%);
+            box-shadow:
+              0 8px 40px rgba(0,0,0,0.7),
+              0 2px 10px rgba(0,0,0,0.5),
+              inset 0 0 0 2px rgba(40,40,40,0.6);
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            z-index: 1;
+          }
+          .vinyl-package:hover .vinyl-disc {
+            transform: translateX(18px) rotate(25deg);
+          }
+
+          /* Groove rings */
+          .vinyl-grooves {
+            position: absolute;
+            inset: 4%;
+            border-radius: 50%;
+            background:
+              repeating-radial-gradient(
+                circle at center,
+                transparent 0px,
+                transparent 2px,
+                rgba(255,255,255,0.03) 2.5px,
+                transparent 3px
+              );
+            pointer-events: none;
+          }
+
+          /* Center label */
+          .vinyl-label {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 34%;
+            aspect-ratio: 1 / 1;
+            border-radius: 50%;
+            background:
+              radial-gradient(circle at 40% 35%,
+                #ffd700 0%, #c9a227 30%, #a07d1c 60%, #806515 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            box-shadow:
+              inset 0 2px 6px rgba(255,255,255,0.2),
+              inset 0 -2px 6px rgba(0,0,0,0.3),
+              0 0 0 3px rgba(30,30,30,0.8);
+            overflow: hidden;
+          }
+          .vinyl-label-name {
+            font-size: 7px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #0c0a06;
+            opacity: 0.8;
+          }
+          .vinyl-label-title {
+            font-size: 6px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: #0c0a06;
+            opacity: 0.6;
+            text-align: center;
+            max-width: 80%;
+            line-height: 1.3;
+          }
+          .vinyl-hole {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #0d0d0d;
+            box-shadow:
+              inset 0 1px 2px rgba(0,0,0,0.8),
+              0 0 0 2px rgba(80,80,80,0.3);
+            margin-top: 2px;
+          }
+
+          /* Subtle light reflection on vinyl */
+          .vinyl-shine {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background:
+              linear-gradient(
+                135deg,
+                transparent 30%,
+                rgba(255,255,255,0.04) 45%,
+                rgba(255,255,255,0.08) 50%,
+                rgba(255,255,255,0.04) 55%,
+                transparent 70%
+              );
+            pointer-events: none;
+          }
+
+          /* --- Album Sleeve (on top of vinyl) --- */
+          .album-cover-art {
+            position: relative;
+            width: 73%;
+            flex-shrink: 0;
+            aspect-ratio: 1 / 1;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow:
+              0 16px 48px rgba(0,0,0,0.7),
+              0 4px 14px rgba(0,0,0,0.5),
+              4px 0 20px rgba(0,0,0,0.4),
+              0 0 0 1px rgba(255,215,0,0.06);
+            cursor: pointer;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            z-index: 2;
+          }
+          .album-cover-art:hover {
+            transform: translateY(-4px) scale(1.005);
+            box-shadow:
+              0 22px 60px rgba(0,0,0,0.75),
+              0 8px 20px rgba(0,0,0,0.5),
+              4px 0 24px rgba(0,0,0,0.45),
+              0 0 0 1px rgba(255,215,0,0.10);
+          }
+          .album-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+          }
+          .album-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+              180deg,
+              rgba(0,0,0,0.45) 0%,
+              rgba(0,0,0,0.05) 20%,
+              rgba(0,0,0,0.02) 35%,
+              rgba(0,0,0,0.50) 65%,
+              rgba(0,0,0,0.88) 100%
+            );
+            pointer-events: none;
+          }
+          /* Artist name at top-left, Single at top-right */
+          .album-text-top {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 18px 22px;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            z-index: 3;
+          }
+          .album-artist-top {
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.92);
+            text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+            margin: 0;
+          }
+          .album-type-corner {
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.5);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 3px 8px;
+            border-radius: 2px;
+            margin-top: 2px;
+          }
+          .album-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 0 22px 6px;
+            text-align: center;
+          }
+          .album-label-tag {
+            display: inline-block;
+            font-size: 7px;
+            font-weight: 600;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: rgba(255,215,0,0.7);
+            padding: 0;
+            margin-bottom: 12px;
+            background: none;
+            border: none;
+          }
+          .album-title {
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+            line-height: 1.15;
+            color: #fff;
+            text-shadow: 0 1px 12px rgba(0,0,0,0.6);
+            margin-bottom: 0;
+            font-style: italic;
+            font-family: Georgia, 'Times New Roman', serif;
+          }
+          .album-divider {
+            width: 36px;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(255,215,0,0.1), rgba(255,215,0,0.6), rgba(255,215,0,0.1));
+            margin: 10px auto;
+          }
+          .album-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+          .album-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: #0c0a06;
+            background: linear-gradient(135deg, #c9a227, #ffd700, #e8c840);
+            padding: 3px 8px;
+            border-radius: 2px;
+          }
+          .badge-icon {
+            font-size: 7px;
+            line-height: 1;
+          }
+          .album-type {
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.4);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: 3px 7px;
+            border-radius: 2px;
+          }
+
+          /* Sleeve shine sweep */
+          .album-shine {
+            position: absolute;
+            top: 0; left: -75%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(
+              105deg,
+              transparent 30%,
+              rgba(255,255,255,0.06) 45%,
+              rgba(255,255,255,0.12) 50%,
+              rgba(255,255,255,0.06) 55%,
+              transparent 70%
+            );
+            pointer-events: none;
+            transition: left 0.6s ease;
+          }
+          .album-cover-art:hover .album-shine {
+            left: 125%;
+          }
+
+          .album-cover-wrap .track-description {
+            margin-top: 18px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 0.6px;
+            font-style: italic;
+          }
+
+          /* --- Player --- */
+          .track-player {
+            margin-top: 14px;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+          }
+          .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,215,0,0.25);
+            border-radius: 40px;
+            padding: 10px 20px;
+            backdrop-filter: blur(6px);
+          }
+          .player-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,215,0,0.6);
+            background: transparent;
+            color: #ffd700;
+            font-size: 16px;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+          }
+          .player-btn:hover {
+            background: rgba(255,215,0,0.15);
+            border-color: #ffd700;
+            transform: scale(1.08);
+          }
+          .player-progress-wrap {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.4);
+          }
+          .player-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #b8941e, #ffd700, #ffe566);
+            border-radius: 4px;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 8px rgba(255,215,0,0.3);
+          }
+          .player-time {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-family: monospace;
+          }
+
+          /* --- Volume Control --- */
+          .player-volume {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            margin-left: 2px;
+          }
+          .volume-icon-btn {
+            background: none;
+            border: none;
+            color: #ffd700;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            opacity: 0.7;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+          }
+          .volume-icon-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+          }
+          .volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 60px;
+            height: 4px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+            transition: background 0.2s ease;
+          }
+          .volume-slider:hover {
+            background: rgba(255,255,255,0.25);
+          }
+          /* Track (WebKit) */
+          .volume-slider::-webkit-slider-runnable-track {
+            height: 4px;
+            border-radius: 2px;
+          }
+          /* Thumb (WebKit) */
+          .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #c9a227);
+            border: 2px solid rgba(255,215,0,0.8);
+            box-shadow: 0 0 6px rgba(255,215,0,0.3);
+            cursor: pointer;
+            margin-top: -5px;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+          }
+          .volume-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(255,215,0,0.5);
+          }
+          /* Thumb (Firefox) */
+          .volume-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #c9a227);
+            border: 2px solid rgba(255,215,0,0.8);
+            box-shadow: 0 0 6px rgba(255,215,0,0.3);
+            cursor: pointer;
+          }
+          .volume-slider::-moz-range-track {
+            height: 4px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 2px;
+            border: none;
+          }
+
+          /* --- Lyrics Scroller --- */
+          .lyrics-wrap {
+            max-width: 520px;
+            margin: 18px auto 0;
+          }
+          .lyrics-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 18px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,215,0,0.15);
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+            cursor: pointer;
+          }
+          .lyrics-header:hover {
+            background: rgba(0,0,0,0.4);
+          }
+          .lyrics-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(255,215,0,0.6);
+          }
+          .lyrics-toggle-btn {
+            background: none;
+            border: none;
+            color: rgba(255,215,0,0.5);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 0;
+            transition: transform 0.3s ease;
+          }
+          .lyrics-wrap.collapsed .lyrics-toggle-btn {
+            transform: rotate(-90deg);
+          }
+          .lyrics-scroll {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,215,0,0.15);
+            border-top: 1px solid rgba(255,215,0,0.08);
+            border-radius: 0 0 12px 12px;
+            backdrop-filter: blur(6px);
+            transition: max-height 0.4s ease, opacity 0.3s ease;
+            scroll-behavior: smooth;
+          }
+          .lyrics-wrap.collapsed .lyrics-scroll {
+            max-height: 0;
+            opacity: 0;
+            border: none;
+            overflow: hidden;
+          }
+          /* Custom scrollbar */
+          .lyrics-scroll::-webkit-scrollbar {
+            width: 4px;
+          }
+          .lyrics-scroll::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          .lyrics-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255,215,0,0.25);
+            border-radius: 2px;
+          }
+          .lyrics-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,215,0,0.4);
+          }
+          .lyrics-content {
+            padding: 16px 24px 20px;
+          }
+          .lyric-line {
+            font-size: 14px;
+            line-height: 1.9;
+            color: rgba(255,255,255,0.55);
+            margin: 0;
+            padding: 2px 0;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-style: italic;
+            text-align: center;
+          }
+          .lyric-line.chorus {
+            color: rgba(255,215,0,0.55);
+          }
+          .lyric-line.verse-start {
+            margin-top: 2px;
+          }
+          /* Top/bottom fade masks */
+          .lyrics-scroll {
+            -webkit-mask-image: linear-gradient(
+              to bottom,
+              transparent 0%,
+              black 12%,
+              black 88%,
+              transparent 100%
+            );
+            mask-image: linear-gradient(
+              to bottom,
+              transparent 0%,
+              black 12%,
+              black 88%,
+              transparent 100%
+            );
+          }
+        </style>
+        <script>
+        (function() {
+          var audio = document.getElementById('featuredTrack');
+          var playBtn = document.getElementById('playBtn');
+          var progressBar = document.getElementById('progressBar');
+          var playerTime = document.getElementById('playerTime');
+          var bgMusicWasEnabled = false;
+
+          function fmt(s) {
+            var m = Math.floor(s / 60);
+            var sec = Math.floor(s % 60);
+            return m + ':' + (sec < 10 ? '0' : '') + sec;
+          }
+
+          // Stop background music when featured track plays
+          function stopBackgroundMusic() {
+            if (typeof BackgroundMusic !== 'undefined' && BackgroundMusic.currentAudio) {
+              bgMusicWasEnabled = BackgroundMusic.enabled;
+              BackgroundMusic.stop();
+            }
+          }
+
+          // Resume background music when featured track stops
+          function resumeBackgroundMusic() {
+            if (typeof BackgroundMusic !== 'undefined' && bgMusicWasEnabled) {
+              BackgroundMusic.handlePageChange();
+            }
+          }
+
+          audio.addEventListener('timeupdate', function() {
+            if (audio.duration) {
+              progressBar.style.width = (audio.currentTime / audio.duration * 100) + '%';
+              playerTime.textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration);
+            }
+          });
+
+          audio.addEventListener('loadedmetadata', function() {
+            playerTime.textContent = '0:00 / ' + fmt(audio.duration);
+          });
+
+          audio.addEventListener('ended', function() {
+            playBtn.innerHTML = '&#x25B6;';
+            resumeBackgroundMusic();
+          });
+
+          window.toggleTrack = function() {
+            if (audio.paused) {
+              stopBackgroundMusic();
+              audio.play();
+              playBtn.innerHTML = '&#x23F8;';
+            } else {
+              audio.pause();
+              playBtn.innerHTML = '&#x25B6;';
+              resumeBackgroundMusic();
+            }
+          };
+
+          window.seekTrack = function(e) {
+            var wrap = document.getElementById('progressWrap');
+            var rect = wrap.getBoundingClientRect();
+            var pct = (e.clientX - rect.left) / rect.width;
+            audio.currentTime = pct * audio.duration;
+          };
+
+          // Volume controls
+          var volumeSlider = document.getElementById('volumeSlider');
+          var volumeBtn = document.getElementById('volumeBtn');
+          var lastVolume = 0.8;
+          audio.volume = 0.8;
+
+          window.setVolume = function(val) {
+            var vol = val / 100;
+            audio.volume = vol;
+            lastVolume = vol > 0 ? vol : lastVolume;
+            updateVolumeIcon(vol);
+          };
+
+          window.toggleMute = function() {
+            if (audio.volume > 0) {
+              lastVolume = audio.volume;
+              audio.volume = 0;
+              volumeSlider.value = 0;
+            } else {
+              audio.volume = lastVolume || 0.8;
+              volumeSlider.value = audio.volume * 100;
+            }
+            updateVolumeIcon(audio.volume);
+          };
+
+          function updateVolumeIcon(vol) {
+            if (vol === 0) {
+              volumeBtn.innerHTML = '&#x1F507;';  // muted
+            } else if (vol < 0.4) {
+              volumeBtn.innerHTML = '&#x1F509;';  // low
+            } else {
+              volumeBtn.innerHTML = '&#x1F50A;';  // high
+            }
+          }
+
+          // Lyrics smooth auto-scroll synced to song duration
+          var lyricsScroll = document.getElementById('lyricsScroll');
+          var lyricsContent = document.getElementById('lyricsContent');
+          var userScrolling = false;
+          var userScrollTimer = null;
+
+          // Detect manual scroll — pause auto-scroll briefly
+          if (lyricsScroll) {
+            lyricsScroll.addEventListener('wheel', function() {
+              userScrolling = true;
+              clearTimeout(userScrollTimer);
+              userScrollTimer = setTimeout(function() { userScrolling = false; }, 4000);
+            });
+            lyricsScroll.addEventListener('touchmove', function() {
+              userScrolling = true;
+              clearTimeout(userScrollTimer);
+              userScrollTimer = setTimeout(function() { userScrolling = false; }, 4000);
+            });
+          }
+
+          audio.addEventListener('timeupdate', function() {
+            if (!audio.duration || !lyricsScroll || !lyricsContent || userScrolling) return;
+
+            var pct = audio.currentTime / audio.duration;
+            var maxScroll = lyricsContent.scrollHeight - lyricsScroll.clientHeight;
+            if (maxScroll > 0) {
+              lyricsScroll.scrollTop = pct * maxScroll;
+            }
+          });
+
+          // Reset lyrics on ended
+          audio.addEventListener('ended', function() {
+            if (lyricsScroll) lyricsScroll.scrollTop = 0;
+          });
+
+          // Toggle lyrics panel
+          window.toggleLyrics = function() {
+            var wrap = document.getElementById('lyricsWrap');
+            if (wrap) wrap.classList.toggle('collapsed');
+          };
+
+          // Also toggle when clicking header
+          var lyricsHeader = document.querySelector('.lyrics-header');
+          if (lyricsHeader) {
+            lyricsHeader.addEventListener('click', function(e) {
+              if (e.target.closest('.lyrics-toggle-btn')) return; // avoid double toggle
+              window.toggleLyrics();
+            });
+          }
+        })();
+        </script>
+
+        <!-- Lyrics Scroller -->
+        <div class="lyrics-wrap" id="lyricsWrap">
+          <div class="lyrics-header">
+            <span class="lyrics-label">Lyrics</span>
+            <button class="lyrics-toggle-btn" id="lyricsToggleBtn" onclick="toggleLyrics()">&#x25BC;</button>
+          </div>
+          <div class="lyrics-scroll" id="lyricsScroll">
+            <div class="lyrics-content" id="lyricsContent">
+              <p class="lyric-line verse-start">No one can tell me</p>
+              <p class="lyric-line">That I'm pretending</p>
+              <p class="lyric-line">Why should I play games?</p>
+              <p class="lyric-line">Love's not a plaything</p>
+              <p class="lyric-line">&nbsp;</p>
+              <p class="lyric-line">Questions people ask of me</p>
+              <p class="lyric-line">For loving you</p>
+              <p class="lyric-line">Why should I say the reasons on my own?</p>
+              <p class="lyric-line">&nbsp;</p>
+              <p class="lyric-line chorus">No one has wanted more than I want you</p>
+              <p class="lyric-line chorus">No one has needed more than I do</p>
+              <p class="lyric-line chorus">No one has wanted more than I want you</p>
+              <p class="lyric-line chorus">No one has needed more than I love you</p>
+              <p class="lyric-line">&nbsp;</p>
+              <p class="lyric-line verse-start">No, I'm not dreaming</p>
+              <p class="lyric-line">Love has a meaning</p>
+              <p class="lyric-line">You're all I live for</p>
+              <p class="lyric-line">No one can give more</p>
+              <p class="lyric-line">&nbsp;</p>
+              <p class="lyric-line">Questions people ask of me</p>
+              <p class="lyric-line">For loving you</p>
+              <p class="lyric-line">Why should I say the reasons on my own?</p>
+              <p class="lyric-line">&nbsp;</p>
+              <p class="lyric-line chorus">No one has wanted more than I want you</p>
+              <p class="lyric-line chorus">No one has needed more than I do</p>
+              <p class="lyric-line chorus">No one has wanted more than I want you</p>
+              <p class="lyric-line chorus">No one has needed more than I love you</p>
+              <p class="lyric-line">&nbsp;</p>
+              <p class="lyric-line chorus">No one has wanted more than I want you</p>
+              <p class="lyric-line chorus">No one has needed more than I do</p>
+              <p class="lyric-line chorus">No one has wanted more than I want you</p>
+              <p class="lyric-line chorus">No one has needed more than I love you</p>
+            </div>
+          </div>
         </div>
       </div>
 

@@ -1,6 +1,19 @@
 <!-- pages/home.html -->
 
-<section class="hero" id="home">
+<section class="hero" id="home" style="background-image: none !important;">
+  <!-- TEST: hero video background -->
+  <video class="hero-video" autoplay muted loop playsinline
+         poster="../images/backgrounds/hero-home.jpg"
+         src="../images/artist/LA-hero.mp4"></video>
+  <style>
+    .hero-video {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+  </style>
   <div class="hero-overlay"></div>
 
   <div class="hero-content">

@@ -47,6 +47,9 @@ const PageLoader = {
       // Insert new content
       this.container.innerHTML = content;
 
+      // Execute any inline scripts (innerHTML doesn't run them)
+      this.executeInlineScripts();
+
       // Fade in new content
       await this.fadeIn();
 
@@ -151,6 +154,25 @@ const PageLoader = {
     if (typeof Utils !== 'undefined') {
       Utils.lazyLoadImages();
     }
+  },
+
+  /**
+   * Execute inline scripts after innerHTML insertion
+   * (Browsers don't run <script> tags inserted via innerHTML)
+   */
+  executeInlineScripts() {
+    if (!this.container) return;
+    const scripts = this.container.querySelectorAll('script');
+    scripts.forEach((oldScript) => {
+      const newScript = document.createElement('script');
+      // Copy attributes (src, type, etc.)
+      Array.from(oldScript.attributes).forEach((attr) => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+      // Copy inline code
+      newScript.textContent = oldScript.textContent;
+      oldScript.parentNode.replaceChild(newScript, oldScript);
+    });
   },
 
   /**

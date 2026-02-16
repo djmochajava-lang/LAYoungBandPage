@@ -133,6 +133,56 @@ body.folder-is-open {
   align-items: flex-start;
 }
 
+/* --- Back to Site — vintage label --- */
+.back-to-site {
+  position: fixed;
+  top: 22px;
+  left: 22px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px 8px 12px;
+  background: var(--manila);
+  border: 2px solid var(--manila-border);
+  border-radius: 2px;
+  font-family: 'Special Elite', 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: var(--ink);
+  text-decoration: none;
+  text-transform: uppercase;
+  box-shadow: 2px 3px 8px rgba(0,0,0,0.35),
+              inset 0 1px 0 rgba(255,255,255,0.3);
+  transform: rotate(-2deg);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+.back-to-site::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border: 1px dashed var(--manila-border);
+  opacity: 0.4;
+  pointer-events: none;
+  border-radius: 1px;
+}
+.back-to-site:hover {
+  transform: rotate(0deg) translateY(-2px);
+  box-shadow: 3px 5px 14px rgba(0,0,0,0.45),
+              inset 0 1px 0 rgba(255,255,255,0.3),
+              0 0 20px rgba(180, 140, 30, 0.15);
+}
+.back-arrow {
+  font-size: 16px;
+  line-height: 1;
+  color: var(--gold-accent);
+}
+.back-text {
+  border-bottom: 1px solid var(--manila-border);
+  padding-bottom: 1px;
+}
+
 /* --- Folder Shell --- */
 .folder-container {
   position: relative;
@@ -995,6 +1045,7 @@ h2.section-title {
   body::before,
   body::after { display: none; }
   .watermark-layer { display: none; }
+  .back-to-site { display: none; }
   .folder-cover { display: none; }
   .folder-tab { display: none; }
   .folder-content {
