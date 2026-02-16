@@ -1,403 +1,457 @@
 // js/gallery.js
 
 /**
- * Gallery Module
- * Handles photo gallery, lightbox, and image viewing
+ * Gallery Module — Futuristic Showcase
+ * 3D tilt, auto-rotation, holographic thumbnails, cinematic lightbox
  */
 
 const Gallery = {
-  currentIndex: 0,
-  images: [],
   initialized: false,
+  cur: 0,
+  autoTimer: null,
+  progressRAF: null,
+  progressStart: 0,
+  paused: false,
+  resumeTimer: null,
+  lbOpen: false,
+  INTERVAL: 4000,
+  RESUME: 6000,
+  CIRCUM: 2 * Math.PI * 18, // ~113
+  MAX_HEIGHT: 620,
+
+  images: [
+    { src: 'images/artist/LAYoungPink.JPG',   caption: 'L.A. Young Pink',             sub: 'Studio Portrait' },
+    { src: 'images/artist/LAPhillysLive.JPG',  caption: 'L.A. Young Live Performance', sub: 'On Stage' },
+    { src: 'images/artist/LAPopSinger.jpeg',   caption: 'L.A. Young Pop Singer',       sub: 'Editorial Shoot' },
+    { src: 'images/artist/LARockAndRoll.jpeg', caption: 'L.A. Young Rock & Roll',      sub: 'Rock & Roll Vibes' },
+    { src: 'images/artist/LAFunkyChild.JPG',   caption: 'L.A. Young Funky Child',      sub: 'Funky Fresh' },
+    { src: 'images/artist/LASoulSista.JPG',    caption: 'L.A. Young Soul Sista',       sub: 'Soul Portrait' },
+    { src: 'images/artist/LAAfro.jpg',         caption: 'L.A. Young Afro',             sub: 'Natural Beauty' },
+    { src: 'images/artist/LASoulLife.PNG',     caption: 'L.A. Young Soul Life',        sub: 'Living Soul' },
+    { src: 'images/artist/LAGreenDress.JPG',   caption: 'L.A. Young Green Dress',      sub: 'Emerald Elegance' },
+  ],
+
+  // DOM refs (set during init)
+  els: {},
 
   /**
    * Initialize gallery
    */
   init() {
-    console.log('🖼️ Initializing Gallery...');
+    console.log('🖼️ Initializing Futuristic Gallery...');
 
-    if (this.initialized) {
-      console.log('Gallery already initialized, skipping...');
+    // Check if the futuristic gallery HTML exists
+    const showcaseFrame = document.getElementById('fg-showcaseFrame');
+    if (!showcaseFrame) {
+      console.log('Futuristic gallery elements not found, skipping...');
       return;
     }
 
-    this.initGalleryItems();
-    this.createLightbox();
+    // Clean up any previous instance
+    this.destroy();
+
+    // Cache DOM elements
+    this.els = {
+      showcaseFrame: showcaseFrame,
+      showcase: document.getElementById('fg-showcase'),
+      capTitle: document.getElementById('fg-capTitle'),
+      capSub: document.getElementById('fg-capSub'),
+      capCount: document.getElementById('fg-capCount'),
+      ringFill: document.getElementById('fg-ringFill'),
+      thumbStrip: document.getElementById('fg-thumbStrip'),
+      lightbox: document.getElementById('fg-lightbox'),
+      lbImg: document.getElementById('fg-lbImg'),
+      lbTitle: document.getElementById('fg-lbTitle'),
+      lbCount: document.getElementById('fg-lbCount'),
+    };
+
+    // Reset state
+    this.cur = 0;
+    this.paused = false;
+    this.lbOpen = false;
+
+    // Build the gallery
+    this.createParticles();
+    this.createProgressRing();
+    this.preloadImages();
+    this.buildThumbnails();
+    this.bind3DTilt();
+    this.bindNavigation();
+    this.bindLightbox();
+    this.bindKeyboard();
+    this.bindTouch();
+    this.updateCaption();
+    this.startAuto();
+
     this.initialized = true;
-
-    console.log('✅ Gallery initialized with', this.images.length, 'images');
+    console.log('✅ Futuristic Gallery initialized with', this.images.length, 'images');
   },
 
   /**
-   * Initialize gallery item click handlers
+   * Destroy / clean up (for SPA re-init)
    */
-  initGalleryItems() {
-    const galleryItems = document.querySelectorAll('.gallery-item');
+  destroy() {
+    this.stopAuto();
+    clearTimeout(this.resumeTimer);
+    this.initialized = false;
+    this._keyHandler && document.removeEventListener('keydown', this._keyHandler);
+  },
 
-    if (galleryItems.length === 0) {
-      console.warn('⚠️ No gallery items found');
-      return;
+  /**
+   * Create floating gold particles
+   */
+  createParticles() {
+    const container = document.getElementById('fg-particles');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.className = 'fg-particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.width = p.style.height = (1.5 + Math.random() * 3) + 'px';
+      p.style.animationDuration = (8 + Math.random() * 15) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.opacity = 0.2 + Math.random() * 0.5;
+      container.appendChild(p);
     }
-
-    console.log(`📸 Found ${galleryItems.length} gallery items`);
-
-    // Collect all images
-    this.images = Array.from(galleryItems)
-      .map((item, index) => {
-        const img = item.querySelector('img');
-
-        if (!img) {
-          console.warn(`⚠️ No image found in gallery item ${index + 1}`);
-          return null;
-        }
-
-        // Log image details for debugging
-        console.log(`Image ${index + 1}:`, {
-          src: img.src,
-          alt: img.alt,
-          complete: img.complete,
-          naturalWidth: img.naturalWidth,
-        });
-
-        return {
-          src: img.src || img.dataset.src || '',
-          alt: img.alt || '',
-          caption: item.dataset.caption || '',
-          element: img,
-        };
-      })
-      .filter((img) => img !== null); // Remove any null entries
-
-    console.log(`✅ Successfully loaded ${this.images.length} images`);
-
-    // Add click handlers
-    galleryItems.forEach((item, index) => {
-      const img = item.querySelector('img');
-
-      if (!img) return;
-
-      // Add error handler to each image
-      img.addEventListener('error', (e) => {
-        console.error(`❌ Failed to load image ${index + 1}:`, img.src);
-        this.handleImageError(img, index);
-      });
-
-      // Add load handler for debugging
-      img.addEventListener('load', (e) => {
-        console.log(`✅ Successfully loaded image ${index + 1}`);
-      });
-
-      item.addEventListener('click', () => {
-        console.log(`🖱️ Clicked gallery item ${index + 1}`);
-        this.openLightbox(index);
-
-        if (typeof Analytics !== 'undefined') {
-          Analytics.trackEvent('Gallery', 'View Image', `Image ${index + 1}`);
-        }
-      });
-
-      // Add keyboard navigation
-      item.setAttribute('tabindex', '0');
-      item.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          this.openLightbox(index);
-        }
-      });
-    });
   },
 
   /**
-   * Handle image loading errors
+   * Create progress ring SVG via DOM API (avoids innerHTML SVG parsing issues)
    */
-  handleImageError(img, index) {
-    // Try alternate file extensions
-    const src = img.src;
+  createProgressRing() {
+    const wrap = document.getElementById('fg-progressRingWrap');
+    if (!wrap || wrap.querySelector('svg')) return;
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'fg-progress-ring');
+    svg.setAttribute('width', '42');
+    svg.setAttribute('height', '42');
+    svg.setAttribute('viewBox', '0 0 42 42');
+    const bg = document.createElementNS(ns, 'circle');
+    bg.setAttribute('class', 'fg-ring-bg');
+    bg.setAttribute('cx', '21');
+    bg.setAttribute('cy', '21');
+    bg.setAttribute('r', '18');
+    svg.appendChild(bg);
+    const fill = document.createElementNS(ns, 'circle');
+    fill.setAttribute('class', 'fg-ring-fill');
+    fill.setAttribute('id', 'fg-ringFill');
+    fill.setAttribute('cx', '21');
+    fill.setAttribute('cy', '21');
+    fill.setAttribute('r', '18');
+    svg.appendChild(fill);
+    wrap.appendChild(svg);
+    // Update cached ref
+    this.els.ringFill = fill;
+  },
 
-    if (src.endsWith('.JPG') && !img.dataset.triedLowercase) {
-      console.log('⚠️ Trying lowercase .jpg extension...');
-      img.dataset.triedLowercase = 'true';
-      img.src = src.replace('.JPG', '.jpg');
-    } else if (src.endsWith('.PNG') && !img.dataset.triedLowercase) {
-      console.log('⚠️ Trying lowercase .png extension...');
-      img.dataset.triedLowercase = 'true';
-      img.src = src.replace('.PNG', '.png');
+  /**
+   * Preload images & detect orientation
+   */
+  preloadImages() {
+    const frame = this.els.showcaseFrame;
+    // Remove any old showcase images
+    frame.querySelectorAll('.fg-showcase-img').forEach(el => el.remove());
+
+    this.images.forEach((img, i) => {
+      const el = document.createElement('img');
+      el.className = 'fg-showcase-img' + (i === 0 ? ' active' : '');
+      el.src = img.src;
+      el.alt = img.caption;
+      el.draggable = false;
+      el.onload = () => {
+        img.w = el.naturalWidth;
+        img.h = el.naturalHeight;
+        img.ratio = el.naturalWidth / el.naturalHeight;
+        if (i === 0) this.updateFrameSize(0);
+      };
+      frame.insertBefore(el, frame.querySelector('.fg-showcase-caption'));
+    });
+    this.showcaseImgs = frame.querySelectorAll('.fg-showcase-img');
+  },
+
+  /**
+   * Adapt frame to image orientation
+   */
+  updateFrameSize(index) {
+    const img = this.images[index];
+    if (!img || !img.ratio) return;
+    const ratio = img.ratio;
+    const frame = this.els.showcaseFrame;
+
+    frame.style.aspectRatio = ratio.toFixed(4);
+
+    if (ratio < 1) {
+      const widthForMaxHeight = this.MAX_HEIGHT * ratio;
+      frame.style.maxWidth = Math.max(Math.min(widthForMaxHeight, 500), 320) + 'px';
+    } else if (ratio <= 1.15) {
+      frame.style.maxWidth = '620px';
     } else {
-      // Show placeholder
-      console.error('❌ All attempts failed, showing placeholder');
-      img.alt = `Image ${index + 1} failed to load`;
-      img.style.display = 'none';
-
-      // Add placeholder text
-      const parent = img.parentElement;
-      if (parent && !parent.querySelector('.image-error')) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'image-error';
-        errorDiv.innerHTML = `
-          <p style="color: rgba(255,255,255,0.6); text-align: center; padding: 2rem;">
-            📷 Image not available<br>
-            <small>${img.alt || 'Gallery image'}</small>
-          </p>
-        `;
-        parent.appendChild(errorDiv);
-      }
+      frame.style.maxWidth = '100%';
     }
   },
 
   /**
-   * Create lightbox HTML structure
+   * Build holographic thumbnail cards
    */
-  createLightbox() {
-    if (document.getElementById('lightbox')) {
-      console.log('Lightbox already exists');
-      return;
-    }
+  buildThumbnails() {
+    const strip = this.els.thumbStrip;
+    if (!strip) return;
+    strip.innerHTML = '';
 
-    const lightbox = document.createElement('div');
-    lightbox.id = 'lightbox';
-    lightbox.className = 'lightbox';
-    lightbox.innerHTML = `
-      <div class="lightbox-overlay"></div>
-      <div class="lightbox-content">
-        <button class="lightbox-close" aria-label="Close lightbox">&times;</button>
-        <button class="lightbox-prev" aria-label="Previous image">&#8249;</button>
-        <button class="lightbox-next" aria-label="Next image">&#8250;</button>
-        <img class="lightbox-image" src="" alt="">
-        <div class="lightbox-caption"></div>
-        <div class="lightbox-counter"></div>
-      </div>
-    `;
-
-    document.body.appendChild(lightbox);
-
-    // Add styles
-    this.addLightboxStyles();
-
-    // Event listeners
-    lightbox
-      .querySelector('.lightbox-close')
-      .addEventListener('click', () => this.closeLightbox());
-    lightbox
-      .querySelector('.lightbox-prev')
-      .addEventListener('click', () => this.prevImage());
-    lightbox
-      .querySelector('.lightbox-next')
-      .addEventListener('click', () => this.nextImage());
-    lightbox
-      .querySelector('.lightbox-overlay')
-      .addEventListener('click', () => this.closeLightbox());
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-      if (!lightbox.classList.contains('active')) return;
-
-      if (e.key === 'Escape') this.closeLightbox();
-      if (e.key === 'ArrowLeft') this.prevImage();
-      if (e.key === 'ArrowRight') this.nextImage();
+    this.images.forEach((img, i) => {
+      const card = document.createElement('div');
+      card.className = 'fg-thumb-card' + (i === 0 ? ' active' : '');
+      card.style.animationDelay = (0.5 + i * 0.07) + 's';
+      card.innerHTML = `
+        <img src="${img.src}" alt="${img.caption}" draggable="false">
+        <div class="fg-holo-shine"></div>
+        <div class="fg-thumb-label">${img.caption.replace('L.A. Young ', '')}</div>
+      `;
+      card.addEventListener('click', () => {
+        this.goTo(i);
+        this.pauseAuto();
+        this.scheduleResume();
+      });
+      strip.appendChild(card);
     });
-
-    console.log('✅ Lightbox created');
+    this.thumbCards = strip.querySelectorAll('.fg-thumb-card');
   },
 
   /**
-   * Add lightbox CSS styles
+   * 3D tilt on showcase
    */
-  addLightboxStyles() {
-    if (document.getElementById('lightbox-styles')) return;
+  bind3DTilt() {
+    const showcase = this.els.showcase;
+    const frame = this.els.showcaseFrame;
+    if (!showcase || !frame) return;
 
-    const style = document.createElement('style');
-    style.id = 'lightbox-styles';
-    style.textContent = `
-      .lightbox {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 9999;
-      }
-      
-      .lightbox.active {
-        display: block;
-      }
-      
-      .lightbox-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.95);
-      }
-      
-      .lightbox-content {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-        padding: 2rem;
-      }
-      
-      .lightbox-image {
-        max-width: 90%;
-        max-height: 80vh;
-        object-fit: contain;
-        animation: fadeInUp 0.3s ease-out;
-      }
-      
-      .lightbox-caption {
-        color: white;
-        text-align: center;
-        margin-top: 1rem;
-        font-size: 1.1rem;
-      }
-      
-      .lightbox-counter {
-        color: rgba(255, 255, 255, 0.7);
-        text-align: center;
-        margin-top: 0.5rem;
-        font-size: 0.9rem;
-      }
-      
-      .lightbox-close,
-      .lightbox-prev,
-      .lightbox-next {
-        position: absolute;
-        background: rgba(255, 215, 0, 0.2);
-        border: 1px solid rgba(255, 215, 0, 0.5);
-        color: #ffd700;
-        font-size: 2rem;
-        width: 50px;
-        height: 50px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-      
-      .lightbox-close {
-        top: 20px;
-        right: 20px;
-      }
-      
-      .lightbox-prev {
-        left: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-      
-      .lightbox-next {
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-      }
-      
-      .lightbox-close:hover,
-      .lightbox-prev:hover,
-      .lightbox-next:hover {
-        background: rgba(255, 215, 0, 0.4);
-        border-color: #ffd700;
-      }
-      
-      @media (max-width: 768px) {
-        .lightbox-image {
-          max-width: 95%;
-          max-height: 70vh;
-        }
-        
-        .lightbox-prev,
-        .lightbox-next {
-          width: 40px;
-          height: 40px;
-          font-size: 1.5rem;
-        }
-      }
-
-      .image-error {
-        min-height: 200px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 215, 0, 0.2);
-      }
-    `;
-
-    document.head.appendChild(style);
+    this._tiltMove = (e) => {
+      const rect = frame.getBoundingClientRect();
+      const x = (e.clientX - rect.left) / rect.width - 0.5;
+      const y = (e.clientY - rect.top) / rect.height - 0.5;
+      frame.style.transform = `rotateY(${x * 6}deg) rotateX(${-y * 4}deg)`;
+    };
+    this._tiltLeave = () => {
+      frame.style.transform = 'rotateY(0) rotateX(0)';
+    };
+    showcase.addEventListener('mousemove', this._tiltMove);
+    showcase.addEventListener('mouseleave', this._tiltLeave);
   },
 
   /**
-   * Open lightbox at specific index
+   * Navigation arrows
    */
-  openLightbox(index) {
-    if (index < 0 || index >= this.images.length) {
-      console.error('Invalid image index:', index);
-      return;
+  bindNavigation() {
+    const prevBtn = document.getElementById('fg-prevBtn');
+    const nextBtn = document.getElementById('fg-nextBtn');
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.goPrev();
+        this.pauseAuto();
+        this.scheduleResume();
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.goNext();
+        this.pauseAuto();
+        this.scheduleResume();
+      });
     }
 
-    this.currentIndex = index;
-    const lightbox = document.getElementById('lightbox');
+    // Pause on hover
+    if (this.els.showcase) {
+      this.els.showcase.addEventListener('mouseenter', () => this.pauseAuto());
+      this.els.showcase.addEventListener('mouseleave', () => this.scheduleResume());
+    }
+  },
 
-    if (!lightbox) {
-      console.error('Lightbox element not found');
-      return;
+  /**
+   * Update caption text
+   */
+  updateCaption() {
+    if (this.els.capTitle) this.els.capTitle.textContent = this.images[this.cur].caption;
+    if (this.els.capSub) this.els.capSub.textContent = this.images[this.cur].sub;
+    if (this.els.capCount) this.els.capCount.textContent = `${this.cur + 1} / ${this.images.length}`;
+  },
+
+  /**
+   * Navigate to specific image
+   */
+  goTo(i) {
+    if (i === this.cur) return;
+    if (this.showcaseImgs && this.showcaseImgs[this.cur]) {
+      this.showcaseImgs[this.cur].classList.remove('active');
+    }
+    if (this.thumbCards && this.thumbCards[this.cur]) {
+      this.thumbCards[this.cur].classList.remove('active');
     }
 
-    const img = lightbox.querySelector('.lightbox-image');
-    const caption = lightbox.querySelector('.lightbox-caption');
-    const counter = lightbox.querySelector('.lightbox-counter');
+    this.cur = i;
 
-    const imageData = this.images[index];
+    if (this.showcaseImgs && this.showcaseImgs[this.cur]) {
+      this.showcaseImgs[this.cur].classList.add('active');
+    }
+    if (this.thumbCards && this.thumbCards[this.cur]) {
+      this.thumbCards[this.cur].classList.add('active');
+      this.thumbCards[this.cur].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
 
-    console.log('Opening lightbox with image:', imageData);
+    this.updateCaption();
+    this.updateFrameSize(this.cur);
+    this.resetProgress();
+  },
 
-    img.src = imageData.src;
-    img.alt = imageData.alt;
-    caption.textContent = imageData.caption;
-    counter.textContent = `${index + 1} / ${this.images.length}`;
+  goNext() { this.goTo((this.cur + 1) % this.images.length); },
+  goPrev() { this.goTo((this.cur - 1 + this.images.length) % this.images.length); },
 
-    lightbox.classList.add('active');
+  /**
+   * Auto-rotation with progress ring
+   */
+  startAuto() {
+    this.stopAuto();
+    this.paused = false;
+    this.progressStart = Date.now();
+    this.autoTimer = setTimeout(() => { this.goNext(); this.startAuto(); }, this.INTERVAL);
+    this.animateRing();
+  },
+
+  stopAuto() {
+    clearTimeout(this.autoTimer);
+    this.autoTimer = null;
+    cancelAnimationFrame(this.progressRAF);
+    if (this.els.ringFill) this.els.ringFill.style.strokeDashoffset = this.CIRCUM;
+  },
+
+  pauseAuto() {
+    this.paused = true;
+    this.stopAuto();
+  },
+
+  scheduleResume() {
+    clearTimeout(this.resumeTimer);
+    this.resumeTimer = setTimeout(() => this.startAuto(), this.RESUME);
+  },
+
+  resetProgress() { this.progressStart = Date.now(); },
+
+  animateRing() {
+    const self = this;
+    function tick() {
+      if (self.paused) return;
+      const pct = Math.min((Date.now() - self.progressStart) / self.INTERVAL, 1);
+      if (self.els.ringFill) self.els.ringFill.style.strokeDashoffset = self.CIRCUM * (1 - pct);
+      if (pct < 1) self.progressRAF = requestAnimationFrame(tick);
+    }
+    self.progressRAF = requestAnimationFrame(tick);
+  },
+
+  /**
+   * Lightbox
+   */
+  bindLightbox() {
+    const frame = this.els.showcaseFrame;
+    const lightbox = this.els.lightbox;
+
+    if (frame) {
+      frame.addEventListener('click', (e) => {
+        if (e.target.closest('.fg-nav-btn')) return;
+        this.openLB(this.cur);
+      });
+    }
+
+    const lbClose = document.getElementById('fg-lbClose');
+    const lbPrev = document.getElementById('fg-lbPrev');
+    const lbNext = document.getElementById('fg-lbNext');
+
+    if (lbClose) lbClose.addEventListener('click', () => this.closeLB());
+    if (lightbox) lightbox.addEventListener('click', (e) => { if (e.target === lightbox) this.closeLB(); });
+    if (lbPrev) lbPrev.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.cur = (this.cur - 1 + this.images.length) % this.images.length;
+      this.updateLB();
+    });
+    if (lbNext) lbNext.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.cur = (this.cur + 1) % this.images.length;
+      this.updateLB();
+    });
+  },
+
+  openLB(i) {
+    this.lbOpen = true;
+    this.cur = i;
+    this.updateLB();
+    if (this.els.lightbox) this.els.lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
+    this.pauseAuto();
   },
 
-  /**
-   * Close lightbox
-   */
-  closeLightbox() {
-    const lightbox = document.getElementById('lightbox');
-    if (lightbox) {
-      lightbox.classList.remove('active');
-      document.body.style.overflow = '';
+  closeLB() {
+    this.lbOpen = false;
+    if (this.els.lightbox) this.els.lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+    this.scheduleResume();
+  },
+
+  updateLB() {
+    if (this.els.lbImg) {
+      this.els.lbImg.src = this.images[this.cur].src;
+      this.els.lbImg.alt = this.images[this.cur].caption;
     }
+    if (this.els.lbTitle) this.els.lbTitle.textContent = this.images[this.cur].caption;
+    if (this.els.lbCount) this.els.lbCount.textContent = `${this.cur + 1} of ${this.images.length}`;
+    if (this.showcaseImgs) this.showcaseImgs.forEach((el, i) => el.classList.toggle('active', i === this.cur));
+    if (this.thumbCards) this.thumbCards.forEach((el, i) => el.classList.toggle('active', i === this.cur));
+    this.updateCaption();
   },
 
   /**
-   * Show previous image
+   * Keyboard navigation
    */
-  prevImage() {
-    this.currentIndex =
-      (this.currentIndex - 1 + this.images.length) % this.images.length;
-    this.openLightbox(this.currentIndex);
+  bindKeyboard() {
+    this._keyHandler = (e) => {
+      if (this.lbOpen) {
+        if (e.key === 'Escape') this.closeLB();
+        if (e.key === 'ArrowLeft') { this.cur = (this.cur - 1 + this.images.length) % this.images.length; this.updateLB(); }
+        if (e.key === 'ArrowRight') { this.cur = (this.cur + 1) % this.images.length; this.updateLB(); }
+      } else if (document.getElementById('fg-showcase')) {
+        if (e.key === 'ArrowLeft') { this.goPrev(); this.pauseAuto(); this.scheduleResume(); }
+        if (e.key === 'ArrowRight') { this.goNext(); this.pauseAuto(); this.scheduleResume(); }
+      }
+    };
+    document.addEventListener('keydown', this._keyHandler);
   },
 
   /**
-   * Show next image
+   * Touch / Swipe
    */
-  nextImage() {
-    this.currentIndex = (this.currentIndex + 1) % this.images.length;
-    this.openLightbox(this.currentIndex);
+  bindTouch() {
+    const frame = this.els.showcaseFrame;
+    if (!frame) return;
+
+    let tsX = 0;
+    frame.addEventListener('touchstart', (e) => {
+      tsX = e.changedTouches[0].screenX;
+      this.pauseAuto();
+    }, { passive: true });
+    frame.addEventListener('touchend', (e) => {
+      const diff = tsX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) { diff > 0 ? this.goNext() : this.goPrev(); }
+      this.scheduleResume();
+    }, { passive: true });
   },
 
   /**
-   * Reload gallery (useful after dynamic content changes)
+   * Reload gallery (for SPA re-navigation)
    */
   reload() {
     console.log('🔄 Reloading gallery...');
-    this.initialized = false;
-    this.images = [];
-    this.currentIndex = 0;
     this.init();
   },
 };

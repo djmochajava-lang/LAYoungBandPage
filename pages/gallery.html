@@ -2,145 +2,53 @@
 
 <section class="section gallery-section" id="gallery">
   <div class="container">
-    <h2 class="section-title">My Gallery</h2>
-    <p class="section-subtitle">Moments in Color</p>
 
-    <div class="gallery-content">
-      <!-- Gallery Grid -->
-      <div class="gallery-grid">
-        <!-- Image 1 - L.A. Young Pink -->
-        <div class="gallery-item scroll-reveal" data-caption="L.A. Young Pink">
-          <img
-            src="images/artist/LAYoungPink.JPG"
-            alt="L.A. Young Pink"
-            loading="lazy"
-            onerror="
-              this.onerror = null;
-              this.src = 'images/artist/LAYoungPink.jpg';
-            "
-          />
-        </div>
+    <!-- Futuristic Gallery Header -->
+    <div class="fg-header">
+      <h2 class="fg-title">My Gallery</h2>
+      <p class="fg-subtitle">Moments in Color</p>
+      <div class="fg-header-line"><span></span></div>
+    </div>
 
-        <!-- Image 2 - L.A. Young Afro -->
-        <div
-          class="gallery-item scroll-reveal delay-1"
-          data-caption="L.A. Young Live Performance"
-        >
-          <img
-            src="images/artist/LAPhillysLive.JPG"
-            alt="L.A. Young Live Performance"
-            loading="lazy"
-            onerror="
-              this.onerror = null;
-              this.src = 'images/artist/LAPhillysLive.jpg';
-            "
-          />
-        </div>
+    <!-- Floating Particles (created by JS) -->
+    <div class="fg-particles" id="fg-particles"></div>
+    <!-- Scan Line -->
+    <div class="fg-scan-line"></div>
 
-        <!-- Image 3 - L.A. Young Green Dress -->
-        <div
-          class="gallery-item scroll-reveal delay-2"
-          data-caption="L.A. Young Pop Singer"
-        >
-          <img
-            src="images/artist/LAPopSinger.jpeg"
-            alt="L.A. Young Pop Singer"
-            loading="lazy"
-          />
+    <!-- 3D Showcase -->
+    <div class="fg-showcase" id="fg-showcase">
+      <div class="fg-showcase-frame" id="fg-showcaseFrame">
+        <!-- Images injected by JS -->
+        <div class="fg-showcase-caption">
+          <div class="fg-caption-left">
+            <div class="fg-cap-title" id="fg-capTitle"></div>
+            <div class="fg-cap-sub" id="fg-capSub"></div>
+          </div>
+          <div class="fg-caption-right" id="fg-capCount"></div>
         </div>
-
-        <!-- Image 4 - L.A. Young Radio -->
-        <div
-          class="gallery-item scroll-reveal delay-3"
-          data-caption="L.A. Young Rock & Roll"
-        >
-          <img
-            src="images/artist/LARockAndRoll.jpeg"
-            alt="L.A. Young Rock & Roll"
-            loading="lazy"
-          />
-        </div>
-
-        <!-- Image 5 - City Winery -->
-        <div
-          class="gallery-item scroll-reveal delay-4"
-          data-caption="L.A. Young Funky Child"
-        >
-          <img
-            src="images/artist/LAFunkyChild.JPG"
-            alt="L.A. Young Funky Child"
-            loading="lazy"
-            onerror="
-              this.onerror = null;
-              this.src = 'images/artist/LAFunkyChild.jpg';
-            "
-          />
-        </div>
-
-        <!-- Image 6 - Behind the Scenes -->
-        <div
-          class="gallery-item scroll-reveal delay-5"
-          data-caption="L.A. Young Soul Sista"
-        >
-          <img
-            src="images/artist/LASoulSista.JPG"
-            alt="L.A. Young Soul Sista"
-            loading="lazy"
-            onerror="
-              this.onerror = null;
-              this.src = 'images/artist/LASoulSista.jpg';
-            "
-          />
-        </div>
-
-        <!-- Image 7 - Studio Session -->
-        <div
-          class="gallery-item scroll-reveal delay-6"
-          data-caption="L.A. Young Afro"
-        >
-          <img
-            src="images/artist/LAAfro.jpg"
-            alt="L.A. Young Afro"
-            loading="lazy"
-          />
-        </div>
-
-        <!-- Image 8 - Portrait -->
-        <div
-          class="gallery-item scroll-reveal delay-7"
-          data-caption="L.A. Young Soul Life"
-        >
-          <img
-            src="images/artist/LASoulLife.PNG"
-            alt="L.A. Young Soul Life"
-            loading="lazy"
-            onerror="
-              this.onerror = null;
-              this.src = 'images/artist/LASoulLife.png';
-            "
-          />
-        </div>
-
-        <!-- Image 9 - Live Show -->
-        <div
-          class="gallery-item scroll-reveal delay-8"
-          data-caption="L.A. Young Green Dress"
-        >
-          <img
-            src="images/artist/LAGreenDress.JPG"
-            alt="L.A. Young Green Dress"
-            loading="lazy"
-            onerror="
-              this.onerror = null;
-              this.src = 'images/artist/LAGreenDress.jpg';
-            "
-          />
-        </div>
+        <button class="fg-nav-btn fg-prev" id="fg-prevBtn" aria-label="Previous">&#8249;</button>
+        <button class="fg-nav-btn fg-next" id="fg-nextBtn" aria-label="Next">&#8250;</button>
       </div>
+      <!-- Progress ring (built by JS to avoid innerHTML SVG issues) -->
+      <div class="fg-progress-ring-wrap" id="fg-progressRingWrap"></div>
+    </div>
 
-      <!-- Gallery Note -->
-      <div class="gallery-note scroll-reveal delay-9">
-        <p class="text-muted">Click any image to view in full screen</p>
+    <!-- Thumbnail Strip -->
+    <div class="fg-thumb-strip" id="fg-thumbStrip">
+      <!-- Thumbnails injected by JS -->
+    </div>
+
+    <!-- Futuristic Lightbox -->
+    <div class="fg-lightbox" id="fg-lightbox">
+      <button class="fg-lb-close" id="fg-lbClose" aria-label="Close">&times;</button>
+      <button class="fg-lb-nav fg-lb-prev" id="fg-lbPrev" aria-label="Previous">&#8249;</button>
+      <button class="fg-lb-nav fg-lb-next" id="fg-lbNext" aria-label="Next">&#8250;</button>
+      <div class="fg-lb-img-wrap">
+        <img id="fg-lbImg" src="" alt="">
+      </div>
+      <div class="fg-lb-caption">
+        <div class="fg-lb-title" id="fg-lbTitle"></div>
+        <div class="fg-lb-count" id="fg-lbCount"></div>
       </div>
     </div>
 

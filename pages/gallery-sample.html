@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Gallery — L.A. Young</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: #050508;
+      color: #f0ece2;
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    /* ===== Animated Background ===== */
+    .bg-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(212,175,55,0.07) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 80% at 80% 90%, rgba(180,130,50,0.05) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(212,175,55,0.02) 0%, transparent 70%);
+    }
+
+    /* Floating gold particles */
+    .particles {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      background: radial-gradient(circle, rgba(255,215,0,0.8), transparent);
+      border-radius: 50%;
+      animation: particleFloat linear infinite;
+    }
+    @keyframes particleFloat {
+      0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* Scanning line effect */
+    .scan-line {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255,215,0,0.3), rgba(255,215,0,0.6), rgba(255,215,0,0.3), transparent);
+      z-index: 1;
+      animation: scanDown 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes scanDown {
+      0% { top: -2px; opacity: 0; }
+      5% { opacity: 1; }
+      95% { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    /* ===== Header ===== */
+    .gallery-header {
+      text-align: center;
+      padding: 70px 24px 40px;
+      position: relative;
+      z-index: 2;
+    }
+    .gallery-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      letter-spacing: 0.06em;
+      background: linear-gradient(135deg, #ffd700 0%, #fff 30%, #ffd700 50%, #d4af37 70%, #ffd700 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmerText 4s ease infinite;
+      margin-bottom: 8px;
+      text-shadow: 0 0 40px rgba(255,215,0,0.2);
+    }
+    @keyframes shimmerText {
+      0% { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+    .gallery-header .subtitle {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: rgba(212,175,55,0.5);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .header-line {
+      width: 120px;
+      height: 1px;
+      margin: 20px auto 0;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+      position: relative;
+    }
+    .header-line::after {
+      content: '';
+      position: absolute;
+      top: -3px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 7px;
+      height: 7px;
+      background: #ffd700;
+      border-radius: 50%;
+      box-shadow: 0 0 12px rgba(255,215,0,0.6);
+    }
+
+    /* ===== Gallery Container ===== */
+    .gallery-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ===== 3D Showcase / Featured Image ===== */
+    .showcase {
+      position: relative;
+      width: 100%;
+      max-width: 850px;
+      margin: 0 auto 50px;
+      perspective: 1200px;
+    }
+    .showcase-frame {
+      position: relative;
+      width: 100%;
+      border-radius: 20px;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform 0.4s ease, max-width 0.6s cubic-bezier(0.4, 0, 0.2, 1), aspect-ratio 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      aspect-ratio: 16 / 10; /* default, overridden per image */
+      max-width: 100%; /* will shrink for portrait */
+      margin: 0 auto;
+      /* Neon gold glow border */
+      box-shadow:
+        0 0 0 1px rgba(212,175,55,0.3),
+        0 0 30px rgba(212,175,55,0.1),
+        0 0 60px rgba(212,175,55,0.05),
+        0 30px 80px rgba(0,0,0,0.6);
+    }
+    .showcase-frame::before {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, rgba(255,215,0,0.6), rgba(212,175,55,0.1), rgba(255,215,0,0.4), rgba(212,175,55,0.1), rgba(255,215,0,0.6));
+      background-size: 300% 300%;
+      animation: borderShift 5s ease infinite;
+      z-index: -1;
+    }
+    @keyframes borderShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .showcase-frame::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, transparent 40%, transparent 60%, rgba(0,0,0,0.4) 100%);
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    /* Featured images */
+    .showcase-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      opacity: 0;
+      transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s ease;
+      will-change: opacity, transform;
+    }
+    .showcase-img.active {
+      opacity: 1;
+    }
+    .showcase-frame:hover .showcase-img.active {
+      transform: scale(1.03);
+    }
+
+    /* Caption overlay */
+    .showcase-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 80px 32px 28px;
+      background: linear-gradient(to top, rgba(5,5,8,0.95) 0%, rgba(5,5,8,0.6) 40%, transparent 100%);
+      z-index: 4;
+      pointer-events: none;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+    .caption-left {
+      min-width: 0;
+      flex: 1;
+    }
+    .caption-left .cap-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      color: #fff;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.7);
+    }
+    .caption-left .cap-sub {
+      font-size: 0.78rem;
+      color: rgba(212,175,55,0.7);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .caption-right {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255,215,0,0.8);
+      letter-spacing: 0.1em;
+      text-shadow: 0 0 10px rgba(255,215,0,0.3);
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-left: 12px;
+    }
+
+    /* Navigation arrows - futuristic hexagonal */
+    .nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 5;
+      width: 56px;
+      height: 56px;
+      border: none;
+      background: rgba(5,5,8,0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #ffd700;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+    .showcase:hover .nav-btn { opacity: 1; }
+    .nav-btn:hover {
+      background: rgba(212,175,55,0.25);
+      transform: translateY(-50%) scale(1.15);
+      box-shadow: 0 0 30px rgba(255,215,0,0.3);
+    }
+    .nav-btn.prev { left: 18px; }
+    .nav-btn.next { right: 18px; }
+    .nav-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Glowing progress ring */
+    .progress-ring-wrap {
+      position: absolute;
+      bottom: 20px;
+      right: 24px;
+      z-index: 5;
+      width: 42px;
+      height: 42px;
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    .progress-ring {
+      transform: rotate(-90deg);
+    }
+    .progress-ring circle {
+      fill: none;
+      stroke-width: 2.5;
+    }
+    .progress-ring .ring-bg {
+      stroke: rgba(212,175,55,0.15);
+    }
+    .progress-ring .ring-fill {
+      stroke: #ffd700;
+      stroke-dasharray: 113;
+      stroke-dashoffset: 113;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.1s linear;
+      filter: drop-shadow(0 0 4px rgba(255,215,0,0.5));
+    }
+
+    /* ===== Thumbnail Strip — Holographic Cards ===== */
+    .thumb-strip {
+      display: flex;
+      gap: 16px;
+      justify-content: flex-start;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 10px 20px 20px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      max-width: 100%;
+    }
+    .thumb-strip::-webkit-scrollbar { display: none; }
+    .thumb-card {
+      position: relative;
+      width: 115px;
+      min-width: 115px;
+      height: 140px;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+      perspective: 600px;
+      scroll-snap-align: center;
+    }
+    .thumb-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      border: 1.5px solid rgba(212,175,55,0.15);
+      z-index: 2;
+      transition: all 0.4s ease;
+      pointer-events: none;
+    }
+    .thumb-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      background: linear-gradient(180deg, transparent 40%, rgba(5,5,8,0.8) 100%);
+      z-index: 1;
+      pointer-events: none;
+      transition: background 0.4s ease;
+    }
+    .thumb-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
+      filter: brightness(0.6) saturate(0.8);
+    }
+    .thumb-card .thumb-label {
+      position: absolute;
+      bottom: 8px;
+      left: 10px;
+      right: 10px;
+      z-index: 3;
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.3s ease;
+    }
+    /* Holographic shine on hover */
+    .thumb-card .holo-shine {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,215,0,0.12) 45%, rgba(255,255,255,0.15) 50%, rgba(255,215,0,0.12) 55%, transparent 60%);
+      background-size: 250% 250%;
+      background-position: 100% 0%;
+      pointer-events: none;
+      transition: background-position 0.6s ease;
+      border-radius: 14px;
+    }
+    .thumb-card:hover .holo-shine {
+      background-position: 0% 100%;
+    }
+    .thumb-card:hover {
+      transform: translateY(-8px) rotateX(4deg) scale(1.06);
+      box-shadow:
+        0 12px 35px rgba(0,0,0,0.5),
+        0 0 20px rgba(212,175,55,0.15);
+    }
+    .thumb-card:hover::before {
+      border-color: rgba(255,215,0,0.5);
+      box-shadow: inset 0 0 20px rgba(255,215,0,0.05);
+    }
+    .thumb-card:hover::after {
+      background: linear-gradient(180deg, transparent 50%, rgba(5,5,8,0.6) 100%);
+    }
+    .thumb-card:hover img {
+      transform: scale(1.12);
+      filter: brightness(1) saturate(1.1);
+    }
+    .thumb-card:hover .thumb-label {
+      color: #ffd700;
+    }
+
+    /* Active state — gold neon glow */
+    .thumb-card.active {
+      transform: translateY(-4px) scale(1.04);
+      box-shadow:
+        0 0 0 2px #ffd700,
+        0 0 25px rgba(255,215,0,0.3),
+        0 0 50px rgba(255,215,0,0.1),
+        0 12px 30px rgba(0,0,0,0.4);
+    }
+    .thumb-card.active::before {
+      border-color: #ffd700;
+    }
+    .thumb-card.active img {
+      filter: brightness(1) saturate(1.1);
+    }
+    .thumb-card.active .thumb-label {
+      color: #ffd700;
+    }
+    .thumb-card.active .holo-shine {
+      background-position: 0% 100%;
+    }
+
+    /* ===== Lightbox — Cinematic Fullscreen ===== */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(2,2,5,0.96);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .lightbox.open {
+      opacity: 1;
+      visibility: visible;
+    }
+    .lb-img-wrap {
+      position: relative;
+      max-width: 90vw;
+      max-height: 80vh;
+      transform: scale(0.88) translateY(20px);
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .lightbox.open .lb-img-wrap {
+      transform: scale(1) translateY(0);
+    }
+    .lb-img-wrap img {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      border-radius: 16px;
+      box-shadow:
+        0 0 0 1px rgba(212,175,55,0.2),
+        0 0 80px rgba(0,0,0,0.8),
+        0 0 120px rgba(212,175,55,0.06);
+      transition: opacity 0.4s ease;
+    }
+    .lb-caption {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .lb-caption .lb-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      font-size: 1.3rem;
+      color: #f0ece2;
+    }
+    .lb-caption .lb-count {
+      font-size: 0.75rem;
+      color: rgba(212,175,55,0.6);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+    .lb-close {
+      position: fixed;
+      top: 28px;
+      right: 32px;
+      z-index: 1001;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(212,175,55,0.3);
+      background: rgba(5,5,8,0.6);
+      backdrop-filter: blur(10px);
+      color: #ffd700;
+      font-size: 1.6rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.4s ease;
+    }
+    .lb-close:hover {
+      background: rgba(212,175,55,0.15);
+      border-color: #ffd700;
+      transform: rotate(90deg) scale(1.1);
+      box-shadow: 0 0 20px rgba(255,215,0,0.2);
+    }
+    .lb-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1001;
+      width: 56px;
+      height: 56px;
+      border: none;
+      background: rgba(5,5,8,0.6);
+      backdrop-filter: blur(10px);
+      color: #ffd700;
+      font-size: 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.35s ease;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    }
+    .lb-nav:hover {
+      background: rgba(212,175,55,0.2);
+      transform: translateY(-50%) scale(1.15);
+    }
+    .lb-nav.prev { left: 28px; }
+    .lb-nav.next { right: 28px; }
+    .lb-nav svg {
+      width: 22px; height: 22px;
+      fill: none; stroke: currentColor;
+      stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    /* ===== Entrance Animations ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      animation: revealUp 0.9s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    .reveal-d1 { animation-delay: 0.15s; }
+    .reveal-d2 { animation-delay: 0.3s; }
+    .reveal-d3 { animation-delay: 0.45s; }
+    @keyframes revealUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Stagger each thumbnail */
+    .thumb-card {
+      opacity: 0;
+      transform: translateY(30px) scale(0.9);
+      animation: thumbReveal 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+    @keyframes thumbReveal {
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 768px) {
+      .gallery-header { padding: 50px 20px 30px; }
+      .showcase { max-width: 100%; }
+      .showcase-frame { aspect-ratio: 4 / 3; border-radius: 14px; }
+      .nav-btn { opacity: 1; width: 44px; height: 44px; }
+      .nav-btn.prev { left: 10px; }
+      .nav-btn.next { right: 10px; }
+      .thumb-strip {
+        padding: 10px 4px 20px;
+      }
+      .thumb-card {
+        width: 95px;
+        min-width: 95px;
+        height: 115px;
+        border-radius: 10px;
+      }
+      .lb-nav { width: 44px; height: 44px; }
+      .lb-nav.prev { left: 12px; }
+      .lb-nav.next { right: 12px; }
+      .lb-close { top: 16px; right: 16px; }
+      .progress-ring-wrap { display: none; }
+    }
+    @media (max-width: 480px) {
+      .showcase-frame { aspect-ratio: 1 / 1; }
+      .thumb-card { width: 80px; min-width: 80px; height: 100px; }
+      .thumb-strip { gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Animated Background -->
+  <div class="bg-canvas"></div>
+  <div class="particles" id="particles"></div>
+  <div class="scan-line"></div>
+
+  <!-- Header -->
+  <header class="gallery-header reveal">
+    <h1>My Gallery</h1>
+    <p class="subtitle">Moments in Color</p>
+    <div class="header-line"></div>
+  </header>
+
+  <!-- Gallery -->
+  <main class="gallery-wrap">
+
+    <!-- 3D Showcase -->
+    <div class="showcase reveal reveal-d1" id="showcase">
+      <div class="showcase-frame" id="showcaseFrame">
+        <!-- Images injected by JS -->
+        <div class="showcase-caption">
+          <div class="caption-left">
+            <div class="cap-title" id="capTitle"></div>
+            <div class="cap-sub" id="capSub"></div>
+          </div>
+          <div class="caption-right" id="capCount"></div>
+        </div>
+        <button class="nav-btn prev" id="prevBtn" aria-label="Previous">
+          <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <button class="nav-btn next" id="nextBtn" aria-label="Next">
+          <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+        </button>
+      </div>
+      <!-- Progress ring -->
+      <div class="progress-ring-wrap">
+        <svg class="progress-ring" width="42" height="42" viewBox="0 0 42 42">
+          <circle class="ring-bg" cx="21" cy="21" r="18"/>
+          <circle class="ring-fill" id="ringFill" cx="21" cy="21" r="18"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Thumbnail Strip -->
+    <section class="reveal reveal-d2">
+      <div class="thumb-strip" id="thumbStrip">
+        <!-- Thumbnails injected by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+    <button class="lb-nav prev" id="lbPrev" aria-label="Previous">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="lb-nav next" id="lbNext" aria-label="Next">
+      <svg viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+    </button>
+    <div class="lb-img-wrap">
+      <img id="lbImg" src="" alt="">
+    </div>
+    <div class="lb-caption">
+      <div class="lb-title" id="lbTitle"></div>
+      <div class="lb-count" id="lbCount"></div>
+    </div>
+  </div>
+
+<script>
+  /* ===== Gallery Data ===== */
+  const images = [
+    { src: '../images/artist/LAYoungPink.JPG',      caption: 'L.A. Young Pink',             sub: 'Studio Portrait' },
+    { src: '../images/artist/LAPhillysLive.JPG',     caption: 'L.A. Young Live Performance', sub: 'On Stage' },
+    { src: '../images/artist/LAPopSinger.jpeg',      caption: 'L.A. Young Pop Singer',       sub: 'Editorial Shoot' },
+    { src: '../images/artist/LARockAndRoll.jpeg',    caption: 'L.A. Young Rock & Roll',      sub: 'Rock & Roll Vibes' },
+    { src: '../images/artist/LAFunkyChild.JPG',      caption: 'L.A. Young Funky Child',      sub: 'Funky Fresh' },
+    { src: '../images/artist/LASoulSista.JPG',       caption: 'L.A. Young Soul Sista',       sub: 'Soul Portrait' },
+    { src: '../images/artist/LAAfro.jpg',            caption: 'L.A. Young Afro',             sub: 'Natural Beauty' },
+    { src: '../images/artist/LASoulLife.PNG',        caption: 'L.A. Young Soul Life',        sub: 'Living Soul' },
+    { src: '../images/artist/LAGreenDress.JPG',      caption: 'L.A. Young Green Dress',      sub: 'Emerald Elegance' },
+  ];
+
+  /* ===== State ===== */
+  let cur = 0;
+  let autoTimer = null;
+  let progressRAF = null;
+  let progressStart = 0;
+  let paused = false;
+  let resumeTimer = null;
+  const INTERVAL = 4000;
+  const RESUME = 6000;
+  const CIRCUM = 2 * Math.PI * 18; // ~113
+
+  /* ===== DOM ===== */
+  const showcaseFrame = document.getElementById('showcaseFrame');
+  const capTitle = document.getElementById('capTitle');
+  const capSub = document.getElementById('capSub');
+  const capCount = document.getElementById('capCount');
+  const ringFill = document.getElementById('ringFill');
+  const thumbStrip = document.getElementById('thumbStrip');
+  const lightbox = document.getElementById('lightbox');
+  const lbImg = document.getElementById('lbImg');
+  const lbTitle = document.getElementById('lbTitle');
+  const lbCount = document.getElementById('lbCount');
+
+  /* ===== Create Particles ===== */
+  (function createParticles() {
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 25; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.width = p.style.height = (1.5 + Math.random() * 3) + 'px';
+      p.style.animationDuration = (8 + Math.random() * 15) + 's';
+      p.style.animationDelay = (Math.random() * 10) + 's';
+      p.style.opacity = 0.2 + Math.random() * 0.5;
+      container.appendChild(p);
+    }
+  })();
+
+  /* ===== Preload images & detect orientation ===== */
+  let imagesLoaded = 0;
+  images.forEach((img, i) => {
+    const el = document.createElement('img');
+    el.className = 'showcase-img' + (i === 0 ? ' active' : '');
+    el.src = img.src;
+    el.alt = img.caption;
+    el.draggable = false;
+    el.onload = function() {
+      img.w = this.naturalWidth;
+      img.h = this.naturalHeight;
+      img.ratio = this.naturalWidth / this.naturalHeight;
+      imagesLoaded++;
+      // Once first image loads, set initial frame
+      if (i === 0) updateFrameSize(0);
+    };
+    showcaseFrame.insertBefore(el, showcaseFrame.querySelector('.showcase-caption'));
+  });
+  const showcaseImgs = showcaseFrame.querySelectorAll('.showcase-img');
+
+  /* ===== Adapt frame to image orientation ===== */
+  const MAX_HEIGHT = 620; // max frame height in px
+
+  function updateFrameSize(index) {
+    const img = images[index];
+    if (!img.ratio) return; // not loaded yet
+
+    // Use the image's exact aspect ratio — cover won't crop when frame matches
+    const ratio = img.ratio;
+    showcaseFrame.style.aspectRatio = ratio.toFixed(4);
+
+    if (ratio < 1) {
+      // Portrait — cap width so height stays reasonable
+      const widthForMaxHeight = MAX_HEIGHT * ratio;
+      showcaseFrame.style.maxWidth = Math.max(Math.min(widthForMaxHeight, 500), 320) + 'px';
+    } else if (ratio <= 1.15) {
+      // Square-ish
+      showcaseFrame.style.maxWidth = '620px';
+    } else {
+      // Landscape — full width
+      showcaseFrame.style.maxWidth = '100%';
+    }
+  }
+
+  /* ===== Build Thumbnails ===== */
+  images.forEach((img, i) => {
+    const card = document.createElement('div');
+    card.className = 'thumb-card' + (i === 0 ? ' active' : '');
+    card.style.animationDelay = (0.5 + i * 0.07) + 's';
+    card.innerHTML = `
+      <img src="${img.src}" alt="${img.caption}" draggable="false">
+      <div class="holo-shine"></div>
+      <div class="thumb-label">${img.caption.replace('L.A. Young ', '')}</div>
+    `;
+    card.addEventListener('click', () => {
+      goTo(i);
+      pauseAuto();
+      scheduleResume();
+    });
+    thumbStrip.appendChild(card);
+  });
+  const thumbCards = thumbStrip.querySelectorAll('.thumb-card');
+
+  /* ===== 3D Tilt on Showcase ===== */
+  const showcase = document.getElementById('showcase');
+  showcase.addEventListener('mousemove', (e) => {
+    const rect = showcaseFrame.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    showcaseFrame.style.transform = `rotateY(${x * 6}deg) rotateX(${-y * 4}deg)`;
+  });
+  showcase.addEventListener('mouseleave', () => {
+    showcaseFrame.style.transform = 'rotateY(0) rotateX(0)';
+  });
+
+  /* ===== Navigation ===== */
+  function updateCaption() {
+    capTitle.textContent = images[cur].caption;
+    capSub.textContent = images[cur].sub;
+    capCount.textContent = `${cur + 1} / ${images.length}`;
+  }
+
+  function goTo(i) {
+    if (i === cur) return;
+    showcaseImgs[cur].classList.remove('active');
+    thumbCards[cur].classList.remove('active');
+    cur = i;
+    showcaseImgs[cur].classList.add('active');
+    thumbCards[cur].classList.add('active');
+    updateCaption();
+    updateFrameSize(cur);
+    thumbCards[cur].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    resetProgress();
+  }
+  function goNext() { goTo((cur + 1) % images.length); }
+  function goPrev() { goTo((cur - 1 + images.length) % images.length); }
+
+  document.getElementById('prevBtn').addEventListener('click', (e) => { e.stopPropagation(); goPrev(); pauseAuto(); scheduleResume(); });
+  document.getElementById('nextBtn').addEventListener('click', (e) => { e.stopPropagation(); goNext(); pauseAuto(); scheduleResume(); });
+
+  /* ===== Auto-Rotation with Ring Progress ===== */
+  function startAuto() {
+    stopAuto();
+    paused = false;
+    progressStart = Date.now();
+    autoTimer = setTimeout(() => { goNext(); startAuto(); }, INTERVAL);
+    animateRing();
+  }
+  function stopAuto() {
+    clearTimeout(autoTimer);
+    autoTimer = null;
+    cancelAnimationFrame(progressRAF);
+    ringFill.style.strokeDashoffset = CIRCUM;
+  }
+  function pauseAuto() { paused = true; stopAuto(); }
+  function scheduleResume() {
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(startAuto, RESUME);
+  }
+  function resetProgress() { progressStart = Date.now(); }
+  function animateRing() {
+    function tick() {
+      if (paused) return;
+      const pct = Math.min((Date.now() - progressStart) / INTERVAL, 1);
+      ringFill.style.strokeDashoffset = CIRCUM * (1 - pct);
+      if (pct < 1) progressRAF = requestAnimationFrame(tick);
+    }
+    progressRAF = requestAnimationFrame(tick);
+  }
+
+  showcase.addEventListener('mouseenter', pauseAuto);
+  showcase.addEventListener('mouseleave', scheduleResume);
+
+  /* ===== Lightbox ===== */
+  let lbOpen = false;
+
+  showcaseFrame.addEventListener('click', (e) => {
+    if (e.target.closest('.nav-btn')) return;
+    openLB(cur);
+  });
+
+  function openLB(i) {
+    lbOpen = true;
+    cur = i;
+    updateLB();
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    pauseAuto();
+  }
+  function closeLB() {
+    lbOpen = false;
+    lightbox.classList.remove('open');
+    document.body.style.overflow = '';
+    scheduleResume();
+  }
+  function updateLB() {
+    lbImg.src = images[cur].src;
+    lbImg.alt = images[cur].caption;
+    lbTitle.textContent = images[cur].caption;
+    lbCount.textContent = `${cur + 1} of ${images.length}`;
+    showcaseImgs.forEach((el, i) => el.classList.toggle('active', i === cur));
+    thumbCards.forEach((el, i) => el.classList.toggle('active', i === cur));
+    updateCaption();
+  }
+
+  document.getElementById('lbClose').addEventListener('click', closeLB);
+  lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLB(); });
+  document.getElementById('lbPrev').addEventListener('click', (e) => { e.stopPropagation(); cur = (cur - 1 + images.length) % images.length; updateLB(); });
+  document.getElementById('lbNext').addEventListener('click', (e) => { e.stopPropagation(); cur = (cur + 1) % images.length; updateLB(); });
+
+  /* ===== Keyboard ===== */
+  document.addEventListener('keydown', (e) => {
+    if (lbOpen) {
+      if (e.key === 'Escape') closeLB();
+      if (e.key === 'ArrowLeft') { cur = (cur - 1 + images.length) % images.length; updateLB(); }
+      if (e.key === 'ArrowRight') { cur = (cur + 1) % images.length; updateLB(); }
+    } else {
+      if (e.key === 'ArrowLeft') { goPrev(); pauseAuto(); scheduleResume(); }
+      if (e.key === 'ArrowRight') { goNext(); pauseAuto(); scheduleResume(); }
+    }
+  });
+
+  /* ===== Touch/Swipe ===== */
+  let tsX = 0;
+  showcaseFrame.addEventListener('touchstart', (e) => { tsX = e.changedTouches[0].screenX; pauseAuto(); }, { passive: true });
+  showcaseFrame.addEventListener('touchend', (e) => {
+    const diff = tsX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) { diff > 0 ? goNext() : goPrev(); }
+    scheduleResume();
+  }, { passive: true });
+
+  /* ===== Init ===== */
+  updateCaption();
+  startAuto();
+</script>
+</body>
+</html>
