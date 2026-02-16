@@ -183,6 +183,20 @@ img {
 
 .btn-icon { font-size: 1em; }
 
+.pdf-badge {
+  display: inline-block;
+  background: #e63946;
+  color: #fff;
+  font-size: 0.55em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 0.15em 0.4em;
+  border-radius: 2px;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 0.1em;
+}
+
 /* ==========================================================================
    TOP BAR
    ========================================================================== */

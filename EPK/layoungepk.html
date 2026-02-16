@@ -20,6 +20,12 @@
   <span class="back-text">layoung.com</span>
 </a>
 
+<!-- Save as PDF Button (visible when folder is open) -->
+<button class="save-pdf-btn" id="savePdfBtn" onclick="saveAsPdf()" title="Save EPK as PDF">
+  <span class="pdf-icon">&#x1F4C4;</span>
+  <span class="pdf-text">Save as PDF</span>
+</button>
+
 <div class="folder-container">
   <div class="folder" id="folder">
 
@@ -351,16 +357,11 @@
       <!-- ============================================================
            UPCOMING PERFORMANCES
            ============================================================ -->
-      <h2 class="section-title">Upcoming Performances</h2>
+      <h2 class="section-title">Past Performances</h2>
       <div class="calendar-card">
         <div class="tour-date">
           <span class="td-date">FEB 14</span>
           <span class="td-venue">Blues Alley</span>
-          <span class="td-loc">Washington, DC</span>
-        </div>
-        <div class="tour-date">
-          <span class="td-date">MAR 7</span>
-          <span class="td-venue">City Winery</span>
           <span class="td-loc">Washington, DC</span>
         </div>
         <div class="tour-date">
@@ -369,14 +370,24 @@
           <span class="td-loc">Baltimore, MD</span>
         </div>
         <div class="tour-date">
-          <span class="td-date">APR 12</span>
-          <span class="td-venue">Soul Night</span>
-          <span class="td-loc">Philadelphia, PA</span>
-        </div>
-        <div class="tour-date">
           <span class="td-date">MAY 5</span>
           <span class="td-venue">African American Cultural Festival</span>
           <span class="td-loc">Baltimore, MD</span>
+        </div>
+        <div class="tour-date">
+          <span class="td-date">AUG 14</span>
+          <span class="td-venue">Anacostia Playhouse</span>
+          <span class="td-loc">Washington, DC</span>
+        </div>
+        <div class="tour-date">
+          <span class="td-date">NOV 12</span>
+          <span class="td-venue">Jazz Legacy Foundation Gala</span>
+          <span class="td-loc">Hampton, VA</span>
+        </div>
+        <div class="tour-date">
+          <span class="td-date">DEC 26</span>
+          <span class="td-venue">City Winery</span>
+          <span class="td-loc">Washington, DC</span>
         </div>
       </div>
 
@@ -420,8 +431,8 @@
         <div class="booking-card">
           <h3>Ready to Book?</h3>
           <p>Download the press kit or send a booking inquiry directly to management.</p>
-          <a href="LA-Young-EPK.pdf" class="cta-btn btn-gold-retro" download>
-            &#x1F4C4; Download EPK (PDF)
+          <a href="javascript:void(0)" class="cta-btn btn-gold-retro" onclick="saveAsPdf()">
+            &#x1F4C4; Save as PDF
           </a>
           <a href="mailto:djmochajava@gmail.com?subject=Booking Inquiry - L.A. Young" class="cta-btn btn-outline-retro">
             &#x2709; Send Booking Inquiry
@@ -538,13 +549,27 @@
       setTimeout(function() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         document.getElementById('audioPlayer').classList.add('visible');
+        document.getElementById('savePdfBtn').classList.add('visible');
       }, 400);
     } else {
       folder.classList.remove('open');
       document.body.classList.remove('folder-is-open');
       document.getElementById('audioPlayer').classList.remove('visible');
+      document.getElementById('savePdfBtn').classList.remove('visible');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  };
+
+  /* --- Save as PDF (triggers browser print dialog) --- */
+  window.saveAsPdf = function() {
+    // Add print-ready class that flattens 3D transforms before printing
+    document.body.classList.add('print-ready');
+    // Small delay to let the browser apply the class before opening print dialog
+    setTimeout(function() {
+      window.print();
+      // Remove the class after print dialog closes
+      document.body.classList.remove('print-ready');
+    }, 100);
   };
 
   /* --- Toggle audio playback --- */
