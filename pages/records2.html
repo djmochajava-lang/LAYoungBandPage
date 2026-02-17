@@ -1,0 +1,971 @@
+<!-- pages/records2.html -->
+
+<section class="section" id="records2">
+<div class="container">
+<style>
+/* ==========================================================================
+   Records2 — Spotify-Style Artist Page (Mobile-First)
+   Gold (#ffd700) replaces Spotify green. Transparent UI over goldlights.jpg.
+   ========================================================================== */
+
+/* --- Reset container for Spotify feel --- */
+#records2 > .container {
+  max-width: 100% !important;
+  padding: 0 !important;
+  width: 100% !important;
+}
+#records2 {
+  padding: 0 !important;
+  min-height: 100vh;
+}
+/* Override gold scrollbar from .section global */
+#records2::-webkit-scrollbar {
+  width: 6px;
+}
+#records2::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+}
+#records2::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+#records2::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* ===== ARTIST HERO ===== */
+.sp-hero {
+  position: relative;
+  width: 100%;
+  height: 45vh;
+  min-height: 320px;
+  max-height: 500px;
+  overflow: hidden;
+}
+.sp-hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  display: block;
+}
+.sp-hero-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    transparent 30%,
+    rgba(0, 0, 0, 0.4) 55%,
+    rgba(0, 0, 0, 0.8) 80%,
+    rgba(0, 0, 0, 0.92) 100%
+  );
+  pointer-events: none;
+}
+.sp-hero-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px 20px 24px;
+}
+.sp-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 6px;
+}
+.sp-verified-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd700, #c9a227);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #000;
+  font-weight: 700;
+}
+.sp-artist-name {
+  font-size: clamp(2.5rem, 10vw, 5rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+  margin: 0 0 8px;
+  letter-spacing: -0.02em;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+.sp-artist-meta {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  margin: 0;
+}
+.sp-genre-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+.sp-genre-tag {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 215, 0, 0.15);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 20px;
+  padding: 4px 12px;
+  letter-spacing: 0.03em;
+}
+
+/* ===== ACTION BAR ===== */
+.sp-action-bar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+}
+.sp-play-btn {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd700, #e8b800);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.3);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sp-play-btn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 6px 24px rgba(255, 215, 0, 0.4);
+}
+.sp-play-btn:active {
+  transform: scale(0.97);
+}
+.sp-play-btn svg {
+  width: 22px;
+  height: 22px;
+  fill: #000;
+  margin-left: 2px;
+}
+.sp-follow-btn {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 20px;
+  padding: 8px 28px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.sp-follow-btn:hover {
+  border-color: #fff;
+  transform: scale(1.02);
+}
+.sp-more-btn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  letter-spacing: 3px;
+  transition: color 0.2s ease;
+}
+.sp-more-btn:hover {
+  color: #fff;
+}
+
+/* ===== CONTENT BODY ===== */
+.sp-body {
+  padding: 0 20px 40px;
+}
+
+/* ===== POPULAR TRACKS ===== */
+.sp-section-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin: 32px 0 16px;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.sp-track-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sp-track-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  min-height: 56px;
+}
+.sp-track-item:hover,
+.sp-track-item:active {
+  background: rgba(255, 255, 255, 0.08);
+}
+.sp-track-item.sp-active {
+  background: rgba(255, 215, 0, 0.1);
+}
+.sp-track-num {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.5);
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.sp-track-item.sp-active .sp-track-num {
+  color: #ffd700;
+}
+.sp-track-art {
+  width: 44px;
+  height: 44px;
+  border-radius: 4px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.sp-track-info {
+  flex: 1;
+  min-width: 0;
+}
+.sp-track-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #fff;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sp-track-item.sp-active .sp-track-name {
+  color: #ffd700;
+}
+.sp-track-artist {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 2px 0 0;
+}
+.sp-track-duration {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  flex-shrink: 0;
+}
+.sp-track-item.sp-coming-soon {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+.sp-track-item.sp-coming-soon .sp-track-name {
+  font-style: italic;
+}
+
+/* Track progress bar (shows when active) */
+.sp-track-progress-wrap {
+  display: none;
+  padding: 4px 12px 8px;
+  margin-top: -4px;
+}
+.sp-track-progress-wrap.sp-visible {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sp-track-progress-bar {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.sp-track-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: #ffd700;
+  border-radius: 2px;
+  transition: width 0.1s linear;
+}
+.sp-track-progress-bar:hover .sp-track-progress-fill {
+  background: #ffd700;
+}
+.sp-track-time {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+  font-family: monospace;
+  white-space: nowrap;
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ===== DISCOGRAPHY (Horizontal Scroll) ===== */
+.sp-disco-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 36px 0 16px;
+}
+.sp-disco-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+.sp-show-all {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.sp-show-all:hover {
+  color: #fff;
+}
+.sp-disco-scroll {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+  margin: 0 -20px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.sp-disco-scroll::-webkit-scrollbar {
+  display: none;
+}
+.sp-disco-card {
+  flex-shrink: 0;
+  width: 160px;
+  scroll-snap-align: start;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  padding: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.sp-disco-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.sp-disco-art {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  object-fit: cover;
+  margin-bottom: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+.sp-disco-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sp-disco-year {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+}
+.sp-disco-card.sp-placeholder {
+  opacity: 0.3;
+}
+.sp-disco-card.sp-placeholder .sp-disco-art-placeholder {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.06);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: rgba(255, 255, 255, 0.15);
+}
+
+/* ===== ABOUT SECTION ===== */
+.sp-about {
+  margin-top: 36px;
+}
+.sp-about-img-wrap {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 20px;
+  max-height: 280px;
+}
+.sp-about-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  display: block;
+}
+.sp-about-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.sp-about-stat {
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  border-radius: 8px;
+  padding: 10px 16px;
+  text-align: center;
+  flex: 1;
+  min-width: 80px;
+}
+.sp-about-stat-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: #ffd700;
+  display: block;
+}
+.sp-about-stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.03em;
+  margin-top: 2px;
+  display: block;
+}
+.sp-about-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+}
+.sp-about-text.sp-collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sp-show-more-btn {
+  background: none;
+  border: none;
+  color: #ffd700;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-top: 4px;
+  transition: opacity 0.2s ease;
+}
+.sp-show-more-btn:hover {
+  opacity: 0.8;
+}
+
+/* ===== COLLABORATORS (Horizontal Scroll) ===== */
+.sp-collabs {
+  margin-top: 36px;
+}
+.sp-collabs-scroll {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px;
+  margin: 0 -20px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.sp-collabs-scroll::-webkit-scrollbar {
+  display: none;
+}
+.sp-collab-card {
+  flex-shrink: 0;
+  width: 130px;
+  text-align: center;
+  cursor: pointer;
+}
+.sp-collab-img {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 0 auto 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+.sp-collab-img-placeholder {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 215, 0, 0.12);
+  margin: 0 auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  color: rgba(255, 215, 0, 0.25);
+}
+.sp-collab-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  margin: 0 0 2px;
+}
+.sp-collab-role {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ===== FOOTER ===== */
+.sp-footer {
+  margin-top: 48px;
+  padding: 24px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
+}
+.sp-footer p {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.35);
+  margin: 0;
+}
+
+/* ===== TABLET / DESKTOP ===== */
+@media (min-width: 768px) {
+  #records2 .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .sp-hero {
+    height: 50vh;
+    max-height: 550px;
+    border-radius: 0 0 12px 12px;
+  }
+  .sp-hero-content {
+    padding: 32px 40px 36px;
+  }
+  .sp-action-bar {
+    padding: 16px 40px;
+    border-radius: 0;
+  }
+  .sp-body {
+    padding: 0 40px 60px;
+  }
+  .sp-disco-scroll {
+    margin: 0 -40px;
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  .sp-collabs-scroll {
+    margin: 0 -40px;
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  .sp-disco-card {
+    width: 180px;
+  }
+  .sp-about-stats {
+    flex-wrap: nowrap;
+  }
+  .sp-about-img-wrap {
+    max-height: 360px;
+  }
+}
+
+@media (min-width: 1024px) {
+  #records2 .container {
+    max-width: 1000px;
+  }
+  .sp-hero {
+    height: 55vh;
+    max-height: 600px;
+  }
+  .sp-disco-card {
+    width: 200px;
+  }
+}
+</style>
+
+  <!-- ===== ARTIST HERO ===== -->
+  <div class="sp-hero">
+    <img
+      src="images/artist/headshot3.jpg"
+      alt="L.A. Young"
+      class="sp-hero-img"
+    />
+    <div class="sp-hero-gradient"></div>
+    <div class="sp-hero-content">
+      <div class="sp-verified">
+        <span class="sp-verified-badge">&#10003;</span>
+        Verified Artist
+      </div>
+      <h1 class="sp-artist-name">L.A. Young</h1>
+      <p class="sp-artist-meta">20+ years performing &bull; Washington, DC &bull; Gold Bottom Ent.</p>
+      <div class="sp-genre-tags">
+        <span class="sp-genre-tag">Soul</span>
+        <span class="sp-genre-tag">Jazz</span>
+        <span class="sp-genre-tag">Blues</span>
+        <span class="sp-genre-tag">R&amp;B</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ACTION BAR ===== -->
+  <div class="sp-action-bar">
+    <button class="sp-play-btn" id="spMainPlayBtn" title="Play">
+      <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21" /></svg>
+    </button>
+    <button class="sp-follow-btn" id="spFollowBtn">Follow</button>
+    <button class="sp-more-btn" title="More options">&middot;&middot;&middot;</button>
+  </div>
+
+  <!-- ===== BODY ===== -->
+  <div class="sp-body">
+
+    <!-- Popular Tracks -->
+    <h2 class="sp-section-title">Popular</h2>
+    <ul class="sp-track-list" id="spTrackList">
+      <!-- Track 1 — Playable -->
+      <li class="sp-track-item" id="spTrack1" data-src="../Media/no_one_can_love_you_more.mp3">
+        <span class="sp-track-num">1</span>
+        <img src="images/artist/headshot3.jpg" alt="" class="sp-track-art" />
+        <div class="sp-track-info">
+          <p class="sp-track-name">No One Can Love You More</p>
+          <p class="sp-track-artist">L.A. Young &bull; Single</p>
+        </div>
+        <span class="sp-track-duration" id="spTrackDur1">--:--</span>
+      </li>
+      <!-- Progress bar for Track 1 -->
+      <div class="sp-track-progress-wrap" id="spProgressWrap1">
+        <span class="sp-track-time" id="spTimeCurrent1">0:00</span>
+        <div class="sp-track-progress-bar" id="spProgressBar1">
+          <div class="sp-track-progress-fill" id="spProgressFill1"></div>
+        </div>
+        <span class="sp-track-time" id="spTimeTotal1">0:00</span>
+      </div>
+
+      <!-- Track 2 — Coming Soon -->
+      <li class="sp-track-item sp-coming-soon">
+        <span class="sp-track-num">2</span>
+        <div class="sp-track-art" style="background:rgba(255,255,255,0.05);border-radius:4px;"></div>
+        <div class="sp-track-info">
+          <p class="sp-track-name">New Single Coming Soon</p>
+          <p class="sp-track-artist">L.A. Young</p>
+        </div>
+        <span class="sp-track-duration">--:--</span>
+      </li>
+
+      <!-- Track 3 — Coming Soon -->
+      <li class="sp-track-item sp-coming-soon">
+        <span class="sp-track-num">3</span>
+        <div class="sp-track-art" style="background:rgba(255,255,255,0.05);border-radius:4px;"></div>
+        <div class="sp-track-info">
+          <p class="sp-track-name">Unreleased &mdash; Stay Tuned</p>
+          <p class="sp-track-artist">L.A. Young</p>
+        </div>
+        <span class="sp-track-duration">--:--</span>
+      </li>
+
+      <!-- Track 4 — Coming Soon -->
+      <li class="sp-track-item sp-coming-soon">
+        <span class="sp-track-num">4</span>
+        <div class="sp-track-art" style="background:rgba(255,255,255,0.05);border-radius:4px;"></div>
+        <div class="sp-track-info">
+          <p class="sp-track-name">In the Studio with Norman Connors</p>
+          <p class="sp-track-artist">L.A. Young &bull; Norman Connors</p>
+        </div>
+        <span class="sp-track-duration">--:--</span>
+      </li>
+
+      <!-- Track 5 — Coming Soon -->
+      <li class="sp-track-item sp-coming-soon">
+        <span class="sp-track-num">5</span>
+        <div class="sp-track-art" style="background:rgba(255,255,255,0.05);border-radius:4px;"></div>
+        <div class="sp-track-info">
+          <p class="sp-track-name">The Phyllis Hyman Experience (Live)</p>
+          <p class="sp-track-artist">L.A. Young</p>
+        </div>
+        <span class="sp-track-duration">--:--</span>
+      </li>
+    </ul>
+
+    <!-- ===== DISCOGRAPHY ===== -->
+    <div class="sp-disco-header">
+      <h2>Discography</h2>
+      <span class="sp-show-all">Show all</span>
+    </div>
+    <div class="sp-disco-scroll">
+      <!-- Released Single -->
+      <div class="sp-disco-card">
+        <img src="images/artist/headshot3.jpg" alt="No One Can Love You More" class="sp-disco-art" />
+        <p class="sp-disco-title">No One Can Love You More</p>
+        <p class="sp-disco-year">2024 &bull; Single</p>
+      </div>
+      <!-- Coming Soon 1 -->
+      <div class="sp-disco-card sp-placeholder">
+        <div class="sp-disco-art-placeholder">&#9834;</div>
+        <p class="sp-disco-title">Coming Soon</p>
+        <p class="sp-disco-year">2026 &bull; TBA</p>
+      </div>
+      <!-- Coming Soon 2 -->
+      <div class="sp-disco-card sp-placeholder">
+        <div class="sp-disco-art-placeholder">&#9835;</div>
+        <p class="sp-disco-title">Coming Soon</p>
+        <p class="sp-disco-year">2026 &bull; TBA</p>
+      </div>
+    </div>
+
+    <!-- ===== ABOUT ===== -->
+    <div class="sp-about">
+      <h2 class="sp-section-title">About</h2>
+      <div class="sp-about-img-wrap">
+        <img
+          src="images/artist/PhyllisHyman-Signing.jpg"
+          alt="L.A. Young performing"
+          class="sp-about-img"
+        />
+      </div>
+
+      <div class="sp-about-stats">
+        <div class="sp-about-stat">
+          <span class="sp-about-stat-value">#1</span>
+          <span class="sp-about-stat-label">UK FM Radio</span>
+        </div>
+        <div class="sp-about-stat">
+          <span class="sp-about-stat-value">5</span>
+          <span class="sp-about-stat-label">Top-5 UK Hits</span>
+        </div>
+        <div class="sp-about-stat">
+          <span class="sp-about-stat-value">20+</span>
+          <span class="sp-about-stat-label">Years Performing</span>
+        </div>
+        <div class="sp-about-stat">
+          <span class="sp-about-stat-value">2018</span>
+          <span class="sp-about-stat-label">MD Artist of Year</span>
+        </div>
+      </div>
+
+      <p class="sp-about-text sp-collapsed" id="spAboutText">
+        L.A. Young is a soul, jazz, blues, and R&amp;B vocalist whose voice has been
+        compared to Chaka Khan meeting Phyllis Hyman &mdash; a rare blend of raw power and
+        silky emotional depth. A native of Ohio with deep roots in the steel mill communities
+        of the 1980s, she became the first female crane operator in Ohio's steel industry at
+        age 18 before answering her true calling to the stage. Her career spans landmark
+        stages and elite collaborations: from performing at President Clinton's Second
+        Inauguration to opening for Frederick Anthony Jackson, recording with jazz legends
+        Pieces of A Dream, and currently producing new material with iconic producer Norman
+        Connors. Her single "No One Can Love You More" reached #1 on UK FM Radio, with
+        multiple top-5 UK hits following. A Maryland Music Awards Artist of the Year and
+        Woman's Basketball Hall of Fame Inductee, L.A. Young is known for electrifying live
+        performances and her acclaimed Phyllis Hyman tribute show, which has drawn audiences
+        from across the country.
+      </p>
+      <button class="sp-show-more-btn" id="spShowMoreBtn" onclick="toggleAbout()">Show more</button>
+    </div>
+
+    <!-- ===== COLLABORATORS ===== -->
+    <div class="sp-collabs">
+      <h2 class="sp-section-title">Collaborators</h2>
+      <div class="sp-collabs-scroll">
+        <div class="sp-collab-card">
+          <div class="sp-collab-img-placeholder">&#9835;</div>
+          <p class="sp-collab-name">Norman Connors</p>
+          <p class="sp-collab-role">Producer</p>
+        </div>
+        <div class="sp-collab-card">
+          <div class="sp-collab-img-placeholder">&#9834;</div>
+          <p class="sp-collab-name">Pieces of A Dream</p>
+          <p class="sp-collab-role">Jazz Ensemble</p>
+        </div>
+        <div class="sp-collab-card">
+          <div class="sp-collab-img-placeholder">&#9833;</div>
+          <p class="sp-collab-name">Frederick A. Jackson</p>
+          <p class="sp-collab-role">Artist</p>
+        </div>
+        <div class="sp-collab-card">
+          <div class="sp-collab-img-placeholder">&#9836;</div>
+          <p class="sp-collab-name">Skip Scarborough</p>
+          <p class="sp-collab-role">Songwriter</p>
+        </div>
+        <div class="sp-collab-card">
+          <div class="sp-collab-img-placeholder">&#127925;</div>
+          <p class="sp-collab-name">The Unusual Suspects</p>
+          <p class="sp-collab-role">Band</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="sp-footer">
+      <p>&copy; 2026 <strong>Gold Bottom Entertainment LLC</strong> &bull; All rights reserved.</p>
+    </footer>
+
+  </div><!-- /.sp-body -->
+
+<script>
+(function () {
+  /* ---- Audio Setup ---- */
+  var audio = new Audio();
+  audio.preload = 'metadata';
+  audio.src = '../Media/no_one_can_love_you_more.mp3';
+  var isPlaying = false;
+  var bgMusicWasEnabled = false;
+
+  /* ---- DOM Refs ---- */
+  var track1 = document.getElementById('spTrack1');
+  var mainPlayBtn = document.getElementById('spMainPlayBtn');
+  var progressWrap = document.getElementById('spProgressWrap1');
+  var progressFill = document.getElementById('spProgressFill1');
+  var progressBar = document.getElementById('spProgressBar1');
+  var timeCurrent = document.getElementById('spTimeCurrent1');
+  var timeTotal = document.getElementById('spTimeTotal1');
+  var durationEl = document.getElementById('spTrackDur1');
+  var followBtn = document.getElementById('spFollowBtn');
+
+  function fmt(s) {
+    var m = Math.floor(s / 60);
+    var sec = Math.floor(s % 60);
+    return m + ':' + (sec < 10 ? '0' : '') + sec;
+  }
+
+  /* ---- Background Music Integration ---- */
+  function stopBgMusic() {
+    if (typeof BackgroundMusic !== 'undefined' && BackgroundMusic.currentAudio) {
+      bgMusicWasEnabled = BackgroundMusic.enabled;
+      BackgroundMusic.stop();
+    }
+  }
+  function resumeBgMusic() {
+    if (typeof BackgroundMusic !== 'undefined' && bgMusicWasEnabled) {
+      BackgroundMusic.handlePageChange();
+    }
+  }
+
+  /* ---- Play / Pause ---- */
+  function play() {
+    stopBgMusic();
+    audio.play();
+    isPlaying = true;
+    updateUI();
+  }
+  function pause() {
+    audio.pause();
+    isPlaying = false;
+    updateUI();
+    resumeBgMusic();
+  }
+  function toggle() {
+    if (isPlaying) pause();
+    else play();
+  }
+
+  var playSVG = '\x3csvg viewBox="0 0 24 24"\x3e\x3cpolygon points="5,3 19,12 5,21" fill="#000"/\x3e\x3c/svg\x3e';
+  var pauseSVG = '\x3csvg viewBox="0 0 24 24"\x3e\x3crect x="5" y="3" width="4" height="18" fill="#000"/\x3e\x3crect x="15" y="3" width="4" height="18" fill="#000"/\x3e\x3c/svg\x3e';
+
+  function updateUI() {
+    // Play button SVG
+    if (isPlaying) {
+      mainPlayBtn.innerHTML = pauseSVG;
+    } else {
+      mainPlayBtn.innerHTML = playSVG;
+    }
+    // Track active state
+    if (isPlaying) {
+      track1.classList.add('sp-active');
+      progressWrap.classList.add('sp-visible');
+    } else {
+      track1.classList.remove('sp-active');
+      if (audio.currentTime === 0 || audio.ended) {
+        progressWrap.classList.remove('sp-visible');
+      }
+    }
+  }
+
+  /* ---- Events ---- */
+  mainPlayBtn.addEventListener('click', toggle);
+  track1.addEventListener('click', toggle);
+
+  audio.addEventListener('loadedmetadata', function () {
+    durationEl.textContent = fmt(audio.duration);
+    timeTotal.textContent = fmt(audio.duration);
+  });
+
+  audio.addEventListener('timeupdate', function () {
+    if (!audio.duration) return;
+    var pct = (audio.currentTime / audio.duration) * 100;
+    progressFill.style.width = pct + '%';
+    timeCurrent.textContent = fmt(audio.currentTime);
+  });
+
+  audio.addEventListener('ended', function () {
+    isPlaying = false;
+    audio.currentTime = 0;
+    progressFill.style.width = '0%';
+    timeCurrent.textContent = '0:00';
+    updateUI();
+    resumeBgMusic();
+  });
+
+  /* ---- Seek ---- */
+  progressBar.addEventListener('click', function (e) {
+    var rect = progressBar.getBoundingClientRect();
+    var pct = (e.clientX - rect.left) / rect.width;
+    audio.currentTime = pct * audio.duration;
+  });
+
+  /* ---- Follow Button ---- */
+  followBtn.addEventListener('click', function () {
+    if (followBtn.textContent === 'Follow') {
+      followBtn.textContent = 'Following';
+      followBtn.style.borderColor = '#ffd700';
+      followBtn.style.color = '#ffd700';
+    } else {
+      followBtn.textContent = 'Follow';
+      followBtn.style.borderColor = 'rgba(255,255,255,0.35)';
+      followBtn.style.color = '#fff';
+    }
+  });
+
+  /* ---- About Toggle ---- */
+  window.toggleAbout = function () {
+    var text = document.getElementById('spAboutText');
+    var btn = document.getElementById('spShowMoreBtn');
+    if (text.classList.contains('sp-collapsed')) {
+      text.classList.remove('sp-collapsed');
+      btn.textContent = 'Show less';
+    } else {
+      text.classList.add('sp-collapsed');
+      btn.textContent = 'Show more';
+    }
+  };
+})();
+</script>
+
+</div><!-- /.container -->
+</section>

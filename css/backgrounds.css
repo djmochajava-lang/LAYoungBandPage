@@ -95,6 +95,14 @@
   background-attachment: fixed;
 }
 
+/* Records2 (Spotify-style music page — same bg as Music) */
+#records2 {
+  background-image: url('../images/backgrounds/goldlights.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
 /* Shows */
 #shows {
   background-image: url('../images/backgrounds/photostudio4.jpg');
