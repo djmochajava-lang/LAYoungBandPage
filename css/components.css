@@ -129,7 +129,7 @@
     var(--color-primary),
     transparent
   );
-  margin: var(--spacing-md) auto;
+  margin: var(--spacing-sm) auto;
   position: relative;
 }
 

@@ -324,6 +324,82 @@
   box-shadow: var(--shadow-gold);
 }
 
+/* Upcoming Show Announcement */
+.upcoming-announcement {
+  text-align: center;
+  padding: var(--spacing-lg) var(--spacing-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: var(--border-gold);
+  border-radius: 12px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.upcoming-photo {
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto var(--spacing-md);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.15);
+}
+
+.upcoming-photo img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-position: center top;
+  display: block;
+}
+
+.upcoming-announcement h3 {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-sm);
+  letter-spacing: 0.05em;
+}
+
+.upcoming-announcement p {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-base);
+  line-height: 1.7;
+  max-width: 480px;
+  margin: 0 auto var(--spacing-md);
+}
+
+.upcoming-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.upcoming-notify-btn {
+  animation: notifyPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes notifyPulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), 0 0 40px rgba(255, 215, 0, 0.15);
+  }
+}
+
+.upcoming-actions .btn[disabled] {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+  font-style: italic;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 215, 0, 0.15);
+  color: var(--color-text-muted);
+}
+
 /* === MERCH SECTION === */
 .merch-section {
   /* Background managed in backgrounds.css */

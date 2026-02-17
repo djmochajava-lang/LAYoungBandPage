@@ -30,7 +30,7 @@
                 <span class="album-type-corner">Single</span>
               </div>
               <div class="album-text">
-                <h3 class="album-title">No One Can<br>Love You More</h3>
+                <p class="album-title-cursive">No One Can Love You More</p>
               </div>
               <div class="album-shine"></div>
             </div>
@@ -40,6 +40,7 @@
           </p>
         </div>
 
+        <h3 class="album-title-above">"No One Can Love You More"</h3>
         <div class="track-player">
           <audio id="featuredTrack" preload="metadata"
                  src="../Media/no_one_can_love_you_more.mp3"></audio>
@@ -57,6 +58,29 @@
           </div>
         </div>
         <style>
+          /* --- Album Title Above --- */
+          .album-title-above {
+            font-size: clamp(1.4rem, 3vw, 2rem);
+            font-weight: 300;
+            font-style: italic;
+            font-family: Georgia, 'Times New Roman', serif;
+            color: var(--color-primary);
+            letter-spacing: 0.03em;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 12px rgba(255, 215, 0, 0.2);
+          }
+
+          /* --- Album Title Cursive (on sleeve) --- */
+          .album-title-cursive {
+            font-family: 'Caveat', cursive, Georgia, serif;
+            font-size: 15px;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.85);
+            letter-spacing: 0.04em;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
+            margin: 0;
+          }
+
           /* --- Album + Vinyl Package --- */
           .album-cover-wrap {
             max-width: 520px;
