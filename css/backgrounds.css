@@ -142,4 +142,10 @@
     background-attachment: scroll;
     min-height: 120vh;
   }
+
+  /* Shows: cover on mobile so the image fills the tall narrow section */
+  #shows {
+    background-size: cover;
+    background-position: center top;
+  }
 }
