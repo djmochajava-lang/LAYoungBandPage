@@ -103,12 +103,12 @@
   background-attachment: fixed;
 }
 
-/* Records2 (Spotify-style music page — same bg as Music) */
+/* Records2 (Spotify-style music page) */
 #records2 {
-  background-image: url('../images/backgrounds/goldlights.jpg');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background-image: url('../images/backgrounds/MusicBackground.png');
+  background-size: auto 100%;
+  background-position: center top;
+  background-repeat: no-repeat;
 }
 
 /* Shows (Live menu) — stage image fills top-to-bottom, no stretch */
@@ -144,7 +144,8 @@
   }
 
   /* Shows: cover on mobile so the image fills the tall narrow section */
-  #shows {
+  #shows,
+  #records2 {
     background-size: cover;
     background-position: center top;
   }
