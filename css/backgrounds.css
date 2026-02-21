@@ -95,6 +95,14 @@
   background-attachment: fixed;
 }
 
+/* Performances (Live menu) */
+#performances {
+  background-image: url('../images/backgrounds/TheStageIsSetBackground.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
 /* Records2 (Spotify-style music page — same bg as Music) */
 #records2 {
   background-image: url('../images/backgrounds/goldlights.jpg');
