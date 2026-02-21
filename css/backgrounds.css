@@ -111,12 +111,12 @@
   background-attachment: fixed;
 }
 
-/* Shows (Live menu) */
+/* Shows (Live menu) — stage image fills top-to-bottom */
 #shows {
   background-image: url('../images/backgrounds/TheStageIsSetBackground.png');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background-size: 100% 100%;
+  background-position: center top;
+  background-repeat: no-repeat;
 }
 
 /* Merch */
