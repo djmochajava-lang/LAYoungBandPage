@@ -111,9 +111,9 @@
   background-attachment: fixed;
 }
 
-/* Shows */
+/* Shows (Live menu) */
 #shows {
-  background-image: url('../images/backgrounds/photostudio4.jpg');
+  background-image: url('../images/backgrounds/TheStageIsSetBackground.png');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
