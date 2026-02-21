@@ -111,10 +111,10 @@
   background-attachment: fixed;
 }
 
-/* Shows (Live menu) — stage image fills top-to-bottom */
+/* Shows (Live menu) — stage image fills top-to-bottom, no stretch */
 #shows {
   background-image: url('../images/backgrounds/TheStageIsSetBackground.png');
-  background-size: 100% 100%;
+  background-size: auto 100%;
   background-position: center top;
   background-repeat: no-repeat;
 }
