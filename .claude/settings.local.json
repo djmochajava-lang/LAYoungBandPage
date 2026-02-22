@@ -61,7 +61,10 @@
       "Bash(cscript //nologo //e:vbscript - <<'VBSCRIPT'\nSet WshShell = CreateObject\\(\"WScript.Shell\"\\)\nSet lnk = WshShell.CreateShortcut\\(WshShell.ExpandEnvironmentStrings\\(\"%APPDATA%\"\\) & \"\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\GBE Server Manager.lnk\"\\)\nlnk.TargetPath = \"C:\\\\Projects\\\\goldbottom-ent-site\\\\GoldBottomEntLLC\\\\tools\\\\GBEServerManager\\\\bin\\\\Publish\\\\GBEServerManager.exe\"\nlnk.WorkingDirectory = \"C:\\\\Projects\\\\goldbottom-ent-site\\\\GoldBottomEntLLC\\\\tools\\\\GBEServerManager\\\\bin\\\\Publish\"\nlnk.Description = \"Gold Bottom Ent. — Start/Stop Server\"\nlnk.Save\nWScript.Echo \"Shortcut created successfully\"\nVBSCRIPT)",
       "Bash(git check-ignore:*)",
       "Bash(git worktree:*)",
-      "Bash(git worktree remove:*)"
+      "Bash(git worktree remove:*)",
+      "Bash(git pull:*)",
+      "Bash(firebase deploy:*)",
+      "Bash(echo:*)"
     ]
   }
 }
