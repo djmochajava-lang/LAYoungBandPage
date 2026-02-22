@@ -183,6 +183,19 @@ const SwipeNavigation = {
   handleTouchStart(e) {
     this.touchStartX = e.changedTouches[0].screenX;
     this.touchStartY = e.changedTouches[0].screenY;
+
+    // Check if touch started inside a horizontally-scrollable zone
+    this.inScrollZone = false;
+    var el = e.target;
+    while (el && el !== document.body) {
+      var style = window.getComputedStyle(el);
+      var overflowX = style.getPropertyValue('overflow-x');
+      if ((overflowX === 'auto' || overflowX === 'scroll') && el.scrollWidth > el.clientWidth) {
+        this.inScrollZone = true;
+        break;
+      }
+      el = el.parentElement;
+    }
   },
 
   handleTouchEnd(e) {
@@ -194,6 +207,9 @@ const SwipeNavigation = {
   handleSwipe() {
     // Prevent multiple swipes during animation
     if (this.isAnimating) return;
+
+    // Skip page navigation if swipe started inside a horizontal scroll zone
+    if (this.inScrollZone) return;
 
     const diffX = this.touchEndX - this.touchStartX;
     const diffY = this.touchEndY - this.touchStartY;
