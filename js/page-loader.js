@@ -135,9 +135,12 @@ const PageLoader = {
       Forms.init();
     }
 
-    if (typeof Gallery !== 'undefined' && pageName === 'gallery') {
+    if (pageName === 'gallery') {
       // Small delay to ensure DOM is fully rendered
-      setTimeout(() => Gallery.init(), 50);
+      setTimeout(() => {
+        if (typeof Gallery !== 'undefined') Gallery.init();
+        if (typeof EventGallery !== 'undefined') EventGallery.init();
+      }, 50);
     }
 
     if (

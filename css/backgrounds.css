@@ -81,7 +81,7 @@
 
 /* Gallery */
 #gallery {
-  background-image: url('../images/backgrounds/spotlight.jpg');
+  background-image: url('../images/backgrounds/photostudio2.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -130,9 +130,15 @@
 /* Support (Tip Jar / Patronage) */
 #support {
   background-image: url('../images/backgrounds/luxuryfabric.jpg');
-  background-size: cover;
+  background-size: 115%;
   background-position: center;
-  background-attachment: fixed;
+  animation: supportBgDrift 60s ease-in-out infinite alternate;
+}
+
+@keyframes supportBgDrift {
+  0%   { background-position: 45% 45%; }
+  50%  { background-position: 55% 52%; }
+  100% { background-position: 48% 48%; }
 }
 
 /* Connect */

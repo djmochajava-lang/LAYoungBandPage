@@ -216,11 +216,16 @@ img {
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
-.tb-brand span {
+.tb-brand-link {
   color: var(--text-subtle);
   font-weight: 400;
   margin-left: 0.5rem;
   letter-spacing: 0.06em;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.tb-brand-link:hover {
+  color: var(--gold);
 }
 
 .tb-nav {

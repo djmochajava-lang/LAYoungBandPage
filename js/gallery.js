@@ -1,110 +1,134 @@
 // js/gallery.js
 
 /**
- * Gallery Module — Futuristic Showcase
+ * Gallery Module — Futuristic Showcase (Factory Pattern)
  * 3D tilt, auto-rotation, holographic thumbnails, cinematic lightbox
+ *
+ * Creates independent gallery instances with parameterized DOM ID prefixes.
+ * Usage:
+ *   const gallery = createGallery({ prefix: 'fg', images: [...] });
+ *   gallery.init();
  */
 
-const Gallery = {
-  initialized: false,
-  cur: 0,
-  autoTimer: null,
-  progressRAF: null,
-  progressStart: 0,
-  paused: false,
-  resumeTimer: null,
-  lbOpen: false,
-  INTERVAL: 4000,
-  RESUME: 6000,
-  CIRCUM: 2 * Math.PI * 18, // ~113
-  MAX_HEIGHT: 620,
+'use strict';
 
-  images: [
-    { src: 'images/artist/LAYoungPink.JPG',   caption: 'L.A. Young Pink',             sub: 'Studio Portrait' },
-    { src: 'images/artist/LAPhillysLive.JPG',  caption: 'L.A. Young Live Performance', sub: 'On Stage' },
-    { src: 'images/artist/LAPopSinger.jpeg',   caption: 'L.A. Young Pop Singer',       sub: 'Editorial Shoot' },
-    { src: 'images/artist/LARockAndRoll.jpeg', caption: 'L.A. Young Rock & Roll',      sub: 'Rock & Roll Vibes' },
-    { src: 'images/artist/LAFunkyChild.JPG',   caption: 'L.A. Young Funky Child',      sub: 'Funky Fresh' },
-    { src: 'images/artist/LASoulSista.JPG',    caption: 'L.A. Young Soul Sista',       sub: 'Soul Portrait' },
-    { src: 'images/artist/LAAfro.jpg',         caption: 'L.A. Young Afro',             sub: 'Natural Beauty' },
-    { src: 'images/artist/LASoulLife.PNG',     caption: 'L.A. Young Soul Life',        sub: 'Living Soul' },
-    { src: 'images/artist/LAGreenDress.JPG',   caption: 'L.A. Young Green Dress',      sub: 'Emerald Elegance' },
-  ],
+function createGallery(config) {
+  const prefix = config.prefix || 'fg';
+  const images = config.images || [];
+  const INTERVAL = config.interval || 4000;
+  const RESUME_DELAY = config.resumeDelay || 6000;
+  const MAX_HEIGHT = config.maxHeight || 620;
+  const PARTICLE_COUNT = config.particleCount || 25;
+  const lazyLoad = config.lazyLoad || false;
+  const CIRCUM = 2 * Math.PI * 18; // ~113
+  const LAZY_BUFFER = 3; // preload this many images around current
 
-  // DOM refs (set during init)
-  els: {},
+  // Instance state
+  let initialized = false;
+  let cur = 0;
+  let autoTimer = null;
+  let progressRAF = null;
+  let progressStart = 0;
+  let paused = false;
+  let resumeTimer = null;
+  let lbOpen = false;
+  let els = {};
+  let showcaseImgs = null; // NodeList or Map for lazy mode
+  let thumbCards = null;
+  let _keyHandler = null;
+  let _tiltMove = null;
+  let _tiltLeave = null;
+  let thumbObserver = null;
 
-  /**
-   * Initialize gallery
-   */
-  init() {
-    console.log('🖼️ Initializing Futuristic Gallery...');
+  // ─── Helpers ───
 
-    // Check if the futuristic gallery HTML exists
-    const showcaseFrame = document.getElementById('fg-showcaseFrame');
+  function id(suffix) {
+    return document.getElementById(prefix + '-' + suffix);
+  }
+
+  // ─── Init / Destroy ───
+
+  function init() {
+    console.log('🖼️ Initializing Gallery [' + prefix + ']...');
+
+    const showcaseFrame = id('showcaseFrame');
     if (!showcaseFrame) {
-      console.log('Futuristic gallery elements not found, skipping...');
+      console.log('Gallery [' + prefix + '] elements not found, skipping...');
       return;
     }
 
-    // Clean up any previous instance
-    this.destroy();
+    destroy();
 
-    // Cache DOM elements
-    this.els = {
+    els = {
       showcaseFrame: showcaseFrame,
-      showcase: document.getElementById('fg-showcase'),
-      capTitle: document.getElementById('fg-capTitle'),
-      capSub: document.getElementById('fg-capSub'),
-      capCount: document.getElementById('fg-capCount'),
-      ringFill: document.getElementById('fg-ringFill'),
-      thumbStrip: document.getElementById('fg-thumbStrip'),
-      lightbox: document.getElementById('fg-lightbox'),
-      lbImg: document.getElementById('fg-lbImg'),
-      lbTitle: document.getElementById('fg-lbTitle'),
-      lbCount: document.getElementById('fg-lbCount'),
+      showcase: id('showcase'),
+      capTitle: id('capTitle'),
+      capSub: id('capSub'),
+      capCount: id('capCount'),
+      ringFill: id('ringFill'),
+      thumbStrip: id('thumbStrip'),
+      lightbox: id('lightbox'),
+      lbImg: id('lbImg'),
+      lbTitle: id('lbTitle'),
+      lbCount: id('lbCount'),
     };
 
-    // Reset state
-    this.cur = 0;
-    this.paused = false;
-    this.lbOpen = false;
+    cur = 0;
+    paused = false;
+    lbOpen = false;
 
-    // Build the gallery
-    this.createParticles();
-    this.createProgressRing();
-    this.preloadImages();
-    this.buildThumbnails();
-    this.bind3DTilt();
-    this.bindNavigation();
-    this.bindLightbox();
-    this.bindKeyboard();
-    this.bindTouch();
-    this.updateCaption();
-    this.startAuto();
+    createParticles();
+    createProgressRing();
 
-    this.initialized = true;
-    console.log('✅ Futuristic Gallery initialized with', this.images.length, 'images');
-  },
+    if (lazyLoad) {
+      initLazyShowcase();
+    } else {
+      preloadImages();
+    }
 
-  /**
-   * Destroy / clean up (for SPA re-init)
-   */
-  destroy() {
-    this.stopAuto();
-    clearTimeout(this.resumeTimer);
-    this.initialized = false;
-    this._keyHandler && document.removeEventListener('keydown', this._keyHandler);
-  },
+    buildThumbnails();
+    bind3DTilt();
+    bindNavigation();
+    bindLightbox();
+    bindKeyboard();
+    bindTouch();
+    updateCaption();
+    startAuto();
 
-  /**
-   * Create floating gold particles
-   */
-  createParticles() {
-    const container = document.getElementById('fg-particles');
+    initialized = true;
+    console.log('✅ Gallery [' + prefix + '] initialized with', images.length, 'images');
+  }
+
+  function destroy() {
+    stopAuto();
+    clearTimeout(resumeTimer);
+    initialized = false;
+    if (_keyHandler) document.removeEventListener('keydown', _keyHandler);
+    if (_tiltMove && els.showcase) {
+      els.showcase.removeEventListener('mousemove', _tiltMove);
+      els.showcase.removeEventListener('mouseleave', _tiltLeave);
+    }
+    if (thumbObserver) {
+      thumbObserver.disconnect();
+      thumbObserver = null;
+    }
+    _keyHandler = null;
+    _tiltMove = null;
+    _tiltLeave = null;
+  }
+
+  function reload() {
+    console.log('🔄 Reloading gallery [' + prefix + ']...');
+    init();
+  }
+
+  // ─── Particles ───
+
+  function createParticles() {
+    const container = id('particles');
     if (!container) return;
     container.innerHTML = '';
-    for (let i = 0; i < 25; i++) {
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
       const p = document.createElement('div');
       p.className = 'fg-particle';
       p.style.left = Math.random() * 100 + '%';
@@ -114,13 +138,12 @@ const Gallery = {
       p.style.opacity = 0.2 + Math.random() * 0.5;
       container.appendChild(p);
     }
-  },
+  }
 
-  /**
-   * Create progress ring SVG via DOM API (avoids innerHTML SVG parsing issues)
-   */
-  createProgressRing() {
-    const wrap = document.getElementById('fg-progressRingWrap');
+  // ─── Progress Ring ───
+
+  function createProgressRing() {
+    const wrap = id('progressRingWrap');
     if (!wrap || wrap.querySelector('svg')) return;
     const ns = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(ns, 'svg');
@@ -136,336 +159,559 @@ const Gallery = {
     svg.appendChild(bg);
     const fill = document.createElementNS(ns, 'circle');
     fill.setAttribute('class', 'fg-ring-fill');
-    fill.setAttribute('id', 'fg-ringFill');
+    fill.setAttribute('id', prefix + '-ringFill');
     fill.setAttribute('cx', '21');
     fill.setAttribute('cy', '21');
     fill.setAttribute('r', '18');
     svg.appendChild(fill);
     wrap.appendChild(svg);
-    // Update cached ref
-    this.els.ringFill = fill;
-  },
+    els.ringFill = fill;
+  }
 
-  /**
-   * Preload images & detect orientation
-   */
-  preloadImages() {
-    const frame = this.els.showcaseFrame;
-    // Remove any old showcase images
-    frame.querySelectorAll('.fg-showcase-img').forEach(el => el.remove());
+  // ─── Standard Image Preload (for small galleries) ───
 
-    this.images.forEach((img, i) => {
-      const el = document.createElement('img');
+  function preloadImages() {
+    const frame = els.showcaseFrame;
+    frame.querySelectorAll('.fg-showcase-img').forEach(function (el) { el.remove(); });
+
+    images.forEach(function (img, i) {
+      var el = document.createElement('img');
       el.className = 'fg-showcase-img' + (i === 0 ? ' active' : '');
       el.src = img.src;
       el.alt = img.caption;
       el.draggable = false;
-      el.onload = () => {
+      el.onload = function () {
         img.w = el.naturalWidth;
         img.h = el.naturalHeight;
         img.ratio = el.naturalWidth / el.naturalHeight;
-        if (i === 0) this.updateFrameSize(0);
+        if (i === 0) updateFrameSize(0);
       };
       frame.insertBefore(el, frame.querySelector('.fg-showcase-caption'));
     });
-    this.showcaseImgs = frame.querySelectorAll('.fg-showcase-img');
-  },
+    showcaseImgs = frame.querySelectorAll('.fg-showcase-img');
+  }
 
-  /**
-   * Adapt frame to image orientation
-   */
-  updateFrameSize(index) {
-    const img = this.images[index];
+  // ─── Lazy Loading (for large galleries like 124 event images) ───
+
+  /** @type {Map<number, HTMLImageElement>} */
+  var lazyImgMap = new Map();
+
+  function initLazyShowcase() {
+    var frame = els.showcaseFrame;
+    frame.querySelectorAll('.fg-showcase-img').forEach(function (el) { el.remove(); });
+    lazyImgMap.clear();
+    showcaseImgs = null; // We use lazyImgMap instead
+
+    // Load the first image + buffer
+    loadLazyRange(0);
+  }
+
+  function loadLazyRange(center) {
+    var frame = els.showcaseFrame;
+    var caption = frame.querySelector('.fg-showcase-caption');
+
+    for (var offset = -LAZY_BUFFER; offset <= LAZY_BUFFER; offset++) {
+      var idx = ((center + offset) % images.length + images.length) % images.length;
+      if (lazyImgMap.has(idx)) continue;
+
+      var img = images[idx];
+      var el = document.createElement('img');
+      el.className = 'fg-showcase-img' + (idx === cur ? ' active' : '');
+      el.src = img.src;
+      el.alt = img.caption;
+      el.draggable = false;
+      (function (theImg, theIdx, theEl) {
+        theEl.onload = function () {
+          theImg.w = theEl.naturalWidth;
+          theImg.h = theEl.naturalHeight;
+          theImg.ratio = theEl.naturalWidth / theEl.naturalHeight;
+          if (theIdx === cur) updateFrameSize(cur);
+        };
+      })(img, idx, el);
+      frame.insertBefore(el, caption);
+      lazyImgMap.set(idx, el);
+    }
+  }
+
+  function getLazyImg(index) {
+    return lazyImgMap.get(index) || null;
+  }
+
+  // ─── Frame Size ───
+
+  function updateFrameSize(index) {
+    var img = images[index];
     if (!img || !img.ratio) return;
-    const ratio = img.ratio;
-    const frame = this.els.showcaseFrame;
+    var ratio = img.ratio;
+    var frame = els.showcaseFrame;
 
     frame.style.aspectRatio = ratio.toFixed(4);
 
     if (ratio < 1) {
-      const widthForMaxHeight = this.MAX_HEIGHT * ratio;
+      var widthForMaxHeight = MAX_HEIGHT * ratio;
       frame.style.maxWidth = Math.max(Math.min(widthForMaxHeight, 500), 320) + 'px';
     } else if (ratio <= 1.15) {
       frame.style.maxWidth = '620px';
     } else {
       frame.style.maxWidth = '100%';
     }
-  },
+  }
 
-  /**
-   * Build holographic thumbnail cards
-   */
-  buildThumbnails() {
-    const strip = this.els.thumbStrip;
+  // ─── Thumbnails ───
+
+  function buildThumbnails() {
+    var strip = els.thumbStrip;
     if (!strip) return;
     strip.innerHTML = '';
 
-    this.images.forEach((img, i) => {
-      const card = document.createElement('div');
+    if (lazyLoad && images.length > 30) {
+      // Lazy thumbnails: create placeholder divs, load images via IntersectionObserver
+      buildLazyThumbnails(strip);
+    } else {
+      // Standard thumbnails (small gallery)
+      buildStandardThumbnails(strip);
+    }
+  }
+
+  function buildStandardThumbnails(strip) {
+    images.forEach(function (img, i) {
+      var card = createThumbCard(img, i);
+      strip.appendChild(card);
+    });
+    thumbCards = strip.querySelectorAll('.fg-thumb-card');
+  }
+
+  function buildLazyThumbnails(strip) {
+    // Create all cards but defer image loading
+    images.forEach(function (img, i) {
+      var card = document.createElement('div');
       card.className = 'fg-thumb-card' + (i === 0 ? ' active' : '');
-      card.style.animationDelay = (0.5 + i * 0.07) + 's';
-      card.innerHTML = `
-        <img src="${img.src}" alt="${img.caption}" draggable="false">
-        <div class="fg-holo-shine"></div>
-        <div class="fg-thumb-label">${img.caption.replace('L.A. Young ', '')}</div>
-      `;
-      card.addEventListener('click', () => {
-        this.goTo(i);
-        this.pauseAuto();
-        this.scheduleResume();
+      card.style.animationDelay = (0.5 + (Math.min(i, 20)) * 0.07) + 's';
+      card.dataset.index = i;
+
+      // Placeholder structure (no img src yet)
+      var imgEl = document.createElement('img');
+      imgEl.alt = img.caption;
+      imgEl.draggable = false;
+      imgEl.dataset.src = img.src; // store for lazy load
+      card.appendChild(imgEl);
+
+      var shine = document.createElement('div');
+      shine.className = 'fg-holo-shine';
+      card.appendChild(shine);
+
+      var label = document.createElement('div');
+      label.className = 'fg-thumb-label';
+      label.textContent = (img.caption || '').replace('Event photo ', '#');
+      card.appendChild(label);
+
+      card.addEventListener('click', function () {
+        goTo(i);
+        pauseAuto();
+        scheduleResume();
       });
       strip.appendChild(card);
     });
-    this.thumbCards = strip.querySelectorAll('.fg-thumb-card');
-  },
 
-  /**
-   * 3D tilt on showcase
-   */
-  bind3DTilt() {
-    const showcase = this.els.showcase;
-    const frame = this.els.showcaseFrame;
+    thumbCards = strip.querySelectorAll('.fg-thumb-card');
+
+    // Load visible + nearby thumbnails via IntersectionObserver
+    if ('IntersectionObserver' in window) {
+      thumbObserver = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            var card = entry.target;
+            var imgEl = card.querySelector('img');
+            if (imgEl && imgEl.dataset.src && !imgEl.src) {
+              imgEl.src = imgEl.dataset.src;
+            }
+            thumbObserver.unobserve(card);
+          }
+        });
+      }, { root: strip, rootMargin: '0px 200px' });
+
+      thumbCards.forEach(function (card) {
+        thumbObserver.observe(card);
+      });
+    } else {
+      // Fallback: load all
+      thumbCards.forEach(function (card) {
+        var imgEl = card.querySelector('img');
+        if (imgEl && imgEl.dataset.src) imgEl.src = imgEl.dataset.src;
+      });
+    }
+  }
+
+  function createThumbCard(img, i) {
+    var card = document.createElement('div');
+    card.className = 'fg-thumb-card' + (i === 0 ? ' active' : '');
+    card.style.animationDelay = (0.5 + i * 0.07) + 's';
+    card.innerHTML =
+      '<img src="' + img.src + '" alt="' + img.caption + '" draggable="false">' +
+      '<div class="fg-holo-shine"></div>' +
+      '<div class="fg-thumb-label">' + (img.caption || '').replace('L.A. Young ', '') + '</div>';
+    card.addEventListener('click', function () {
+      goTo(i);
+      pauseAuto();
+      scheduleResume();
+    });
+    return card;
+  }
+
+  // ─── 3D Tilt ───
+
+  function bind3DTilt() {
+    var showcase = els.showcase;
+    var frame = els.showcaseFrame;
     if (!showcase || !frame) return;
 
-    this._tiltMove = (e) => {
-      const rect = frame.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width - 0.5;
-      const y = (e.clientY - rect.top) / rect.height - 0.5;
-      frame.style.transform = `rotateY(${x * 6}deg) rotateX(${-y * 4}deg)`;
+    _tiltMove = function (e) {
+      var rect = frame.getBoundingClientRect();
+      var x = (e.clientX - rect.left) / rect.width - 0.5;
+      var y = (e.clientY - rect.top) / rect.height - 0.5;
+      frame.style.transform = 'rotateY(' + (x * 6) + 'deg) rotateX(' + (-y * 4) + 'deg)';
     };
-    this._tiltLeave = () => {
+    _tiltLeave = function () {
       frame.style.transform = 'rotateY(0) rotateX(0)';
     };
-    showcase.addEventListener('mousemove', this._tiltMove);
-    showcase.addEventListener('mouseleave', this._tiltLeave);
-  },
+    showcase.addEventListener('mousemove', _tiltMove);
+    showcase.addEventListener('mouseleave', _tiltLeave);
+  }
 
-  /**
-   * Navigation arrows
-   */
-  bindNavigation() {
-    const prevBtn = document.getElementById('fg-prevBtn');
-    const nextBtn = document.getElementById('fg-nextBtn');
+  // ─── Navigation ───
+
+  function bindNavigation() {
+    var prevBtn = id('prevBtn');
+    var nextBtn = id('nextBtn');
 
     if (prevBtn) {
-      prevBtn.addEventListener('click', (e) => {
+      prevBtn.addEventListener('click', function (e) {
         e.stopPropagation();
-        this.goPrev();
-        this.pauseAuto();
-        this.scheduleResume();
+        goPrev();
+        pauseAuto();
+        scheduleResume();
       });
     }
     if (nextBtn) {
-      nextBtn.addEventListener('click', (e) => {
+      nextBtn.addEventListener('click', function (e) {
         e.stopPropagation();
-        this.goNext();
-        this.pauseAuto();
-        this.scheduleResume();
+        goNext();
+        pauseAuto();
+        scheduleResume();
       });
     }
 
-    // Pause on hover
-    if (this.els.showcase) {
-      this.els.showcase.addEventListener('mouseenter', () => this.pauseAuto());
-      this.els.showcase.addEventListener('mouseleave', () => this.scheduleResume());
+    if (els.showcase) {
+      els.showcase.addEventListener('mouseenter', function () { pauseAuto(); });
+      els.showcase.addEventListener('mouseleave', function () { scheduleResume(); });
     }
-  },
+  }
 
-  /**
-   * Update caption text
-   */
-  updateCaption() {
-    if (this.els.capTitle) this.els.capTitle.textContent = this.images[this.cur].caption;
-    if (this.els.capSub) this.els.capSub.textContent = this.images[this.cur].sub;
-    if (this.els.capCount) this.els.capCount.textContent = `${this.cur + 1} / ${this.images.length}`;
-  },
+  // ─── Caption ───
 
-  /**
-   * Navigate to specific image
-   */
-  goTo(i) {
-    if (i === this.cur) return;
-    if (this.showcaseImgs && this.showcaseImgs[this.cur]) {
-      this.showcaseImgs[this.cur].classList.remove('active');
+  function updateCaption() {
+    if (els.capTitle) els.capTitle.textContent = images[cur].caption;
+    if (els.capSub) els.capSub.textContent = images[cur].sub || '';
+    if (els.capCount) els.capCount.textContent = (cur + 1) + ' / ' + images.length;
+  }
+
+  // ─── Navigation ───
+
+  function goTo(i) {
+    if (i === cur) return;
+
+    // Deactivate old
+    if (lazyLoad) {
+      var oldEl = getLazyImg(cur);
+      if (oldEl) oldEl.classList.remove('active');
+    } else if (showcaseImgs && showcaseImgs[cur]) {
+      showcaseImgs[cur].classList.remove('active');
     }
-    if (this.thumbCards && this.thumbCards[this.cur]) {
-      this.thumbCards[this.cur].classList.remove('active');
-    }
-
-    this.cur = i;
-
-    if (this.showcaseImgs && this.showcaseImgs[this.cur]) {
-      this.showcaseImgs[this.cur].classList.add('active');
-    }
-    if (this.thumbCards && this.thumbCards[this.cur]) {
-      this.thumbCards[this.cur].classList.add('active');
-      this.thumbCards[this.cur].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    if (thumbCards && thumbCards[cur]) {
+      thumbCards[cur].classList.remove('active');
     }
 
-    this.updateCaption();
-    this.updateFrameSize(this.cur);
-    this.resetProgress();
-  },
+    cur = i;
 
-  goNext() { this.goTo((this.cur + 1) % this.images.length); },
-  goPrev() { this.goTo((this.cur - 1 + this.images.length) % this.images.length); },
+    // Lazy: ensure images around new cur are loaded
+    if (lazyLoad) {
+      loadLazyRange(cur);
+      var newEl = getLazyImg(cur);
+      if (newEl) newEl.classList.add('active');
+    } else if (showcaseImgs && showcaseImgs[cur]) {
+      showcaseImgs[cur].classList.add('active');
+    }
 
-  /**
-   * Auto-rotation with progress ring
-   */
-  startAuto() {
-    this.stopAuto();
-    this.paused = false;
-    this.progressStart = Date.now();
-    this.autoTimer = setTimeout(() => { this.goNext(); this.startAuto(); }, this.INTERVAL);
-    this.animateRing();
-  },
+    if (thumbCards && thumbCards[cur]) {
+      thumbCards[cur].classList.add('active');
+      thumbCards[cur].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      // Ensure lazy thumb image is loaded
+      var thumbImg = thumbCards[cur].querySelector('img');
+      if (thumbImg && thumbImg.dataset.src && !thumbImg.src) {
+        thumbImg.src = thumbImg.dataset.src;
+      }
+    }
 
-  stopAuto() {
-    clearTimeout(this.autoTimer);
-    this.autoTimer = null;
-    cancelAnimationFrame(this.progressRAF);
-    if (this.els.ringFill) this.els.ringFill.style.strokeDashoffset = this.CIRCUM;
-  },
+    updateCaption();
+    updateFrameSize(cur);
+    resetProgress();
+  }
 
-  pauseAuto() {
-    this.paused = true;
-    this.stopAuto();
-  },
+  function goNext() { goTo((cur + 1) % images.length); }
+  function goPrev() { goTo((cur - 1 + images.length) % images.length); }
 
-  scheduleResume() {
-    clearTimeout(this.resumeTimer);
-    this.resumeTimer = setTimeout(() => this.startAuto(), this.RESUME);
-  },
+  // ─── Auto-rotation ───
 
-  resetProgress() { this.progressStart = Date.now(); },
+  function startAuto() {
+    stopAuto();
+    paused = false;
+    progressStart = Date.now();
+    autoTimer = setTimeout(function () { goNext(); startAuto(); }, INTERVAL);
+    animateRing();
+  }
 
-  animateRing() {
-    const self = this;
+  function stopAuto() {
+    clearTimeout(autoTimer);
+    autoTimer = null;
+    cancelAnimationFrame(progressRAF);
+    if (els.ringFill) els.ringFill.style.strokeDashoffset = CIRCUM;
+  }
+
+  function pauseAuto() {
+    paused = true;
+    stopAuto();
+  }
+
+  function scheduleResume() {
+    clearTimeout(resumeTimer);
+    resumeTimer = setTimeout(function () { startAuto(); }, RESUME_DELAY);
+  }
+
+  function resetProgress() { progressStart = Date.now(); }
+
+  function animateRing() {
     function tick() {
-      if (self.paused) return;
-      const pct = Math.min((Date.now() - self.progressStart) / self.INTERVAL, 1);
-      if (self.els.ringFill) self.els.ringFill.style.strokeDashoffset = self.CIRCUM * (1 - pct);
-      if (pct < 1) self.progressRAF = requestAnimationFrame(tick);
+      if (paused) return;
+      var pct = Math.min((Date.now() - progressStart) / INTERVAL, 1);
+      if (els.ringFill) els.ringFill.style.strokeDashoffset = CIRCUM * (1 - pct);
+      if (pct < 1) progressRAF = requestAnimationFrame(tick);
     }
-    self.progressRAF = requestAnimationFrame(tick);
-  },
+    progressRAF = requestAnimationFrame(tick);
+  }
 
-  /**
-   * Lightbox
-   */
-  bindLightbox() {
-    const frame = this.els.showcaseFrame;
-    const lightbox = this.els.lightbox;
+  // ─── Lightbox ───
+
+  function bindLightbox() {
+    var frame = els.showcaseFrame;
+    var lightbox = els.lightbox;
 
     if (frame) {
-      frame.addEventListener('click', (e) => {
+      frame.addEventListener('click', function (e) {
         if (e.target.closest('.fg-nav-btn')) return;
-        this.openLB(this.cur);
+        openLB(cur);
       });
     }
 
-    const lbClose = document.getElementById('fg-lbClose');
-    const lbPrev = document.getElementById('fg-lbPrev');
-    const lbNext = document.getElementById('fg-lbNext');
+    var lbClose = id('lbClose');
+    var lbPrev = id('lbPrev');
+    var lbNext = id('lbNext');
 
-    if (lbClose) lbClose.addEventListener('click', () => this.closeLB());
-    if (lightbox) lightbox.addEventListener('click', (e) => { if (e.target === lightbox) this.closeLB(); });
-    if (lbPrev) lbPrev.addEventListener('click', (e) => {
+    if (lbClose) lbClose.addEventListener('click', function () { closeLB(); });
+    if (lightbox) lightbox.addEventListener('click', function (e) { if (e.target === lightbox) closeLB(); });
+    if (lbPrev) lbPrev.addEventListener('click', function (e) {
       e.stopPropagation();
-      this.cur = (this.cur - 1 + this.images.length) % this.images.length;
-      this.updateLB();
+      cur = (cur - 1 + images.length) % images.length;
+      updateLB();
     });
-    if (lbNext) lbNext.addEventListener('click', (e) => {
+    if (lbNext) lbNext.addEventListener('click', function (e) {
       e.stopPropagation();
-      this.cur = (this.cur + 1) % this.images.length;
-      this.updateLB();
+      cur = (cur + 1) % images.length;
+      updateLB();
     });
-  },
+  }
 
-  openLB(i) {
-    this.lbOpen = true;
-    this.cur = i;
-    this.updateLB();
-    if (this.els.lightbox) this.els.lightbox.classList.add('open');
+  function openLB(i) {
+    lbOpen = true;
+    cur = i;
+    updateLB();
+    if (els.lightbox) els.lightbox.classList.add('open');
     document.body.style.overflow = 'hidden';
-    this.pauseAuto();
-  },
+    pauseAuto();
+  }
 
-  closeLB() {
-    this.lbOpen = false;
-    if (this.els.lightbox) this.els.lightbox.classList.remove('open');
+  function closeLB() {
+    lbOpen = false;
+    if (els.lightbox) els.lightbox.classList.remove('open');
     document.body.style.overflow = '';
-    this.scheduleResume();
-  },
+    scheduleResume();
+  }
 
-  updateLB() {
-    if (this.els.lbImg) {
-      this.els.lbImg.src = this.images[this.cur].src;
-      this.els.lbImg.alt = this.images[this.cur].caption;
+  function updateLB() {
+    if (els.lbImg) {
+      els.lbImg.src = images[cur].src;
+      els.lbImg.alt = images[cur].caption;
     }
-    if (this.els.lbTitle) this.els.lbTitle.textContent = this.images[this.cur].caption;
-    if (this.els.lbCount) this.els.lbCount.textContent = `${this.cur + 1} of ${this.images.length}`;
-    if (this.showcaseImgs) this.showcaseImgs.forEach((el, i) => el.classList.toggle('active', i === this.cur));
-    if (this.thumbCards) this.thumbCards.forEach((el, i) => el.classList.toggle('active', i === this.cur));
-    this.updateCaption();
-  },
+    if (els.lbTitle) els.lbTitle.textContent = images[cur].caption;
+    if (els.lbCount) els.lbCount.textContent = (cur + 1) + ' of ' + images.length;
 
-  /**
-   * Keyboard navigation
-   */
-  bindKeyboard() {
-    this._keyHandler = (e) => {
-      if (this.lbOpen) {
-        if (e.key === 'Escape') this.closeLB();
-        if (e.key === 'ArrowLeft') { this.cur = (this.cur - 1 + this.images.length) % this.images.length; this.updateLB(); }
-        if (e.key === 'ArrowRight') { this.cur = (this.cur + 1) % this.images.length; this.updateLB(); }
-      } else if (document.getElementById('fg-showcase')) {
-        if (e.key === 'ArrowLeft') { this.goPrev(); this.pauseAuto(); this.scheduleResume(); }
-        if (e.key === 'ArrowRight') { this.goNext(); this.pauseAuto(); this.scheduleResume(); }
+    // Update showcase active state
+    if (lazyLoad) {
+      lazyImgMap.forEach(function (el, idx) {
+        el.classList.toggle('active', idx === cur);
+      });
+      loadLazyRange(cur);
+    } else if (showcaseImgs) {
+      showcaseImgs.forEach(function (el, i) {
+        el.classList.toggle('active', i === cur);
+      });
+    }
+    if (thumbCards) {
+      thumbCards.forEach(function (el, i) {
+        el.classList.toggle('active', i === cur);
+      });
+    }
+    updateCaption();
+  }
+
+  // ─── Keyboard ───
+
+  function bindKeyboard() {
+    _keyHandler = function (e) {
+      if (lbOpen) {
+        if (e.key === 'Escape') closeLB();
+        if (e.key === 'ArrowLeft') { cur = (cur - 1 + images.length) % images.length; updateLB(); }
+        if (e.key === 'ArrowRight') { cur = (cur + 1) % images.length; updateLB(); }
+      } else if (id('showcase')) {
+        // Only respond if this gallery's showcase is in the viewport
+        var sc = id('showcase');
+        if (sc) {
+          var rect = sc.getBoundingClientRect();
+          var inView = rect.top < window.innerHeight && rect.bottom > 0;
+          if (inView) {
+            if (e.key === 'ArrowLeft') { goPrev(); pauseAuto(); scheduleResume(); }
+            if (e.key === 'ArrowRight') { goNext(); pauseAuto(); scheduleResume(); }
+          }
+        }
       }
     };
-    document.addEventListener('keydown', this._keyHandler);
-  },
+    document.addEventListener('keydown', _keyHandler);
+  }
 
-  /**
-   * Touch / Swipe
-   */
-  bindTouch() {
-    const frame = this.els.showcaseFrame;
+  // ─── Touch / Swipe ───
+
+  function bindTouch() {
+    var frame = els.showcaseFrame;
     if (!frame) return;
 
-    let tsX = 0;
-    frame.addEventListener('touchstart', (e) => {
+    var tsX = 0;
+    frame.addEventListener('touchstart', function (e) {
       tsX = e.changedTouches[0].screenX;
-      this.pauseAuto();
+      pauseAuto();
     }, { passive: true });
-    frame.addEventListener('touchend', (e) => {
-      const diff = tsX - e.changedTouches[0].screenX;
-      if (Math.abs(diff) > 50) { diff > 0 ? this.goNext() : this.goPrev(); }
-      this.scheduleResume();
+    frame.addEventListener('touchend', function (e) {
+      var diff = tsX - e.changedTouches[0].screenX;
+      if (Math.abs(diff) > 50) { diff > 0 ? goNext() : goPrev(); }
+      scheduleResume();
     }, { passive: true });
-  },
-
-  /**
-   * Reload gallery (for SPA re-navigation)
-   */
-  reload() {
-    console.log('🔄 Reloading gallery...');
-    this.init();
-  },
-};
-
-// Auto-initialize if not using module system
-if (typeof module === 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => Gallery.init());
-  } else {
-    Gallery.init();
   }
+
+  // ─── Public API ───
+
+  return {
+    init: init,
+    destroy: destroy,
+    reload: reload,
+    get images() { return images; },
+    get initialized() { return initialized; },
+  };
 }
 
-// Export for module use
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = Gallery;
-}
+// ─── Image Data ───
+
+var artistImages = [
+  { src: 'images/artist/LAYoungPink.JPG',   caption: 'L.A. Young Pink',             sub: 'Studio Portrait' },
+  { src: 'images/artist/LAPhillysLive.JPG',  caption: 'L.A. Young Live Performance', sub: 'On Stage' },
+  { src: 'images/artist/LAPopSinger.jpeg',   caption: 'L.A. Young Pop Singer',       sub: 'Editorial Shoot' },
+  { src: 'images/artist/LARockAndRoll.jpeg', caption: 'L.A. Young Rock & Roll',      sub: 'Rock & Roll Vibes' },
+  { src: 'images/artist/LAFunkyChild.JPG',   caption: 'L.A. Young Funky Child',      sub: 'Funky Fresh' },
+  { src: 'images/artist/LASoulSista.JPG',    caption: 'L.A. Young Soul Sista',       sub: 'Soul Portrait' },
+  { src: 'images/artist/LAAfro.jpg',         caption: 'L.A. Young Afro',             sub: 'Natural Beauty' },
+  { src: 'images/artist/LASoulLife.PNG',     caption: 'L.A. Young Soul Life',        sub: 'Living Soul' },
+  { src: 'images/artist/LAGreenDress.JPG',   caption: 'L.A. Young Green Dress',      sub: 'Emerald Elegance' },
+];
+
+var eventImages = [
+  // 62 event photos (burst duplicates removed, renumbered sequentially)
+  { src: 'images/gallery/event001.jpg', caption: 'Event photo 1',  sub: 'Live Performance' },
+  { src: 'images/gallery/event002.jpg', caption: 'Event photo 2',  sub: 'Live Performance' },
+  { src: 'images/gallery/event003.jpg', caption: 'Event photo 3',  sub: 'Live Performance' },
+  { src: 'images/gallery/event004.jpg', caption: 'Event photo 4',  sub: 'Live Performance' },
+  { src: 'images/gallery/event005.jpg', caption: 'Event photo 5',  sub: 'Live Performance' },
+  { src: 'images/gallery/event006.jpg', caption: 'Event photo 6',  sub: 'Live Performance' },
+  { src: 'images/gallery/event007.jpg', caption: 'Event photo 7',  sub: 'Live Performance' },
+  { src: 'images/gallery/event008.jpg', caption: 'Event photo 8',  sub: 'Live Performance' },
+  { src: 'images/gallery/event009.jpg', caption: 'Event photo 9',  sub: 'Live Performance' },
+  { src: 'images/gallery/event010.jpg', caption: 'Event photo 10', sub: 'Live Performance' },
+  { src: 'images/gallery/event011.jpg', caption: 'Event photo 11', sub: 'Live Performance' },
+  { src: 'images/gallery/event012.jpg', caption: 'Event photo 12', sub: 'Live Performance' },
+  { src: 'images/gallery/event013.jpg', caption: 'Event photo 13', sub: 'Live Performance' },
+  { src: 'images/gallery/event014.jpg', caption: 'Event photo 14', sub: 'Live Performance' },
+  { src: 'images/gallery/event015.jpg', caption: 'Event photo 15', sub: 'Live Performance' },
+  { src: 'images/gallery/event016.jpg', caption: 'Event photo 16', sub: 'Live Performance' },
+  { src: 'images/gallery/event017.jpg', caption: 'Event photo 17', sub: 'Live Performance' },
+  { src: 'images/gallery/event018.jpg', caption: 'Event photo 18', sub: 'Live Performance' },
+  { src: 'images/gallery/event019.jpg', caption: 'Event photo 19', sub: 'Live Performance' },
+  { src: 'images/gallery/event020.jpg', caption: 'Event photo 20', sub: 'Live Performance' },
+  { src: 'images/gallery/event021.jpg', caption: 'Event photo 21', sub: 'Live Performance' },
+  { src: 'images/gallery/event022.jpg', caption: 'Event photo 22', sub: 'Live Performance' },
+  { src: 'images/gallery/event023.jpg', caption: 'Event photo 23', sub: 'Live Performance' },
+  { src: 'images/gallery/event024.jpg', caption: 'Event photo 24', sub: 'Live Performance' },
+  { src: 'images/gallery/event025.jpg', caption: 'Event photo 25', sub: 'Live Performance' },
+  { src: 'images/gallery/event026.jpg', caption: 'Event photo 26', sub: 'Live Performance' },
+  { src: 'images/gallery/event027.jpg', caption: 'Event photo 27', sub: 'Live Performance' },
+  { src: 'images/gallery/event028.jpg', caption: 'Event photo 28', sub: 'Live Performance' },
+  { src: 'images/gallery/event029.jpg', caption: 'Event photo 29', sub: 'Live Performance' },
+  { src: 'images/gallery/event030.jpg', caption: 'Event photo 30', sub: 'Live Performance' },
+  { src: 'images/gallery/event031.jpg', caption: 'Event photo 31', sub: 'Live Performance' },
+  { src: 'images/gallery/event032.jpg', caption: 'Event photo 32', sub: 'Live Performance' },
+  { src: 'images/gallery/event033.jpg', caption: 'Event photo 33', sub: 'Live Performance' },
+  { src: 'images/gallery/event034.jpg', caption: 'Event photo 34', sub: 'Live Performance' },
+  { src: 'images/gallery/event035.jpg', caption: 'Event photo 35', sub: 'Live Performance' },
+  { src: 'images/gallery/event036.jpg', caption: 'Event photo 36', sub: 'Live Performance' },
+  { src: 'images/gallery/event037.jpg', caption: 'Event photo 37', sub: 'Live Performance' },
+  { src: 'images/gallery/event038.jpg', caption: 'Event photo 38', sub: 'Live Performance' },
+  { src: 'images/gallery/event039.jpg', caption: 'Event photo 39', sub: 'Live Performance' },
+  { src: 'images/gallery/event040.jpg', caption: 'Event photo 40', sub: 'Live Performance' },
+  { src: 'images/gallery/event041.jpg', caption: 'Event photo 41', sub: 'Live Performance' },
+  { src: 'images/gallery/event042.jpg', caption: 'Event photo 42', sub: 'Live Performance' },
+  { src: 'images/gallery/event043.jpg', caption: 'Event photo 43', sub: 'Live Performance' },
+  { src: 'images/gallery/event044.jpg', caption: 'Event photo 44', sub: 'Live Performance' },
+  { src: 'images/gallery/event045.jpg', caption: 'Event photo 45', sub: 'Live Performance' },
+  { src: 'images/gallery/event046.jpg', caption: 'Event photo 46', sub: 'Live Performance' },
+  { src: 'images/gallery/event047.jpg', caption: 'Event photo 47', sub: 'Live Performance' },
+  { src: 'images/gallery/event048.jpg', caption: 'Event photo 48', sub: 'Live Performance' },
+  { src: 'images/gallery/event049.jpg', caption: 'Event photo 49', sub: 'Live Performance' },
+  { src: 'images/gallery/event050.jpg', caption: 'Event photo 50', sub: 'Live Performance' },
+  { src: 'images/gallery/event051.jpg', caption: 'Event photo 51', sub: 'Live Performance' },
+  { src: 'images/gallery/event052.jpg', caption: 'Event photo 52', sub: 'Live Performance' },
+  { src: 'images/gallery/event053.jpg', caption: 'Event photo 53', sub: 'Live Performance' },
+  { src: 'images/gallery/event054.jpg', caption: 'Event photo 54', sub: 'Live Performance' },
+  { src: 'images/gallery/event055.jpg', caption: 'Event photo 55', sub: 'Live Performance' },
+  { src: 'images/gallery/event056.jpg', caption: 'Event photo 56', sub: 'Live Performance' },
+  { src: 'images/gallery/event057.jpg', caption: 'Event photo 57', sub: 'Live Performance' },
+  { src: 'images/gallery/event058.jpg', caption: 'Event photo 58', sub: 'Live Performance' },
+  { src: 'images/gallery/event059.jpg', caption: 'Event photo 59', sub: 'Live Performance' },
+  { src: 'images/gallery/event060.jpg', caption: 'Event photo 60', sub: 'Live Performance' },
+  { src: 'images/gallery/event061.jpg', caption: 'Event photo 61', sub: 'Live Performance' },
+  { src: 'images/gallery/event062.jpg', caption: 'Event photo 62', sub: 'Live Performance' },
+];
+
+// ─── Create Instances ───
+
+var Gallery = createGallery({ prefix: 'fg', images: artistImages, particleCount: 25 });
+var EventGallery = createGallery({ prefix: 'eg', images: eventImages, particleCount: 15, lazyLoad: true });
+
+// Expose globally
+window.Gallery = Gallery;
+window.EventGallery = EventGallery;
+window.createGallery = createGallery;

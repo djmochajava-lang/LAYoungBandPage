@@ -54,56 +54,52 @@
 
     <div class="divider"></div>
 
-    <!-- EVENT SLIDESHOW SECTION -->
-    <div class="slideshow-section scroll-reveal">
-      <h2 class="section-title">Event Slideshow</h2>
-      <p class="section-subtitle">Backstage Sneak Peeks & More</p>
+    <!-- EVENT GALLERY SECTION (Futuristic Showcase) -->
+    <div class="fg-header">
+      <h2 class="fg-title">Event Gallery</h2>
+      <p class="fg-subtitle">Backstage Sneak Peeks & More</p>
+      <div class="fg-header-line"><span></span></div>
+    </div>
 
-      <!-- Slideshow Container -->
-      <div class="slideshow-container">
-        <!-- Slideshow will be dynamically populated by JavaScript -->
-        <div class="slideshow-wrapper">
-          <div class="slideshow-image-container">
-            <img
-              id="slideshow-image"
-              src=""
-              alt="Event Photo"
-              class="slideshow-image"
-            />
+    <!-- Floating Particles (created by JS) -->
+    <div class="fg-particles" id="eg-particles"></div>
+    <!-- Scan Line -->
+    <div class="fg-scan-line"></div>
+
+    <!-- 3D Showcase -->
+    <div class="fg-showcase" id="eg-showcase">
+      <div class="fg-showcase-frame" id="eg-showcaseFrame">
+        <!-- Images injected by JS -->
+        <div class="fg-showcase-caption">
+          <div class="fg-caption-left">
+            <div class="fg-cap-title" id="eg-capTitle"></div>
+            <div class="fg-cap-sub" id="eg-capSub"></div>
           </div>
-
-          <!-- Navigation Arrows -->
-          <button class="slideshow-prev" aria-label="Previous slide">
-            <span>&#8249;</span>
-          </button>
-          <button class="slideshow-next" aria-label="Next slide">
-            <span>&#8250;</span>
-          </button>
-
-          <!-- Slide Counter -->
-          <div class="slideshow-counter">
-            <span id="current-slide">1</span> / <span id="total-slides">0</span>
-          </div>
-
-          <!-- Caption -->
-          <div class="slideshow-caption" id="slideshow-caption">
-            Backstage moments
-          </div>
+          <div class="fg-caption-right" id="eg-capCount"></div>
         </div>
+        <button class="fg-nav-btn fg-prev" id="eg-prevBtn" aria-label="Previous">&#8249;</button>
+        <button class="fg-nav-btn fg-next" id="eg-nextBtn" aria-label="Next">&#8250;</button>
+      </div>
+      <!-- Progress ring (built by JS to avoid innerHTML SVG issues) -->
+      <div class="fg-progress-ring-wrap" id="eg-progressRingWrap"></div>
+    </div>
 
-        <!-- Play/Pause Controls -->
-        <div class="slideshow-controls">
-          <button class="slideshow-control-btn" id="slideshow-play-pause">
-            <span class="play-icon">▶</span>
-            <span class="pause-icon" style="display: none">⏸</span>
-          </button>
-          <span class="slideshow-status">Auto-playing</span>
-        </div>
+    <!-- Thumbnail Strip -->
+    <div class="fg-thumb-strip" id="eg-thumbStrip">
+      <!-- Thumbnails injected by JS -->
+    </div>
 
-        <!-- Thumbnail Navigation (Optional) -->
-        <div class="slideshow-thumbnails" id="slideshow-thumbnails">
-          <!-- Thumbnails will be dynamically added here -->
-        </div>
+    <!-- Futuristic Lightbox -->
+    <div class="fg-lightbox" id="eg-lightbox">
+      <button class="fg-lb-close" id="eg-lbClose" aria-label="Close">&times;</button>
+      <button class="fg-lb-nav fg-lb-prev" id="eg-lbPrev" aria-label="Previous">&#8249;</button>
+      <button class="fg-lb-nav fg-lb-next" id="eg-lbNext" aria-label="Next">&#8250;</button>
+      <div class="fg-lb-img-wrap">
+        <img id="eg-lbImg" src="" alt="">
+      </div>
+      <div class="fg-lb-caption">
+        <div class="fg-lb-title" id="eg-lbTitle"></div>
+        <div class="fg-lb-count" id="eg-lbCount"></div>
       </div>
     </div>
 
