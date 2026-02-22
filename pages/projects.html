@@ -26,7 +26,7 @@
         </p>
 
         <div style="border-radius: 12px; box-shadow: inset 0 4px 12px rgba(0,0,0,0.7), inset 0 1px 3px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.4); padding: 4px; background: linear-gradient(145deg, #0d0d0d, #1a1a1a); overflow: hidden;">
-          <video preload="metadata" playsinline controls
+          <video id="project-video-1" preload="metadata" playsinline controls
                  src="Video/SentimentalMood.mp4"
                  style="width: 100%; display: block; border-radius: 8px;">
           </video>
@@ -39,7 +39,7 @@
         <p class="track-description">Behind the scenes in the studio</p>
 
         <div style="border-radius: 12px; box-shadow: inset 0 4px 12px rgba(0,0,0,0.7), inset 0 1px 3px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.4); padding: 4px; background: linear-gradient(145deg, #0d0d0d, #1a1a1a); overflow: hidden;">
-          <video preload="metadata" playsinline controls
+          <video id="project-video-2" preload="metadata" playsinline controls
                  src="Video/InStudio.mp4"
                  style="width: 100%; display: block; border-radius: 8px;">
           </video>
@@ -47,6 +47,141 @@
       </div>
 
     </div>
+
+    <!-- Video Control System: auto-play on scroll, mutual exclusion, no background music -->
+    <script>
+    (function() {
+      'use strict';
+
+      // ── References ──
+      var video1 = document.getElementById('project-video-1');
+      var video2 = document.getElementById('project-video-2');
+      if (!video1 || !video2) return;
+
+      var videos = [video1, video2];
+      var observer = null;
+
+      // ── State ──
+      var activeVideo = null;
+      var fullyVisible = new Map();
+      fullyVisible.set(video1, false);
+      fullyVisible.set(video2, false);
+
+      // ── Mutual Exclusion ──
+      function pauseOther(playing) {
+        videos.forEach(function(v) {
+          if (v !== playing && !v.paused) {
+            v.pause();
+          }
+        });
+      }
+
+      // ── Manual Play Handling ──
+      videos.forEach(function(v) {
+        v.addEventListener('play', function() {
+          activeVideo = v;
+          pauseOther(v);
+        });
+      });
+
+      // When a video ends, clear active status
+      videos.forEach(function(v) {
+        v.addEventListener('ended', function() {
+          if (activeVideo === v) {
+            activeVideo = null;
+          }
+        });
+      });
+
+      // ── IntersectionObserver: Auto-Play / Auto-Stop ──
+      if ('IntersectionObserver' in window) {
+        observer = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            var video = entry.target;
+            var otherVideo = (video === video1) ? video2 : video1;
+            var ratio = entry.intersectionRatio;
+
+            var isFullyVisible = (ratio >= 0.99);
+            var isFullyOffScreen = (ratio === 0);
+
+            fullyVisible.set(video, isFullyVisible);
+
+            // AUTO-STOP: Video goes fully off-screen
+            if (isFullyOffScreen && !video.paused) {
+              video.pause();
+              if (activeVideo === video) {
+                activeVideo = null;
+              }
+            }
+
+            // AUTO-PLAY: Video becomes fully visible
+            if (isFullyVisible && video.paused) {
+              var otherIsPlaying = !otherVideo.paused;
+              var otherIsFullyVisible = fullyVisible.get(otherVideo);
+
+              if (!otherIsPlaying) {
+                // Nothing playing — auto-play this video
+                video.play().catch(function() {});
+                activeVideo = video;
+              } else if (otherIsPlaying && !otherIsFullyVisible) {
+                // Other is playing but not fully visible — stop other, play this
+                otherVideo.pause();
+                video.play().catch(function() {});
+                activeVideo = video;
+              }
+              // If other is playing AND fully visible — do nothing (both-visible case)
+            }
+
+            // EDGE: This video is playing but no longer fully visible,
+            // and the other video just became fully visible
+            if (!isFullyVisible && !video.paused) {
+              var otherNowFullyVisible = fullyVisible.get(otherVideo);
+              if (otherNowFullyVisible) {
+                video.pause();
+                if (activeVideo === video) {
+                  activeVideo = null;
+                }
+                // Auto-play the other since it's fully visible
+                if (otherVideo.paused) {
+                  otherVideo.play().catch(function() {});
+                  activeVideo = otherVideo;
+                }
+              }
+            }
+          });
+        }, {
+          threshold: [0, 1.0]
+        });
+
+        observer.observe(video1);
+        observer.observe(video2);
+      }
+
+      // ── Page Leave Cleanup ──
+      function cleanup() {
+        videos.forEach(function(v) {
+          if (!v.paused) {
+            v.pause();
+          }
+        });
+        if (observer) {
+          observer.disconnect();
+        }
+        window.removeEventListener('hashchange', onHashChange);
+        window.removeEventListener('beforeunload', cleanup);
+      }
+
+      function onHashChange() {
+        var hash = window.location.hash.substring(1) || 'home';
+        if (hash !== 'projects') {
+          cleanup();
+        }
+      }
+
+      window.addEventListener('hashchange', onHashChange);
+      window.addEventListener('beforeunload', cleanup);
+    })();
+    </script>
 
     <div class="divider"></div>
 
