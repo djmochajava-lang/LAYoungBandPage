@@ -16,34 +16,34 @@
               <div class="vinyl-grooves"></div>
               <div class="vinyl-label">
                 <span class="vinyl-label-name">Gold Bottom Ent. LLC</span>
-                <span class="vinyl-label-title">No One Can Love You More</span>
+                <span class="vinyl-label-title">Introduction Groove</span>
                 <div class="vinyl-hole"></div>
               </div>
               <div class="vinyl-shine"></div>
             </div>
             <!-- Album Sleeve (on top) -->
             <div class="album-cover-art">
-              <img src="../images/artist/headshot3.jpg" alt="L.A. Young — No One Can Love You More" class="album-photo" />
+              <img src="../images/artist/headshot3.jpg" alt="L.A. Young — Introduction Groove" class="album-photo" />
               <div class="album-overlay"></div>
               <div class="album-text-top">
                 <p class="album-artist-top">L.A. Young</p>
                 <span class="album-type-corner">Single</span>
               </div>
               <div class="album-text">
-                <p class="album-title-cursive">No One Can Love You More</p>
+                <p class="album-title-cursive">Introduction Groove</p>
               </div>
               <div class="album-shine"></div>
             </div>
           </div>
           <p class="track-description">
-            Written by Skip Scarborough &bull; A Phyllis Hyman tribute
+            Original instrumental &bull; Soul groove
           </p>
         </div>
 
-        <h3 class="album-title-above" id="nowPlayingTitle">"No One Can Love You More"</h3>
+        <h3 class="album-title-above" id="nowPlayingTitle">"Introduction Groove"</h3>
         <div class="track-player">
           <audio id="featuredTrack" preload="metadata"
-                 src="../Media/no_one_can_love_you_more.mp3"></audio>
+                 src="../music/IntroductiongroveSoft.mp3"></audio>
           <div class="player-controls">
             <button class="player-nav-btn" id="prevBtn" onclick="playPrev()" title="Previous track">&#x23EE;</button>
             <button class="player-btn" id="playBtn" onclick="toggleTrack()">&#x25B6;</button>
@@ -776,18 +776,18 @@
           // --- Playlist data ---
           var playlist = [
             {
-              title: 'No One Can Love You More',
-              src: '../Media/no_one_can_love_you_more.mp3',
-              art: '../images/artist/headshot3.jpg',
-              description: 'Written by Skip Scarborough &bull; A Phyllis Hyman tribute',
-              hasLyrics: true
-            },
-            {
               title: 'Introduction Groove',
               src: '../music/IntroductiongroveSoft.mp3',
               art: '../images/artist/headshot3.jpg',
               description: 'Original instrumental &bull; Soul groove',
               hasLyrics: false
+            },
+            {
+              title: 'No One Can Love You More',
+              src: '../Media/no_one_can_love_you_more.mp3',
+              art: '../images/artist/headshot3.jpg',
+              description: 'Written by Skip Scarborough &bull; A Phyllis Hyman tribute',
+              hasLyrics: true
             },
             {
               title: 'Daydreaming In Sound',
@@ -1083,7 +1083,7 @@
         </script>
 
         <!-- Lyrics Scroller -->
-        <div class="lyrics-wrap" id="lyricsWrap">
+        <div class="lyrics-wrap" id="lyricsWrap" style="display:none">
           <div class="lyrics-header">
             <span class="lyrics-label">Lyrics</span>
             <button class="lyrics-toggle-btn" id="lyricsToggleBtn" onclick="toggleLyrics()">&#x25BC;</button>
