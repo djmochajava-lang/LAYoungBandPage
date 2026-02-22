@@ -3,15 +3,25 @@
    Gold (#ffd700) replaces Spotify green. Transparent UI over goldlights.jpg.
    ========================================================================== */
 
-/* --- Reset container for Spotify feel --- */
+/* --- Reset section + container for Spotify feel --- */
+/* When loaded inline via SPA, this <section> inherits .section styles
+   (height:100vh, display:flex, align-items:center, padding:6rem 0)
+   which break the full-page scrollable layout. Override them here.
+   Keep height:100vh + overflow-y:auto so the section remains the
+   scroll container (body has overflow:hidden). */
+#LAYoungMusicPlayer {
+  display: block !important;
+  padding: 0 !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  overflow-y: auto !important; /* backgrounds.css sets overflow:hidden on .section — restore scrolling */
+}
 #LAYoungMusicPlayer > .container {
   max-width: 100% !important;
   padding: 0 !important;
   width: 100% !important;
-}
-#LAYoungMusicPlayer {
-  padding: 0 !important;
-  min-height: 100vh;
+  max-height: none !important;
+  overflow-y: visible !important;
 }
 /* Override gold scrollbar from .section global */
 #LAYoungMusicPlayer::-webkit-scrollbar {
