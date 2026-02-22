@@ -11,6 +11,7 @@ const Router = {
     performances: 'pages/performances.html',
     LAYoungMusicPlayer: 'pages/LAYoungMusicPlayer.tpl',
     merch: 'pages/merch.html',
+    support: 'pages/support.html',
     contact: 'pages/contact.html',
   },
   currentPage: null,

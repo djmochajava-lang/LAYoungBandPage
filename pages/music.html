@@ -5,7 +5,7 @@
     <h2 class="section-title">Music 🎧</h2>
     <p class="section-subtitle">Soul in Full Color</p>
     <div class="music-content">
-      <!-- Featured Track -->
+      <!-- Featured Track — The Woman In Me -->
       <div class="featured-track scroll-reveal delay-1">
 
         <!-- Album + Vinyl -->
@@ -16,34 +16,37 @@
               <div class="vinyl-grooves"></div>
               <div class="vinyl-label">
                 <span class="vinyl-label-name">Gold Bottom Ent. LLC</span>
-                <span class="vinyl-label-title">No One Can Love You More</span>
+                <span class="vinyl-label-title">The Woman In Me</span>
                 <div class="vinyl-hole"></div>
               </div>
               <div class="vinyl-shine"></div>
             </div>
             <!-- Album Sleeve (on top) -->
             <div class="album-cover-art">
-              <img src="../images/artist/headshot3.jpg" alt="L.A. Young — No One Can Love You More" class="album-photo" />
+              <img src="../images/artist/Album.png" alt="L.A. Young — The Woman In Me" class="album-photo" />
               <div class="album-overlay"></div>
               <div class="album-text-top">
                 <p class="album-artist-top">L.A. Young</p>
                 <span class="album-type-corner">Single</span>
               </div>
               <div class="album-text">
-                <p class="album-title-cursive">No One Can Love You More</p>
+                <p class="album-title-cursive">The Woman In Me</p>
               </div>
               <div class="album-shine"></div>
             </div>
           </div>
           <p class="track-description">
-            Written by Skip Scarborough &bull; A Phyllis Hyman tribute
+            Written by L.A. Young &bull; Original
           </p>
         </div>
 
-        <h3 class="album-title-above">"No One Can Love You More"</h3>
+        <h3 class="album-title-above">"The Woman In Me"</h3>
+        <p class="track-description" style="text-align:center; margin: -0.5rem auto 1rem; max-width:520px;">
+          Written by Robert John Lange &amp; Shania Twain
+        </p>
         <div class="track-player">
           <audio id="featuredTrack" preload="metadata"
-                 src="../Media/no_one_can_love_you_more.mp3"></audio>
+                 src="../Media/The_Woman_In_Me_warm_polish.mp3"></audio>
           <div class="player-controls">
             <button class="player-btn" id="playBtn" onclick="toggleTrack()">&#x25B6;</button>
             <div class="player-progress-wrap" id="progressWrap" onclick="seekTrack(event)">
@@ -55,6 +58,7 @@
               <input type="range" class="volume-slider" id="volumeSlider"
                      min="0" max="100" value="80" oninput="setVolume(this.value)">
             </div>
+            <button class="lyrics-inline-btn" id="lyricsInlineBtn1" onclick="toggleLyrics1()" title="Lyrics">&#x266B; <span class="lyrics-btn-text">Lyrics</span></button>
           </div>
         </div>
         <style>
@@ -521,110 +525,191 @@
             border: none;
           }
 
-          /* --- Lyrics Scroller --- */
-          .lyrics-wrap {
-            max-width: 520px;
-            margin: 18px auto 0;
-          }
-          .lyrics-header {
+          /* --- Inline Lyrics Button (in player bar) --- */
+          .lyrics-inline-btn {
+            background: none;
+            border: 1px solid rgba(255,215,0,0.3);
+            color: rgba(255,215,0,0.6);
+            font-size: 12px;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            letter-spacing: 0.5px;
+            height: 30px;
+            padding: 0 12px;
+            border-radius: 15px;
+            cursor: pointer;
+            flex-shrink: 0;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding: 8px 18px;
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,215,0,0.15);
-            border-bottom: none;
-            border-radius: 12px 12px 0 0;
-            cursor: pointer;
+            justify-content: center;
+            gap: 5px;
+            transition: all 0.2s ease;
+            margin-left: 4px;
+            white-space: nowrap;
           }
-          .lyrics-header:hover {
-            background: rgba(0,0,0,0.4);
+          .lyrics-btn-text {
+            color: rgba(255,255,255,0.45);
           }
-          .lyrics-label {
-            font-size: 11px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: rgba(255,215,0,0.6);
+          .lyrics-inline-btn:hover {
+            color: #ffd700;
+            border-color: rgba(255,215,0,0.6);
+            background: rgba(255,215,0,0.1);
           }
-          .lyrics-toggle-btn {
-            background: none;
-            border: none;
-            color: rgba(255,215,0,0.5);
-            font-size: 12px;
-            cursor: pointer;
-            padding: 0;
-            transition: transform 0.3s ease;
+          .lyrics-inline-btn:hover .lyrics-btn-text {
+            color: rgba(255,255,255,0.7);
           }
-          .lyrics-wrap.collapsed .lyrics-toggle-btn {
-            transform: rotate(-90deg);
+          .lyrics-inline-btn.active {
+            color: #ffd700;
+            border-color: #ffd700;
+            background: rgba(255,215,0,0.15);
           }
-          .lyrics-scroll {
-            max-height: 200px;
+          .lyrics-inline-btn.active .lyrics-btn-text {
+            color: rgba(255,255,255,0.8);
+          }
+
+          /* --- Lyrics Popup Overlay --- */
+          .lyrics-overlay {
+            position: fixed !important;
+            inset: 0;
+            z-index: 10000 !important;
+            background: rgba(2, 2, 5, 0.96);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
             overflow-y: auto;
-            background: rgba(0,0,0,0.35);
-            border: 1px solid rgba(255,215,0,0.15);
-            border-top: 1px solid rgba(255,215,0,0.08);
-            border-radius: 0 0 12px 12px;
-            backdrop-filter: blur(6px);
-            transition: max-height 0.4s ease, opacity 0.3s ease;
-            scroll-behavior: smooth;
-          }
-          .lyrics-wrap.collapsed .lyrics-scroll {
-            max-height: 0;
             opacity: 0;
-            border: none;
-            overflow: hidden;
+            visibility: hidden;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
           }
-          /* Custom scrollbar */
-          .lyrics-scroll::-webkit-scrollbar {
-            width: 4px;
+          .lyrics-overlay.open {
+            opacity: 1;
+            visibility: visible;
           }
-          .lyrics-scroll::-webkit-scrollbar-track {
-            background: transparent;
+
+          /* --- Lyrics Paper Document --- */
+          .lyrics-paper {
+            position: relative;
+            width: 100%;
+            max-width: 720px;
+            background: #f9f6f0;
+            padding: 50px 55px 60px;
+            box-shadow:
+              inset 0 0 30px rgba(0, 0, 0, 0.06),
+              0 15px 60px rgba(0, 0, 0, 0.5),
+              0 5px 20px rgba(0, 0, 0, 0.3);
+            transform: scale(0.88) translateY(20px);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: auto 0;
           }
-          .lyrics-scroll::-webkit-scrollbar-thumb {
-            background: rgba(255,215,0,0.25);
-            border-radius: 2px;
+          .lyrics-overlay.open .lyrics-paper {
+            transform: scale(1) translateY(0);
           }
-          .lyrics-scroll::-webkit-scrollbar-thumb:hover {
-            background: rgba(255,215,0,0.4);
+          .lyrics-paper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+              linear-gradient(to right, rgba(0,0,0,0.03) 0%, transparent 3%, transparent 97%, rgba(0,0,0,0.03) 100%),
+              linear-gradient(to bottom, rgba(0,0,0,0.04) 0%, transparent 2%, transparent 98%, rgba(0,0,0,0.03) 100%);
+            pointer-events: none;
           }
-          .lyrics-content {
-            padding: 16px 24px 20px;
+
+          /* --- Close Button --- */
+          .lyrics-close {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            background: rgba(255, 255, 255, 0.5);
+            color: #2a2a2a;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            line-height: 1;
           }
-          .lyric-line {
-            font-size: 14px;
-            line-height: 1.9;
-            color: rgba(255,255,255,0.55);
-            margin: 0;
-            padding: 2px 0;
-            font-family: Georgia, 'Times New Roman', serif;
+          .lyrics-close:hover {
+            background: #2a2a2a;
+            color: #f9f6f0;
+            border-color: #2a2a2a;
+          }
+
+          /* --- Paper Header --- */
+          .lyrics-paper-header {
+            text-align: center;
+            margin-bottom: 30px;
+          }
+          .lyrics-paper-title {
+            font-family: 'Times New Roman', Georgia, 'Palatino Linotype', serif;
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #2a2a2a;
+            margin-bottom: 8px;
+          }
+          .lyrics-paper-byline {
+            font-family: 'Times New Roman', Georgia, serif;
+            font-size: 13px;
             font-style: italic;
+            color: #888;
+            letter-spacing: 1px;
+          }
+          .lyrics-paper-divider {
+            width: 80px;
+            height: 1px;
+            background: #ccc;
+            margin: 20px auto;
+          }
+
+          /* --- Lyric Lines on Paper --- */
+          .lyrics-paper-body {
             text-align: center;
           }
-          .lyric-line.chorus {
-            color: rgba(255,215,0,0.55);
+          .lyrics-paper-line {
+            font-family: 'Times New Roman', Georgia, 'Palatino Linotype', serif;
+            font-size: 13pt;
+            line-height: 2.2;
+            color: #2a2a2a;
+            margin: 0;
+            padding: 0;
+            font-style: italic;
           }
-          .lyric-line.verse-start {
-            margin-top: 2px;
+          .lyrics-paper-line.chorus {
+            color: #8b6914;
+            font-weight: 600;
           }
-          /* Top/bottom fade masks */
-          .lyrics-scroll {
-            -webkit-mask-image: linear-gradient(
-              to bottom,
-              transparent 0%,
-              black 12%,
-              black 88%,
-              transparent 100%
-            );
-            mask-image: linear-gradient(
-              to bottom,
-              transparent 0%,
-              black 12%,
-              black 88%,
-              transparent 100%
-            );
+          .lyrics-paper-line.verse-gap {
+            line-height: 1.2;
+          }
+
+          /* --- Lyrics Responsive --- */
+          @media (max-width: 768px) {
+            .lyrics-overlay {
+              padding: 20px 10px;
+            }
+            .lyrics-paper {
+              padding: 30px 22px 40px;
+            }
+            .lyrics-paper-title {
+              font-size: 18px;
+              letter-spacing: 1px;
+            }
+            .lyrics-close {
+              top: 10px;
+              right: 12px;
+              width: 36px;
+              height: 36px;
+              font-size: 1.3rem;
+            }
           }
         </style>
         <script>
@@ -725,104 +810,364 @@
               volumeBtn.innerHTML = '&#x1F50A;';  // high
             }
           }
+        })();
+        </script>
 
-          // Lyrics smooth auto-scroll synced to song duration
-          var lyricsScroll = document.getElementById('lyricsScroll');
-          var lyricsContent = document.getElementById('lyricsContent');
-          var userScrolling = false;
-          var userScrollTimer = null;
+        <!-- Lyrics Popup — The Woman In Me -->
+        <div class="lyrics-overlay" id="lyricsOverlay1">
+          <div class="lyrics-paper">
+            <button class="lyrics-close" id="lyricsClose1" aria-label="Close lyrics">&times;</button>
+            <div class="lyrics-paper-header">
+              <h2 class="lyrics-paper-title">The Woman In Me</h2>
+              <p class="lyrics-paper-byline">Written by Robert John Lange &amp; Shania Twain</p>
+              <div class="lyrics-paper-divider"></div>
+            </div>
+            <div class="lyrics-paper-body">
+              <p class="lyrics-paper-line">Oh, oh, oh</p>
+              <p class="lyrics-paper-line">Mm, mm</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line">I'm not always strong</p>
+              <p class="lyrics-paper-line">And sometimes I'm even wrong</p>
+              <p class="lyrics-paper-line">But I win when I choose</p>
+              <p class="lyrics-paper-line">And I can't stand to lose</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line">But I can't always be</p>
+              <p class="lyrics-paper-line">The rock that you see</p>
+              <p class="lyrics-paper-line">When the nights get too long</p>
+              <p class="lyrics-paper-line">And I just can't go on</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line chorus">The woman in me</p>
+              <p class="lyrics-paper-line chorus">Needs you to be</p>
+              <p class="lyrics-paper-line chorus">The man in my arms</p>
+              <p class="lyrics-paper-line chorus">To hold tenderly</p>
+              <p class="lyrics-paper-line chorus">'Cause I'm a woman in love</p>
+              <p class="lyrics-paper-line chorus">And it's you I run to</p>
+              <p class="lyrics-paper-line chorus">Yeah, the woman in me</p>
+              <p class="lyrics-paper-line chorus">Needs the man in you</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line">When the world wants too much</p>
+              <p class="lyrics-paper-line">And it feels cold and out of touch</p>
+              <p class="lyrics-paper-line">Oh, it's a beautiful place</p>
+              <p class="lyrics-paper-line">When you kiss my face</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line chorus">The woman in me</p>
+              <p class="lyrics-paper-line chorus">Needs you to be</p>
+              <p class="lyrics-paper-line chorus">The man in my arms</p>
+              <p class="lyrics-paper-line chorus">To hold tenderly</p>
+              <p class="lyrics-paper-line chorus">'Cause I'm a woman in love</p>
+              <p class="lyrics-paper-line chorus">And it's you I run to</p>
+              <p class="lyrics-paper-line chorus">Yeah, the woman in me</p>
+              <p class="lyrics-paper-line chorus">Needs the man in you</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line chorus">Yeah, the woman in me</p>
+              <p class="lyrics-paper-line chorus">Needs the man in you</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line">I need you, baby</p>
+              <p class="lyrics-paper-line">Yeah, yeah</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line">Oh, baby</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line">Oh</p>
+              <p class="lyrics-paper-line">Yeah, yeah, I need you, baby</p>
+            </div>
+          </div>
+        </div>
+        <script>
+        (function() {
+          'use strict';
+          var overlay = document.getElementById('lyricsOverlay1');
+          var closeBtn = document.getElementById('lyricsClose1');
+          var btn = document.getElementById('lyricsInlineBtn1');
+          var savedOverflow = '';
 
-          // Detect manual scroll — pause auto-scroll briefly
-          if (lyricsScroll) {
-            lyricsScroll.addEventListener('wheel', function() {
-              userScrolling = true;
-              clearTimeout(userScrollTimer);
-              userScrollTimer = setTimeout(function() { userScrolling = false; }, 4000);
-            });
-            lyricsScroll.addEventListener('touchmove', function() {
-              userScrolling = true;
-              clearTimeout(userScrollTimer);
-              userScrollTimer = setTimeout(function() { userScrolling = false; }, 4000);
-            });
+          // Move overlay to body so it escapes section overflow:hidden clipping
+          if (overlay) document.body.appendChild(overlay);
+
+          function openLyrics() {
+            savedOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            overlay.classList.add('open');
+            if (btn) btn.classList.add('active');
+            setTimeout(function() { closeBtn.focus(); }, 400);
           }
 
-          audio.addEventListener('timeupdate', function() {
-            if (!audio.duration || !lyricsScroll || !lyricsContent || userScrolling) return;
+          function closeLyrics() {
+            overlay.classList.remove('open');
+            document.body.style.overflow = savedOverflow;
+            overlay.scrollTop = 0;
+            if (btn) btn.classList.remove('active');
+          }
 
-            var pct = audio.currentTime / audio.duration;
-            var maxScroll = lyricsContent.scrollHeight - lyricsScroll.clientHeight;
-            if (maxScroll > 0) {
-              lyricsScroll.scrollTop = pct * maxScroll;
+          window.toggleLyrics1 = function() {
+            if (overlay.classList.contains('open')) {
+              closeLyrics();
+            } else {
+              openLyrics();
+            }
+          };
+
+          if (closeBtn) closeBtn.addEventListener('click', closeLyrics);
+
+          if (overlay) overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) closeLyrics();
+          });
+
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) {
+              closeLyrics();
+            }
+          });
+        })();
+        </script>
+
+      </div>
+
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Track 2 — No One Can Love You More -->
+    <div class="music-content">
+      <div class="featured-track scroll-reveal delay-1">
+
+        <h3 class="album-title-above">"No One Can Love You More"</h3>
+        <p class="track-description" style="text-align:center; margin: -0.5rem auto 1rem; max-width:520px;">
+          Written by Skip Scarborough &bull; A Phyllis Hyman tribute
+        </p>
+        <div class="track-player">
+          <audio id="track2Audio" preload="metadata"
+                 src="../Media/no_one_can_love_you_more.mp3"></audio>
+          <div class="player-controls">
+            <button class="player-btn" id="playBtn2" onclick="toggleTrack2()">&#x25B6;</button>
+            <div class="player-progress-wrap" id="progressWrap2" onclick="seekTrack2(event)">
+              <div class="player-progress" id="progressBar2"></div>
+            </div>
+            <span class="player-time" id="playerTime2">0:00 / 0:00</span>
+            <div class="player-volume">
+              <button class="volume-icon-btn" id="volumeBtn2" onclick="toggleMute2()">&#x1F50A;</button>
+              <input type="range" class="volume-slider" id="volumeSlider2"
+                     min="0" max="100" value="80" oninput="setVolume2(this.value)">
+            </div>
+            <button class="lyrics-inline-btn" id="lyricsInlineBtn" onclick="toggleLyrics()" title="Lyrics">&#x266B; <span class="lyrics-btn-text">Lyrics</span></button>
+          </div>
+        </div>
+        <script>
+        (function() {
+          var audio2 = document.getElementById('track2Audio');
+          var playBtn2 = document.getElementById('playBtn2');
+          var progressBar2 = document.getElementById('progressBar2');
+          var playerTime2 = document.getElementById('playerTime2');
+          var audio1 = document.getElementById('featuredTrack');
+          var playBtn1 = document.getElementById('playBtn');
+          var bgMusicWasEnabled2 = false;
+
+          function fmt(s) {
+            var m = Math.floor(s / 60);
+            var sec = Math.floor(s % 60);
+            return m + ':' + (sec < 10 ? '0' : '') + sec;
+          }
+
+          function stopBackgroundMusic() {
+            if (typeof BackgroundMusic !== 'undefined' && BackgroundMusic.currentAudio) {
+              bgMusicWasEnabled2 = BackgroundMusic.enabled;
+              BackgroundMusic.stop();
+            }
+          }
+
+          function resumeBackgroundMusic() {
+            if (typeof BackgroundMusic !== 'undefined' && bgMusicWasEnabled2) {
+              BackgroundMusic.handlePageChange();
+            }
+          }
+
+          // Stop track 1 if it's playing when track 2 starts
+          function stopTrack1() {
+            if (audio1 && !audio1.paused) {
+              audio1.pause();
+              if (playBtn1) playBtn1.innerHTML = '&#x25B6;';
+            }
+          }
+
+          audio2.addEventListener('timeupdate', function() {
+            if (audio2.duration) {
+              progressBar2.style.width = (audio2.currentTime / audio2.duration * 100) + '%';
+              playerTime2.textContent = fmt(audio2.currentTime) + ' / ' + fmt(audio2.duration);
             }
           });
 
-          // Reset lyrics on ended
-          audio.addEventListener('ended', function() {
-            if (lyricsScroll) lyricsScroll.scrollTop = 0;
+          audio2.addEventListener('loadedmetadata', function() {
+            playerTime2.textContent = '0:00 / ' + fmt(audio2.duration);
           });
 
-          // Toggle lyrics panel
-          window.toggleLyrics = function() {
-            var wrap = document.getElementById('lyricsWrap');
-            if (wrap) wrap.classList.toggle('collapsed');
+          audio2.addEventListener('ended', function() {
+            playBtn2.innerHTML = '&#x25B6;';
+            resumeBackgroundMusic();
+          });
+
+          window.toggleTrack2 = function() {
+            if (audio2.paused) {
+              stopTrack1();
+              stopBackgroundMusic();
+              audio2.play();
+              playBtn2.innerHTML = '&#x23F8;';
+            } else {
+              audio2.pause();
+              playBtn2.innerHTML = '&#x25B6;';
+              resumeBackgroundMusic();
+            }
           };
 
-          // Also toggle when clicking header
-          var lyricsHeader = document.querySelector('.lyrics-header');
-          if (lyricsHeader) {
-            lyricsHeader.addEventListener('click', function(e) {
-              if (e.target.closest('.lyrics-toggle-btn')) return; // avoid double toggle
-              window.toggleLyrics();
+          window.seekTrack2 = function(e) {
+            var wrap = document.getElementById('progressWrap2');
+            var rect = wrap.getBoundingClientRect();
+            var pct = (e.clientX - rect.left) / rect.width;
+            audio2.currentTime = pct * audio2.duration;
+          };
+
+          // Volume controls
+          var volumeSlider2 = document.getElementById('volumeSlider2');
+          var volumeBtn2 = document.getElementById('volumeBtn2');
+          var lastVolume2 = 0.8;
+          audio2.volume = 0.8;
+
+          window.setVolume2 = function(val) {
+            var vol = val / 100;
+            audio2.volume = vol;
+            lastVolume2 = vol > 0 ? vol : lastVolume2;
+            updateVolumeIcon2(vol);
+          };
+
+          window.toggleMute2 = function() {
+            if (audio2.volume > 0) {
+              lastVolume2 = audio2.volume;
+              audio2.volume = 0;
+              volumeSlider2.value = 0;
+            } else {
+              audio2.volume = lastVolume2 || 0.8;
+              volumeSlider2.value = audio2.volume * 100;
+            }
+            updateVolumeIcon2(audio2.volume);
+          };
+
+          function updateVolumeIcon2(vol) {
+            if (vol === 0) {
+              volumeBtn2.innerHTML = '&#x1F507;';
+            } else if (vol < 0.4) {
+              volumeBtn2.innerHTML = '&#x1F509;';
+            } else {
+              volumeBtn2.innerHTML = '&#x1F50A;';
+            }
+          }
+
+          // Also stop track 2 when track 1 plays (cross-wire)
+          if (audio1) {
+            audio1.addEventListener('play', function() {
+              if (!audio2.paused) {
+                audio2.pause();
+                playBtn2.innerHTML = '&#x25B6;';
+              }
             });
           }
         })();
         </script>
 
-        <!-- Lyrics Scroller -->
-        <div class="lyrics-wrap" id="lyricsWrap">
-          <div class="lyrics-header">
-            <span class="lyrics-label">Lyrics</span>
-            <button class="lyrics-toggle-btn" id="lyricsToggleBtn" onclick="toggleLyrics()">&#x25BC;</button>
-          </div>
-          <div class="lyrics-scroll" id="lyricsScroll">
-            <div class="lyrics-content" id="lyricsContent">
-              <p class="lyric-line verse-start">No one can tell me</p>
-              <p class="lyric-line">That I'm pretending</p>
-              <p class="lyric-line">Why should I play games?</p>
-              <p class="lyric-line">Love's not a plaything</p>
-              <p class="lyric-line">&nbsp;</p>
-              <p class="lyric-line">Questions people ask of me</p>
-              <p class="lyric-line">For loving you</p>
-              <p class="lyric-line">Why should I say the reasons on my own?</p>
-              <p class="lyric-line">&nbsp;</p>
-              <p class="lyric-line chorus">No one has wanted more than I want you</p>
-              <p class="lyric-line chorus">No one has needed more than I do</p>
-              <p class="lyric-line chorus">No one has wanted more than I want you</p>
-              <p class="lyric-line chorus">No one has needed more than I love you</p>
-              <p class="lyric-line">&nbsp;</p>
-              <p class="lyric-line verse-start">No, I'm not dreaming</p>
-              <p class="lyric-line">Love has a meaning</p>
-              <p class="lyric-line">You're all I live for</p>
-              <p class="lyric-line">No one can give more</p>
-              <p class="lyric-line">&nbsp;</p>
-              <p class="lyric-line">Questions people ask of me</p>
-              <p class="lyric-line">For loving you</p>
-              <p class="lyric-line">Why should I say the reasons on my own?</p>
-              <p class="lyric-line">&nbsp;</p>
-              <p class="lyric-line chorus">No one has wanted more than I want you</p>
-              <p class="lyric-line chorus">No one has needed more than I do</p>
-              <p class="lyric-line chorus">No one has wanted more than I want you</p>
-              <p class="lyric-line chorus">No one has needed more than I love you</p>
-              <p class="lyric-line">&nbsp;</p>
-              <p class="lyric-line chorus">No one has wanted more than I want you</p>
-              <p class="lyric-line chorus">No one has needed more than I do</p>
-              <p class="lyric-line chorus">No one has wanted more than I want you</p>
-              <p class="lyric-line chorus">No one has needed more than I love you</p>
+        <!-- Lyrics Popup -->
+        <div class="lyrics-overlay" id="lyricsOverlay">
+          <div class="lyrics-paper">
+            <button class="lyrics-close" id="lyricsClose" aria-label="Close lyrics">&times;</button>
+            <div class="lyrics-paper-header">
+              <h2 class="lyrics-paper-title">No One Can Love You More</h2>
+              <p class="lyrics-paper-byline">Written by Skip Scarborough &bull; A Phyllis Hyman tribute</p>
+              <div class="lyrics-paper-divider"></div>
+            </div>
+            <div class="lyrics-paper-body">
+              <p class="lyrics-paper-line">No one can tell me</p>
+              <p class="lyrics-paper-line">That I'm pretending</p>
+              <p class="lyrics-paper-line">Why should I play games?</p>
+              <p class="lyrics-paper-line">Love's not a plaything</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line">Questions people ask of me</p>
+              <p class="lyrics-paper-line">For loving you</p>
+              <p class="lyrics-paper-line">Why should I say the reasons on my own?</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line chorus">No one has wanted more than I want you</p>
+              <p class="lyrics-paper-line chorus">No one has needed more than I do</p>
+              <p class="lyrics-paper-line chorus">No one has wanted more than I want you</p>
+              <p class="lyrics-paper-line chorus">No one has needed more than I love you</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line">No, I'm not dreaming</p>
+              <p class="lyrics-paper-line">Love has a meaning</p>
+              <p class="lyrics-paper-line">You're all I live for</p>
+              <p class="lyrics-paper-line">No one can give more</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line">Questions people ask of me</p>
+              <p class="lyrics-paper-line">For loving you</p>
+              <p class="lyrics-paper-line">Why should I say the reasons on my own?</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line chorus">No one has wanted more than I want you</p>
+              <p class="lyrics-paper-line chorus">No one has needed more than I do</p>
+              <p class="lyrics-paper-line chorus">No one has wanted more than I want you</p>
+              <p class="lyrics-paper-line chorus">No one has needed more than I love you</p>
+              <p class="lyrics-paper-line verse-gap">&nbsp;</p>
+              <p class="lyrics-paper-line chorus">No one has wanted more than I want you</p>
+              <p class="lyrics-paper-line chorus">No one has needed more than I do</p>
+              <p class="lyrics-paper-line chorus">No one has wanted more than I want you</p>
+              <p class="lyrics-paper-line chorus">No one has needed more than I love you</p>
             </div>
           </div>
         </div>
-      </div>
+        <script>
+        (function() {
+          'use strict';
+          var overlay = document.getElementById('lyricsOverlay');
+          var closeBtn = document.getElementById('lyricsClose');
+          var btn = document.getElementById('lyricsInlineBtn');
+          var savedOverflow = '';
 
+          // Move overlay to body so it escapes section overflow:hidden clipping
+          if (overlay) document.body.appendChild(overlay);
+
+          function openLyrics() {
+            savedOverflow = document.body.style.overflow;
+            document.body.style.overflow = 'hidden';
+            overlay.classList.add('open');
+            if (btn) btn.classList.add('active');
+            setTimeout(function() { closeBtn.focus(); }, 400);
+          }
+
+          function closeLyrics() {
+            overlay.classList.remove('open');
+            document.body.style.overflow = savedOverflow;
+            overlay.scrollTop = 0;
+            if (btn) btn.classList.remove('active');
+          }
+
+          // Wire up toggleLyrics (called by the music note button onclick)
+          window.toggleLyrics = function() {
+            if (overlay.classList.contains('open')) {
+              closeLyrics();
+            } else {
+              openLyrics();
+            }
+          };
+
+          // Close button
+          if (closeBtn) closeBtn.addEventListener('click', closeLyrics);
+
+          // Backdrop click (click overlay, not paper)
+          if (overlay) overlay.addEventListener('click', function(e) {
+            if (e.target === overlay) closeLyrics();
+          });
+
+          // ESC key
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) {
+              closeLyrics();
+            }
+          });
+        })();
+        </script>
+      </div>
     </div>
 
     <div class="divider"></div>

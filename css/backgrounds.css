@@ -127,6 +127,14 @@
   background-attachment: fixed;
 }
 
+/* Support (Tip Jar / Patronage) */
+#support {
+  background-image: url('../images/backgrounds/luxuryfabric.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
 /* Connect */
 #contact {
   background-image: url('../images/backgrounds/smoke.jpg');
