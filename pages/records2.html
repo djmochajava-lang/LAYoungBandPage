@@ -982,6 +982,9 @@
     audio.src = playlist[index].src;
     audio.load();
 
+    // Re-apply current volume/mute after load (load() can reset volume)
+    applyVolume();
+
     // Update active highlight
     for (var i = 0; i < trackItems.length; i++) {
       trackItems[i].classList.toggle('sp-active', i === index);
@@ -1111,8 +1114,9 @@
 
   // Knob rotation: -135deg (min/mute) to +135deg (max)
   var knobAngle = 135;    // Start at max (135 = 100%)
-  var prevVolume = 1;
+  var currentVolume = 1;  // Track the current volume level (0-1)
   var isMuted = false;
+  var prevVolumeBeforeMute = 1;
 
   function angleToVolume(angle) {
     // -135 = 0%, +135 = 100%
@@ -1123,16 +1127,14 @@
     return (vol * 270) - 135;
   }
 
-  function setKnobAngle(angle) {
-    knobAngle = Math.max(-135, Math.min(135, angle));
-    knobIndicator.style.transform = 'translateX(-50%) rotate(' + knobAngle + 'deg)';
-    var vol = angleToVolume(knobAngle);
-    audio.volume = vol;
-    var pct = Math.round(vol * 100);
-    volPct.textContent = pct;
+  // Apply the current volume/mute state to the audio element
+  function applyVolume() {
+    audio.volume = isMuted ? 0 : currentVolume;
+    audio.muted = isMuted;
+  }
 
-    // Update icon
-    if (vol === 0) {
+  function updateVolumeIcon(vol) {
+    if (isMuted || vol === 0) {
       volIcon.innerHTML = '&#x1f507;';
       volIcon.classList.add('sp-muted');
     } else if (vol < 0.5) {
@@ -1142,6 +1144,18 @@
       volIcon.innerHTML = '&#x1f50a;';
       volIcon.classList.remove('sp-muted');
     }
+  }
+
+  function setKnobAngle(angle) {
+    knobAngle = Math.max(-135, Math.min(135, angle));
+    knobIndicator.style.transform = 'translateX(-50%) rotate(' + knobAngle + 'deg)';
+    currentVolume = angleToVolume(knobAngle);
+    var pct = Math.round(currentVolume * 100);
+    volPct.textContent = pct;
+
+    // Apply to audio
+    applyVolume();
+    updateVolumeIcon(currentVolume);
   }
 
   // Initialize knob position
@@ -1174,8 +1188,11 @@
     // Dragging up = louder, down = quieter
     var deltaY = dragStartY - point.clientY;
     var newAngle = dragStartAngle + (deltaY * 1.8);
+    // Un-mute when user drags the knob
+    if (isMuted) {
+      isMuted = false;
+    }
     setKnobAngle(newAngle);
-    isMuted = false;
   }
 
   function endDrag() {
@@ -1187,17 +1204,32 @@
     document.removeEventListener('touchend', endDrag);
   }
 
-  // Mute toggle via icon click
+  // Mute toggle via icon click — track keeps playing, just silences output
   volIcon.addEventListener('click', function () {
     if (isMuted) {
+      // Unmute — restore previous volume
       isMuted = false;
-      setKnobAngle(volumeToAngle(prevVolume));
+      currentVolume = prevVolumeBeforeMute;
+      setKnobAngle(volumeToAngle(currentVolume));
     } else {
-      prevVolume = angleToVolume(knobAngle);
-      if (prevVolume < 0.05) prevVolume = 0.5;
+      // Mute — remember current volume, silence audio
+      prevVolumeBeforeMute = currentVolume;
+      if (prevVolumeBeforeMute < 0.05) prevVolumeBeforeMute = 0.5;
       isMuted = true;
-      setKnobAngle(-135);
+      applyVolume();
+      updateVolumeIcon(0);
+      volPct.textContent = '0';
     }
+  });
+
+  /* ---- Hide global music toggle on this page (has its own controls) ---- */
+  var globalMusicBtn = document.getElementById('music-toggle');
+  if (globalMusicBtn) globalMusicBtn.style.display = 'none';
+
+  // Restore it when navigating away
+  window.addEventListener('hashchange', function restoreGlobalBtn() {
+    if (globalMusicBtn) globalMusicBtn.style.display = '';
+    window.removeEventListener('hashchange', restoreGlobalBtn);
   });
 
   /* ---- About Toggle ---- */

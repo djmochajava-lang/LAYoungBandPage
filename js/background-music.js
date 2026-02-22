@@ -77,8 +77,8 @@ const BackgroundMusic = {
     const hash = window.location.hash.substring(1) || 'home';
     const trackPath = this.pageTracks[hash];
 
-    // Never play background music on music/videos pages
-    if (hash === 'music' || hash === 'videos') {
+    // Never play background music on pages with their own audio players
+    if (hash === 'music' || hash === 'videos' || hash === 'records2') {
       this.stop();
       return;
     }
