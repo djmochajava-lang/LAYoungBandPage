@@ -692,6 +692,188 @@
     width: 200px;
   }
 }
+
+/* ===== FOLLOW MODAL ===== */
+.sp-follow-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  align-items: center;
+  justify-content: center;
+}
+.sp-follow-overlay.active {
+  display: flex;
+}
+.sp-follow-modal {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 380px;
+  padding: 32px 28px;
+  position: relative;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+}
+.sp-follow-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 22px;
+  cursor: pointer;
+  padding: 4px 8px;
+  line-height: 1;
+}
+.sp-follow-close:hover { color: #fff; }
+.sp-follow-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: #ffd700;
+  text-align: center;
+  margin-bottom: 6px;
+}
+.sp-follow-subtitle {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  margin-bottom: 24px;
+}
+.sp-social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 10px;
+  transition: opacity 0.2s;
+}
+.sp-social-btn:hover { opacity: 0.85; }
+.sp-social-btn.google {
+  background: #4285f4;
+  color: #fff;
+}
+.sp-social-btn.apple {
+  background: #000;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.sp-social-btn.microsoft {
+  background: #2f2f2f;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.sp-social-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.sp-follow-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.sp-follow-divider::before,
+.sp-follow-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+.sp-follow-input {
+  width: 100%;
+  padding: 11px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 14px;
+  margin-bottom: 10px;
+  outline: none;
+  box-sizing: border-box;
+}
+.sp-follow-input:focus {
+  border-color: rgba(255, 215, 0, 0.5);
+}
+.sp-follow-input::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+.sp-follow-hint {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  margin: -4px 0 14px 2px;
+}
+.sp-follow-submit {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ffd700, #daa520);
+  color: #1a1a1a;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.sp-follow-submit:hover { opacity: 0.9; }
+.sp-follow-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.sp-follow-prefs {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+.sp-follow-prefs span::before {
+  content: '✓ ';
+  color: #ffd700;
+}
+.sp-follow-msg {
+  text-align: center;
+  font-size: 13px;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  display: none;
+}
+.sp-follow-msg.success {
+  display: block;
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+  border: 1px solid rgba(46, 204, 113, 0.3);
+}
+.sp-follow-msg.error {
+  display: block;
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+.sp-follow-msg.info {
+  display: block;
+  background: rgba(255, 215, 0, 0.1);
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+}
 </style>
 
   <!-- ===== ARTIST HERO ===== -->
@@ -905,6 +1087,47 @@
       <p>&copy; 2026 <strong>Gold Bottom Entertainment LLC</strong> &bull; All rights reserved.</p>
     </footer>
 
+  <!-- ===== FOLLOW MODAL ===== -->
+  <div class="sp-follow-overlay" id="spFollowOverlay">
+    <div class="sp-follow-modal">
+      <button class="sp-follow-close" id="spFollowClose">&times;</button>
+      <h3 class="sp-follow-title">Follow L.A. Young</h3>
+      <p class="sp-follow-subtitle">Get notified about new music, shows &amp; tickets</p>
+
+      <div class="sp-follow-msg" id="spFollowMsg"></div>
+
+      <!-- Social Sign-In Buttons -->
+      <button class="sp-social-btn google" id="spGoogleBtn">
+        <svg viewBox="0 0 24 24"><path fill="#fff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#fff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#fff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#fff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+      <button class="sp-social-btn apple" id="spAppleBtn">
+        <svg viewBox="0 0 24 24"><path fill="#fff" d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.32 2.32-1.89 4.2-3.74 4.25z"/></svg>
+        Continue with Apple
+      </button>
+      <button class="sp-social-btn microsoft" id="spMicrosoftBtn">
+        <svg viewBox="0 0 24 24"><rect fill="#f25022" x="1" y="1" width="10" height="10"/><rect fill="#7fba00" x="13" y="1" width="10" height="10"/><rect fill="#00a4ef" x="1" y="13" width="10" height="10"/><rect fill="#ffb900" x="13" y="13" width="10" height="10"/></svg>
+        Continue with Microsoft
+      </button>
+
+      <div class="sp-follow-divider">or</div>
+
+      <!-- Manual Email/Phone Form -->
+      <form id="spFollowForm" autocomplete="off">
+        <input type="email" class="sp-follow-input" id="spFollowEmail" placeholder="Email address *" required />
+        <input type="tel" class="sp-follow-input" id="spFollowPhone" placeholder="Phone number" />
+        <p class="sp-follow-hint">Optional — for text notifications</p>
+        <button type="submit" class="sp-follow-submit" id="spFollowSubmit">Join the List</button>
+      </form>
+
+      <div class="sp-follow-prefs">
+        <span>New songs</span>
+        <span>Shows</span>
+        <span>Tickets</span>
+      </div>
+    </div>
+  </div>
+
   </div><!-- /.sp-body -->
 
 <script>
@@ -1090,17 +1313,204 @@
     audio.currentTime = pct * audio.duration;
   });
 
-  /* ---- Follow Button ---- */
-  followBtn.addEventListener('click', function () {
-    if (followBtn.textContent === 'Follow') {
+  /* ---- Follow / Mailing List (Firebase) ---- */
+  var _fbApp = null;
+  var _fbDb = null;
+  var _fbAuth = null;
+  var _fbProviders = {};
+
+  function initFirebase() {
+    if (_fbApp) return;
+    try {
+      var cfg = window.SITE_CONFIG && window.SITE_CONFIG.firebase;
+      if (!cfg || typeof firebase === 'undefined') {
+        console.warn('[Follow] Firebase not available');
+        return;
+      }
+      _fbApp = firebase.initializeApp(cfg);
+      _fbDb = firebase.firestore();
+      _fbAuth = firebase.auth();
+
+      // Providers
+      var goog = new firebase.auth.GoogleAuthProvider();
+      goog.setCustomParameters({ prompt: 'select_account' });
+      _fbProviders.google = goog;
+
+      var apple = new firebase.auth.OAuthProvider('apple.com');
+      apple.addScope('email');
+      apple.addScope('name');
+      _fbProviders.apple = apple;
+
+      var ms = new firebase.auth.OAuthProvider('microsoft.com');
+      ms.setCustomParameters({ prompt: 'select_account' });
+      _fbProviders.microsoft = ms;
+
+      console.log('[Follow] Firebase initialized');
+    } catch (err) {
+      console.error('[Follow] Firebase init error:', err);
+    }
+  }
+
+  // DOM refs
+  var overlay = document.getElementById('spFollowOverlay');
+  var closeBtn = document.getElementById('spFollowClose');
+  var followForm = document.getElementById('spFollowForm');
+  var followEmail = document.getElementById('spFollowEmail');
+  var followPhone = document.getElementById('spFollowPhone');
+  var followSubmitBtn = document.getElementById('spFollowSubmit');
+  var followMsg = document.getElementById('spFollowMsg');
+  var googleBtn = document.getElementById('spGoogleBtn');
+  var appleBtn = document.getElementById('spAppleBtn');
+  var microsoftBtn = document.getElementById('spMicrosoftBtn');
+
+  function showFollowMsg(text, type) {
+    followMsg.textContent = text;
+    followMsg.className = 'sp-follow-msg ' + type;
+  }
+  function clearFollowMsg() {
+    followMsg.textContent = '';
+    followMsg.className = 'sp-follow-msg';
+  }
+
+  function setFollowingState(on) {
+    if (on) {
       followBtn.textContent = 'Following';
       followBtn.style.borderColor = '#ffd700';
       followBtn.style.color = '#ffd700';
+      localStorage.setItem('la-young-following', 'true');
     } else {
       followBtn.textContent = 'Follow';
       followBtn.style.borderColor = 'rgba(255,255,255,0.35)';
       followBtn.style.color = '#fff';
+      localStorage.removeItem('la-young-following');
     }
+  }
+
+  // Restore follow state on load
+  if (localStorage.getItem('la-young-following') === 'true') {
+    setFollowingState(true);
+  }
+
+  function openModal() {
+    initFirebase();
+    clearFollowMsg();
+    followEmail.value = '';
+    followPhone.value = '';
+    overlay.classList.add('active');
+  }
+  function closeModal() {
+    overlay.classList.remove('active');
+  }
+
+  // Open/close modal
+  followBtn.addEventListener('click', function () {
+    if (followBtn.textContent === 'Following') {
+      // Unfollow — just toggle UI + localStorage (don't delete from Firestore)
+      setFollowingState(false);
+      return;
+    }
+    openModal();
+  });
+  closeBtn.addEventListener('click', closeModal);
+  overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closeModal();
+  });
+
+  // Save follower to Firestore
+  function saveFollower(email, phone, displayName, provider) {
+    if (!_fbDb) {
+      showFollowMsg('Service unavailable. Please try again later.', 'error');
+      return Promise.reject('No Firestore');
+    }
+    // Check for duplicate
+    return _fbDb.collection('followers')
+      .where('email', '==', email.toLowerCase())
+      .get()
+      .then(function (snap) {
+        if (!snap.empty) {
+          showFollowMsg("You're already following! Welcome back.", 'info');
+          setFollowingState(true);
+          setTimeout(closeModal, 1800);
+          return;
+        }
+        // Write new follower
+        return _fbDb.collection('followers').add({
+          email: email.toLowerCase(),
+          phone: phone || null,
+          displayName: displayName || null,
+          source: 'music-player',
+          authProvider: provider,
+          followedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          notifyNewSongs: true,
+          notifyShows: true,
+          notifyTickets: true
+        }).then(function () {
+          showFollowMsg('Welcome to the family! 🎶', 'success');
+          setFollowingState(true);
+          setTimeout(closeModal, 1800);
+        });
+      })
+      .catch(function (err) {
+        console.error('[Follow] Firestore error:', err);
+        showFollowMsg('Something went wrong. Please try again.', 'error');
+      });
+  }
+
+  // Social sign-in handler
+  function socialFollow(providerKey) {
+    if (!_fbAuth || !_fbProviders[providerKey]) {
+      showFollowMsg('Sign-in not available. Use email below.', 'error');
+      return;
+    }
+    clearFollowMsg();
+    showFollowMsg('Signing in...', 'info');
+
+    _fbAuth.signInWithPopup(_fbProviders[providerKey])
+      .then(function (result) {
+        var user = result.user;
+        var email = user.email;
+        var name = user.displayName || null;
+        if (!email) {
+          showFollowMsg('Could not get email. Please use the form below.', 'error');
+          return;
+        }
+        return saveFollower(email, null, name, providerKey);
+      })
+      .then(function () {
+        // Sign out — we don't need a persistent session
+        if (_fbAuth.currentUser) _fbAuth.signOut();
+      })
+      .catch(function (err) {
+        console.error('[Follow] Social sign-in error:', err);
+        if (err.code === 'auth/popup-closed-by-user') {
+          clearFollowMsg();
+        } else {
+          showFollowMsg('Sign-in failed. Try email below.', 'error');
+        }
+      });
+  }
+
+  googleBtn.addEventListener('click', function () { socialFollow('google'); });
+  appleBtn.addEventListener('click', function () { socialFollow('apple'); });
+  microsoftBtn.addEventListener('click', function () { socialFollow('microsoft'); });
+
+  // Manual email form
+  followForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email = followEmail.value.trim();
+    var phone = followPhone.value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showFollowMsg('Please enter a valid email address.', 'error');
+      return;
+    }
+    clearFollowMsg();
+    followSubmitBtn.disabled = true;
+    followSubmitBtn.textContent = 'Joining...';
+    saveFollower(email, phone, null, 'email')
+      .finally(function () {
+        followSubmitBtn.disabled = false;
+        followSubmitBtn.textContent = 'Join the List';
+      });
   });
 
   /* ---- Volume Knob ---- */
