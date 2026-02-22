@@ -17,7 +17,7 @@ const SwipeNavigation = {
     'home',
     'bio',
     'music',
-    'records2',
+    'LAYoungMusicPlayer',
     'projects',
     'gallery',
     'videos',

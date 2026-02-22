@@ -104,7 +104,7 @@
 }
 
 /* Records2 (Spotify-style music page) */
-#records2 {
+#LAYoungMusicPlayer {
   background-image: url('../images/backgrounds/MusicBackground.png');
   background-size: auto 100%;
   background-position: center top;
@@ -145,7 +145,7 @@
 
   /* Shows: cover on mobile so the image fills the tall narrow section */
   #shows,
-  #records2 {
+  #LAYoungMusicPlayer {
     background-size: cover;
     background-position: center top;
   }

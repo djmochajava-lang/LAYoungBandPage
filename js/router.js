@@ -9,7 +9,7 @@ const Router = {
     gallery: 'pages/gallery.html',
     shows: 'pages/shows.html',
     performances: 'pages/performances.html',
-    records2: 'pages/records2.html',
+    LAYoungMusicPlayer: 'pages/LAYoungMusicPlayer.html',
     merch: 'pages/merch.html',
     contact: 'pages/contact.html',
   },

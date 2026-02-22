@@ -142,7 +142,7 @@ const PageLoader = {
 
     if (
       typeof MediaPlayer !== 'undefined' &&
-      (pageName === 'music' || pageName === 'projects' || pageName === 'videos' || pageName === 'records2')
+      (pageName === 'music' || pageName === 'projects' || pageName === 'videos' || pageName === 'LAYoungMusicPlayer')
     ) {
       MediaPlayer.init();
     }
