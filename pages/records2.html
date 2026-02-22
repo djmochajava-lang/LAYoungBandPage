@@ -651,93 +651,101 @@
     <!-- Popular Tracks -->
     <h2 class="sp-section-title">Popular</h2>
     <ul class="sp-track-list" id="spTrackList">
-      <!-- Track 1 — Playable -->
-      <li class="sp-track-item" id="spTrack1" data-src="../Media/no_one_can_love_you_more.mp3">
+      <!-- Track 1 -->
+      <li class="sp-track-item" data-index="0" data-src="../music/IntroductiongroveSoft.mp3">
         <span class="sp-track-num">1</span>
+        <img src="images/artist/headshot3.jpg" alt="" class="sp-track-art" />
+        <div class="sp-track-info">
+          <p class="sp-track-name">Introduction Groove</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original</p>
+        </div>
+        <span class="sp-track-duration sp-dur">--:--</span>
+      </li>
+
+      <!-- Track 2 -->
+      <li class="sp-track-item" data-index="1" data-src="../Media/no_one_can_love_you_more.mp3">
+        <span class="sp-track-num">2</span>
         <img src="images/artist/headshot3.jpg" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">No One Can Love You More</p>
           <p class="sp-track-artist">L.A. Young &bull; Single</p>
         </div>
-        <span class="sp-track-duration" id="spTrackDur1">--:--</span>
-      </li>
-      <!-- Progress bar for Track 1 -->
-      <div class="sp-track-progress-wrap" id="spProgressWrap1">
-        <span class="sp-track-time" id="spTimeCurrent1">0:00</span>
-        <div class="sp-track-progress-bar" id="spProgressBar1">
-          <div class="sp-track-progress-fill" id="spProgressFill1"></div>
-        </div>
-        <span class="sp-track-time" id="spTimeTotal1">0:00</span>
-      </div>
-
-      <!-- Track 2 — Coming Soon -->
-      <li class="sp-track-item sp-coming-soon">
-        <span class="sp-track-num">2</span>
-        <div class="sp-track-art" style="background:rgba(255,255,255,0.05);border-radius:4px;"></div>
-        <div class="sp-track-info">
-          <p class="sp-track-name">New Single Coming Soon</p>
-          <p class="sp-track-artist">L.A. Young</p>
-        </div>
-        <span class="sp-track-duration">--:--</span>
+        <span class="sp-track-duration sp-dur">--:--</span>
       </li>
 
-      <!-- Track 3 — Coming Soon -->
-      <li class="sp-track-item sp-coming-soon">
+      <!-- Track 3 -->
+      <li class="sp-track-item" data-index="2" data-src="../music/DaydreamingInSoundsoft.mp3">
         <span class="sp-track-num">3</span>
-        <div class="sp-track-art" style="background:rgba(255,255,255,0.05);border-radius:4px;"></div>
+        <img src="images/artist/headshot3.jpg" alt="" class="sp-track-art" />
         <div class="sp-track-info">
-          <p class="sp-track-name">Unreleased &mdash; Stay Tuned</p>
-          <p class="sp-track-artist">L.A. Young</p>
+          <p class="sp-track-name">Daydreaming In Sound</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original</p>
         </div>
-        <span class="sp-track-duration">--:--</span>
+        <span class="sp-track-duration sp-dur">--:--</span>
       </li>
 
-      <!-- Track 4 — Coming Soon -->
-      <li class="sp-track-item sp-coming-soon">
+      <!-- Track 4 -->
+      <li class="sp-track-item" data-index="3" data-src="../music/MidnightMelodySoft.mp3">
         <span class="sp-track-num">4</span>
-        <div class="sp-track-art" style="background:rgba(255,255,255,0.05);border-radius:4px;"></div>
+        <img src="images/artist/headshot3.jpg" alt="" class="sp-track-art" />
         <div class="sp-track-info">
-          <p class="sp-track-name">In the Studio with Norman Connors</p>
-          <p class="sp-track-artist">L.A. Young &bull; Norman Connors</p>
+          <p class="sp-track-name">Midnight Melody</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original</p>
         </div>
-        <span class="sp-track-duration">--:--</span>
+        <span class="sp-track-duration sp-dur">--:--</span>
       </li>
 
-      <!-- Track 5 — Coming Soon -->
-      <li class="sp-track-item sp-coming-soon">
+      <!-- Track 5 -->
+      <li class="sp-track-item" data-index="4" data-src="../music/ShopaholicTeaserSoft.mp3">
         <span class="sp-track-num">5</span>
-        <div class="sp-track-art" style="background:rgba(255,255,255,0.05);border-radius:4px;"></div>
+        <img src="images/artist/headshot3.jpg" alt="" class="sp-track-art" />
         <div class="sp-track-info">
-          <p class="sp-track-name">The Phyllis Hyman Experience (Live)</p>
-          <p class="sp-track-artist">L.A. Young</p>
+          <p class="sp-track-name">Shopaholic Teaser</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original</p>
         </div>
-        <span class="sp-track-duration">--:--</span>
+        <span class="sp-track-duration sp-dur">--:--</span>
       </li>
     </ul>
+
+    <!-- Shared progress bar (shows under active track) -->
+    <div class="sp-track-progress-wrap" id="spProgressWrap">
+      <span class="sp-track-time" id="spTimeCurrent">0:00</span>
+      <div class="sp-track-progress-bar" id="spProgressBar">
+        <div class="sp-track-progress-fill" id="spProgressFill"></div>
+      </div>
+      <span class="sp-track-time" id="spTimeTotal">0:00</span>
+    </div>
 
     <!-- ===== DISCOGRAPHY ===== -->
     <div class="sp-disco-header">
       <h2>Discography</h2>
-      <span class="sp-show-all">Show all</span>
+      <span class="sp-show-all">5 Tracks</span>
     </div>
     <div class="sp-disco-scroll">
-      <!-- Released Single -->
+      <div class="sp-disco-card">
+        <img src="images/artist/headshot3.jpg" alt="Introduction Groove" class="sp-disco-art" />
+        <p class="sp-disco-title">Introduction Groove</p>
+        <p class="sp-disco-year">Original &bull; Instrumental</p>
+      </div>
       <div class="sp-disco-card">
         <img src="images/artist/headshot3.jpg" alt="No One Can Love You More" class="sp-disco-art" />
         <p class="sp-disco-title">No One Can Love You More</p>
         <p class="sp-disco-year">2024 &bull; Single</p>
       </div>
-      <!-- Coming Soon 1 -->
-      <div class="sp-disco-card sp-placeholder">
-        <div class="sp-disco-art-placeholder">&#9834;</div>
-        <p class="sp-disco-title">Coming Soon</p>
-        <p class="sp-disco-year">2026 &bull; TBA</p>
+      <div class="sp-disco-card">
+        <img src="images/artist/headshot3.jpg" alt="Daydreaming In Sound" class="sp-disco-art" />
+        <p class="sp-disco-title">Daydreaming In Sound</p>
+        <p class="sp-disco-year">Original &bull; Instrumental</p>
       </div>
-      <!-- Coming Soon 2 -->
-      <div class="sp-disco-card sp-placeholder">
-        <div class="sp-disco-art-placeholder">&#9835;</div>
-        <p class="sp-disco-title">Coming Soon</p>
-        <p class="sp-disco-year">2026 &bull; TBA</p>
+      <div class="sp-disco-card">
+        <img src="images/artist/headshot3.jpg" alt="Midnight Melody" class="sp-disco-art" />
+        <p class="sp-disco-title">Midnight Melody</p>
+        <p class="sp-disco-year">Original &bull; Instrumental</p>
+      </div>
+      <div class="sp-disco-card">
+        <img src="images/artist/headshot3.jpg" alt="Shopaholic Teaser" class="sp-disco-art" />
+        <p class="sp-disco-title">Shopaholic Teaser</p>
+        <p class="sp-disco-year">Original &bull; Instrumental</p>
       </div>
     </div>
 
@@ -830,22 +838,31 @@
 
 <script>
 (function () {
-  /* ---- Audio Setup ---- */
+  'use strict';
+
+  /* ---- Playlist data ---- */
+  var playlist = [
+    { title: 'Introduction Groove', src: '../music/IntroductiongroveSoft.mp3' },
+    { title: 'No One Can Love You More', src: '../Media/no_one_can_love_you_more.mp3' },
+    { title: 'Daydreaming In Sound', src: '../music/DaydreamingInSoundsoft.mp3' },
+    { title: 'Midnight Melody', src: '../music/MidnightMelodySoft.mp3' },
+    { title: 'Shopaholic Teaser', src: '../music/ShopaholicTeaserSoft.mp3' }
+  ];
+
+  var currentIndex = -1;
   var audio = new Audio();
   audio.preload = 'metadata';
-  audio.src = '../Media/no_one_can_love_you_more.mp3';
   var isPlaying = false;
   var bgMusicWasEnabled = false;
 
   /* ---- DOM Refs ---- */
-  var track1 = document.getElementById('spTrack1');
+  var trackItems = document.querySelectorAll('#spTrackList .sp-track-item');
   var mainPlayBtn = document.getElementById('spMainPlayBtn');
-  var progressWrap = document.getElementById('spProgressWrap1');
-  var progressFill = document.getElementById('spProgressFill1');
-  var progressBar = document.getElementById('spProgressBar1');
-  var timeCurrent = document.getElementById('spTimeCurrent1');
-  var timeTotal = document.getElementById('spTimeTotal1');
-  var durationEl = document.getElementById('spTrackDur1');
+  var progressWrap = document.getElementById('spProgressWrap');
+  var progressFill = document.getElementById('spProgressFill');
+  var progressBar = document.getElementById('spProgressBar');
+  var timeCurrent = document.getElementById('spTimeCurrent');
+  var timeTotal = document.getElementById('spTimeTotal');
   var followBtn = document.getElementById('spFollowBtn');
 
   function fmt(s) {
@@ -853,6 +870,19 @@
     var sec = Math.floor(s % 60);
     return m + ':' + (sec < 10 ? '0' : '') + sec;
   }
+
+  /* ---- Preload durations ---- */
+  playlist.forEach(function (track, i) {
+    var tmp = new Audio();
+    tmp.preload = 'metadata';
+    tmp.src = track.src;
+    tmp.addEventListener('loadedmetadata', function () {
+      var durEls = trackItems[i] ? trackItems[i].querySelectorAll('.sp-dur') : [];
+      for (var d = 0; d < durEls.length; d++) {
+        durEls[d].textContent = fmt(tmp.duration);
+      }
+    });
+  });
 
   /* ---- Background Music Integration ---- */
   function stopBgMusic() {
@@ -867,52 +897,83 @@
     }
   }
 
-  /* ---- Play / Pause ---- */
-  function play() {
-    stopBgMusic();
-    audio.play();
-    isPlaying = true;
-    updateUI();
+  /* ---- Load & Play ---- */
+  function loadTrack(index, autoplay) {
+    if (index < 0 || index >= playlist.length) return;
+    currentIndex = index;
+    audio.src = playlist[index].src;
+    audio.load();
+
+    // Update active highlight
+    for (var i = 0; i < trackItems.length; i++) {
+      trackItems[i].classList.toggle('sp-active', i === index);
+    }
+
+    // Position progress bar after the active track
+    var activeItem = trackItems[index];
+    if (activeItem && activeItem.parentNode) {
+      activeItem.parentNode.insertBefore(progressWrap, activeItem.nextSibling);
+    }
+
+    progressFill.style.width = '0%';
+    timeCurrent.textContent = '0:00';
+
+    if (autoplay) {
+      stopBgMusic();
+      audio.play().then(function () {
+        isPlaying = true;
+        updatePlayBtn();
+        progressWrap.classList.add('sp-visible');
+      }).catch(function () {});
+    }
   }
-  function pause() {
-    audio.pause();
-    isPlaying = false;
-    updateUI();
-    resumeBgMusic();
-  }
-  function toggle() {
-    if (isPlaying) pause();
-    else play();
+
+  function toggleCurrent() {
+    if (currentIndex < 0) {
+      loadTrack(0, true);
+      return;
+    }
+    if (isPlaying) {
+      audio.pause();
+      isPlaying = false;
+      updatePlayBtn();
+      resumeBgMusic();
+    } else {
+      stopBgMusic();
+      audio.play();
+      isPlaying = true;
+      updatePlayBtn();
+      progressWrap.classList.add('sp-visible');
+    }
   }
 
   var playSVG = '\x3csvg viewBox="0 0 24 24"\x3e\x3cpolygon points="5,3 19,12 5,21" fill="#000"/\x3e\x3c/svg\x3e';
   var pauseSVG = '\x3csvg viewBox="0 0 24 24"\x3e\x3crect x="5" y="3" width="4" height="18" fill="#000"/\x3e\x3crect x="15" y="3" width="4" height="18" fill="#000"/\x3e\x3c/svg\x3e';
 
-  function updateUI() {
-    // Play button SVG
-    if (isPlaying) {
-      mainPlayBtn.innerHTML = pauseSVG;
-    } else {
-      mainPlayBtn.innerHTML = playSVG;
-    }
-    // Track active state
-    if (isPlaying) {
-      track1.classList.add('sp-active');
-      progressWrap.classList.add('sp-visible');
-    } else {
-      track1.classList.remove('sp-active');
-      if (audio.currentTime === 0 || audio.ended) {
-        progressWrap.classList.remove('sp-visible');
-      }
-    }
+  function updatePlayBtn() {
+    mainPlayBtn.innerHTML = isPlaying ? pauseSVG : playSVG;
   }
 
-  /* ---- Events ---- */
-  mainPlayBtn.addEventListener('click', toggle);
-  track1.addEventListener('click', toggle);
+  /* ---- Track click handlers ---- */
+  for (var t = 0; t < trackItems.length; t++) {
+    (function (idx) {
+      trackItems[idx].addEventListener('click', function () {
+        if (idx === currentIndex) {
+          toggleCurrent();
+        } else {
+          loadTrack(idx, true);
+        }
+      });
+    })(t);
+  }
 
+  /* ---- Main play button ---- */
+  mainPlayBtn.addEventListener('click', function () {
+    toggleCurrent();
+  });
+
+  /* ---- Audio events ---- */
   audio.addEventListener('loadedmetadata', function () {
-    durationEl.textContent = fmt(audio.duration);
     timeTotal.textContent = fmt(audio.duration);
   });
 
@@ -924,16 +985,28 @@
   });
 
   audio.addEventListener('ended', function () {
-    isPlaying = false;
-    audio.currentTime = 0;
-    progressFill.style.width = '0%';
-    timeCurrent.textContent = '0:00';
-    updateUI();
-    resumeBgMusic();
+    // Auto-advance to next track
+    if (currentIndex < playlist.length - 1) {
+      loadTrack(currentIndex + 1, true);
+    } else {
+      // Last track — reset
+      isPlaying = false;
+      audio.currentTime = 0;
+      progressFill.style.width = '0%';
+      timeCurrent.textContent = '0:00';
+      progressWrap.classList.remove('sp-visible');
+      updatePlayBtn();
+      for (var i = 0; i < trackItems.length; i++) {
+        trackItems[i].classList.remove('sp-active');
+      }
+      currentIndex = -1;
+      resumeBgMusic();
+    }
   });
 
   /* ---- Seek ---- */
   progressBar.addEventListener('click', function (e) {
+    if (!audio.duration) return;
     var rect = progressBar.getBoundingClientRect();
     var pct = (e.clientX - rect.left) / rect.width;
     audio.currentTime = pct * audio.duration;
