@@ -192,6 +192,88 @@
   color: #fff;
 }
 
+/* ===== VOLUME KNOB ===== */
+.sp-volume-wrap {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sp-vol-label {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.55);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  user-select: none;
+  line-height: 1;
+}
+.sp-vol-label:hover {
+  color: #fff;
+}
+.sp-vol-label.sp-muted {
+  color: rgba(255, 255, 255, 0.25);
+}
+.sp-knob-outer {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(0, 0, 0, 0.6) 70%);
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  position: relative;
+  cursor: grab;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    inset 0 1px 2px rgba(255, 255, 255, 0.08);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  flex-shrink: 0;
+  touch-action: none;
+}
+.sp-knob-outer:hover {
+  border-color: rgba(255, 215, 0, 0.55);
+  box-shadow:
+    0 2px 12px rgba(255, 215, 0, 0.2),
+    inset 0 1px 2px rgba(255, 255, 255, 0.08);
+}
+.sp-knob-outer:active {
+  cursor: grabbing;
+}
+.sp-knob-indicator {
+  position: absolute;
+  width: 3px;
+  height: 12px;
+  background: linear-gradient(180deg, #ffd700, #c9a227);
+  border-radius: 2px;
+  top: 4px;
+  left: 50%;
+  transform-origin: 50% 18px;
+  transform: translateX(-50%) rotate(0deg);
+  box-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+  pointer-events: none;
+}
+.sp-knob-dot {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.35);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.sp-vol-pct {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: monospace;
+  min-width: 28px;
+  text-align: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
 /* ===== CONTENT BODY ===== */
 .sp-body {
   padding: 0 20px 40px;
@@ -643,6 +725,15 @@
     </button>
     <button class="sp-follow-btn" id="spFollowBtn">Follow</button>
     <button class="sp-more-btn" title="More options">&middot;&middot;&middot;</button>
+    <!-- Volume Knob -->
+    <div class="sp-volume-wrap">
+      <span class="sp-vol-label" id="spVolIcon" title="Mute/Unmute">&#x1f50a;</span>
+      <div class="sp-knob-outer" id="spKnob" title="Drag to adjust volume">
+        <div class="sp-knob-indicator" id="spKnobIndicator"></div>
+        <div class="sp-knob-dot"></div>
+      </div>
+      <span class="sp-vol-pct" id="spVolPct">100</span>
+    </div>
   </div>
 
   <!-- ===== BODY ===== -->
@@ -1029,6 +1120,103 @@
       followBtn.textContent = 'Follow';
       followBtn.style.borderColor = 'rgba(255,255,255,0.35)';
       followBtn.style.color = '#fff';
+    }
+  });
+
+  /* ---- Volume Knob ---- */
+  var knob = document.getElementById('spKnob');
+  var knobIndicator = document.getElementById('spKnobIndicator');
+  var volIcon = document.getElementById('spVolIcon');
+  var volPct = document.getElementById('spVolPct');
+
+  // Knob rotation: -135deg (min/mute) to +135deg (max)
+  var knobAngle = 135;    // Start at max (135 = 100%)
+  var prevVolume = 1;
+  var isMuted = false;
+
+  function angleToVolume(angle) {
+    // -135 = 0%, +135 = 100%
+    return Math.max(0, Math.min(1, (angle + 135) / 270));
+  }
+
+  function volumeToAngle(vol) {
+    return (vol * 270) - 135;
+  }
+
+  function setKnobAngle(angle) {
+    knobAngle = Math.max(-135, Math.min(135, angle));
+    knobIndicator.style.transform = 'translateX(-50%) rotate(' + knobAngle + 'deg)';
+    var vol = angleToVolume(knobAngle);
+    audio.volume = vol;
+    var pct = Math.round(vol * 100);
+    volPct.textContent = pct;
+
+    // Update icon
+    if (vol === 0) {
+      volIcon.innerHTML = '&#x1f507;';
+      volIcon.classList.add('sp-muted');
+    } else if (vol < 0.5) {
+      volIcon.innerHTML = '&#x1f509;';
+      volIcon.classList.remove('sp-muted');
+    } else {
+      volIcon.innerHTML = '&#x1f50a;';
+      volIcon.classList.remove('sp-muted');
+    }
+  }
+
+  // Initialize knob position
+  setKnobAngle(135);
+
+  // Drag interaction
+  var isDragging = false;
+  var dragStartY, dragStartAngle;
+
+  knob.addEventListener('mousedown', startDrag);
+  knob.addEventListener('touchstart', startDrag, { passive: false });
+
+  function startDrag(e) {
+    e.preventDefault();
+    isDragging = true;
+    var point = e.touches ? e.touches[0] : e;
+    dragStartY = point.clientY;
+    dragStartAngle = knobAngle;
+    knob.style.cursor = 'grabbing';
+    document.addEventListener('mousemove', onDrag);
+    document.addEventListener('touchmove', onDrag, { passive: false });
+    document.addEventListener('mouseup', endDrag);
+    document.addEventListener('touchend', endDrag);
+  }
+
+  function onDrag(e) {
+    if (!isDragging) return;
+    e.preventDefault();
+    var point = e.touches ? e.touches[0] : e;
+    // Dragging up = louder, down = quieter
+    var deltaY = dragStartY - point.clientY;
+    var newAngle = dragStartAngle + (deltaY * 1.8);
+    setKnobAngle(newAngle);
+    isMuted = false;
+  }
+
+  function endDrag() {
+    isDragging = false;
+    knob.style.cursor = 'grab';
+    document.removeEventListener('mousemove', onDrag);
+    document.removeEventListener('touchmove', onDrag);
+    document.removeEventListener('mouseup', endDrag);
+    document.removeEventListener('touchend', endDrag);
+  }
+
+  // Mute toggle via icon click
+  volIcon.addEventListener('click', function () {
+    if (isMuted) {
+      isMuted = false;
+      setKnobAngle(volumeToAngle(prevVolume));
+    } else {
+      prevVolume = angleToVolume(knobAngle);
+      if (prevVolume < 0.05) prevVolume = 0.5;
+      isMuted = true;
+      setKnobAngle(-135);
     }
   });
 
