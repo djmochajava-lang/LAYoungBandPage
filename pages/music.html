@@ -574,18 +574,19 @@
             background: rgba(2, 2, 5, 0.96);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             padding: 40px 20px;
             overflow-y: auto;
             opacity: 0;
-            visibility: hidden;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          }
+          .lyrics-overlay.visible {
+            display: flex;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
           }
           .lyrics-overlay.open {
             opacity: 1;
-            visibility: visible;
           }
 
           /* --- Lyrics Paper Document --- */
@@ -886,7 +887,12 @@
           function openLyrics() {
             savedOverflow = document.body.style.overflow;
             document.body.style.overflow = 'hidden';
-            overlay.classList.add('open');
+            overlay.classList.add('visible');
+            requestAnimationFrame(function() {
+              requestAnimationFrame(function() {
+                overlay.classList.add('open');
+              });
+            });
             if (btn) btn.classList.add('active');
             setTimeout(function() { closeBtn.focus(); }, 400);
           }
@@ -894,12 +900,15 @@
           function closeLyrics() {
             overlay.classList.remove('open');
             document.body.style.overflow = savedOverflow;
-            overlay.scrollTop = 0;
             if (btn) btn.classList.remove('active');
+            setTimeout(function() {
+              overlay.classList.remove('visible');
+              overlay.scrollTop = 0;
+            }, 400);
           }
 
           window.toggleLyrics1 = function() {
-            if (overlay.classList.contains('open')) {
+            if (overlay.classList.contains('visible')) {
               closeLyrics();
             } else {
               openLyrics();
@@ -1130,7 +1139,12 @@
           function openLyrics() {
             savedOverflow = document.body.style.overflow;
             document.body.style.overflow = 'hidden';
-            overlay.classList.add('open');
+            overlay.classList.add('visible');
+            requestAnimationFrame(function() {
+              requestAnimationFrame(function() {
+                overlay.classList.add('open');
+              });
+            });
             if (btn) btn.classList.add('active');
             setTimeout(function() { closeBtn.focus(); }, 400);
           }
@@ -1138,13 +1152,16 @@
           function closeLyrics() {
             overlay.classList.remove('open');
             document.body.style.overflow = savedOverflow;
-            overlay.scrollTop = 0;
             if (btn) btn.classList.remove('active');
+            setTimeout(function() {
+              overlay.classList.remove('visible');
+              overlay.scrollTop = 0;
+            }, 400);
           }
 
           // Wire up toggleLyrics (called by the music note button onclick)
           window.toggleLyrics = function() {
-            if (overlay.classList.contains('open')) {
+            if (overlay.classList.contains('visible')) {
               closeLyrics();
             } else {
               openLyrics();

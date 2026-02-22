@@ -1111,7 +1111,7 @@
 }
 
 .support-section .section-subtitle {
-  margin-bottom: var(--spacing-md);  /* Tighter than default 4rem */
+  margin-bottom: var(--spacing-sm);
 }
 
 .support-content {
@@ -1122,17 +1122,17 @@
 /* Hero portrait between title and pullquote */
 .support-hero-portrait {
   text-align: center;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: 0.5rem;
 }
 
 .support-hero-portrait img {
   display: block;
   margin: 0 auto;
-  width: 160px;
-  height: 160px;
+  width: 340px;
+  height: auto;
   object-fit: cover;
   object-position: top center;
-  border-radius: 50%;
+  border-radius: 8px;
   border: 2px solid rgba(255, 215, 0, 0.3);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 40px rgba(255, 215, 0, 0.08);
   filter: grayscale(20%) contrast(1.05);
@@ -1149,8 +1149,8 @@
 /* Opening editorial pull-quote */
 .support-pullquote {
   text-align: center;
-  padding: var(--spacing-md) var(--spacing-md);  /* Tighter top padding */
-  margin-bottom: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  margin-bottom: 0.5rem;
 }
 
 .support-pullquote blockquote {
@@ -1173,15 +1173,15 @@
   width: 60px;
   height: 2px;
   background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
-  margin: var(--spacing-md) auto;
+  margin: var(--spacing-sm) auto;
 }
 
-/* Statistics cards grid */
+/* Statistics cards grid — always 2×2 */
 .support-stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-md);
-  margin: var(--spacing-lg) 0;
+  margin: var(--spacing-md) 0;
 }
 
 .support-stat-card {
@@ -1218,7 +1218,7 @@
 /* Narrative / editorial prose sections */
 .support-narrative {
   max-width: 700px;
-  margin: 0 auto var(--spacing-lg);
+  margin: 0 auto var(--spacing-md);
   text-align: center;
 }
 
@@ -1226,7 +1226,7 @@
   font-family: var(--font-primary);
   font-size: var(--font-size-xl);
   color: var(--color-primary);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   letter-spacing: 0.08em;
 }
 
@@ -1234,7 +1234,7 @@
   color: var(--color-text-secondary);
   font-size: var(--font-size-base);
   line-height: 1.9;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
 }
 
 .support-narrative strong {
@@ -1246,7 +1246,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-md);
-  margin: var(--spacing-lg) 0;
+  margin: var(--spacing-md) 0;
 }
 
 .support-impact-item {
@@ -1287,8 +1287,8 @@
 /* Donate CTA section */
 .support-cta {
   text-align: center;
-  margin: var(--spacing-xl) auto;
-  padding: var(--spacing-lg) var(--spacing-md);
+  margin: var(--spacing-lg) auto;
+  padding: var(--spacing-md) var(--spacing-md);
   max-width: 600px;
   background: linear-gradient(135deg, rgba(255, 215, 0, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
   border: 2px solid rgba(255, 215, 0, 0.25);
@@ -1335,6 +1335,33 @@
   box-shadow: 0 0 30px rgba(255, 215, 0, 0.5), 0 0 60px rgba(255, 215, 0, 0.2);
   transform: translateY(-3px);
   color: var(--color-bg-dark);
+}
+
+/* Header row — title + top donate button */
+.support-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* Subtle top donate button — inconspicuous, not bold */
+.support-donate-btn-top {
+  padding: 0.4rem 1.2rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  background: transparent;
+  color: rgba(255, 215, 0, 0.5);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+}
+.support-donate-btn-top:hover {
+  background: rgba(255, 215, 0, 0.08);
+  color: var(--color-primary);
+  border-color: rgba(255, 215, 0, 0.5);
+  box-shadow: none;
+  transform: translateY(-1px);
 }
 
 /* Trust / transparency note */
@@ -1388,8 +1415,8 @@
   }
 
   .support-hero-portrait img {
-    width: 130px;
-    height: 130px;
+    width: 220px;
+    height: auto;
   }
 }
 
