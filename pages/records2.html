@@ -900,6 +900,13 @@
   /* ---- Load & Play ---- */
   function loadTrack(index, autoplay) {
     if (index < 0 || index >= playlist.length) return;
+
+    // Stop the single audio channel completely before loading anything new
+    audio.pause();
+    audio.currentTime = 0;
+    isPlaying = false;
+    updatePlayBtn();
+
     currentIndex = index;
     audio.src = playlist[index].src;
     audio.load();
