@@ -147,6 +147,13 @@ const PageLoader = {
       MediaPlayer.init();
     }
 
+    // Load external player JS for music player page (no inline script in the HTML)
+    if (pageName === 'LAYoungMusicPlayer') {
+      const playerScript = document.createElement('script');
+      playerScript.src = 'js/music-player-app.js';
+      this.container.appendChild(playerScript);
+    }
+
     if (typeof ScrollEffects !== 'undefined') {
       ScrollEffects.init();
     }

@@ -9,12 +9,13 @@ const Router = {
     gallery: 'pages/gallery.html',
     shows: 'pages/shows.html',
     performances: 'pages/performances.html',
-    LAYoungMusicPlayer: 'pages/LAYoungMusicPlayer.html',
+    LAYoungMusicPlayer: 'pages/LAYoungMusicPlayer.tpl',
     merch: 'pages/merch.html',
     contact: 'pages/contact.html',
   },
   currentPage: null,
   defaultPage: 'home',
+  playerWindow: null,
 
   init() {
     this.setupNavigation();
@@ -72,6 +73,13 @@ const Router = {
       return;
     }
 
+    // Desktop: open music player in its own browser window
+    if (pageName === 'LAYoungMusicPlayer' && window.innerWidth > 768) {
+      this.openPlayerWindow();
+      this.closeMobileMenu();
+      return;
+    }
+
     await this.loadPage(pageName);
     this.updateURL(pageName);
     this.currentPage = pageName;
@@ -104,6 +112,13 @@ const Router = {
     window.addEventListener('popstate', () => {
       const hash = window.location.hash.substring(1);
       const pageName = hash || this.defaultPage;
+
+      // If navigating to music player on desktop, open popup window
+      if (pageName === 'LAYoungMusicPlayer' && window.innerWidth > 768) {
+        this.openPlayerWindow();
+        return;
+      }
+
       if (this.routes[pageName]) {
         this.currentPage = pageName;
         this.loadPage(pageName);
@@ -131,6 +146,47 @@ const Router = {
 
   getCurrentPage() {
     return this.currentPage;
+  },
+
+  // === Music Player — Standalone Browser Window (Desktop) ===
+  openPlayerWindow() {
+    // If window is already open and not closed, just focus it
+    if (this.playerWindow && !this.playerWindow.closed) {
+      this.playerWindow.focus();
+      console.log('📱 Player window focused');
+      return;
+    }
+
+    // Phone-sized window dimensions (extra width for bezel sides)
+    const width = 480;
+    const height = 780;
+
+    // Position in bottom-right of screen
+    const left = window.screen.availWidth - width - 30;
+    const top = window.screen.availHeight - height - 60;
+
+    const features = [
+      `width=${width}`,
+      `height=${height}`,
+      `left=${left}`,
+      `top=${top}`,
+      'popup=yes',
+      'resizable=no',
+      'scrollbars=no',
+      'status=no',
+      'menubar=no',
+      'toolbar=no',
+      'location=no',
+    ].join(',');
+
+    this.playerWindow = window.open('player.html', 'LAYoungPlayer', features);
+
+    // Stop background music on main site
+    if (typeof BackgroundMusic !== 'undefined') {
+      BackgroundMusic.stop();
+    }
+
+    console.log('📱 Player window opened');
   },
 
   async preloadPage(pageName) {
