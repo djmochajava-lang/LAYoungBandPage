@@ -64,7 +64,8 @@
       "Bash(git worktree remove:*)",
       "Bash(git pull:*)",
       "Bash(firebase deploy:*)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "Bash(grep:*)"
     ]
   }
 }
