@@ -956,6 +956,12 @@
   });
 
   /* ---- Background Music Integration ---- */
+  // Immediately stop any background music when this page loads
+  if (typeof BackgroundMusic !== 'undefined' && BackgroundMusic.currentAudio) {
+    bgMusicWasEnabled = BackgroundMusic.enabled;
+    BackgroundMusic.stop();
+  }
+
   function stopBgMusic() {
     if (typeof BackgroundMusic !== 'undefined' && BackgroundMusic.currentAudio) {
       bgMusicWasEnabled = BackgroundMusic.enabled;
