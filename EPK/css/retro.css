@@ -912,45 +912,6 @@ h2.section-title {
   padding-bottom: 1px;
 }
 
-/* --- Audio Player (vinyl style) --- */
-.audio-player {
-  position: fixed;
-  right: 25px;
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--manila);
-  border: 2px solid var(--manila-border);
-  border-radius: 10px;
-  padding: 15px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.25);
-  opacity: 0;
-  transition: opacity 0.5s ease;
-  z-index: 50;
-  text-align: center;
-}
-.audio-player.visible {
-  opacity: 1;
-}
-.play-button {
-  width: 52px;
-  height: 52px;
-  background: var(--ink);
-  border: none;
-  border-radius: 50%;
-  color: white;
-  font-size: 20px;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-.play-button:hover {
-  transform: scale(1.1);
-}
-.player-label {
-  font-size: 9px;
-  color: var(--ink-light);
-  margin-top: 8px;
-}
-
 /* --- Footer --- */
 .folder-footer {
   text-align: center;
@@ -1088,7 +1049,6 @@ body.print-ready::after { display: none !important; }
 body.print-ready .watermark-layer { display: none !important; }
 body.print-ready .back-to-site { display: none !important; }
 body.print-ready .save-pdf-btn { display: none !important; }
-body.print-ready .audio-player { display: none !important; }
 body.print-ready .folder-cover { display: none !important; }
 body.print-ready .folder-tab { display: none !important; }
 body.print-ready .folder-content::before { display: none !important; }
@@ -1131,7 +1091,6 @@ body.print-ready .folder-content {
   .watermark-layer { display: none !important; }
   .back-to-site { display: none !important; }
   .save-pdf-btn { display: none !important; }
-  .audio-player { display: none !important; }
   .modal-overlay { display: none !important; }
 
   /* Hide folder chrome — cover, tab, aged-paper overlay */

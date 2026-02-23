@@ -455,11 +455,6 @@
     </div><!-- /folder-content -->
   </div><!-- /folder -->
 
-  <!-- Audio Preview Player -->
-  <div class="audio-player" id="audioPlayer">
-    <button class="play-button" onclick="toggleAudio()">&#x25B6;</button>
-    <div class="player-label">60s Preview</div>
-  </div>
 </div><!-- /folder-container -->
 
 <!-- ================================================================
@@ -513,7 +508,6 @@
   'use strict';
 
   var folderOpen = false;
-  var audioPlaying = false;
 
   /* --- Paper rustle sound --- */
   var audioCtx = typeof AudioContext !== 'undefined' ? null : null;
@@ -550,17 +544,22 @@
       // Scroll to top of folder content
       setTimeout(function() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        document.getElementById('audioPlayer').classList.add('visible');
         document.getElementById('savePdfBtn').classList.add('visible');
       }, 400);
     } else {
       folder.classList.remove('open');
       document.body.classList.remove('folder-is-open');
-      document.getElementById('audioPlayer').classList.remove('visible');
       document.getElementById('savePdfBtn').classList.remove('visible');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
+
+  // Auto-open folder after 3 seconds if user hasn't clicked
+  setTimeout(function() {
+    if (!folderOpen) {
+      toggleFolder();
+    }
+  }, 3000);
 
   /* --- Save as PDF (triggers browser print dialog) --- */
   window.saveAsPdf = function() {
@@ -572,22 +571,6 @@
       // Remove the class after print dialog closes
       document.body.classList.remove('print-ready');
     }, 100);
-  };
-
-  /* --- Toggle audio playback --- */
-  window.toggleAudio = function() {
-    initAudio();
-    audioPlaying = !audioPlaying;
-    var btn = document.querySelector('.play-button');
-    if (audioPlaying) {
-      btn.textContent = '\u23F8';
-      setTimeout(function() {
-        btn.textContent = '\u25B6';
-        audioPlaying = false;
-      }, 60000);
-    } else {
-      btn.textContent = '\u25B6';
-    }
   };
 
   /* --- Press Modals --- */
@@ -692,6 +675,22 @@
   });
 
 })();
+</script>
+
+<script>
+// Return to the band page tab that opened this EPK popup
+document.addEventListener('click', function(e) {
+  var link = e.target.closest('a[href*="../index.html"]');
+  if (!link) return;
+
+  // Check if we were opened by another tab and it's still alive
+  if (window.opener && !window.opener.closed) {
+    e.preventDefault();
+    window.opener.focus();
+    window.close();
+  }
+  // If opener is gone (tab closed), let the link navigate normally
+});
 </script>
 
 </body>

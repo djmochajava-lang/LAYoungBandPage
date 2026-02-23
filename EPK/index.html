@@ -23,8 +23,6 @@
   <nav class="epk-topbar">
     <div class="tb-brand">L.A. YOUNG <a href="../index.html" class="tb-brand-link">| Band Page</a></div>
     <div class="tb-nav">
-      <a href="../index.html" class="tb-link">Band Page</a>
-      <a href="#contact" class="tb-link">Contact</a>
       <a href="layoungepk.html" class="btn btn-outline btn-sm">
         <span class="btn-icon pdf-badge">PDF</span> EPK on the GO
       </a>
@@ -536,6 +534,22 @@
     Press kit updated February 2026
   </div>
 </footer>
+
+<script>
+// Return to the band page tab that opened this EPK popup
+document.addEventListener('click', function(e) {
+  var link = e.target.closest('a[href*="../index.html"]');
+  if (!link) return;
+
+  // Check if we were opened by another tab and it's still alive
+  if (window.opener && !window.opener.closed) {
+    e.preventDefault();
+    window.opener.focus();
+    window.close();
+  }
+  // If opener is gone (tab closed), let the link navigate normally
+});
+</script>
 
 </body>
 </html>
