@@ -46,8 +46,8 @@ const PageLoader = {
         window.__musicPlayerAudio.pause();
         window.__musicPlayerAudio.src = '';
         window.__musicPlayerAudio = null;
-        window.__musicPlayerInitialized = false;
       }
+      window.__musicPlayerInitialized = false;
 
       // Fade out current content
       await this.fadeOut();
@@ -160,9 +160,10 @@ const PageLoader = {
     }
 
     // Load external player JS for music player page (no inline script in the HTML)
+    // Cache-bust with timestamp so the browser re-executes on every SPA navigation
     if (pageName === 'LAYoungMusicPlayer') {
       const playerScript = document.createElement('script');
-      playerScript.src = 'js/music-player-app.js';
+      playerScript.src = 'js/music-player-app.js?t=' + Date.now();
       this.container.appendChild(playerScript);
     }
 
