@@ -33,13 +33,26 @@
         </div>
       </div>
 
-      <!-- Upcoming Track 2 -->
+      <!-- Sneak Peek – Behind the Scenes -->
+      <div class="featured-track scroll-reveal delay-1">
+        <h3>Sneak Peek</h3>
+        <p class="track-description">Behind the Scenes</p>
+
+        <div style="border-radius: 12px; box-shadow: inset 0 4px 12px rgba(0,0,0,0.7), inset 0 1px 3px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.4); padding: 4px; background: linear-gradient(145deg, #0d0d0d, #1a1a1a); overflow: hidden;">
+          <video id="project-video-2" preload="metadata" playsinline muted controls
+                 src="Video/BehindTheScenes.mp4"
+                 style="width: 100%; display: block; border-radius: 8px;">
+          </video>
+        </div>
+      </div>
+
+      <!-- The Production Crew -->
       <div class="featured-track scroll-reveal delay-1">
         <h3>The Production Crew</h3>
         <p class="track-description">Behind the scenes in the studio</p>
 
         <div style="border-radius: 12px; box-shadow: inset 0 4px 12px rgba(0,0,0,0.7), inset 0 1px 3px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.4); padding: 4px; background: linear-gradient(145deg, #0d0d0d, #1a1a1a); overflow: hidden;">
-          <video id="project-video-2" preload="metadata" playsinline muted controls
+          <video id="project-video-3" preload="metadata" playsinline muted controls
                  src="Video/InStudio.mp4"
                  style="width: 100%; display: block; border-radius: 8px;">
           </video>
@@ -53,22 +66,22 @@
     (function() {
       'use strict';
 
-      // ── References ──
+      // ── References (supports any number of project videos) ──
       var video1 = document.getElementById('project-video-1');
       var video2 = document.getElementById('project-video-2');
-      if (!video1 || !video2) return;
+      var video3 = document.getElementById('project-video-3');
+      var videos = [video1, video2, video3].filter(Boolean);
+      if (videos.length === 0) return;
 
-      var videos = [video1, video2];
       var observer = null;
 
       // ── State ──
       var activeVideo = null;
       var fullyVisible = new Map();
-      fullyVisible.set(video1, false);
-      fullyVisible.set(video2, false);
+      videos.forEach(function(v) { fullyVisible.set(v, false); });
 
       // ── Mutual Exclusion ──
-      function pauseOther(playing) {
+      function pauseOthers(playing) {
         videos.forEach(function(v) {
           if (v !== playing && !v.paused) {
             v.pause();
@@ -76,11 +89,27 @@
         });
       }
 
+      // ── Any other video currently playing? ──
+      function anyOtherPlaying(video) {
+        for (var i = 0; i < videos.length; i++) {
+          if (videos[i] !== video && !videos[i].paused) return true;
+        }
+        return false;
+      }
+
+      // ── Any other video fully visible AND playing? ──
+      function anyOtherVisibleAndPlaying(video) {
+        for (var i = 0; i < videos.length; i++) {
+          if (videos[i] !== video && !videos[i].paused && fullyVisible.get(videos[i])) return true;
+        }
+        return false;
+      }
+
       // ── Manual Play Handling ──
       videos.forEach(function(v) {
         v.addEventListener('play', function() {
           activeVideo = v;
-          pauseOther(v);
+          pauseOthers(v);
         });
       });
 
@@ -98,7 +127,6 @@
         observer = new IntersectionObserver(function(entries) {
           entries.forEach(function(entry) {
             var video = entry.target;
-            var otherVideo = (video === video1) ? video2 : video1;
             var ratio = entry.intersectionRatio;
 
             var isFullyVisible = (ratio >= 0.99);
@@ -116,35 +144,31 @@
 
             // AUTO-PLAY: Video becomes fully visible
             if (isFullyVisible && video.paused) {
-              var otherIsPlaying = !otherVideo.paused;
-              var otherIsFullyVisible = fullyVisible.get(otherVideo);
-
-              if (!otherIsPlaying) {
-                // Nothing playing — auto-play this video
+              if (!anyOtherPlaying(video)) {
+                // Nothing else playing — auto-play this video
                 video.play().catch(function() {});
                 activeVideo = video;
-              } else if (otherIsPlaying && !otherIsFullyVisible) {
-                // Other is playing but not fully visible — stop other, play this
-                otherVideo.pause();
+              } else if (!anyOtherVisibleAndPlaying(video)) {
+                // Others playing but not fully visible — stop them, play this
+                pauseOthers(video);
                 video.play().catch(function() {});
                 activeVideo = video;
               }
-              // If other is playing AND fully visible — do nothing (both-visible case)
+              // If another is playing AND fully visible — do nothing
             }
 
-            // EDGE: This video is playing but no longer fully visible,
-            // and the other video just became fully visible
+            // EDGE: This video is playing but no longer fully visible
             if (!isFullyVisible && !video.paused) {
-              var otherNowFullyVisible = fullyVisible.get(otherVideo);
-              if (otherNowFullyVisible) {
-                video.pause();
-                if (activeVideo === video) {
-                  activeVideo = null;
-                }
-                // Auto-play the other since it's fully visible
-                if (otherVideo.paused) {
-                  otherVideo.play().catch(function() {});
-                  activeVideo = otherVideo;
+              // Find a fully-visible video that's paused and auto-play it
+              for (var i = 0; i < videos.length; i++) {
+                if (videos[i] !== video && fullyVisible.get(videos[i])) {
+                  video.pause();
+                  if (activeVideo === video) activeVideo = null;
+                  if (videos[i].paused) {
+                    videos[i].play().catch(function() {});
+                    activeVideo = videos[i];
+                  }
+                  break;
                 }
               }
             }
@@ -153,8 +177,7 @@
           threshold: [0, 1.0]
         });
 
-        observer.observe(video1);
-        observer.observe(video2);
+        videos.forEach(function(v) { observer.observe(v); });
       }
 
       // ── Page Leave Cleanup ──
