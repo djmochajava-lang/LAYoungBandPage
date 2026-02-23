@@ -158,11 +158,13 @@
       <div class="video-item scroll-reveal">
         <h3>L.A. Young Live</h3>
         <p class="video-subtitle">City Winery Performance</p>
-        <div style="border-radius: 12px; box-shadow: inset 0 4px 12px rgba(0,0,0,0.7), inset 0 1px 3px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.4); padding: 4px; background: linear-gradient(145deg, #0d0d0d, #1a1a1a); overflow: hidden;">
+        <div style="border-radius: 12px; box-shadow: inset 0 4px 12px rgba(0,0,0,0.7), inset 0 1px 3px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.4); padding: 4px; background: linear-gradient(145deg, #0d0d0d, #1a1a1a); overflow: hidden; position: relative;">
           <video preload="metadata" playsinline muted controls
                  src="Video/LAYoungWinery.mp4"
                  style="width: 100%; max-height: 700px; object-fit: cover; object-position: center 59%; display: block; border-radius: 8px; background: #000;">
           </video>
+          <!-- Black gradient overlay to hide yellow tribute text below "Call for booking..." -->
+          <div style="position: absolute; bottom: 4px; left: 4px; right: 4px; height: 60px; background: linear-gradient(to bottom, transparent 0%, black 40%); border-radius: 0 0 8px 8px; pointer-events: none; z-index: 2;"></div>
         </div>
       </div>
     </div>
