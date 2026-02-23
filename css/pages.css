@@ -1029,7 +1029,7 @@
   .fg-nav-btn { opacity: 1; width: 44px; height: 44px; }
   .fg-prev { left: 10px; }
   .fg-next { right: 10px; }
-  .fg-thumb-strip { padding: 0 4px; max-width: 631px; }
+  .fg-thumb-strip { padding: 0 4px; max-width: 100%; }
   .fg-thumb-card { width: 85px; min-width: 85px; height: 105px; margin: 12px 0; }
   .fg-lb-nav { width: 44px; height: 44px; }
   .fg-lb-prev { left: 12px; }
@@ -1038,9 +1038,9 @@
   .fg-progress-ring-wrap { display: none; }
 }
 @media (max-width: 480px) {
-  .fg-showcase-frame { aspect-ratio: 1 / 1; }
+  .fg-showcase-frame { aspect-ratio: 3 / 4; }
   .fg-thumb-card { width: 72px; min-width: 72px; height: 90px; margin: 10px 0; }
-  .fg-thumb-strip { gap: 0; max-width: 540px; }
+  .fg-thumb-strip { gap: 0; max-width: 100%; }
 }
 
 /* === GALLERY SCROLL-LOCK PANELS === */
@@ -1169,19 +1169,30 @@
   50% { opacity: 1; }
 }
 
+/* Gallery section — override flex centering so scroll container starts at top */
+#gallery.gallery-section {
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0;
+}
+
 /* Gallery panels responsive — disable sticky on mobile */
 @media (max-width: 768px) {
   .gallery-panel {
     height: auto;
-    min-height: 100vh;
+    min-height: auto;
   }
   .gallery-panel-sticky {
     position: relative;
     height: auto;
     min-height: 100vh;
+    padding: 60px 1rem 16px;
   }
   .gallery-panel-sticky .fg-showcase {
-    max-height: none;
+    max-height: calc(100vh - 300px);
+  }
+  .gallery-panel-sticky .fg-showcase-frame {
+    max-height: 100%;
   }
   .gallery-panel.inactive .gallery-panel-sticky {
     opacity: 1;
