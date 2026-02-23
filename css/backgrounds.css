@@ -53,20 +53,32 @@
   background-attachment: fixed;
 }
 
-/* Bio – vintage microphone */
+/* Bio – artist page */
 #bio {
-  background-image: url('../images/backgrounds/photostudio2.jpg');
-  background-size: cover;
-  background-position: center;
+  background-image: url('../images/backgrounds/ribbonmic3.jpg');
+  background-size: auto 100%;
+  background-position: left center;
+  background-repeat: no-repeat;
   background-attachment: fixed;
+  background-color: #000;
+}
+/* Bio — lighter overlay so the background shows through */
+#bio::before {
+  background: rgba(0, 0, 0, 0.25);
 }
 
 /* Music */
 #music {
-  background-image: url('../images/backgrounds/goldlights.jpg');
-  background-size: cover;
-  background-position: center;
+  background-image: url('../images/backgrounds/PinkReord.jpg');
+  background-size: contain;
+  background-position: left top;
+  background-repeat: no-repeat;
   background-attachment: fixed;
+  background-color: #c4006a;
+}
+/* Music — lighter overlay so the bright pink background shows through */
+#music::before {
+  background: rgba(0, 0, 0, 0.25);
 }
 
 /* Projects */
@@ -143,10 +155,14 @@
 
 /* Support (Tip Jar / Patronage) */
 #support {
-  background-image: url('../images/backgrounds/luxuryfabric.jpg');
-  background-size: 115%;
+  background-image: url('../images/backgrounds/OrangeFlear.jpg');
+  background-size: cover;
   background-position: center;
-  animation: supportBgDrift 60s ease-in-out infinite alternate;
+  background-attachment: fixed;
+}
+/* Support — lighter overlay so the bright pink background shows through */
+#support::before {
+  background: rgba(0, 0, 0, 0.25);
 }
 
 @keyframes supportBgDrift {
