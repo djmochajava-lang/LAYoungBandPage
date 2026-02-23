@@ -83,10 +83,14 @@
 
 /* Projects */
 #projects {
-  background-image: url('../images/backgrounds/ribbonmic3.jpg');
+  background-image: url('../images/backgrounds/StudioC.jpg');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
+}
+/* Projects — lighter overlay so the background shows through */
+#projects::before {
+  background: rgba(0, 0, 0, 0.25);
 }
 
 /* Videos */
