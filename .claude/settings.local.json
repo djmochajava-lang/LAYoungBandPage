@@ -65,7 +65,20 @@
       "Bash(git pull:*)",
       "Bash(firebase deploy:*)",
       "Bash(echo:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(xxd:*)",
+      "Bash(unzip:*)",
+      "Bash(git -C \"C:\\\\Projects\\\\goldbottom-ent-site\\\\LAYoungBandPage\" add pages/music.html)",
+      "Bash(git -C \"C:\\\\Projects\\\\goldbottom-ent-site\\\\LAYoungBandPage\" commit -m \"$\\(cat <<''EOF''\nRemove bottom divider from music page\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git -C \"C:\\\\Projects\\\\goldbottom-ent-site\\\\LAYoungBandPage\" push origin main)",
+      "Bash(powershell -File:*)",
+      "Bash(powershell:*)",
+      "Bash(git restore:*)",
+      "Bash(git -C \"C:\\\\Projects\\\\goldbottom-ent-site\\\\LAYoungBandPage\" status)",
+      "Bash(git -C \"C:\\\\Projects\\\\goldbottom-ent-site\\\\LAYoungBandPage\" diff --stat)",
+      "Bash(git -C \"C:\\\\Projects\\\\goldbottom-ent-site\\\\LAYoungBandPage\" log --oneline -3)",
+      "Bash(git -C \"C:\\\\Projects\\\\goldbottom-ent-site\\\\LAYoungBandPage\" add css/pages.css)",
+      "Bash(git -C \"C:\\\\Projects\\\\goldbottom-ent-site\\\\LAYoungBandPage\" commit -m \"$\\(cat <<''EOF''\nFix gallery layout for mobile screens\n\n- Override flex centering on gallery section so content starts from top\n- Reduce sticky panel padding for mobile nav \\(60px vs 90px desktop\\)\n- Constrain showcase max-height on mobile to fit within viewport\n- Set film strip max-width to 100% on mobile for fluid width\n- Use 3:4 aspect ratio on small phones for better portrait framing\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

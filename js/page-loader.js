@@ -140,6 +140,7 @@ const PageLoader = {
       setTimeout(() => {
         if (typeof Gallery !== 'undefined') Gallery.init();
         if (typeof EventGallery !== 'undefined') EventGallery.init();
+        if (typeof GalleryCoordinator !== 'undefined') GalleryCoordinator.init();
       }, 50);
     }
 
