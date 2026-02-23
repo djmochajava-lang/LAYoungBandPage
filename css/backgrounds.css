@@ -27,6 +27,12 @@
   pointer-events: none;
 }
 
+/* Gallery section needs scroll for sticky panels */
+#gallery.gallery-section {
+  overflow-y: auto !important;
+  overflow-x: hidden;
+}
+
 /* All content above overlay */
 .section > *,
 .hero > * {
@@ -85,6 +91,14 @@
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
+}
+/* Gallery — vignette spotlight to balance studio equipment on left */
+#gallery::before {
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 45%,
+      rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.65) 60%, rgba(0,0,0,0.82) 100%),
+    linear-gradient(to right,
+      rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.15) 25%, transparent 45%);
 }
 
 /* Tour */

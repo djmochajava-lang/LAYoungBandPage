@@ -1,107 +1,141 @@
 <!-- pages/gallery.html -->
 
 <section class="section gallery-section" id="gallery">
-  <div class="container">
+  <div class="gallery-scroll-container">
 
-    <!-- Futuristic Gallery Header -->
-    <div class="fg-header">
-      <h2 class="fg-title">My Gallery</h2>
-      <p class="fg-subtitle">Moments in Color</p>
-      <div class="fg-header-line"><span></span></div>
-    </div>
+    <!-- ═══════════ GALLERY 1: ARTIST PHOTOS ═══════════ -->
+    <div class="gallery-panel active" id="fg-panel">
+      <div class="gallery-panel-sticky">
 
-    <!-- Floating Particles (created by JS) -->
-    <div class="fg-particles" id="fg-particles"></div>
-    <!-- Scan Line -->
-    <div class="fg-scan-line"></div>
-
-    <!-- 3D Showcase -->
-    <div class="fg-showcase" id="fg-showcase">
-      <div class="fg-showcase-frame" id="fg-showcaseFrame">
-        <!-- Images injected by JS -->
-        <div class="fg-showcase-caption">
-          <div class="fg-caption-left">
-            <div class="fg-cap-title" id="fg-capTitle"></div>
-            <div class="fg-cap-sub" id="fg-capSub"></div>
-          </div>
-          <div class="fg-caption-right" id="fg-capCount"></div>
+        <!-- Futuristic Gallery Header -->
+        <div class="fg-header">
+          <h2 class="fg-title">My Gallery</h2>
+          <p class="fg-subtitle">Moments in Color</p>
+          <div class="fg-header-line"><span></span></div>
         </div>
-        <button class="fg-nav-btn fg-prev" id="fg-prevBtn" aria-label="Previous">&#8249;</button>
-        <button class="fg-nav-btn fg-next" id="fg-nextBtn" aria-label="Next">&#8250;</button>
-      </div>
-      <!-- Progress ring (built by JS to avoid innerHTML SVG issues) -->
-      <div class="fg-progress-ring-wrap" id="fg-progressRingWrap"></div>
-    </div>
 
-    <!-- Thumbnail Strip -->
-    <div class="fg-thumb-strip" id="fg-thumbStrip">
-      <!-- Thumbnails injected by JS -->
-    </div>
+        <!-- Floating Particles (created by JS) -->
+        <div class="fg-particles" id="fg-particles"></div>
+        <!-- Scan Line -->
+        <div class="fg-scan-line"></div>
 
-    <!-- Futuristic Lightbox -->
-    <div class="fg-lightbox" id="fg-lightbox">
-      <button class="fg-lb-close" id="fg-lbClose" aria-label="Close">&times;</button>
-      <button class="fg-lb-nav fg-lb-prev" id="fg-lbPrev" aria-label="Previous">&#8249;</button>
-      <button class="fg-lb-nav fg-lb-next" id="fg-lbNext" aria-label="Next">&#8250;</button>
-      <div class="fg-lb-img-wrap">
-        <img id="fg-lbImg" src="" alt="">
-      </div>
-      <div class="fg-lb-caption">
-        <div class="fg-lb-title" id="fg-lbTitle"></div>
-        <div class="fg-lb-count" id="fg-lbCount"></div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- EVENT GALLERY SECTION (Futuristic Showcase) -->
-    <div class="fg-header">
-      <h2 class="fg-title">Event Gallery</h2>
-      <p class="fg-subtitle">Backstage Sneak Peeks & More</p>
-      <div class="fg-header-line"><span></span></div>
-    </div>
-
-    <!-- Floating Particles (created by JS) -->
-    <div class="fg-particles" id="eg-particles"></div>
-    <!-- Scan Line -->
-    <div class="fg-scan-line"></div>
-
-    <!-- 3D Showcase -->
-    <div class="fg-showcase" id="eg-showcase">
-      <div class="fg-showcase-frame" id="eg-showcaseFrame">
-        <!-- Images injected by JS -->
-        <div class="fg-showcase-caption">
-          <div class="fg-caption-left">
-            <div class="fg-cap-title" id="eg-capTitle"></div>
-            <div class="fg-cap-sub" id="eg-capSub"></div>
+        <!-- 3D Showcase -->
+        <div class="fg-showcase" id="fg-showcase">
+          <div class="fg-showcase-frame" id="fg-showcaseFrame">
+            <!-- Images injected by JS -->
+            <div class="fg-showcase-caption">
+              <div class="fg-caption-left">
+                <div class="fg-cap-title" id="fg-capTitle"></div>
+                <div class="fg-cap-sub" id="fg-capSub"></div>
+              </div>
+              <div class="fg-caption-right" id="fg-capCount"></div>
+            </div>
+            <button class="fg-nav-btn fg-prev" id="fg-prevBtn" aria-label="Previous">&#8249;</button>
+            <button class="fg-nav-btn fg-next" id="fg-nextBtn" aria-label="Next">&#8250;</button>
           </div>
-          <div class="fg-caption-right" id="eg-capCount"></div>
+          <!-- Progress ring (built by JS to avoid innerHTML SVG issues) -->
+          <div class="fg-progress-ring-wrap" id="fg-progressRingWrap"></div>
         </div>
-        <button class="fg-nav-btn fg-prev" id="eg-prevBtn" aria-label="Previous">&#8249;</button>
-        <button class="fg-nav-btn fg-next" id="eg-nextBtn" aria-label="Next">&#8250;</button>
-      </div>
-      <!-- Progress ring (built by JS to avoid innerHTML SVG issues) -->
-      <div class="fg-progress-ring-wrap" id="eg-progressRingWrap"></div>
-    </div>
 
-    <!-- Thumbnail Strip -->
-    <div class="fg-thumb-strip" id="eg-thumbStrip">
-      <!-- Thumbnails injected by JS -->
-    </div>
+        <!-- Play Button Overlay -->
+        <button class="gallery-play-btn" id="fg-playBtn" aria-label="Start slideshow">
+          <span class="gallery-play-icon">&#9654;</span>
+        </button>
 
-    <!-- Futuristic Lightbox -->
-    <div class="fg-lightbox" id="eg-lightbox">
-      <button class="fg-lb-close" id="eg-lbClose" aria-label="Close">&times;</button>
-      <button class="fg-lb-nav fg-lb-prev" id="eg-lbPrev" aria-label="Previous">&#8249;</button>
-      <button class="fg-lb-nav fg-lb-next" id="eg-lbNext" aria-label="Next">&#8250;</button>
-      <div class="fg-lb-img-wrap">
-        <img id="eg-lbImg" src="" alt="">
+        <!-- Thumbnail Strip -->
+        <div class="fg-thumb-strip" id="fg-thumbStrip">
+          <!-- Thumbnails injected by JS -->
+        </div>
+
+        <!-- Scroll Hint -->
+        <div class="gallery-scroll-hint">
+          <span>Scroll for BackStage Gallery</span>
+          <div class="gallery-scroll-arrow"></div>
+        </div>
+
+      </div><!-- /gallery-panel-sticky -->
+
+      <!-- Futuristic Lightbox (position:fixed — outside sticky) -->
+      <div class="fg-lightbox" id="fg-lightbox">
+        <button class="fg-lb-close" id="fg-lbClose" aria-label="Close">&times;</button>
+        <button class="fg-lb-nav fg-lb-prev" id="fg-lbPrev" aria-label="Previous">&#8249;</button>
+        <button class="fg-lb-nav fg-lb-next" id="fg-lbNext" aria-label="Next">&#8250;</button>
+        <div class="fg-lb-img-wrap">
+          <img id="fg-lbImg" src="" alt="">
+        </div>
+        <div class="fg-lb-caption">
+          <div class="fg-lb-title" id="fg-lbTitle"></div>
+          <div class="fg-lb-count" id="fg-lbCount"></div>
+        </div>
       </div>
-      <div class="fg-lb-caption">
-        <div class="fg-lb-title" id="eg-lbTitle"></div>
-        <div class="fg-lb-count" id="eg-lbCount"></div>
+    </div><!-- /fg-panel -->
+
+    <!-- ═══════════ GALLERY 2: EVENT PHOTOS ═══════════ -->
+    <div class="gallery-panel" id="eg-panel">
+      <div class="gallery-panel-sticky">
+
+        <!-- BackStage Gallery Header -->
+        <div class="fg-header">
+          <h2 class="fg-title">BackStage Gallery</h2>
+          <p class="fg-subtitle">Backstage Sneak Peeks & More</p>
+          <div class="fg-header-line"><span></span></div>
+        </div>
+
+        <!-- Floating Particles (created by JS) -->
+        <div class="fg-particles" id="eg-particles"></div>
+        <!-- Scan Line -->
+        <div class="fg-scan-line"></div>
+
+        <!-- 3D Showcase -->
+        <div class="fg-showcase" id="eg-showcase">
+          <div class="fg-showcase-frame" id="eg-showcaseFrame">
+            <!-- Images injected by JS -->
+            <div class="fg-showcase-caption">
+              <div class="fg-caption-left">
+                <div class="fg-cap-title" id="eg-capTitle"></div>
+                <div class="fg-cap-sub" id="eg-capSub"></div>
+              </div>
+              <div class="fg-caption-right" id="eg-capCount"></div>
+            </div>
+            <button class="fg-nav-btn fg-prev" id="eg-prevBtn" aria-label="Previous">&#8249;</button>
+            <button class="fg-nav-btn fg-next" id="eg-nextBtn" aria-label="Next">&#8250;</button>
+          </div>
+          <!-- Progress ring (built by JS to avoid innerHTML SVG issues) -->
+          <div class="fg-progress-ring-wrap" id="eg-progressRingWrap"></div>
+        </div>
+
+        <!-- Play Button Overlay -->
+        <button class="gallery-play-btn" id="eg-playBtn" aria-label="Start slideshow">
+          <span class="gallery-play-icon">&#9654;</span>
+        </button>
+
+        <!-- Thumbnail Strip -->
+        <div class="fg-thumb-strip" id="eg-thumbStrip">
+          <!-- Thumbnails injected by JS -->
+        </div>
+
+        <!-- Scroll Hint (up) -->
+        <div class="gallery-scroll-hint gallery-scroll-hint--up">
+          <div class="gallery-scroll-arrow gallery-scroll-arrow--up"></div>
+          <span>Scroll for Artist Gallery</span>
+        </div>
+
+      </div><!-- /gallery-panel-sticky -->
+
+      <!-- Futuristic Lightbox (position:fixed — outside sticky) -->
+      <div class="fg-lightbox" id="eg-lightbox">
+        <button class="fg-lb-close" id="eg-lbClose" aria-label="Close">&times;</button>
+        <button class="fg-lb-nav fg-lb-prev" id="eg-lbPrev" aria-label="Previous">&#8249;</button>
+        <button class="fg-lb-nav fg-lb-next" id="eg-lbNext" aria-label="Next">&#8250;</button>
+        <div class="fg-lb-img-wrap">
+          <img id="eg-lbImg" src="" alt="">
+        </div>
+        <div class="fg-lb-caption">
+          <div class="fg-lb-title" id="eg-lbTitle"></div>
+          <div class="fg-lb-count" id="eg-lbCount"></div>
+        </div>
       </div>
-    </div>
+    </div><!-- /eg-panel -->
 
     <!-- PAGE FOOTER (shows on mobile only) -->
     <footer class="page-footer">

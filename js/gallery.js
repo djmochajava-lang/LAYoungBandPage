@@ -29,15 +29,17 @@ function createGallery(config) {
   let autoTimer = null;
   let progressRAF = null;
   let progressStart = 0;
-  let paused = false;
+  let paused = true; // start paused — user must initiate playback
   let resumeTimer = null;
   let lbOpen = false;
+  let userStartedPlay = false; // tracks if user clicked play
   let els = {};
   let showcaseImgs = null; // NodeList or Map for lazy mode
   let thumbCards = null;
   let _keyHandler = null;
   let _tiltMove = null;
   let _tiltLeave = null;
+  let _lbWrapClick = null;
   let thumbObserver = null;
 
   // ─── Helpers ───
@@ -87,13 +89,18 @@ function createGallery(config) {
     }
 
     buildThumbnails();
+    setupDragScroll();
     bind3DTilt();
     bindNavigation();
     bindLightbox();
     bindKeyboard();
     bindTouch();
     updateCaption();
-    startAuto();
+
+    // Don't auto-play — wait for user to start or navigate
+    paused = true;
+    userStartedPlay = false;
+    stopAuto();
 
     initialized = true;
     console.log('✅ Gallery [' + prefix + '] initialized with', images.length, 'images');
@@ -112,9 +119,14 @@ function createGallery(config) {
       thumbObserver.disconnect();
       thumbObserver = null;
     }
+    if (_lbWrapClick && els.lightbox) {
+      var wrap = els.lightbox.querySelector('.fg-lb-img-wrap');
+      if (wrap) wrap.removeEventListener('click', _lbWrapClick);
+    }
     _keyHandler = null;
     _tiltMove = null;
     _tiltLeave = null;
+    _lbWrapClick = null;
   }
 
   function reload() {
@@ -302,7 +314,7 @@ function createGallery(config) {
 
       var label = document.createElement('div');
       label.className = 'fg-thumb-label';
-      label.textContent = (img.caption || '').replace('Event photo ', '#');
+      label.textContent = (img.caption || '').replace('BackStage photo ', '#');
       card.appendChild(label);
 
       card.addEventListener('click', function () {
@@ -358,6 +370,61 @@ function createGallery(config) {
     return card;
   }
 
+  // ─── Drag-to-Scroll on Thumbnail Strip ───
+
+  function setupDragScroll() {
+    var strip = els.thumbStrip;
+    if (!strip) return;
+
+    var isDown = false;
+    var startX = 0;
+    var scrollStart = 0;
+    var hasDragged = false;
+
+    strip.style.cursor = 'grab';
+
+    strip.addEventListener('mousedown', function (e) {
+      // Only left mouse button
+      if (e.button !== 0) return;
+      isDown = true;
+      hasDragged = false;
+      startX = e.pageX;
+      scrollStart = strip.scrollLeft;
+      strip.style.cursor = 'grabbing';
+      strip.style.scrollBehavior = 'auto';
+      e.preventDefault();
+    });
+
+    strip.addEventListener('mousemove', function (e) {
+      if (!isDown) return;
+      var dx = e.pageX - startX;
+      if (Math.abs(dx) > 3) hasDragged = true;
+      strip.scrollLeft = scrollStart - dx;
+    });
+
+    strip.addEventListener('mouseup', function () {
+      isDown = false;
+      strip.style.cursor = 'grab';
+      strip.style.scrollBehavior = '';
+    });
+
+    strip.addEventListener('mouseleave', function () {
+      if (isDown) {
+        isDown = false;
+        strip.style.cursor = 'grab';
+        strip.style.scrollBehavior = '';
+      }
+    });
+
+    // Prevent click on cards after a drag
+    strip.addEventListener('click', function (e) {
+      if (hasDragged) {
+        e.stopPropagation();
+        hasDragged = false;
+      }
+    }, true);
+  }
+
   // ─── 3D Tilt ───
 
   function bind3DTilt() {
@@ -402,7 +469,10 @@ function createGallery(config) {
     }
 
     if (els.showcase) {
-      els.showcase.addEventListener('mouseenter', function () { pauseAuto(); });
+      els.showcase.addEventListener('mouseenter', function () {
+        if (userStartedPlay) return; // don't pause auto-play slideshow on hover
+        pauseAuto();
+      });
       els.showcase.addEventListener('mouseleave', function () { scheduleResume(); });
     }
   }
@@ -483,6 +553,7 @@ function createGallery(config) {
   }
 
   function scheduleResume() {
+    if (!userStartedPlay) return; // only auto-resume if user started playback
     clearTimeout(resumeTimer);
     resumeTimer = setTimeout(function () { startAuto(); }, RESUME_DELAY);
   }
@@ -528,6 +599,19 @@ function createGallery(config) {
       cur = (cur + 1) % images.length;
       updateLB();
     });
+
+    // Click anywhere on the lightbox image or its wrapper to advance
+    var lbImgWrap = lightbox ? lightbox.querySelector('.fg-lb-img-wrap') : null;
+    if (lbImgWrap) {
+      lbImgWrap.style.cursor = 'pointer';
+      if (_lbWrapClick) lbImgWrap.removeEventListener('click', _lbWrapClick);
+      _lbWrapClick = function (e) {
+        e.stopPropagation();
+        cur = (cur + 1) % images.length;
+        updateLB();
+      };
+      lbImgWrap.addEventListener('click', _lbWrapClick);
+    }
   }
 
   function openLB(i) {
@@ -615,12 +699,38 @@ function createGallery(config) {
     }, { passive: true });
   }
 
+  // ─── Playback Control (user-initiated) ───
+
+  function startPlayback() {
+    userStartedPlay = true;
+    paused = false;
+    startAuto();
+    var playBtn = document.getElementById(prefix + '-playBtn');
+    if (playBtn) playBtn.classList.add('hidden');
+  }
+
+  function stopPlayback() {
+    pauseAuto();
+    clearTimeout(resumeTimer);
+    userStartedPlay = false;
+    var playBtn = document.getElementById(prefix + '-playBtn');
+    if (playBtn) playBtn.classList.remove('hidden');
+  }
+
+  function isPlaying() {
+    return userStartedPlay && !paused && autoTimer !== null;
+  }
+
   // ─── Public API ───
 
   return {
     init: init,
     destroy: destroy,
     reload: reload,
+    startPlayback: startPlayback,
+    stopPlayback: stopPlayback,
+    isPlaying: isPlaying,
+    get prefix() { return prefix; },
     get images() { return images; },
     get initialized() { return initialized; },
   };
@@ -642,68 +752,68 @@ var artistImages = [
 
 var eventImages = [
   // 62 event photos (burst duplicates removed, renumbered sequentially)
-  { src: 'images/gallery/event001.jpg', caption: 'Event photo 1',  sub: 'Live Performance' },
-  { src: 'images/gallery/event002.jpg', caption: 'Event photo 2',  sub: 'Live Performance' },
-  { src: 'images/gallery/event003.jpg', caption: 'Event photo 3',  sub: 'Live Performance' },
-  { src: 'images/gallery/event004.jpg', caption: 'Event photo 4',  sub: 'Live Performance' },
-  { src: 'images/gallery/event005.jpg', caption: 'Event photo 5',  sub: 'Live Performance' },
-  { src: 'images/gallery/event006.jpg', caption: 'Event photo 6',  sub: 'Live Performance' },
-  { src: 'images/gallery/event007.jpg', caption: 'Event photo 7',  sub: 'Live Performance' },
-  { src: 'images/gallery/event008.jpg', caption: 'Event photo 8',  sub: 'Live Performance' },
-  { src: 'images/gallery/event009.jpg', caption: 'Event photo 9',  sub: 'Live Performance' },
-  { src: 'images/gallery/event010.jpg', caption: 'Event photo 10', sub: 'Live Performance' },
-  { src: 'images/gallery/event011.jpg', caption: 'Event photo 11', sub: 'Live Performance' },
-  { src: 'images/gallery/event012.jpg', caption: 'Event photo 12', sub: 'Live Performance' },
-  { src: 'images/gallery/event013.jpg', caption: 'Event photo 13', sub: 'Live Performance' },
-  { src: 'images/gallery/event014.jpg', caption: 'Event photo 14', sub: 'Live Performance' },
-  { src: 'images/gallery/event015.jpg', caption: 'Event photo 15', sub: 'Live Performance' },
-  { src: 'images/gallery/event016.jpg', caption: 'Event photo 16', sub: 'Live Performance' },
-  { src: 'images/gallery/event017.jpg', caption: 'Event photo 17', sub: 'Live Performance' },
-  { src: 'images/gallery/event018.jpg', caption: 'Event photo 18', sub: 'Live Performance' },
-  { src: 'images/gallery/event019.jpg', caption: 'Event photo 19', sub: 'Live Performance' },
-  { src: 'images/gallery/event020.jpg', caption: 'Event photo 20', sub: 'Live Performance' },
-  { src: 'images/gallery/event021.jpg', caption: 'Event photo 21', sub: 'Live Performance' },
-  { src: 'images/gallery/event022.jpg', caption: 'Event photo 22', sub: 'Live Performance' },
-  { src: 'images/gallery/event023.jpg', caption: 'Event photo 23', sub: 'Live Performance' },
-  { src: 'images/gallery/event024.jpg', caption: 'Event photo 24', sub: 'Live Performance' },
-  { src: 'images/gallery/event025.jpg', caption: 'Event photo 25', sub: 'Live Performance' },
-  { src: 'images/gallery/event026.jpg', caption: 'Event photo 26', sub: 'Live Performance' },
-  { src: 'images/gallery/event027.jpg', caption: 'Event photo 27', sub: 'Live Performance' },
-  { src: 'images/gallery/event028.jpg', caption: 'Event photo 28', sub: 'Live Performance' },
-  { src: 'images/gallery/event029.jpg', caption: 'Event photo 29', sub: 'Live Performance' },
-  { src: 'images/gallery/event030.jpg', caption: 'Event photo 30', sub: 'Live Performance' },
-  { src: 'images/gallery/event031.jpg', caption: 'Event photo 31', sub: 'Live Performance' },
-  { src: 'images/gallery/event032.jpg', caption: 'Event photo 32', sub: 'Live Performance' },
-  { src: 'images/gallery/event033.jpg', caption: 'Event photo 33', sub: 'Live Performance' },
-  { src: 'images/gallery/event034.jpg', caption: 'Event photo 34', sub: 'Live Performance' },
-  { src: 'images/gallery/event035.jpg', caption: 'Event photo 35', sub: 'Live Performance' },
-  { src: 'images/gallery/event036.jpg', caption: 'Event photo 36', sub: 'Live Performance' },
-  { src: 'images/gallery/event037.jpg', caption: 'Event photo 37', sub: 'Live Performance' },
-  { src: 'images/gallery/event038.jpg', caption: 'Event photo 38', sub: 'Live Performance' },
-  { src: 'images/gallery/event039.jpg', caption: 'Event photo 39', sub: 'Live Performance' },
-  { src: 'images/gallery/event040.jpg', caption: 'Event photo 40', sub: 'Live Performance' },
-  { src: 'images/gallery/event041.jpg', caption: 'Event photo 41', sub: 'Live Performance' },
-  { src: 'images/gallery/event042.jpg', caption: 'Event photo 42', sub: 'Live Performance' },
-  { src: 'images/gallery/event043.jpg', caption: 'Event photo 43', sub: 'Live Performance' },
-  { src: 'images/gallery/event044.jpg', caption: 'Event photo 44', sub: 'Live Performance' },
-  { src: 'images/gallery/event045.jpg', caption: 'Event photo 45', sub: 'Live Performance' },
-  { src: 'images/gallery/event046.jpg', caption: 'Event photo 46', sub: 'Live Performance' },
-  { src: 'images/gallery/event047.jpg', caption: 'Event photo 47', sub: 'Live Performance' },
-  { src: 'images/gallery/event048.jpg', caption: 'Event photo 48', sub: 'Live Performance' },
-  { src: 'images/gallery/event049.jpg', caption: 'Event photo 49', sub: 'Live Performance' },
-  { src: 'images/gallery/event050.jpg', caption: 'Event photo 50', sub: 'Live Performance' },
-  { src: 'images/gallery/event051.jpg', caption: 'Event photo 51', sub: 'Live Performance' },
-  { src: 'images/gallery/event052.jpg', caption: 'Event photo 52', sub: 'Live Performance' },
-  { src: 'images/gallery/event053.jpg', caption: 'Event photo 53', sub: 'Live Performance' },
-  { src: 'images/gallery/event054.jpg', caption: 'Event photo 54', sub: 'Live Performance' },
-  { src: 'images/gallery/event055.jpg', caption: 'Event photo 55', sub: 'Live Performance' },
-  { src: 'images/gallery/event056.jpg', caption: 'Event photo 56', sub: 'Live Performance' },
-  { src: 'images/gallery/event057.jpg', caption: 'Event photo 57', sub: 'Live Performance' },
-  { src: 'images/gallery/event058.jpg', caption: 'Event photo 58', sub: 'Live Performance' },
-  { src: 'images/gallery/event059.jpg', caption: 'Event photo 59', sub: 'Live Performance' },
-  { src: 'images/gallery/event060.jpg', caption: 'Event photo 60', sub: 'Live Performance' },
-  { src: 'images/gallery/event061.jpg', caption: 'Event photo 61', sub: 'Live Performance' },
-  { src: 'images/gallery/event062.jpg', caption: 'Event photo 62', sub: 'Live Performance' },
+  { src: 'images/gallery/event001.jpg', caption: 'BackStage photo 1',  sub: 'Live Performance' },
+  { src: 'images/gallery/event002.jpg', caption: 'BackStage photo 2',  sub: 'Live Performance' },
+  { src: 'images/gallery/event003.jpg', caption: 'BackStage photo 3',  sub: 'Live Performance' },
+  { src: 'images/gallery/event004.jpg', caption: 'BackStage photo 4',  sub: 'Live Performance' },
+  { src: 'images/gallery/event005.jpg', caption: 'BackStage photo 5',  sub: 'Live Performance' },
+  { src: 'images/gallery/event006.jpg', caption: 'BackStage photo 6',  sub: 'Live Performance' },
+  { src: 'images/gallery/event007.jpg', caption: 'BackStage photo 7',  sub: 'Live Performance' },
+  { src: 'images/gallery/event008.jpg', caption: 'BackStage photo 8',  sub: 'Live Performance' },
+  { src: 'images/gallery/event009.jpg', caption: 'BackStage photo 9',  sub: 'Live Performance' },
+  { src: 'images/gallery/event010.jpg', caption: 'BackStage photo 10', sub: 'Live Performance' },
+  { src: 'images/gallery/event011.jpg', caption: 'BackStage photo 11', sub: 'Live Performance' },
+  { src: 'images/gallery/event012.jpg', caption: 'BackStage photo 12', sub: 'Live Performance' },
+  { src: 'images/gallery/event013.jpg', caption: 'BackStage photo 13', sub: 'Live Performance' },
+  { src: 'images/gallery/event014.jpg', caption: 'BackStage photo 14', sub: 'Live Performance' },
+  { src: 'images/gallery/event015.jpg', caption: 'BackStage photo 15', sub: 'Live Performance' },
+  { src: 'images/gallery/event016.jpg', caption: 'BackStage photo 16', sub: 'Live Performance' },
+  { src: 'images/gallery/event017.jpg', caption: 'BackStage photo 17', sub: 'Live Performance' },
+  { src: 'images/gallery/event018.jpg', caption: 'BackStage photo 18', sub: 'Live Performance' },
+  { src: 'images/gallery/event019.jpg', caption: 'BackStage photo 19', sub: 'Live Performance' },
+  { src: 'images/gallery/event020.jpg', caption: 'BackStage photo 20', sub: 'Live Performance' },
+  { src: 'images/gallery/event021.jpg', caption: 'BackStage photo 21', sub: 'Live Performance' },
+  { src: 'images/gallery/event022.jpg', caption: 'BackStage photo 22', sub: 'Live Performance' },
+  { src: 'images/gallery/event023.jpg', caption: 'BackStage photo 23', sub: 'Live Performance' },
+  { src: 'images/gallery/event024.jpg', caption: 'BackStage photo 24', sub: 'Live Performance' },
+  { src: 'images/gallery/event025.jpg', caption: 'BackStage photo 25', sub: 'Live Performance' },
+  { src: 'images/gallery/event026.jpg', caption: 'BackStage photo 26', sub: 'Live Performance' },
+  { src: 'images/gallery/event027.jpg', caption: 'BackStage photo 27', sub: 'Live Performance' },
+  { src: 'images/gallery/event028.jpg', caption: 'BackStage photo 28', sub: 'Live Performance' },
+  { src: 'images/gallery/event029.jpg', caption: 'BackStage photo 29', sub: 'Live Performance' },
+  { src: 'images/gallery/event030.jpg', caption: 'BackStage photo 30', sub: 'Live Performance' },
+  { src: 'images/gallery/event031.jpg', caption: 'BackStage photo 31', sub: 'Live Performance' },
+  { src: 'images/gallery/event032.jpg', caption: 'BackStage photo 32', sub: 'Live Performance' },
+  { src: 'images/gallery/event033.jpg', caption: 'BackStage photo 33', sub: 'Live Performance' },
+  { src: 'images/gallery/event034.jpg', caption: 'BackStage photo 34', sub: 'Live Performance' },
+  { src: 'images/gallery/event035.jpg', caption: 'BackStage photo 35', sub: 'Live Performance' },
+  { src: 'images/gallery/event036.jpg', caption: 'BackStage photo 36', sub: 'Live Performance' },
+  { src: 'images/gallery/event037.jpg', caption: 'BackStage photo 37', sub: 'Live Performance' },
+  { src: 'images/gallery/event038.jpg', caption: 'BackStage photo 38', sub: 'Live Performance' },
+  { src: 'images/gallery/event039.jpg', caption: 'BackStage photo 39', sub: 'Live Performance' },
+  { src: 'images/gallery/event040.jpg', caption: 'BackStage photo 40', sub: 'Live Performance' },
+  { src: 'images/gallery/event041.jpg', caption: 'BackStage photo 41', sub: 'Live Performance' },
+  { src: 'images/gallery/event042.jpg', caption: 'BackStage photo 42', sub: 'Live Performance' },
+  { src: 'images/gallery/event043.jpg', caption: 'BackStage photo 43', sub: 'Live Performance' },
+  { src: 'images/gallery/event044.jpg', caption: 'BackStage photo 44', sub: 'Live Performance' },
+  { src: 'images/gallery/event045.jpg', caption: 'BackStage photo 45', sub: 'Live Performance' },
+  { src: 'images/gallery/event046.jpg', caption: 'BackStage photo 46', sub: 'Live Performance' },
+  { src: 'images/gallery/event047.jpg', caption: 'BackStage photo 47', sub: 'Live Performance' },
+  { src: 'images/gallery/event048.jpg', caption: 'BackStage photo 48', sub: 'Live Performance' },
+  { src: 'images/gallery/event049.jpg', caption: 'BackStage photo 49', sub: 'Live Performance' },
+  { src: 'images/gallery/event050.jpg', caption: 'BackStage photo 50', sub: 'Live Performance' },
+  { src: 'images/gallery/event051.jpg', caption: 'BackStage photo 51', sub: 'Live Performance' },
+  { src: 'images/gallery/event052.jpg', caption: 'BackStage photo 52', sub: 'Live Performance' },
+  { src: 'images/gallery/event053.jpg', caption: 'BackStage photo 53', sub: 'Live Performance' },
+  { src: 'images/gallery/event054.jpg', caption: 'BackStage photo 54', sub: 'Live Performance' },
+  { src: 'images/gallery/event055.jpg', caption: 'BackStage photo 55', sub: 'Live Performance' },
+  { src: 'images/gallery/event056.jpg', caption: 'BackStage photo 56', sub: 'Live Performance' },
+  { src: 'images/gallery/event057.jpg', caption: 'BackStage photo 57', sub: 'Live Performance' },
+  { src: 'images/gallery/event058.jpg', caption: 'BackStage photo 58', sub: 'Live Performance' },
+  { src: 'images/gallery/event059.jpg', caption: 'BackStage photo 59', sub: 'Live Performance' },
+  { src: 'images/gallery/event060.jpg', caption: 'BackStage photo 60', sub: 'Live Performance' },
+  { src: 'images/gallery/event061.jpg', caption: 'BackStage photo 61', sub: 'Live Performance' },
+  { src: 'images/gallery/event062.jpg', caption: 'BackStage photo 62', sub: 'Live Performance' },
 ];
 
 // ─── Create Instances ───
@@ -715,3 +825,114 @@ var EventGallery = createGallery({ prefix: 'eg', images: eventImages, particleCo
 window.Gallery = Gallery;
 window.EventGallery = EventGallery;
 window.createGallery = createGallery;
+
+// ─── Gallery Coordinator ───
+// Manages mutual exclusion, scroll-based activation, and play buttons
+
+var GalleryCoordinator = (function () {
+  'use strict';
+
+  var galleries = [
+    { instance: Gallery, panelId: 'fg-panel', playBtnId: 'fg-playBtn' },
+    { instance: EventGallery, panelId: 'eg-panel', playBtnId: 'eg-playBtn' },
+  ];
+  var activeIndex = 0;
+  var observer = null;
+  var _initialized = false;
+
+  function init() {
+    if (_initialized) destroy();
+    setupIntersectionObserver();
+    setupPlayButtons();
+    setActive(0);
+    _initialized = true;
+    console.log('🎛️ GalleryCoordinator initialized');
+  }
+
+  function setupIntersectionObserver() {
+    // The scroll parent is the #gallery section (overflow-y: auto)
+    var scrollParent = document.getElementById('gallery');
+    if (!scrollParent) return;
+
+    observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+            var idx = -1;
+            for (var i = 0; i < galleries.length; i++) {
+              if (galleries[i].panelId === entry.target.id) { idx = i; break; }
+            }
+            if (idx !== -1 && idx !== activeIndex) {
+              setActive(idx);
+            }
+          }
+        });
+      },
+      {
+        root: scrollParent,
+        threshold: [0.3, 0.5],
+      }
+    );
+
+    galleries.forEach(function (g) {
+      var panel = document.getElementById(g.panelId);
+      if (panel) observer.observe(panel);
+    });
+  }
+
+  function setActive(index) {
+    activeIndex = index;
+
+    galleries.forEach(function (g, i) {
+      var panel = document.getElementById(g.panelId);
+      if (!panel) return;
+
+      if (i === index) {
+        panel.classList.add('active');
+        panel.classList.remove('inactive');
+      } else {
+        panel.classList.remove('active');
+        panel.classList.add('inactive');
+        // Stop the other gallery's auto-play
+        if (g.instance.isPlaying()) {
+          g.instance.stopPlayback();
+        }
+      }
+    });
+  }
+
+  function setupPlayButtons() {
+    galleries.forEach(function (g, i) {
+      var btn = document.getElementById(g.playBtnId);
+      if (btn) {
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          // Stop any other playing gallery
+          galleries.forEach(function (other, j) {
+            if (j !== i && other.instance.isPlaying()) {
+              other.instance.stopPlayback();
+            }
+          });
+          // Start this gallery
+          g.instance.startPlayback();
+        });
+      }
+    });
+  }
+
+  function destroy() {
+    if (observer) {
+      observer.disconnect();
+      observer = null;
+    }
+    _initialized = false;
+  }
+
+  return {
+    init: init,
+    destroy: destroy,
+    setActive: setActive,
+  };
+})();
+
+window.GalleryCoordinator = GalleryCoordinator;
