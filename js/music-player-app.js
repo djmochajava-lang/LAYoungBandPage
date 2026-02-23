@@ -5,9 +5,16 @@
   'use strict';
 
   // Guard against multiple initializations (Live Server re-injects scripts)
+  // Check if the DOM elements still exist — if not, the page was reloaded
+  // and we need to re-initialize with fresh DOM refs
   if (window.__musicPlayerInitialized) {
-    console.log('🎵 Music player already initialized, skipping');
-    return;
+    var testEl = document.getElementById('spMainPlayBtn');
+    if (testEl) {
+      console.log('🎵 Music player already initialized, skipping');
+      return;
+    }
+    // DOM was replaced (SPA navigation), need to re-init
+    console.log('🎵 Music player DOM replaced, re-initializing');
   }
   window.__musicPlayerInitialized = true;
 
@@ -55,19 +62,27 @@
     return m + ':' + (sec < 10 ? '0' : '') + sec;
   }
 
-  /* ---- Preload durations ---- */
-  playlist.forEach(function (track, i) {
+  /* ---- Preload durations (lazy — one at a time to avoid mobile issues) ---- */
+  function preloadDuration(i) {
+    if (i >= playlist.length) return;
     var tmp = document.createElement('audio');
     tmp.preload = 'metadata';
-    tmp.src = track.src;
+    tmp.src = playlist[i].src;
     tmp.addEventListener('loadedmetadata', function () {
       var durEls = trackItems[i] ? trackItems[i].querySelectorAll('.sp-dur') : [];
       for (var d = 0; d < durEls.length; d++) {
         durEls[d].textContent = fmt(tmp.duration);
       }
       playlist[i].duration = tmp.duration;
+      tmp.src = ''; // release the resource
+      preloadDuration(i + 1); // load next one
     });
-  });
+    tmp.addEventListener('error', function () {
+      console.warn('🎵 Could not preload duration for:', playlist[i].title);
+      preloadDuration(i + 1); // skip and continue
+    });
+  }
+  preloadDuration(0);
 
   /* ---- Background Music Integration ---- */
   function stopBgMusic() {
@@ -163,7 +178,22 @@
         updatePlayBtn();
         updateEqState();
         progressWrap.classList.add('sp-visible');
-      }).catch(function () {});
+      }).catch(function (err) {
+        console.warn('🎵 Play blocked:', err.name, '- waiting for canplay');
+        // Mobile browsers may reject play() if audio isn't ready yet.
+        // Wait for the audio to be playable, then try again.
+        audio.addEventListener('canplay', function retry() {
+          audio.removeEventListener('canplay', retry);
+          audio.play().then(function () {
+            isPlaying = true;
+            updatePlayBtn();
+            updateEqState();
+            progressWrap.classList.add('sp-visible');
+          }).catch(function (e) {
+            console.warn('🎵 Retry play failed:', e.name);
+          });
+        });
+      });
     }
   }
 
@@ -185,11 +215,14 @@
       resumeBgMusic();
     } else {
       stopBgMusic();
-      audio.play();
-      isPlaying = true;
-      updatePlayBtn();
-      updateEqState();
-      progressWrap.classList.add('sp-visible');
+      audio.play().then(function () {
+        isPlaying = true;
+        updatePlayBtn();
+        updateEqState();
+        progressWrap.classList.add('sp-visible');
+      }).catch(function (err) {
+        console.warn('🎵 Resume play blocked:', err.name);
+      });
     }
   }
 
@@ -313,7 +346,9 @@
     // Repeat One — replay same track
     if (repeatMode === 2) {
       audio.currentTime = 0;
-      audio.play().catch(function () {});
+      audio.play().catch(function (err) {
+        console.warn('🎵 Repeat play blocked:', err.name);
+      });
       return;
     }
 
