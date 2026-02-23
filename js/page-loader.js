@@ -41,6 +41,14 @@ const PageLoader = {
       // Get page content (from cache or fetch)
       const content = await this.getPageContent(pageName, pageUrl);
 
+      // Stop music player audio if it's playing (SPA navigation away from player)
+      if (window.__musicPlayerAudio) {
+        window.__musicPlayerAudio.pause();
+        window.__musicPlayerAudio.src = '';
+        window.__musicPlayerAudio = null;
+        window.__musicPlayerInitialized = false;
+      }
+
       // Fade out current content
       await this.fadeOut();
 

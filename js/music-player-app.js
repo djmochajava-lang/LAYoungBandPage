@@ -34,8 +34,16 @@
   // new Audio() created inside dynamically-injected scripts doesn't
   // properly connect to Chrome's media resource manager, causing
   // permanent stalls (readyState=0, networkState=2).
+  //
+  // Reuse existing audio if navigating back (SPA), otherwise create new.
+  // Store on window so it can be stopped when navigating away.
+  if (window.__musicPlayerAudio) {
+    window.__musicPlayerAudio.pause();
+    window.__musicPlayerAudio.src = '';
+  }
   var audio = document.createElement('audio');
   audio.preload = 'metadata';
+  window.__musicPlayerAudio = audio;
   var isPlaying = false;
   var bgMusicWasEnabled = false;
   var isShuffled = false;
