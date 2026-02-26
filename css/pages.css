@@ -222,6 +222,31 @@
   line-height: 1.6;
 }
 
+/* Bio Quote */
+.bio-quote {
+  margin: var(--spacing-lg) 0;
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-left: 3px solid var(--color-primary);
+  background: rgba(255, 215, 0, 0.04);
+  font-style: italic;
+}
+
+.bio-quote p {
+  font-size: var(--font-size-lg);
+  line-height: 1.7;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.bio-quote cite {
+  display: block;
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-primary);
+  font-style: normal;
+  letter-spacing: 0.5px;
+}
+
 /* Bio CTA */
 .bio-cta {
   text-align: center;
