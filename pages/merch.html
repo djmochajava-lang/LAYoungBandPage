@@ -2,77 +2,216 @@
 
 <section class="section merch-section" id="merch">
   <div class="container">
-    <h2 class="section-title">Merchandise</h2>
-    <p class="section-subtitle">Wear the Soul</p>
+    <h2 class="section-title">Merch</h2>
+    <p class="section-subtitle">Wear the Movement</p>
+
+    <style>
+      /* Merch product mockups — CSS-rendered designs */
+      .merch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-lg); }
+      .merch-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,215,0,0.15); border-radius: 8px; overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease; }
+      .merch-card:hover { transform: translateY(-4px); border-color: rgba(255,215,0,0.4); }
+
+      /* Product mockup area */
+      .merch-mockup { position: relative; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+
+      /* Tee mockup — silhouette with design text */
+      .mockup-tee { background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); }
+      .mockup-tee .tee-shape {
+        width: 65%; height: 75%; position: relative;
+        background: #0a0a0a; border-radius: 4px 4px 8px 8px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 1.5rem; text-align: center;
+        box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+      }
+      .mockup-tee .tee-shape::before {
+        content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+        width: 35%; height: 12px; background: #0a0a0a; border-radius: 0 0 50% 50%;
+      }
+      .tee-design-text { color: #fff; font-family: 'Playfair Display', 'Georgia', serif; font-weight: 300; line-height: 1.3; }
+      .tee-design-text.large { font-size: 1.1rem; letter-spacing: 0.02em; }
+      .tee-design-text.small { font-size: 0.7rem; color: var(--color-primary); margin-top: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+      /* Hoodie mockup */
+      .mockup-hoodie { background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); }
+      .mockup-hoodie .hoodie-shape {
+        width: 70%; height: 80%; position: relative;
+        background: #0a0a0a; border-radius: 8px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 2rem 1.5rem; text-align: center;
+        box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+      }
+      .mockup-hoodie .hoodie-shape::before {
+        content: ''; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+        width: 25%; height: 20px; background: #0a0a0a; border-radius: 50% 50% 0 0;
+      }
+
+      /* Hat mockup */
+      .mockup-hat { background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); }
+      .mockup-hat .hat-shape {
+        width: 55%; aspect-ratio: 1.2/1; position: relative;
+        background: #0a0a0a; border-radius: 50% 50% 8px 8px;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+      }
+      .mockup-hat .hat-shape::after {
+        content: ''; position: absolute; bottom: -6px; left: -10%; width: 120%; height: 12px;
+        background: #0a0a0a; border-radius: 0 0 4px 4px;
+      }
+      .hat-monogram { color: var(--color-primary); font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 300; letter-spacing: 0.15em; }
+
+      /* Sticker mockup */
+      .mockup-stickers { background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); }
+      .sticker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; padding: 1rem; }
+      .sticker-item {
+        aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--color-primary);
+        display: flex; align-items: center; justify-content: center;
+        padding: 0.5rem; text-align: center;
+        background: rgba(255,215,0,0.05);
+      }
+      .sticker-item span { color: var(--color-primary); font-family: 'Playfair Display', serif; font-size: 0.55rem; letter-spacing: 0.05em; text-transform: uppercase; line-height: 1.2; }
+
+      /* Poster mockup */
+      .mockup-poster { background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); }
+      .poster-frame {
+        width: 55%; aspect-ratio: 2/3; position: relative;
+        background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+        border: 2px solid rgba(255,215,0,0.3); padding: 1.5rem;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        text-align: center;
+      }
+      .poster-frame .poster-title { color: var(--color-primary); font-family: 'Playfair Display', serif; font-size: 0.9rem; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.4; }
+      .poster-frame .poster-subtitle { color: rgba(255,255,255,0.6); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.75rem; }
+      .poster-frame .poster-line { width: 40px; height: 1px; background: var(--color-primary); margin: 0.75rem auto; }
+
+      /* Card info area */
+      .merch-info { padding: 1.25rem; }
+      .merch-info h4 { color: var(--color-text); font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 400; margin: 0 0 0.25rem; }
+      .merch-info .merch-tagline { color: var(--color-text-muted); font-size: 0.8rem; margin: 0 0 0.75rem; line-height: 1.4; }
+      .merch-info .merch-price { color: var(--color-primary); font-size: 1.1rem; font-weight: 600; }
+      .merch-info .merch-badge { display: inline-block; background: rgba(255,215,0,0.1); color: var(--color-primary); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 3px; margin-left: 0.5rem; vertical-align: middle; }
+
+      /* Coming soon overlay */
+      .merch-coming-soon { text-align: center; margin-top: var(--spacing-xl); padding: var(--spacing-lg); border: 1px dashed rgba(255,215,0,0.2); border-radius: 8px; }
+      .merch-coming-soon h3 { color: var(--color-primary); font-family: 'Playfair Display', serif; font-weight: 300; margin-bottom: var(--spacing-xs); }
+      .merch-coming-soon p { color: var(--color-text-muted); font-size: 0.9rem; }
+
+      @media (max-width: 768px) {
+        .merch-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--spacing-md); }
+      }
+    </style>
 
     <div class="merch-content">
-      <!-- Merch Preview -->
-      <div class="merch-preview scroll-reveal">
-        <h3>Official L.A. Young Merch</h3>
-        <p>
-          Show your support with exclusive merchandise. All items ship
-          worldwide.
-        </p>
-
-        <div class="merch-grid">
-          <!-- Merch Item 1 -->
-          <div class="merch-item card">
-            <div class="placeholder-image">
-              <p>[T-Shirt]</p>
+      <div class="merch-grid">
+        <!-- Product 1: I Sing Because I'm Human — Statement Tee -->
+        <div class="merch-card scroll-reveal">
+          <div class="merch-mockup mockup-tee">
+            <div class="tee-shape">
+              <span class="tee-design-text large">I SING<br>BECAUSE<br>I AM HUMAN</span>
+              <span class="tee-design-text small">&mdash; L.A. Young</span>
             </div>
+          </div>
+          <div class="merch-info">
+            <h4>"I Sing Because I'm Human" Tee</h4>
+            <p class="merch-tagline">The statement that started a movement. Bold serif on premium black cotton.</p>
+            <span class="merch-price">$32.99</span>
+            <span class="merch-badge">Bestseller</span>
+          </div>
+        </div>
+
+        <!-- Product 2: Soul in Full Color — Flagship Tee -->
+        <div class="merch-card scroll-reveal delay-1">
+          <div class="merch-mockup mockup-tee">
+            <div class="tee-shape">
+              <span class="tee-design-text large" style="color: var(--color-primary); font-size: 1.3rem; letter-spacing: 0.08em;">L.A. YOUNG</span>
+              <span class="tee-design-text small" style="color: rgba(255,255,255,0.7);">Soul in Full Color</span>
+            </div>
+          </div>
+          <div class="merch-info">
             <h4>Soul in Full Color Tee</h4>
-            <p class="price">$25.00</p>
-            <a href="#" class="btn btn-primary btn-small">Shop Now</a>
+            <p class="merch-tagline">Gold metallic wordmark on black. Looks like fashion, not merch.</p>
+            <span class="merch-price">$29.99</span>
           </div>
+        </div>
 
-          <!-- Merch Item 2 -->
-          <div class="merch-item card">
-            <div class="placeholder-image">
-              <p>[Hoodie]</p>
+        <!-- Product 3: I Sing Because I'm Human — Hoodie -->
+        <div class="merch-card scroll-reveal delay-2">
+          <div class="merch-mockup mockup-hoodie">
+            <div class="hoodie-shape">
+              <span class="tee-design-text large" style="font-size: 0.95rem;">I SING<br>BECAUSE<br>I AM HUMAN</span>
+              <span class="tee-design-text small">&mdash; L.A. Young</span>
             </div>
-            <h4>L.A. Young Hoodie</h4>
-            <p class="price">$45.00</p>
-            <a href="#" class="btn btn-primary btn-small">Shop Now</a>
           </div>
-
-          <!-- Merch Item 3 -->
-          <div class="merch-item card">
-            <div class="placeholder-image">
-              <p>[Poster]</p>
-            </div>
-            <h4>Concert Poster</h4>
-            <p class="price">$15.00</p>
-            <a href="#" class="btn btn-primary btn-small">Shop Now</a>
+          <div class="merch-info">
+            <h4>"I Sing Because I'm Human" Hoodie</h4>
+            <p class="merch-tagline">The anthem in heavyweight fleece. Gold embroidered front, statement back.</p>
+            <span class="merch-price">$54.99</span>
+            <span class="merch-badge">Premium</span>
           </div>
+        </div>
 
-          <!-- Merch Item 4 -->
-          <div class="merch-item card">
-            <div class="placeholder-image">
-              <p>[Hat]</p>
+        <!-- Product 4: Gold Crown Dad Hat -->
+        <div class="merch-card scroll-reveal delay-3">
+          <div class="merch-mockup mockup-hat">
+            <div class="hat-shape">
+              <span class="hat-monogram">LAY</span>
             </div>
-            <h4>Signature Cap</h4>
-            <p class="price">$20.00</p>
-            <a href="#" class="btn btn-primary btn-small">Shop Now</a>
+          </div>
+          <div class="merch-info">
+            <h4>Gold Crown Dad Hat</h4>
+            <p class="merch-tagline">Gold embroidered LAY monogram on unstructured black. Subtle and timeless.</p>
+            <span class="merch-price">$27.99</span>
+          </div>
+        </div>
+
+        <!-- Product 5: Forged in the Heat Poster -->
+        <div class="merch-card scroll-reveal delay-4">
+          <div class="merch-mockup mockup-poster">
+            <div class="poster-frame">
+              <span class="poster-subtitle">From</span>
+              <span class="poster-title">STEEL MILL<br>TO<br>SOUL POWER</span>
+              <div class="poster-line"></div>
+              <span class="poster-subtitle">L.A. Young</span>
+            </div>
+          </div>
+          <div class="merch-info">
+            <h4>"Steel Mill to Soul Power" Poster</h4>
+            <p class="merch-tagline">Art Deco inspired 18x24" print. Frame-worthy on any wall.</p>
+            <span class="merch-price">$24.99</span>
+            <span class="merch-badge">Limited</span>
+          </div>
+        </div>
+
+        <!-- Product 6: Sticker Pack -->
+        <div class="merch-card scroll-reveal delay-5">
+          <div class="merch-mockup mockup-stickers">
+            <div class="sticker-grid">
+              <div class="sticker-item"><span>LAY</span></div>
+              <div class="sticker-item"><span>Soul in Full Color</span></div>
+              <div class="sticker-item"><span>Soul Fam</span></div>
+              <div class="sticker-item"><span>I Sing Because I Am Human</span></div>
+            </div>
+          </div>
+          <div class="merch-info">
+            <h4>Soul Fam Sticker Pack</h4>
+            <p class="merch-tagline">4 gold kiss-cut stickers. Laptops, bottles, guitar cases, everywhere.</p>
+            <span class="merch-price">$8.99</span>
           </div>
         </div>
       </div>
 
       <div class="divider"></div>
 
-      <!-- Shopify Link -->
-      <div class="shopify-link scroll-reveal delay-2">
-        <h3>Visit the Official Store</h3>
-        <p>Browse the complete collection on Shopify</p>
-        <a href="#" class="btn btn-primary btn-large" target="_blank">
-          Shop All Merchandise
-        </a>
+      <!-- Store coming soon -->
+      <div class="merch-coming-soon scroll-reveal">
+        <h3>Store Opening Soon</h3>
+        <p>The official L.A. Young merch store is launching. Join the Soul Fam to be first in line.</p>
+        <a href="#contact" class="btn btn-primary btn-large" style="margin-top: var(--spacing-md);">Get Notified</a>
       </div>
 
       <!-- Shipping Info -->
-      <div class="shipping-info scroll-reveal delay-3">
-        <h4>Shipping & Returns</h4>
-        <p class="text-muted">
-          Free shipping on orders over $50 • Worldwide delivery • 30-day returns
+      <div class="shipping-info scroll-reveal delay-3" style="text-align: center; margin-top: var(--spacing-lg);">
+        <p class="text-muted" style="font-size: 0.85rem;">
+          Free shipping on orders over $50 &bull; Worldwide delivery &bull; 30-day returns
         </p>
       </div>
     </div>
@@ -81,7 +220,7 @@
     <footer class="page-footer">
       <div class="footer-content">
         <p class="footer-text">
-          © 2026 <strong>Powered By Gold Bottom Ent. LLC</strong> | All rights
+          &copy; 2026 <strong>Powered By Gold Bottom Ent. LLC</strong> | All rights
           reserved.
         </p>
       </div>

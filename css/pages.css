@@ -247,6 +247,48 @@
   letter-spacing: 0.5px;
 }
 
+/* Accolade icons — gold Unicode symbols instead of emoji */
+.accolade-icon {
+  font-style: normal;
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  line-height: 1;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+/* Social icon SVG links */
+.social-icons {
+  display: flex;
+  gap: var(--spacing-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: var(--spacing-sm);
+}
+
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: var(--color-text-secondary);
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.3s ease;
+}
+
+.social-icon:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: rgba(255, 215, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+.social-icon svg {
+  display: block;
+}
+
 /* Bio CTA */
 .bio-cta {
   text-align: center;
