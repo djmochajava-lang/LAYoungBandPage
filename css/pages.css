@@ -175,6 +175,23 @@
   object-fit: cover;
 }
 
+/* Per-member object-position — faces centered in circle */
+[data-member="dj-mocha-java"] .band-member-photo img {
+  object-position: center 30%;
+}
+
+[data-member="eugene-chapman"] .band-member-photo img {
+  object-position: center 18%;
+}
+
+[data-member="jimmy-carney"] .band-member-photo img {
+  object-position: center 15%;
+}
+
+[data-member="kevin-robinson"] .band-member-photo img {
+  object-position: center 25%;
+}
+
 /* Read More Button */
 .band-readmore-btn {
   margin-top: var(--spacing-sm);
