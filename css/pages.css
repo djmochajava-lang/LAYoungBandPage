@@ -112,7 +112,6 @@
 .performances-section,
 .accolades-section {
   margin-bottom: var(--spacing-xl);
-  text-align: center;
 }
 
 .highlight-text {
@@ -130,7 +129,7 @@
 /* Band Grid */
 .band-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-md);
   margin: var(--spacing-lg) 0;
 }
@@ -157,6 +156,202 @@
 .band-member .bio-snippet {
   color: var(--color-text-muted);
   font-size: var(--font-size-sm);
+}
+
+/* Band Member Card Photo */
+.band-member-photo {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto var(--spacing-sm);
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid rgba(255, 215, 0, 0.25);
+  background: rgba(255, 215, 0, 0.06);
+}
+
+.band-member-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Read More Button */
+.band-readmore-btn {
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-xs) !important;
+  padding: 0.4rem 1.2rem !important;
+  letter-spacing: 0.08em;
+}
+
+/* === BAND MEMBER BIO POPUP === */
+
+/* ─── Band Bio Popup — EPK Paper Style ─── */
+.band-bio-overlay {
+  position: fixed !important;
+  inset: 0;
+  z-index: 10000 !important;
+  background: rgba(2, 2, 5, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.band-bio-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Paper panel */
+.band-bio-panel {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: #f9f6f0;
+  border: 2px solid #a89968;
+  padding: 44px 40px 40px;
+  transform: scale(0.9) translateY(15px);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: auto 0;
+  box-shadow:
+    inset 0 0 30px rgba(0, 0, 0, 0.05),
+    0 15px 50px rgba(0, 0, 0, 0.45),
+    0 5px 20px rgba(0, 0, 0, 0.25),
+    0 0 30px rgba(139, 105, 20, 0.1);
+}
+
+/* Aged paper edge darkening */
+.band-bio-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to right,  rgba(0,0,0,0.04) 0%, transparent 4%, transparent 96%, rgba(0,0,0,0.04) 100%),
+    linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, transparent 3%, transparent 97%, rgba(0,0,0,0.04) 100%);
+  z-index: 0;
+}
+
+.band-bio-panel > * {
+  position: relative;
+  z-index: 1;
+}
+
+.band-bio-overlay.open .band-bio-panel {
+  transform: scale(1) translateY(0);
+}
+
+/* Close button — ink on paper */
+.band-bio-close {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  z-index: 2;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid #a89968;
+  background: #f5f1e8;
+  color: #2a2a2a;
+  font-size: 1.3rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.band-bio-close:hover {
+  background: #8b6914;
+  color: #f9f6f0;
+  border-color: #8b6914;
+}
+
+.band-bio-member {
+  text-align: center;
+}
+
+/* Photo — rectangular with vintage treatment */
+.band-bio-photo {
+  width: 180px;
+  height: 200px;
+  margin: 0 auto var(--spacing-md);
+  overflow: hidden;
+  border: 3px solid #2a2a2a;
+  background: #e8dcc4;
+  box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.band-bio-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: sepia(12%) contrast(1.04);
+  transition: filter 0.3s ease;
+}
+
+.band-bio-photo:hover img {
+  filter: sepia(0%) contrast(1);
+}
+
+/* Name — dark ink, editorial serif */
+.band-bio-name {
+  font-family: var(--font-primary);
+  font-size: 1.5rem;
+  color: #2a2a2a;
+  margin-bottom: 2px;
+  letter-spacing: 0.02em;
+}
+
+/* Role — warm gold, small caps feel */
+.band-bio-role {
+  color: #8b6914;
+  font-family: var(--font-secondary);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: var(--spacing-sm);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid #d4c5a9;
+}
+
+/* Body text — ink on paper */
+.band-bio-body {
+  text-align: left;
+  color: #444;
+  font-family: var(--font-secondary);
+  font-size: 0.9rem;
+  line-height: 1.75;
+}
+
+.band-bio-body p {
+  margin-bottom: 0.85em;
+}
+
+.band-bio-body p:last-child {
+  margin-bottom: 0;
+}
+
+.band-bio-loading {
+  text-align: center;
+  color: #888;
+  padding: var(--spacing-lg) 0;
+  font-style: italic;
+  font-family: var(--font-secondary);
+}
+
+.band-bio-error {
+  text-align: center;
+  color: #888;
+  padding: var(--spacing-lg) 0;
+  font-family: var(--font-secondary);
 }
 
 /* Performance List */
@@ -188,38 +383,88 @@
   font-size: var(--font-size-sm);
 }
 
-/* Accolades Grid */
-.accolades-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-md);
+/* Accolades Timeline */
+.accolades-timeline {
+  position: relative;
   margin-top: var(--spacing-lg);
+  padding-left: 2px;
 }
 
-.accolade-item {
-  background: rgba(255, 255, 255, 0.03);
-  border: var(--border-gold-light);
-  padding: var(--spacing-md);
-  text-align: center;
-  transition: all var(--transition-base);
+/* Gold vertical line */
+.accolades-timeline::before {
+  content: '';
+  position: absolute;
+  left: 72px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-primary) 10%,
+    var(--color-primary) 90%,
+    transparent
+  );
 }
 
-.accolade-item:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: var(--color-primary);
-  transform: translateY(-5px);
+.accolade-entry {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+  position: relative;
 }
 
-.accolade-item .badge {
-  font-size: 2rem;
-  display: block;
-  margin-bottom: var(--spacing-sm);
+.accolade-entry + .accolade-entry {
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
 }
 
-.accolade-item p {
-  color: var(--color-text-secondary);
+.accolade-year {
+  flex-shrink: 0;
+  width: 52px;
+  font-family: var(--font-primary);
   font-size: var(--font-size-sm);
-  line-height: 1.6;
+  font-weight: 600;
+  color: var(--color-primary);
+  letter-spacing: 0.5px;
+  text-align: right;
+  padding-top: 2px;
+  opacity: 0.8;
+}
+
+/* Gold dot on the timeline */
+.accolade-entry::after {
+  content: '';
+  position: absolute;
+  left: 68px;
+  top: calc(var(--spacing-md) + 6px);
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-bg);
+  border: 2px solid var(--color-primary);
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.25);
+  z-index: 1;
+}
+
+.accolade-detail {
+  padding-left: calc(var(--spacing-md) + 8px);
+}
+
+.accolade-detail h4 {
+  font-family: var(--font-primary);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 4px;
+  letter-spacing: 0.3px;
+}
+
+.accolade-detail p {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  margin: 0;
 }
 
 /* Bio Quote */
@@ -247,13 +492,14 @@
   letter-spacing: 0.5px;
 }
 
-/* Accolade icons — gold Unicode symbols instead of emoji */
-.accolade-icon {
-  font-style: normal;
+/* Accolade entry hover */
+.accolade-entry:hover .accolade-detail h4 {
   color: var(--color-primary);
-  font-size: 1.5rem;
-  line-height: 1;
-  text-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+}
+
+.accolade-entry:hover::after {
+  background: var(--color-primary);
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
 }
 
 /* Social icon SVG links */
@@ -476,6 +722,53 @@
   color: var(--color-text-muted);
   font-style: italic;
   margin-bottom: var(--spacing-md);
+}
+
+/* Video frame — gold gradient border with glow */
+.video-frame {
+  position: relative;
+  border-radius: 12px;
+  padding: 3px;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.5) 0%,
+    rgba(139, 105, 20, 0.15) 25%,
+    rgba(255, 215, 0, 0.4) 50%,
+    rgba(139, 105, 20, 0.15) 75%,
+    rgba(255, 215, 0, 0.5) 100%
+  );
+  box-shadow:
+    0 0 18px rgba(255, 215, 0, 0.08),
+    0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Dark inner bezel */
+.video-frame::before {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: 9px;
+  box-shadow:
+    inset 0 3px 10px rgba(0, 0, 0, 0.7),
+    inset 0 1px 3px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.video-frame .video-player {
+  width: 100%;
+  display: block;
+  border-radius: 9px;
+  position: relative;
+}
+
+/* Hover — glow intensifies */
+.video-frame:hover {
+  box-shadow:
+    0 0 24px rgba(255, 215, 0, 0.15),
+    0 0 60px rgba(255, 215, 0, 0.06),
+    0 8px 30px rgba(0, 0, 0, 0.5);
 }
 
 .streaming-links {
@@ -1287,8 +1580,40 @@
     grid-template-columns: 1fr;
   }
 
-  .accolades-grid {
-    grid-template-columns: 1fr;
+  .band-member-photo {
+    width: 80px;
+    height: 80px;
+  }
+
+  .band-bio-overlay {
+    padding: 20px 12px;
+  }
+
+  .band-bio-panel {
+    padding: 32px 22px 26px;
+  }
+
+  .band-bio-photo {
+    width: 140px;
+    height: 160px;
+  }
+
+  .accolades-timeline::before {
+    left: 12px;
+  }
+
+  .accolade-year {
+    width: 0;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .accolade-entry::after {
+    left: 8px;
+  }
+
+  .accolade-detail {
+    padding-left: var(--spacing-md);
   }
 
   .merch-grid {
@@ -1318,8 +1643,12 @@
 }
 
 .show-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 215, 0, 0.15);
+  border-top: 2px solid rgba(255, 215, 0, 0.35);
   border-radius: 12px;
   padding: var(--spacing-md) var(--spacing-md);
   text-align: center;
@@ -1327,9 +1656,12 @@
 }
 
 .show-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(255, 215, 0, 0.4);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transform: translateY(-5px);
+  border-color: rgba(255, 215, 0, 0.35);
+  border-top-color: var(--color-primary);
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.35),
+    0 0 20px rgba(255, 215, 0, 0.06);
 }
 
 .show-card-icon {
@@ -1341,27 +1673,44 @@
 .show-card-title {
   font-family: var(--font-primary);
   font-size: var(--font-size-lg);
-  color: var(--color-primary);
   margin-bottom: var(--spacing-sm);
   letter-spacing: 0.05em;
+  background: linear-gradient(135deg, #ffd700 0%, #f0c040 40%, #fff5cc 55%, #f0c040 70%, #d4a017 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: none;
+  transition: background-position 0.6s ease;
+}
+
+.show-card:hover .show-card-title {
+  background-position: 100% center;
 }
 
 .show-card-desc {
-  color: var(--color-text-secondary);
+  color: rgba(255, 255, 255, 0.78);
   font-size: var(--font-size-sm);
-  line-height: 1.6;
+  line-height: 1.7;
   margin-bottom: var(--spacing-sm);
+}
+
+.show-card-desc::first-line {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 500;
 }
 
 .show-card-tag {
   display: inline-block;
-  font-size: 0.7rem;
-  color: var(--color-text-muted);
-  letter-spacing: 0.08em;
+  font-size: 0.65rem;
+  color: rgba(255, 215, 0, 0.7);
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  border-top: 1px solid rgba(255, 215, 0, 0.15);
-  padding-top: var(--spacing-xs);
-  margin-top: var(--spacing-xs);
+  margin-top: auto;
+  padding: 6px 14px;
+  background: rgba(255, 215, 0, 0.06);
+  border: 1px solid rgba(255, 215, 0, 0.12);
+  border-radius: 20px;
 }
 
 .show-card-booking {
