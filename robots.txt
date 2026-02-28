@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://layoungbandpage.com/sitemap.xml
