@@ -2014,6 +2014,27 @@
 }
 
 /* Trust / transparency note */
+.support-qr {
+  margin: var(--spacing-md) auto var(--spacing-xs);
+  text-align: center;
+}
+.support-qr img {
+  width: 140px;
+  height: 140px;
+  border-radius: 8px;
+  opacity: 0.85;
+  transition: opacity var(--transition-base);
+}
+.support-qr img:hover {
+  opacity: 1;
+}
+.support-qr p {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faded);
+  font-style: italic;
+  margin-top: var(--spacing-xs);
+}
+
 .support-trust-note {
   text-align: center;
   margin-top: var(--spacing-sm);
