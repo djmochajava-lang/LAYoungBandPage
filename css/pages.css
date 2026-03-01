@@ -1995,21 +1995,21 @@
   flex-wrap: wrap;
 }
 
-/* Subtle top donate button — inconspicuous, not bold */
+/* Top donate button — visible but not competing with title */
 .support-donate-btn-top {
-  padding: 0.4rem 1.2rem;
+  padding: 0.5rem 1.4rem;
   font-size: 0.75rem;
-  font-weight: 400;
+  font-weight: 600;
   letter-spacing: 0.1em;
-  background: transparent;
-  color: rgba(255, 215, 0, 0.5);
-  border: 1px solid rgba(255, 215, 0, 0.25);
+  background: rgba(255, 215, 0, 0.1);
+  color: var(--color-primary);
+  border: 1px solid rgba(255, 215, 0, 0.5);
 }
 .support-donate-btn-top:hover {
-  background: rgba(255, 215, 0, 0.08);
+  background: rgba(255, 215, 0, 0.2);
   color: var(--color-primary);
-  border-color: rgba(255, 215, 0, 0.5);
-  box-shadow: none;
+  border-color: rgba(255, 215, 0, 0.75);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
   transform: translateY(-1px);
 }
 
@@ -2019,14 +2019,17 @@
   text-align: center;
 }
 .support-qr img {
+  display: block;
+  margin: 0 auto;
   width: 140px;
   height: 140px;
   border-radius: 8px;
-  opacity: 0.85;
+  filter: invert(1);
+  opacity: 0.7;
   transition: opacity var(--transition-base);
 }
 .support-qr img:hover {
-  opacity: 1;
+  opacity: 0.9;
 }
 .support-qr p {
   font-size: var(--font-size-xs);
