@@ -741,13 +741,13 @@ function createGallery(config) {
 
 var artistImages = [
   { src: 'images/artist/LAYoungPink.JPG',   caption: 'L.A. Young Pink',             sub: 'Studio Portrait' },
-  { src: 'images/artist/LAPhillysLive.JPG',  caption: 'L.A. Young Live Performance', sub: 'On Stage' },
+  { src: 'images/artist/LAPhillysLive.jpg',  caption: 'L.A. Young Live Performance', sub: 'On Stage' },
   { src: 'images/artist/LAPopSinger.jpeg',   caption: 'L.A. Young Pop Singer',       sub: 'Editorial Shoot' },
   { src: 'images/artist/LARockAndRoll.jpeg', caption: 'L.A. Young Rock & Roll',      sub: 'Rock & Roll Vibes' },
-  { src: 'images/artist/LAFunkyChild.JPG',   caption: 'L.A. Young Funky Child',      sub: 'Funky Fresh' },
-  { src: 'images/artist/LASoulSista.JPG',    caption: 'L.A. Young Soul Sista',       sub: 'Soul Portrait' },
+  { src: 'images/artist/LAFunkyChild.jpg',   caption: 'L.A. Young Funky Child',      sub: 'Funky Fresh' },
+  { src: 'images/artist/LASoulSista.jpg',    caption: 'L.A. Young Soul Sista',       sub: 'Soul Portrait' },
   { src: 'images/artist/LAAfro.jpg',         caption: 'L.A. Young Afro',             sub: 'Natural Beauty' },
-  { src: 'images/artist/LASoulLife.PNG',     caption: 'L.A. Young Soul Life',        sub: 'Living Soul' },
+  { src: 'images/artist/LASoulLife.png',     caption: 'L.A. Young Soul Life',        sub: 'Living Soul' },
   { src: 'images/artist/LAGreenDress.JPG',   caption: 'L.A. Young Green Dress',      sub: 'Emerald Elegance' },
 ];
 
