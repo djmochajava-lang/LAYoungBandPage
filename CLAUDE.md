@@ -141,6 +141,12 @@ LAYoungBandPage/
 - **Lightbox** with keyboard navigation and swipe support
 - **Slideshow mode** with auto-advance
 
+## Session Rules (applies to all ecosystem sessions)
+
+- **Sound alerts**: Play notify sound (5x) BEFORE showing AskUserQuestion or ExitPlanMode — the sound alerts the user that a button/question is waiting. Do NOT play sound after the user clicks approve. Sequence: (1) play sound → (2) show question/approval.
+- **Global approvals**: NEVER ask for approval on: commits, pushes, sync, file edits, installs, browser opens, builds, tests. Just do it. Only ask questions for genuinely ambiguous requirements or decisions.
+- See memory files for full approvals list and sound command.
+
 ## Development Workflow
 
 1. Edit HTML/CSS/JS files directly (no compilation needed)

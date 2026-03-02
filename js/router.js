@@ -13,6 +13,7 @@ const Router = {
     merch: 'pages/merch.html',
     support: 'pages/support.html',
     contact: 'pages/contact.html',
+    fanwall: 'pages/fanwall.html',
   },
   currentPage: null,
   defaultPage: 'home',

@@ -1,0 +1,325 @@
+<!-- pages/fanwall.html — Fan Wall / Guestbook -->
+
+<section class="section fanwall-section" id="fanwall">
+  <div class="container">
+    <h2 class="section-title">Fan Wall</h2>
+    <p class="section-subtitle">Leave Your Mark &mdash; Share Your L.A. Young Story</p>
+
+    <!-- Post Form -->
+    <div class="fanwall-compose scroll-reveal">
+      <div class="fanwall-compose-header">
+        <div class="fanwall-avatar fanwall-avatar--compose">&#9834;</div>
+        <div>
+          <h3>Write on the Wall</h3>
+          <p>Share a memory, a message, or just show some love</p>
+        </div>
+      </div>
+
+      <form id="fanwall-form" class="fanwall-form">
+        <div class="fanwall-form-row">
+          <div class="form-group" style="flex:1">
+            <label for="fw-name" class="form-label">Your Name</label>
+            <input type="text" id="fw-name" name="name" class="form-input" placeholder="First name or nickname" required maxlength="40" />
+          </div>
+          <div class="form-group" style="flex:1">
+            <label for="fw-location" class="form-label">Where You're From <span style="color:var(--color-text-faded);font-weight:400">(optional)</span></label>
+            <input type="text" id="fw-location" name="location" class="form-input" placeholder="City, State" maxlength="50" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="fw-message" class="form-label">Your Message</label>
+          <textarea id="fw-message" name="message" class="form-textarea" placeholder="What does L.A. Young's music mean to you?" required maxlength="500" rows="3"></textarea>
+          <div class="fanwall-char-count"><span id="fw-charcount">0</span> / 500</div>
+        </div>
+
+        <!-- Reaction Picker -->
+        <div class="fanwall-reaction-pick">
+          <span class="fanwall-reaction-label">How does the music make you feel?</span>
+          <div class="fanwall-reaction-options" id="fw-reactions">
+            <button type="button" class="fanwall-reaction-btn" data-reaction="soul" title="Soul">&#127925;</button>
+            <button type="button" class="fanwall-reaction-btn" data-reaction="fire" title="Fire">&#128293;</button>
+            <button type="button" class="fanwall-reaction-btn" data-reaction="love" title="Love">&#10084;&#65039;</button>
+            <button type="button" class="fanwall-reaction-btn" data-reaction="vibes" title="Good Vibes">&#10024;</button>
+            <button type="button" class="fanwall-reaction-btn" data-reaction="clap" title="Applause">&#128079;</button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary fanwall-submit-btn">
+          Post to the Wall &#9997;
+        </button>
+      </form>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Wall Stats -->
+    <div class="fanwall-stats scroll-reveal delay-1">
+      <div class="fanwall-stat">
+        <span class="fanwall-stat-num" id="fw-total">0</span>
+        <span class="fanwall-stat-label">Messages</span>
+      </div>
+      <div class="fanwall-stat">
+        <span class="fanwall-stat-num" id="fw-cities">0</span>
+        <span class="fanwall-stat-label">Cities</span>
+      </div>
+      <div class="fanwall-stat">
+        <span class="fanwall-stat-num" id="fw-latest">--</span>
+        <span class="fanwall-stat-label">Latest Post</span>
+      </div>
+    </div>
+
+    <!-- Filter / Sort -->
+    <div class="fanwall-controls scroll-reveal delay-1">
+      <div class="fanwall-filter-group">
+        <button class="fanwall-filter active" data-filter="all">All</button>
+        <button class="fanwall-filter" data-filter="soul">&#127925; Soul</button>
+        <button class="fanwall-filter" data-filter="fire">&#128293; Fire</button>
+        <button class="fanwall-filter" data-filter="love">&#10084;&#65039; Love</button>
+        <button class="fanwall-filter" data-filter="vibes">&#10024; Vibes</button>
+        <button class="fanwall-filter" data-filter="clap">&#128079; Applause</button>
+      </div>
+      <select class="fanwall-sort" id="fw-sort">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+      </select>
+    </div>
+
+    <!-- Messages Feed -->
+    <div class="fanwall-feed" id="fanwall-feed">
+      <!-- Messages rendered by script -->
+    </div>
+
+    <div id="fanwall-empty" class="fanwall-empty" style="display:none">
+      <div class="fanwall-empty-icon">&#127908;</div>
+      <h3>Be the First to Write on the Wall</h3>
+      <p>No messages yet &mdash; your words could be the first note in the chorus.</p>
+    </div>
+
+    <!-- PAGE FOOTER (shows on mobile only) -->
+    <footer class="page-footer">
+      <div class="footer-content">
+        <p class="footer-text">
+          &copy; 2026 <strong>Powered By Gold Bottom Ent. LLC</strong> | All rights
+          reserved.
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Success Toast -->
+  <div class="fanwall-toast" id="fw-toast">
+    <span>&#10024;</span> Your message is on the wall!
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+
+    var STORAGE_KEY = 'layoung-fanwall';
+    var form = document.getElementById('fanwall-form');
+    var feed = document.getElementById('fanwall-feed');
+    var emptyState = document.getElementById('fanwall-empty');
+    var charCount = document.getElementById('fw-charcount');
+    var msgInput = document.getElementById('fw-message');
+    var sortSelect = document.getElementById('fw-sort');
+    var toast = document.getElementById('fw-toast');
+    var selectedReaction = 'soul';
+    var currentFilter = 'all';
+
+    // ---- Seed Data (pre-loaded messages so wall isn't empty) ----
+    var seedMessages = [
+      { id: 's1', name: 'Michelle T.', location: 'Baltimore, MD', message: 'I saw L.A. Young perform at a small jazz club years ago and I have been a fan ever since. Her voice just wraps around you like a warm blanket. Pure soul.', reaction: 'soul', timestamp: new Date('2026-01-15T19:30:00').getTime(), seed: true },
+      { id: 's2', name: 'David R.', location: 'London, UK', message: 'Discovered her music through a friend in the UK. The fact that she had five Top-5 hits over here and most people back home don\'t know her name is criminal. World-class talent.', reaction: 'fire', timestamp: new Date('2026-01-22T14:00:00').getTime(), seed: true },
+      { id: 's3', name: 'Crystal', location: 'Washington, DC', message: 'My daughter and I play GroovyBandRush together every weekend. She loves the rhythm game and I love that she is learning about real music. Thank you for making something the whole family can enjoy!', reaction: 'love', timestamp: new Date('2026-02-03T10:15:00').getTime(), seed: true },
+      { id: 's4', name: 'James P.', location: 'Annapolis, MD', message: 'Maryland Artist of the Year was well deserved. Saw her at the waterfront festival and the energy was unreal. The whole crowd was on their feet.', reaction: 'clap', timestamp: new Date('2026-02-10T20:00:00').getTime(), seed: true },
+      { id: 's5', name: 'Keisha', location: 'Atlanta, GA', message: 'Just found this site and I am obsessed with the music player. The lyrics scroller is such a nice touch. You can tell this was built with love.', reaction: 'vibes', timestamp: new Date('2026-02-18T16:45:00').getTime(), seed: true },
+      { id: 's6', name: 'Roberto M.', location: 'New York, NY', message: 'Real soul music in 2026. No auto-tune, no gimmicks. Just a voice that makes you feel something. This is what the world needs more of.', reaction: 'soul', timestamp: new Date('2026-02-25T21:30:00').getTime(), seed: true }
+    ];
+
+    // ---- Storage ----
+    function getMessages() {
+      try {
+        var stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (stored && stored.length) return stored;
+      } catch(e) {}
+      // First visit — seed the wall
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(seedMessages));
+      return seedMessages.slice();
+    }
+
+    function saveMessages(msgs) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+    }
+
+    // ---- Render ----
+    function timeAgo(ts) {
+      var diff = Date.now() - ts;
+      var mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return mins + 'm ago';
+      var hrs = Math.floor(mins / 60);
+      if (hrs < 24) return hrs + 'h ago';
+      var days = Math.floor(hrs / 24);
+      if (days < 30) return days + 'd ago';
+      var months = Math.floor(days / 30);
+      return months + 'mo ago';
+    }
+
+    var reactionEmoji = { soul: '\uD83C\uDFB5', fire: '\uD83D\uDD25', love: '\u2764\uFE0F', vibes: '\u2728', clap: '\uD83D\uDC4F' };
+
+    function escapeHtml(str) {
+      var div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function renderMessages() {
+      var msgs = getMessages();
+
+      // Filter
+      if (currentFilter !== 'all') {
+        msgs = msgs.filter(function(m) { return m.reaction === currentFilter; });
+      }
+
+      // Sort
+      var sortVal = sortSelect ? sortSelect.value : 'newest';
+      msgs.sort(function(a, b) {
+        return sortVal === 'newest' ? b.timestamp - a.timestamp : a.timestamp - b.timestamp;
+      });
+
+      if (msgs.length === 0) {
+        feed.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+
+      var html = '';
+      for (var i = 0; i < msgs.length; i++) {
+        var m = msgs[i];
+        var emoji = reactionEmoji[m.reaction] || '\uD83C\uDFB5';
+        var initial = m.name ? m.name.charAt(0).toUpperCase() : '?';
+        var loc = m.location ? '<span class="fanwall-msg-location">' + escapeHtml(m.location) + '</span>' : '';
+
+        html += '<div class="fanwall-msg" data-id="' + m.id + '">' +
+          '<div class="fanwall-avatar">' + initial + '</div>' +
+          '<div class="fanwall-msg-body">' +
+            '<div class="fanwall-msg-header">' +
+              '<strong class="fanwall-msg-name">' + escapeHtml(m.name) + '</strong>' +
+              loc +
+              '<span class="fanwall-msg-time">' + timeAgo(m.timestamp) + '</span>' +
+            '</div>' +
+            '<p class="fanwall-msg-text">' + escapeHtml(m.message) + '</p>' +
+            '<span class="fanwall-msg-reaction">' + emoji + '</span>' +
+          '</div>' +
+        '</div>';
+      }
+      feed.innerHTML = html;
+
+      updateStats();
+    }
+
+    function updateStats() {
+      var msgs = getMessages();
+      var total = document.getElementById('fw-total');
+      var cities = document.getElementById('fw-cities');
+      var latest = document.getElementById('fw-latest');
+
+      if (total) total.textContent = msgs.length;
+      if (cities) {
+        var uniqueCities = {};
+        msgs.forEach(function(m) {
+          if (m.location) uniqueCities[m.location.trim().toLowerCase()] = true;
+        });
+        cities.textContent = Object.keys(uniqueCities).length;
+      }
+      if (latest && msgs.length > 0) {
+        var sorted = msgs.slice().sort(function(a,b) { return b.timestamp - a.timestamp; });
+        latest.textContent = timeAgo(sorted[0].timestamp);
+      }
+    }
+
+    // ---- Form Submit ----
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      var name = document.getElementById('fw-name').value.trim();
+      var location = document.getElementById('fw-location').value.trim();
+      var message = document.getElementById('fw-message').value.trim();
+
+      if (!name || !message) return;
+
+      var msgs = getMessages();
+      var newMsg = {
+        id: 'fw_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+        name: name,
+        location: location,
+        message: message,
+        reaction: selectedReaction,
+        timestamp: Date.now()
+      };
+      msgs.push(newMsg);
+      saveMessages(msgs);
+
+      form.reset();
+      charCount.textContent = '0';
+      // Reset reaction selection
+      document.querySelectorAll('.fanwall-reaction-btn').forEach(function(btn) { btn.classList.remove('active'); });
+      document.querySelector('.fanwall-reaction-btn[data-reaction="soul"]').classList.add('active');
+      selectedReaction = 'soul';
+
+      renderMessages();
+      showToast();
+
+      // Scroll to new message
+      setTimeout(function() {
+        var newEl = feed.querySelector('[data-id="' + newMsg.id + '"]');
+        if (newEl) newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 100);
+    });
+
+    // ---- Char Counter ----
+    msgInput.addEventListener('input', function() {
+      charCount.textContent = this.value.length;
+    });
+
+    // ---- Reaction Picker ----
+    document.getElementById('fw-reactions').addEventListener('click', function(e) {
+      var btn = e.target.closest('.fanwall-reaction-btn');
+      if (!btn) return;
+      document.querySelectorAll('.fanwall-reaction-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      selectedReaction = btn.getAttribute('data-reaction');
+    });
+    // Default
+    document.querySelector('.fanwall-reaction-btn[data-reaction="soul"]').classList.add('active');
+
+    // ---- Filters ----
+    document.querySelectorAll('.fanwall-filter').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.fanwall-filter').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        currentFilter = btn.getAttribute('data-filter');
+        renderMessages();
+      });
+    });
+
+    // ---- Sort ----
+    if (sortSelect) {
+      sortSelect.addEventListener('change', renderMessages);
+    }
+
+    // ---- Toast ----
+    function showToast() {
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 3000);
+    }
+
+    // ---- Init ----
+    renderMessages();
+
+  })();
+  </script>
+</section>
