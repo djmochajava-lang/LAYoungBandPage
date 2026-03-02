@@ -408,6 +408,7 @@
       savedOverflow = document.body.style.overflow;
       document.body.style.overflow = 'hidden';
       overlay.classList.add('open');
+      if (typeof FanPoints !== 'undefined') FanPoints.award('activity:read-support-article', 15, 'Read the Story');
       setTimeout(function() { closeBtn.focus(); }, 400);
     }
 

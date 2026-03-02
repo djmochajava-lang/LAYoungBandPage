@@ -90,6 +90,11 @@ const Router = {
       Analytics.trackPageView(`/#${pageName}`);
     }
 
+    // Notify Fan Points system of page visit
+    document.dispatchEvent(new CustomEvent('layoung:page-loaded', {
+      detail: { page: pageName }
+    }));
+
     this.closeMobileMenu();
   },
 

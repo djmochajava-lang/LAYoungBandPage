@@ -108,5 +108,8 @@
 
   <!-- Config (creates game instance - must be last) -->
   <script src="js/config.js?v=12"></script>
+
+  <!-- Signal to main site that the game was played (Fan Points) -->
+  <script>try { localStorage.setItem('layoung-game-played', 'true'); } catch(e) {}</script>
 </body>
 </html>

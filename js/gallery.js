@@ -616,6 +616,7 @@ function createGallery(config) {
 
   function openLB(i) {
     lbOpen = true;
+    if (typeof FanPoints !== 'undefined') FanPoints.award('activity:gallery-lightbox', 15, 'Opened Lightbox');
     cur = i;
     updateLB();
     if (els.lightbox) els.lightbox.classList.add('open');

@@ -53,6 +53,11 @@
 
     <div class="divider"></div>
 
+    <!-- Top Fans Leaderboard (Fan of the Month) -->
+    <div id="fp-leaderboard-container" class="scroll-reveal delay-1"></div>
+
+    <div class="divider"></div>
+
     <!-- Wall Stats -->
     <div class="fanwall-stats scroll-reveal delay-1">
       <div class="fanwall-stat">
@@ -262,6 +267,7 @@
       };
       msgs.push(newMsg);
       saveMessages(msgs);
+      if (typeof FanPoints !== 'undefined') FanPoints.award('activity:fanwall-post', 25, 'Posted on Wall');
 
       form.reset();
       charCount.textContent = '0';
@@ -319,6 +325,11 @@
 
     // ---- Init ----
     renderMessages();
+
+    // ---- Leaderboard (Fan of the Month) ----
+    if (typeof FanPoints !== 'undefined' && FanPoints.renderLeaderboard) {
+      FanPoints.renderLeaderboard('fp-leaderboard-container');
+    }
 
   })();
   </script>

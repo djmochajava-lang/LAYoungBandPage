@@ -762,6 +762,7 @@
             if (audio.paused) {
               stopBackgroundMusic();
               audio.play();
+              if (typeof FanPoints !== 'undefined') FanPoints.award('activity:play-track', 20, 'Played a Track \u266B');
               playBtn.innerHTML = '&#x23F8;';
             } else {
               audio.pause();

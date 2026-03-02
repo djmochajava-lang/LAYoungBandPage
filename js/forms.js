@@ -61,6 +61,9 @@ const Forms = {
         );
         emailInput.value = '';
 
+        // Fan Points
+        if (typeof FanPoints !== 'undefined') FanPoints.award('activity:email-signup', 20, 'Joined the Fam');
+
         // Track conversion
         if (typeof Analytics !== 'undefined') {
           Analytics.trackEvent('Email Signup', 'Submit', 'Newsletter');
@@ -118,6 +121,9 @@ const Forms = {
           'success',
         );
         contactForm.reset();
+
+        // Fan Points
+        if (typeof FanPoints !== 'undefined') FanPoints.award('activity:contact-form', 20, 'Sent a Message');
 
         if (typeof Analytics !== 'undefined') {
           Analytics.trackEvent(

@@ -77,6 +77,9 @@
       // Analytics (should initialize early)
       this.initModule('Analytics', Analytics);
 
+      // Fan Points gamification
+      this.initModule('FanPoints', FanPoints);
+
       // Store remaining modules for on-demand initialization
       this.modules.Forms = Forms;
       this.modules.Gallery = Gallery;

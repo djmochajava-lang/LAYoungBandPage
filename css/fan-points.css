@@ -1,0 +1,404 @@
+/* ═══════════════════════════════════════════════════════
+   Fan Points — Gamification System Styles
+   L.A. Young Band Page
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Floating Points Animation ─────────────────────── */
+
+@keyframes fpFloatUp {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(0) scale(0.5);
+  }
+  12% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-10px) scale(1.1);
+  }
+  25% {
+    transform: translateX(-50%) translateY(-20px) scale(1);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-60px) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-90px) scale(0.8);
+  }
+}
+
+.fp-floating {
+  position: fixed;
+  top: 80px;
+  z-index: 9998;
+  pointer-events: none;
+  animation: fpFloatUp 1.8s ease-out forwards;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transform: translateX(-50%);
+}
+
+.fp-floating-points {
+  font-family: 'Caveat', 'Georgia', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffd700;
+  text-shadow:
+    0 0 12px rgba(255, 215, 0, 0.6),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+  line-height: 1;
+}
+
+.fp-floating-label {
+  font-family: 'Inter', 'Georgia', serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  margin-top: 2px;
+  letter-spacing: 0.3px;
+}
+
+
+/* ── Persistent Points Counter (Bottom-Left Pill) ──── */
+
+.fp-counter {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 1000;
+  display: none;  /* hidden until first points earned */
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  background: rgba(10, 10, 10, 0.88);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: default;
+  transition: transform 0.2s ease, border-color 0.3s ease;
+  user-select: none;
+}
+
+.fp-counter.visible {
+  display: flex;
+}
+
+.fp-counter:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 215, 0, 0.5);
+}
+
+.fp-counter-icon {
+  color: #ffd700;
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.fp-counter-value {
+  color: #ffd700;
+  font-family: 'Inter', 'Georgia', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  min-width: 1.2em;
+  text-align: center;
+  line-height: 1;
+}
+
+/* Bump animation on new points */
+@keyframes fpBump {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.25); }
+}
+
+.fp-counter.fp-bump {
+  animation: fpBump 0.4s ease;
+}
+
+
+/* ── Join Bar (Bottom Banner) ──────────────────────── */
+
+@keyframes fpSlideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.fp-join-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, rgba(26, 10, 46, 0.95), rgba(10, 10, 10, 0.95));
+  border-top: 1px solid rgba(255, 215, 0, 0.25);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fpSlideUp 0.4s ease-out;
+}
+
+.fp-join-bar.visible {
+  display: flex;
+}
+
+/* Shift counter up when join bar is visible */
+.fp-join-bar.visible ~ .fp-counter {
+  bottom: 60px;
+}
+
+.fp-join-text {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.82rem;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.3;
+}
+
+.fp-join-text strong {
+  color: #ffd700;
+}
+
+.fp-join-btn {
+  background: linear-gradient(135deg, #c9a227, #ffd700);
+  color: #0a0a06;
+  border: none;
+  padding: 6px 18px;
+  border-radius: 4px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: opacity 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.fp-join-btn:hover {
+  opacity: 0.9;
+}
+
+.fp-join-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.fp-join-close:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+
+/* ── Leaderboard (Fan Wall Page) ───────────────────── */
+
+.fp-leaderboard {
+  margin-bottom: 24px;
+}
+
+.fp-leaderboard-title {
+  text-align: center;
+  font-family: 'Caveat', 'Georgia', serif;
+  font-size: 1.6rem;
+  color: #ffd700;
+  margin-bottom: 16px;
+}
+
+.fp-leaderboard-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.fp-lb-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 215, 0, 0.15);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 200px;
+  flex: 0 1 260px;
+  transition: border-color 0.3s ease;
+}
+
+.fp-lb-card:hover {
+  border-color: rgba(255, 215, 0, 0.4);
+}
+
+/* #1 position — gold highlight */
+.fp-lb-card.fp-lb-first {
+  border-color: rgba(255, 215, 0, 0.5);
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.08), rgba(255, 215, 0, 0.02));
+}
+
+.fp-lb-rank {
+  font-family: 'Caveat', 'Georgia', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #484f58;
+  min-width: 28px;
+  text-align: center;
+  line-height: 1;
+}
+
+.fp-lb-first .fp-lb-rank {
+  color: #ffd700;
+}
+
+.fp-lb-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 215, 0, 0.15);
+  color: #ffd700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.fp-lb-first .fp-lb-avatar {
+  background: rgba(255, 215, 0, 0.25);
+}
+
+.fp-lb-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.fp-lb-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #c9d1d9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fp-lb-first .fp-lb-name {
+  color: #ffd700;
+}
+
+.fp-lb-crown {
+  font-size: 0.7rem;
+  margin-left: 4px;
+}
+
+.fp-lb-pts {
+  font-size: 0.75rem;
+  color: #8b949e;
+  margin-top: 1px;
+}
+
+.fp-lb-score {
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: #ffd700;
+  white-space: nowrap;
+}
+
+.fp-lb-empty {
+  text-align: center;
+  color: #8b949e;
+  font-size: 0.85rem;
+  padding: 16px;
+}
+
+.fp-lb-join-cta {
+  text-align: center;
+  margin-top: 10px;
+}
+
+.fp-lb-join-btn {
+  background: none;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  padding: 6px 16px;
+  border-radius: 4px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.fp-lb-join-btn:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.5);
+}
+
+
+/* ── Reduced Motion ────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .fp-floating {
+    animation-duration: 0.01ms !important;
+  }
+  .fp-counter.fp-bump {
+    animation: none;
+  }
+  .fp-join-bar {
+    animation: none;
+  }
+}
+
+
+/* ── Mobile Adjustments ────────────────────────────── */
+
+@media (max-width: 768px) {
+  .fp-counter {
+    bottom: 14px;
+    left: 14px;
+    padding: 5px 10px;
+  }
+
+  .fp-counter-icon {
+    font-size: 0.75rem;
+  }
+
+  .fp-counter-value {
+    font-size: 0.78rem;
+  }
+
+  .fp-floating {
+    top: 70px;
+  }
+
+  .fp-floating-points {
+    font-size: 1.6rem;
+  }
+
+  .fp-join-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 14px;
+  }
+
+  .fp-join-text {
+    font-size: 0.75rem;
+    flex: 1 1 100%;
+    text-align: center;
+  }
+
+  .fp-lb-card {
+    min-width: 160px;
+    flex: 1 1 100%;
+    padding: 10px 12px;
+  }
+}
