@@ -81,7 +81,13 @@
 
         <nav class="mobile-menu-nav" aria-label="Mobile navigation">
           <a href="#home" class="mobile-menu-link">Home</a>
-          <a href="#bio" class="mobile-menu-link">Artist</a>
+          <div class="mobile-menu-dropdown">
+            <a href="#bio" class="mobile-menu-link mobile-menu-dropdown-trigger">Artist</a>
+            <div class="mobile-menu-dropdown-items">
+              <a href="#bio" class="mobile-menu-link mobile-menu-sub-link">Bio</a>
+              <a href="#fanwall" class="mobile-menu-link mobile-menu-sub-link">Fan Wall</a>
+            </div>
+          </div>
           <a href="#shows" class="mobile-menu-link">Live</a>
           <div class="mobile-menu-dropdown">
             <a href="#music" class="mobile-menu-link mobile-menu-dropdown-trigger">Music</a>
@@ -92,7 +98,6 @@
             </div>
           </div>
           <a href="#gallery" class="mobile-menu-link">Gallery</a>
-          <a href="#fanwall" class="mobile-menu-link">Fan Wall</a>
           <div class="mobile-menu-dropdown">
             <a href="#support" class="mobile-menu-link mobile-menu-dropdown-trigger">Support</a>
             <div class="mobile-menu-dropdown-items">
@@ -140,7 +145,13 @@
 
         <nav class="main-nav" aria-label="Main navigation">
           <a href="#home" data-page="home" style="display: none">Home</a>
-          <a href="#bio" data-page="bio">Artist</a>
+          <div class="nav-dropdown">
+            <a href="#bio" data-page="bio" class="nav-dropdown-trigger">Artist</a>
+            <div class="nav-dropdown-menu">
+              <a href="#bio" data-page="bio">Bio</a>
+              <a href="#fanwall" data-page="fanwall">Fan Wall</a>
+            </div>
+          </div>
           <a href="#shows" data-page="shows" class="nav-link">Live</a>
           <div class="nav-dropdown">
             <a href="#music" data-page="music" class="nav-dropdown-trigger">Music</a>
@@ -151,7 +162,6 @@
             </div>
           </div>
           <a href="#gallery" data-page="gallery">Gallery</a>
-          <a href="#fanwall" data-page="fanwall">Fan Wall</a>
           <div class="nav-dropdown">
             <a href="#support" data-page="support" class="nav-dropdown-trigger">Support</a>
             <div class="nav-dropdown-menu">
