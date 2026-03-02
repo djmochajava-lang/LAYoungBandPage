@@ -15,8 +15,6 @@ const FanPoints = {
   _monthlyPoints: 0,
   _counterEl: null,
   _counterValueEl: null,
-  _footerPtsEl: null,
-  _footerPtsValueEl: null,
   _joinBarEl: null,
   _firebaseUser: null,
   _db: null,
@@ -66,7 +64,6 @@ const FanPoints = {
     // Create persistent UI
     this._createCounter();
     this._createJoinBar();
-    this._initFooterPoints();
 
     // Listen for SPA page navigations
     var self = this;
@@ -160,7 +157,8 @@ const FanPoints = {
     el.id = 'fp-counter';
     el.title = 'Your Fan Points';
     el.innerHTML = '<span class="fp-counter-icon">\u2605</span>' +
-                   '<span class="fp-counter-value" id="fp-counter-value">0</span>';
+                   '<span class="fp-counter-value" id="fp-counter-value">0</span>' +
+                   '<span class="fp-counter-label">pts</span>';
     document.body.appendChild(el);
 
     this._counterEl = el;
@@ -184,31 +182,6 @@ const FanPoints = {
     // Force reflow to restart animation
     void this._counterEl.offsetWidth;
     this._counterEl.classList.add('fp-bump');
-
-    // Also update footer points
-    this._updateFooterPoints();
-  },
-
-  // ── Footer Points Display ──────────────────────────
-
-  _initFooterPoints: function() {
-    this._footerPtsEl = document.getElementById('footer-fan-points');
-    this._footerPtsValueEl = document.getElementById('footer-pts-value');
-
-    // Show if already has points
-    if (this._footerPtsEl && this._points > 0) {
-      this._footerPtsValueEl.textContent = this._points;
-      this._footerPtsEl.classList.add('visible');
-    }
-  },
-
-  _updateFooterPoints: function() {
-    if (!this._footerPtsEl || !this._footerPtsValueEl) return;
-
-    this._footerPtsValueEl.textContent = this._points;
-    if (this._points > 0) {
-      this._footerPtsEl.classList.add('visible');
-    }
   },
 
   // ── Join Bar ──────────────────────────────────────
@@ -573,8 +546,6 @@ const FanPoints = {
     this._save();
     if (this._counterValueEl) this._counterValueEl.textContent = '0';
     if (this._counterEl) this._counterEl.classList.remove('visible');
-    if (this._footerPtsValueEl) this._footerPtsValueEl.textContent = '0';
-    if (this._footerPtsEl) this._footerPtsEl.classList.remove('visible');
     this._hideJoinBar();
     console.log('FanPoints reset to 0');
   }

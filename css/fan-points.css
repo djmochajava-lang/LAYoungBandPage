@@ -62,12 +62,12 @@
 }
 
 
-/* ── Persistent Points Counter (Bottom-Left Pill) ──── */
+/* ── Persistent Points Counter (Bottom-Right Pill) ──── */
 
 .fp-counter {
   position: fixed;
   bottom: 20px;
-  left: 20px;
+  right: 20px;
   z-index: 1000;
   display: none;  /* hidden until first points earned */
   align-items: center;
@@ -105,6 +105,15 @@
   font-weight: 700;
   min-width: 1.2em;
   text-align: center;
+  line-height: 1;
+}
+
+.fp-counter-label {
+  color: rgba(255, 215, 0, 0.55);
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   line-height: 1;
 }
 
@@ -364,7 +373,7 @@
 @media (max-width: 768px) {
   .fp-counter {
     bottom: 14px;
-    left: 14px;
+    right: 14px;
     padding: 5px 10px;
   }
 
@@ -400,71 +409,5 @@
     min-width: 160px;
     flex: 1 1 100%;
     padding: 10px 12px;
-  }
-}
-
-
-/* ── Footer Points Display ────────────────────────── */
-
-.footer-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.footer-points {
-  display: none;  /* hidden until points > 0 */
-  align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
-  border-radius: 14px;
-  background: rgba(255, 215, 0, 0.08);
-  border: 1px solid rgba(255, 215, 0, 0.2);
-  white-space: nowrap;
-  flex-shrink: 0;
-  transition: border-color 0.3s ease;
-}
-
-.footer-points.visible {
-  display: flex;
-}
-
-.footer-points:hover {
-  border-color: rgba(255, 215, 0, 0.45);
-}
-
-.footer-points-star {
-  color: #ffd700;
-  font-size: 0.7rem;
-  line-height: 1;
-}
-
-.footer-points-value {
-  color: #ffd700;
-  font-family: 'Inter', 'Georgia', serif;
-  font-size: 0.75rem;
-  font-weight: 700;
-  line-height: 1;
-}
-
-.footer-points-label {
-  color: rgba(255, 215, 0, 0.6);
-  font-size: 0.65rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  line-height: 1;
-}
-
-@media (max-width: 768px), (orientation: portrait) {
-  .footer-points {
-    padding: 2px 8px;
-  }
-  .footer-points-value {
-    font-size: 0.7rem;
-  }
-  .footer-points-label {
-    font-size: 0.6rem;
   }
 }
