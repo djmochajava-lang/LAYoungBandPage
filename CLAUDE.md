@@ -14,6 +14,8 @@ This project is part of a three-site ecosystem. Before making changes, verify wh
 
 **Relationship to GBE:** L.A. Young is the featured artist managed by Gold Bottom Entertainment LLC. GBE's public site links here from its Featured Artist page and home page. This site links back to GBE via booking/management references.
 
+**Trademark:** The phrase "I sing because I am human.™" is displayed on bio.html and support.html. This is part of the broader "I _____ because I am human" brand owned by Gold Bottom Ent LLC (company asset). Trademark management is handled from the GBE dashboard's IP & Rights page — do NOT manage trademark data from this site.
+
 See `../GoldBottomEntLLC/claude.md` for the GBE site documentation.
 
 ---
