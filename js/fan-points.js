@@ -37,7 +37,7 @@ const FanPoints = {
     'page:shows':                 { points: 10, label: 'Checked Live Shows' },
     'page:performances':          { points: 10, label: 'Explored Performances' },
     'page:LAYoungMusicPlayer':    { points: 15, label: 'Opened the Player' },
-    'page:merch':                 { points: 10, label: 'Browsed Merch' },
+    // 'page:merch':                 { points: 10, label: 'Browsed Merch' },  // Hidden until merch is live
     'page:support':               { points: 10, label: 'Visited Support' },
     'page:contact':               { points: 10, label: 'Found Connect' },
     'page:fanwall':               { points: 10, label: 'Hit the Fan Wall' },

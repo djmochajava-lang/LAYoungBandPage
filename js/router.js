@@ -10,7 +10,7 @@ const Router = {
     shows: 'pages/shows.html',
     performances: 'pages/performances.html',
     LAYoungMusicPlayer: 'pages/LAYoungMusicPlayer.tpl',
-    merch: 'pages/merch.html',
+    // merch: 'pages/merch.html',  // Hidden until fully developed — local only
     support: 'pages/support.html',
     contact: 'pages/contact.html',
     fanwall: 'pages/fanwall.html',

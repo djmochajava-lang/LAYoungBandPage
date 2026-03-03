@@ -22,7 +22,7 @@ const SwipeNavigation = {
     'gallery',
     'videos',
     'shows',
-    'merch',
+    // 'merch',  // Hidden until fully developed — local only
     'contact',
   ],
 
