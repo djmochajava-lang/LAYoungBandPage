@@ -1,8 +1,39 @@
+# Jekyll
 _site
 .sass-cache
 .jekyll-cache
 .jekyll-metadata
+
+# Dependencies
 vendor
+node_modules/
+
+# Environment & secrets (SEC-002)
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+*.p12
+*.pfx
+credentials.json
+secrets.json
+service-account.json
+serviceAccountKey.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+._*
+
+# Project-specific
 project-code-dump.txt
 Video/big/
 nul
