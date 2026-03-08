@@ -81,8 +81,8 @@ const PageLoader = {
       return this.cache[pageName];
     }
 
-    // Fetch from server
-    const response = await fetch(pageUrl);
+    // Fetch from server (cache-bust to ensure fresh content during dev)
+    const response = await fetch(pageUrl, { cache: 'no-cache' });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
