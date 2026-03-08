@@ -9,6 +9,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Special+Elite&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/retro.css" />
+  <!-- Firebase SDK (shared project: goldbottoment) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -652,12 +655,71 @@
     document.getElementById('bandModal').classList.add('active');
   };
 
-  /* --- Contact form --- */
+  /* --- Contact form (Firestore persistence) --- */
   window.submitContact = function(e) {
     e.preventDefault();
-    alert('Message sent! (Demo \u2014 no email sent)');
-    closeModal('contactModal');
-    e.target.reset();
+    var form = e.target;
+    var inputs = form.querySelectorAll('input, select, textarea');
+    var name = inputs[0].value.trim();
+    var email = inputs[1].value.trim();
+    var inquiryType = inputs[2].value;
+    var message = inputs[3].value.trim();
+
+    if (!name || !email || !inquiryType || !message) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    // Initialize Firebase if needed
+    var db = null;
+    try {
+      if (typeof firebase !== 'undefined') {
+        if (!firebase.apps.length) {
+          firebase.initializeApp({
+            apiKey: 'AIzaSyBxdl4Rq11ogyXwhH-2QCKhxB_RnT_bSEk',
+            authDomain: 'goldbottoment.firebaseapp.com',
+            projectId: 'goldbottoment',
+            storageBucket: 'goldbottoment.firebasestorage.app',
+            messagingSenderId: '963268881384',
+            appId: '1:963268881384:web:2ca6af27366263f23dd25d'
+          });
+        }
+        db = firebase.firestore();
+      }
+    } catch(err) { db = null; }
+
+    if (!db) {
+      alert('Unable to send \u2014 please email us directly at booking@layoungbandpage.com');
+      return;
+    }
+
+    // Disable button during write
+    var btn = form.querySelector('button[type="submit"]');
+    var origText = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = 'Sending\u2026';
+
+    db.collection('contact_submissions').add({
+      formType: 'epk-contact',
+      source: 'la-young-epk',
+      name: name,
+      email: email,
+      inquiryType: inquiryType,
+      message: message,
+      submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+    })
+    .then(function() {
+      alert('Message sent! We\u2019ll get back to you within 24\u201348 hours.');
+      closeModal('contactModal');
+      form.reset();
+    })
+    .catch(function() {
+      alert('Unable to send \u2014 please email us directly at booking@layoungbandpage.com');
+    })
+    .then(function() {
+      btn.disabled = false;
+      btn.textContent = origText;
+    });
   };
 
   /* --- Close modals --- */

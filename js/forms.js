@@ -3,9 +3,29 @@
 /**
  * Forms Module
  * Handles email signup, contact forms, and validation
+ * Persists submissions to Firestore (contact_submissions collection)
  */
 
 const Forms = {
+  FALLBACK_EMAIL: 'booking@layoungbandpage.com',
+
+  /**
+   * Get Firestore instance (initialize Firebase if needed)
+   */
+  _getDb() {
+    if (typeof firebase === 'undefined') return null;
+    try {
+      if (!firebase.apps.length) {
+        const config = (typeof window.SITE_CONFIG !== 'undefined') ? window.SITE_CONFIG.firebase : null;
+        if (!config) return null;
+        firebase.initializeApp(config);
+      }
+      return firebase.firestore();
+    } catch (e) {
+      return null;
+    }
+  },
+
   /**
    * Initialize all forms
    */
@@ -40,23 +60,34 @@ const Forms = {
         return;
       }
 
+      // Firestore availability guard
+      const db = this._getDb();
+      if (!db) {
+        this.showMessage(
+          signupForm,
+          'Unable to subscribe \u2014 please try again later or email us at ' + this.FALLBACK_EMAIL,
+          'error',
+        );
+        return;
+      }
+
       // Disable button during submission
       submitBtn.disabled = true;
       const originalText = submitBtn.textContent;
       submitBtn.textContent = 'Subscribing...';
 
       try {
-        // Submit to backend (uses api.js)
-        if (typeof API !== 'undefined') {
-          await API.subscribeEmail(email);
-        } else {
-          console.warn('API module not loaded, simulating success');
-          await this.simulateAPICall();
-        }
+        // Persist to Firestore
+        await db.collection('contact_submissions').add({
+          formType: 'email-signup',
+          source: 'la-young',
+          email: email,
+          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
         this.showMessage(
           signupForm,
-          'Thanks for subscribing! Check your email to confirm.',
+          'Thanks for subscribing! You\u2019re part of the Soul Fam now.',
           'success',
         );
         emailInput.value = '';
@@ -72,7 +103,7 @@ const Forms = {
         console.error('Signup error:', error);
         this.showMessage(
           signupForm,
-          'Oops! Something went wrong. Please try again.',
+          'Unable to subscribe \u2014 please try again or email us at ' + this.FALLBACK_EMAIL,
           'error',
         );
       } finally {
@@ -103,21 +134,37 @@ const Forms = {
         return;
       }
 
+      // Firestore availability guard
+      const db = this._getDb();
+      if (!db) {
+        this.showMessage(
+          contactForm,
+          'Unable to send \u2014 please try again later or email us at ' + this.FALLBACK_EMAIL,
+          'error',
+        );
+        return;
+      }
+
       const submitBtn = contactForm.querySelector('button[type="submit"]');
       submitBtn.disabled = true;
       const originalText = submitBtn.textContent;
       submitBtn.textContent = 'Sending...';
 
       try {
-        if (typeof API !== 'undefined') {
-          await API.submitContactForm(data);
-        } else {
-          await this.simulateAPICall();
-        }
+        // Persist to Firestore
+        await db.collection('contact_submissions').add({
+          formType: 'contact',
+          source: 'la-young',
+          name: data.name.trim(),
+          email: data.email.trim(),
+          subject: (data.subject || '').trim(),
+          message: data.message.trim(),
+          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
 
         this.showMessage(
           contactForm,
-          "Message sent! We'll get back to you soon.",
+          "Message sent! We\u2019ll get back to you within 24\u201348 hours.",
           'success',
         );
         contactForm.reset();
@@ -136,7 +183,7 @@ const Forms = {
         console.error('Contact form error:', error);
         this.showMessage(
           contactForm,
-          'Failed to send message. Please try again.',
+          'Unable to send \u2014 please try again or email us at ' + this.FALLBACK_EMAIL,
           'error',
         );
       } finally {
@@ -205,15 +252,6 @@ const Forms = {
       messageEl.style.opacity = '0';
       setTimeout(() => messageEl.remove(), 300);
     }, 5000);
-  },
-
-  /**
-   * Simulate API call (for development)
-   */
-  simulateAPICall() {
-    return new Promise((resolve) => {
-      setTimeout(resolve, 1000);
-    });
   },
 
   /**
