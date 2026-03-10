@@ -1,229 +1,369 @@
-<!-- pages/merch.html -->
+<!-- pages/merch.html — Two-Theme Merch Page (MERCH-STRUCT-001) -->
 
 <section class="section merch-section" id="merch">
-  <div class="container">
-    <h2 class="section-title">Merch</h2>
-    <p class="section-subtitle">Wear the Movement</p>
+  <div class="container-wide">
 
-    <style>
-      /* Merch product mockups — CSS-rendered designs */
-      .merch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--spacing-lg); margin-top: var(--spacing-lg); }
-      .merch-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,215,0,0.15); border-radius: 8px; overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease; }
-      .merch-card:hover { transform: translateY(-4px); border-color: rgba(255,215,0,0.4); }
+    <!-- ═══ THEME NAV ═══ -->
+    <nav class="merch-theme-nav" id="merch-theme-nav">
+      <a href="#merch-theme-a" class="merch-nav-pill active" data-theme="a">Soul in Full Color</a>
+      <a href="#merch-theme-b" class="merch-nav-pill" data-theme="b">I Sing Because I Am Human</a>
+    </nav>
 
-      /* Product mockup area */
-      .merch-mockup { position: relative; aspect-ratio: 1/1; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- THEME A: SOUL IN FULL COLOR                             -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <div class="merch-theme merch-theme--a" id="merch-theme-a">
 
-      /* Tee mockup — silhouette with design text */
-      .mockup-tee { background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); }
-      .mockup-tee .tee-shape {
-        width: 65%; height: 75%; position: relative;
-        background: #0a0a0a; border-radius: 4px 4px 8px 8px;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        padding: 1.5rem; text-align: center;
-        box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
-      }
-      .mockup-tee .tee-shape::before {
-        content: ''; position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
-        width: 35%; height: 12px; background: #0a0a0a; border-radius: 0 0 50% 50%;
-      }
-      .tee-design-text { color: #fff; font-family: 'Playfair Display', 'Georgia', serif; font-weight: 300; line-height: 1.3; }
-      .tee-design-text.large { font-size: 1.1rem; letter-spacing: 0.02em; }
-      .tee-design-text.small { font-size: 0.7rem; color: var(--color-primary); margin-top: 0.5rem; letter-spacing: 0.1em; text-transform: uppercase; }
-
-      /* Hoodie mockup */
-      .mockup-hoodie { background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); }
-      .mockup-hoodie .hoodie-shape {
-        width: 70%; height: 80%; position: relative;
-        background: #0a0a0a; border-radius: 8px;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        padding: 2rem 1.5rem; text-align: center;
-        box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
-      }
-      .mockup-hoodie .hoodie-shape::before {
-        content: ''; position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-        width: 25%; height: 20px; background: #0a0a0a; border-radius: 50% 50% 0 0;
-      }
-
-      /* Hat mockup */
-      .mockup-hat { background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); }
-      .mockup-hat .hat-shape {
-        width: 55%; aspect-ratio: 1.2/1; position: relative;
-        background: #0a0a0a; border-radius: 50% 50% 8px 8px;
-        display: flex; align-items: center; justify-content: center;
-        box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
-      }
-      .mockup-hat .hat-shape::after {
-        content: ''; position: absolute; bottom: -6px; left: -10%; width: 120%; height: 12px;
-        background: #0a0a0a; border-radius: 0 0 4px 4px;
-      }
-      .hat-monogram { color: var(--color-primary); font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 300; letter-spacing: 0.15em; }
-
-      /* Sticker mockup */
-      .mockup-stickers { background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); }
-      .sticker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; padding: 1rem; }
-      .sticker-item {
-        aspect-ratio: 1; border-radius: 50%; border: 2px solid var(--color-primary);
-        display: flex; align-items: center; justify-content: center;
-        padding: 0.5rem; text-align: center;
-        background: rgba(255,215,0,0.05);
-      }
-      .sticker-item span { color: var(--color-primary); font-family: 'Playfair Display', serif; font-size: 0.55rem; letter-spacing: 0.05em; text-transform: uppercase; line-height: 1.2; }
-
-      /* Poster mockup */
-      .mockup-poster { background: linear-gradient(135deg, #111 0%, #1a1a1a 50%, #111 100%); }
-      .poster-frame {
-        width: 55%; aspect-ratio: 2/3; position: relative;
-        background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
-        border: 2px solid rgba(255,215,0,0.3); padding: 1.5rem;
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        text-align: center;
-      }
-      .poster-frame .poster-title { color: var(--color-primary); font-family: 'Playfair Display', serif; font-size: 0.9rem; font-weight: 300; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.4; }
-      .poster-frame .poster-subtitle { color: rgba(255,255,255,0.6); font-size: 0.6rem; letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.75rem; }
-      .poster-frame .poster-line { width: 40px; height: 1px; background: var(--color-primary); margin: 0.75rem auto; }
-
-      /* Card info area */
-      .merch-info { padding: 1.25rem; }
-      .merch-info h4 { color: var(--color-text); font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 400; margin: 0 0 0.25rem; }
-      .merch-info .merch-tagline { color: var(--color-text-muted); font-size: 0.8rem; margin: 0 0 0.75rem; line-height: 1.4; }
-      .merch-info .merch-price { color: var(--color-primary); font-size: 1.1rem; font-weight: 600; }
-      .merch-info .merch-badge { display: inline-block; background: rgba(255,215,0,0.1); color: var(--color-primary); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: 3px; margin-left: 0.5rem; vertical-align: middle; }
-
-      /* Coming soon overlay */
-      .merch-coming-soon { text-align: center; margin-top: var(--spacing-xl); padding: var(--spacing-lg); border: 1px dashed rgba(255,215,0,0.2); border-radius: 8px; }
-      .merch-coming-soon h3 { color: var(--color-primary); font-family: 'Playfair Display', serif; font-weight: 300; margin-bottom: var(--spacing-xs); }
-      .merch-coming-soon p { color: var(--color-text-muted); font-size: 0.9rem; }
-
-      @media (max-width: 768px) {
-        .merch-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--spacing-md); }
-      }
-    </style>
-
-    <div class="merch-content">
-      <div class="merch-grid">
-        <!-- Product 1: I Sing Because I'm Human — Statement Tee -->
-        <div class="merch-card scroll-reveal">
-          <div class="merch-mockup mockup-tee">
-            <div class="tee-shape">
-              <span class="tee-design-text large">I SING<br>BECAUSE<br>I AM HUMAN</span>
-              <span class="tee-design-text small">&mdash; L.A. Young</span>
-            </div>
-          </div>
-          <div class="merch-info">
-            <h4>"I Sing Because I'm Human" Tee</h4>
-            <p class="merch-tagline">The statement that started a movement. Bold serif on premium black cotton.</p>
-            <span class="merch-price">$32.99</span>
-            <span class="merch-badge">Bestseller</span>
-          </div>
-        </div>
-
-        <!-- Product 2: Soul in Full Color — Flagship Tee -->
-        <div class="merch-card scroll-reveal delay-1">
-          <div class="merch-mockup mockup-tee">
-            <div class="tee-shape">
-              <span class="tee-design-text large" style="color: var(--color-primary); font-size: 1.3rem; letter-spacing: 0.08em;">L.A. YOUNG</span>
-              <span class="tee-design-text small" style="color: rgba(255,255,255,0.7);">Soul in Full Color</span>
-            </div>
-          </div>
-          <div class="merch-info">
-            <h4>Soul in Full Color Tee</h4>
-            <p class="merch-tagline">Gold metallic wordmark on black. Looks like fashion, not merch.</p>
-            <span class="merch-price">$29.99</span>
-          </div>
-        </div>
-
-        <!-- Product 3: I Sing Because I'm Human — Hoodie -->
-        <div class="merch-card scroll-reveal delay-2">
-          <div class="merch-mockup mockup-hoodie">
-            <div class="hoodie-shape">
-              <span class="tee-design-text large" style="font-size: 0.95rem;">I SING<br>BECAUSE<br>I AM HUMAN</span>
-              <span class="tee-design-text small">&mdash; L.A. Young</span>
-            </div>
-          </div>
-          <div class="merch-info">
-            <h4>"I Sing Because I'm Human" Hoodie</h4>
-            <p class="merch-tagline">The anthem in heavyweight fleece. Gold embroidered front, statement back.</p>
-            <span class="merch-price">$54.99</span>
-            <span class="merch-badge">Premium</span>
-          </div>
-        </div>
-
-        <!-- Product 4: Gold Crown Dad Hat -->
-        <div class="merch-card scroll-reveal delay-3">
-          <div class="merch-mockup mockup-hat">
-            <div class="hat-shape">
-              <span class="hat-monogram">LAY</span>
-            </div>
-          </div>
-          <div class="merch-info">
-            <h4>Gold Crown Dad Hat</h4>
-            <p class="merch-tagline">Gold embroidered LAY monogram on unstructured black. Subtle and timeless.</p>
-            <span class="merch-price">$27.99</span>
-          </div>
-        </div>
-
-        <!-- Product 5: Forged in the Heat Poster -->
-        <div class="merch-card scroll-reveal delay-4">
-          <div class="merch-mockup mockup-poster">
-            <div class="poster-frame">
-              <span class="poster-subtitle">From</span>
-              <span class="poster-title">STEEL MILL<br>TO<br>SOUL POWER</span>
-              <div class="poster-line"></div>
-              <span class="poster-subtitle">L.A. Young</span>
-            </div>
-          </div>
-          <div class="merch-info">
-            <h4>"Steel Mill to Soul Power" Poster</h4>
-            <p class="merch-tagline">Art Deco inspired 18x24" print. Frame-worthy on any wall.</p>
-            <span class="merch-price">$24.99</span>
-            <span class="merch-badge">Limited</span>
-          </div>
-        </div>
-
-        <!-- Product 6: Sticker Pack -->
-        <div class="merch-card scroll-reveal delay-5">
-          <div class="merch-mockup mockup-stickers">
-            <div class="sticker-grid">
-              <div class="sticker-item"><span>LAY</span></div>
-              <div class="sticker-item"><span>Soul in Full Color</span></div>
-              <div class="sticker-item"><span>Soul Fam</span></div>
-              <div class="sticker-item"><span>I Sing Because I Am Human</span></div>
-            </div>
-          </div>
-          <div class="merch-info">
-            <h4>Soul Fam Sticker Pack</h4>
-            <p class="merch-tagline">4 gold kiss-cut stickers. Laptops, bottles, guitar cases, everywhere.</p>
-            <span class="merch-price">$8.99</span>
-          </div>
+      <!-- Hero -->
+      <div class="merch-hero merch-hero--a scroll-reveal">
+        <div class="merch-hero__content">
+          <p class="merch-hero__label">The Signature Collection</p>
+          <blockquote class="merch-hero__quote">
+            <p class="merch-hero__title merch-hero__title--gold">&ldquo;Soul in Full Color&rdquo;</p>
+            <cite class="merch-hero__author">&mdash; L.A. Young, <span>Singer</span></cite>
+          </blockquote>
+          <p class="merch-hero__subtitle">Premium gold-on-black. Fashion first, merch second.</p>
+          <p class="merch-hero__shipping">Free shipping on orders over $50</p>
         </div>
       </div>
 
-      <div class="divider"></div>
+      <!-- Product Grid -->
+      <div class="merch-product-grid">
 
-      <!-- Store coming soon -->
-      <div class="merch-coming-soon scroll-reveal">
-        <h3>Store Opening Soon</h3>
-        <p>The official L.A. Young merch store is launching. Join the Soul Fam to be first in line.</p>
-        <a href="#contact" class="btn btn-primary btn-large" style="margin-top: var(--spacing-md);">Get Notified</a>
+        <!-- 1. Flagship Gold Wordmark Tee -->
+        <div class="merch-card merch-card--a scroll-reveal">
+          <div class="merch-card__image-wrap">
+            <img src="../images/merch/pipeline/shopify/layoung-merch-design-09-shopify-main.png"
+                 alt="Flagship Gold Wordmark Tee"
+                 class="merch-card__image" loading="lazy">
+            <span class="merch-card__badge merch-card__badge--a">Bestseller</span>
+          </div>
+          <div class="merch-card__body">
+            <h3 class="merch-card__title merch-card__title--a">Flagship Gold Wordmark Tee</h3>
+            <p class="merch-card__tagline">Gold metallic wordmark on black. Looks like fashion, not merch.</p>
+            <div class="merch-card__footer">
+              <span class="merch-card__price merch-card__price--a">$29.99</span>
+              <div class="merch-buy-btn" data-product-id="" data-product-handle="flagship-gold-wordmark-tee">
+                <button class="btn btn-primary merch-btn--coming-soon" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Statement Hoodie -->
+        <div class="merch-card merch-card--a scroll-reveal delay-1">
+          <div class="merch-card__image-wrap">
+            <img src="../images/merch/pipeline/shopify/layoung-merch-design-06-shopify-main.png"
+                 alt="Statement Hoodie"
+                 class="merch-card__image" loading="lazy">
+            <span class="merch-card__badge merch-card__badge--a">Premium</span>
+          </div>
+          <div class="merch-card__body">
+            <h3 class="merch-card__title merch-card__title--a">Statement Hoodie</h3>
+            <p class="merch-card__tagline">Gold embroidered front, statement back. Heavyweight fleece.</p>
+            <div class="merch-card__footer">
+              <span class="merch-card__price merch-card__price--a">$54.99</span>
+              <div class="merch-buy-btn" data-product-id="" data-product-handle="statement-hoodie">
+                <button class="btn btn-primary merch-btn--coming-soon" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Gold Crown Dad Hat -->
+        <div class="merch-card merch-card--a scroll-reveal delay-2">
+          <div class="merch-card__image-wrap">
+            <img src="../images/merch/pipeline/shopify/layoung-merch-design-10-shopify-main.png"
+                 alt="Gold Crown Dad Hat"
+                 class="merch-card__image" loading="lazy">
+          </div>
+          <div class="merch-card__body">
+            <h3 class="merch-card__title merch-card__title--a">Gold Crown Dad Hat</h3>
+            <p class="merch-card__tagline">Gold embroidered LAY monogram on unstructured black. Subtle and timeless.</p>
+            <div class="merch-card__footer">
+              <span class="merch-card__price merch-card__price--a">$27.99</span>
+              <div class="merch-buy-btn" data-product-id="" data-product-handle="gold-crown-dad-hat">
+                <button class="btn btn-primary merch-btn--coming-soon" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Soul in Full Color Tote -->
+        <div class="merch-card merch-card--a scroll-reveal delay-3">
+          <div class="merch-card__image-wrap">
+            <img src="../images/merch/pipeline/shopify/layoung-merch-design-04-shopify-main.png"
+                 alt="Soul in Full Color Tote"
+                 class="merch-card__image" loading="lazy">
+          </div>
+          <div class="merch-card__body">
+            <h3 class="merch-card__title merch-card__title--a">Soul in Full Color Tote</h3>
+            <p class="merch-card__tagline">Large elegant serif on black canvas. Makes a statement anywhere.</p>
+            <div class="merch-card__footer">
+              <span class="merch-card__price merch-card__price--a">$26.99</span>
+              <div class="merch-buy-btn" data-product-id="" data-product-handle="soul-in-full-color-tote">
+                <button class="btn btn-primary merch-btn--coming-soon" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Vinyl Label Mug -->
+        <div class="merch-card merch-card--a scroll-reveal">
+          <div class="merch-card__image-wrap">
+            <img src="../images/merch/pipeline/shopify/layoung-merch-design-01-shopify-main.png"
+                 alt="Vinyl Label Mug"
+                 class="merch-card__image" loading="lazy">
+          </div>
+          <div class="merch-card__body">
+            <h3 class="merch-card__title merch-card__title--a">Vinyl Label Mug</h3>
+            <p class="merch-card__tagline">The iconic design on a black glossy mug. Morning coffee in gold.</p>
+            <div class="merch-card__footer">
+              <span class="merch-card__price merch-card__price--a">$19.99</span>
+              <div class="merch-buy-btn" data-product-id="" data-product-handle="vinyl-label-mug">
+                <button class="btn btn-primary merch-btn--coming-soon" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Soul Fam Sticker Pack -->
+        <div class="merch-card merch-card--a scroll-reveal delay-1">
+          <div class="merch-card__image-wrap">
+            <img src="../images/merch/pipeline/shopify/layoung-merch-design-01-shopify-main.png"
+                 alt="Soul Fam Sticker Pack"
+                 class="merch-card__image" loading="lazy">
+          </div>
+          <div class="merch-card__body">
+            <h3 class="merch-card__title merch-card__title--a">Soul Fam Sticker Pack</h3>
+            <p class="merch-card__tagline">4 gold kiss-cut stickers. Laptops, bottles, guitar cases, everywhere.</p>
+            <div class="merch-card__footer">
+              <span class="merch-card__price merch-card__price--a">$8.99</span>
+              <div class="merch-buy-btn" data-product-id="" data-product-handle="soul-fam-sticker-pack">
+                <button class="btn btn-primary merch-btn--coming-soon" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. Forged in the Heat Tee -->
+        <div class="merch-card merch-card--a scroll-reveal delay-2">
+          <div class="merch-card__image-wrap">
+            <img src="../images/merch/pipeline/shopify/layoung-merch-design-02-shopify-main.png"
+                 alt="Forged in the Heat Tee"
+                 class="merch-card__image" loading="lazy">
+            <span class="merch-card__badge merch-card__badge--a">Heritage</span>
+          </div>
+          <div class="merch-card__body">
+            <h3 class="merch-card__title merch-card__title--a">Forged in the Heat Tee</h3>
+            <p class="merch-card__tagline">The origin story no one else can tell. Heavyweight vintage wash.</p>
+            <div class="merch-card__footer">
+              <span class="merch-card__price merch-card__price--a">$34.99</span>
+              <div class="merch-buy-btn" data-product-id="" data-product-handle="forged-in-the-heat-tee">
+                <button class="btn btn-primary merch-btn--coming-soon" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /merch-product-grid -->
+    </div><!-- /merch-theme--a -->
+
+    <!-- ═══ THEME DIVIDER ═══ -->
+    <div class="merch-divider scroll-reveal">
+      <div class="merch-divider__line"></div>
+    </div>
+
+    <!-- ════════════════════════════════════════════════════════ -->
+    <!-- THEME B: I SING BECAUSE I AM HUMAN                      -->
+    <!-- ════════════════════════════════════════════════════════ -->
+    <div class="merch-theme merch-theme--b" id="merch-theme-b">
+
+      <!-- Hero -->
+      <div class="merch-hero merch-hero--b scroll-reveal">
+        <div class="merch-hero__content">
+          <p class="merch-hero__label merch-hero__label--b">The Statement Collection</p>
+          <h2 class="merch-hero__title merch-hero__title--white">I Sing Because I Am Human</h2>
+          <p class="merch-hero__subtitle merch-hero__subtitle--b">In the age of algorithms, this is a declaration of authenticity.</p>
+        </div>
       </div>
 
-      <!-- Shipping Info -->
-      <div class="shipping-info scroll-reveal delay-3" style="text-align: center; margin-top: var(--spacing-lg);">
-        <p class="text-muted" style="font-size: 0.85rem;">
-          Free shipping on orders over $50 &bull; Worldwide delivery &bull; 30-day returns
-        </p>
+      <!-- Product Grid -->
+      <div class="merch-product-grid">
+
+        <!-- 1. I Sing Because I Am Human Tee -->
+        <div class="merch-card merch-card--b scroll-reveal">
+          <div class="merch-card__image-wrap">
+            <img src="../images/merch/pipeline/shopify/layoung-merch-design-11-shopify-main.png"
+                 alt="I Sing Because I Am Human Tee"
+                 class="merch-card__image" loading="lazy">
+            <span class="merch-card__badge merch-card__badge--b">Statement</span>
+          </div>
+          <div class="merch-card__body">
+            <h3 class="merch-card__title merch-card__title--b">I Sing Because I Am Human Tee</h3>
+            <p class="merch-card__tagline">The statement that transcends music. Bold serif on premium black cotton.</p>
+            <div class="merch-card__footer">
+              <span class="merch-card__price merch-card__price--b">$32.99</span>
+              <div class="merch-buy-btn" data-product-id="" data-product-handle="i-sing-because-i-am-human-tee">
+                <button class="btn btn-secondary merch-btn--coming-soon" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Cannot Be Coded Long Sleeve -->
+        <div class="merch-card merch-card--b scroll-reveal delay-1">
+          <div class="merch-card__image-wrap">
+            <img src="../images/merch/pipeline/shopify/layoung-merch-design-12-shopify-main.png"
+                 alt="Cannot Be Coded Long Sleeve"
+                 class="merch-card__image" loading="lazy">
+          </div>
+          <div class="merch-card__body">
+            <h3 class="merch-card__title merch-card__title--b">Cannot Be Coded Long Sleeve</h3>
+            <p class="merch-card__tagline">The back is a manifesto. Sparks conversations everywhere.</p>
+            <div class="merch-card__footer">
+              <span class="merch-card__price merch-card__price--b">$34.99</span>
+              <div class="merch-buy-btn" data-product-id="" data-product-handle="cannot-be-coded-long-sleeve">
+                <button class="btn btn-secondary merch-btn--coming-soon" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Golden Soul Revue Poster -->
+        <div class="merch-card merch-card--b scroll-reveal delay-2">
+          <div class="merch-card__image-wrap">
+            <img src="../images/merch/pipeline/shopify/layoung-merch-design-13-shopify-main.png"
+                 alt="Golden Soul Revue Poster"
+                 class="merch-card__image" loading="lazy">
+            <span class="merch-card__badge merch-card__badge--b">Limited</span>
+          </div>
+          <div class="merch-card__body">
+            <h3 class="merch-card__title merch-card__title--b">Golden Soul Revue Poster</h3>
+            <p class="merch-card__tagline">18x24" art print. The energy of a live show, framed on your wall.</p>
+            <div class="merch-card__footer">
+              <span class="merch-card__price merch-card__price--b">$24.99</span>
+              <div class="merch-buy-btn" data-product-id="" data-product-handle="golden-soul-revue-poster">
+                <button class="btn btn-secondary merch-btn--coming-soon" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. L.A. Young Portrait Tee -->
+        <div class="merch-card merch-card--b scroll-reveal delay-3">
+          <div class="merch-card__image-wrap">
+            <img src="../images/merch/pipeline/shopify/layoung-merch-design-14-shopify-main.png"
+                 alt="L.A. Young Portrait Tee"
+                 class="merch-card__image" loading="lazy">
+            <span class="merch-card__badge merch-card__badge--b">Exclusive</span>
+          </div>
+          <div class="merch-card__body">
+            <h3 class="merch-card__title merch-card__title--b">L.A. Young Portrait Tee</h3>
+            <p class="merch-card__tagline">The face behind the voice. Photo-quality print on premium cotton.</p>
+            <div class="merch-card__footer">
+              <span class="merch-card__price merch-card__price--b">$29.99</span>
+              <div class="merch-buy-btn" data-product-id="" data-product-handle="la-young-portrait-tee">
+                <button class="btn btn-secondary merch-btn--coming-soon" disabled>Coming Soon</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /merch-product-grid -->
+    </div><!-- /merch-theme--b -->
+
+    <!-- ═══ TRUST BAR ═══ -->
+    <div class="merch-trust-bar scroll-reveal">
+      <div class="merch-trust__item">
+        <span class="merch-trust__icon">&#x1f4e6;</span>
+        <span class="merch-trust__text">Free Shipping Over $50</span>
+      </div>
+      <div class="merch-trust__item">
+        <span class="merch-trust__icon">&#x1f310;</span>
+        <span class="merch-trust__text">Worldwide Delivery</span>
+      </div>
+      <div class="merch-trust__item">
+        <span class="merch-trust__icon">&#x1f504;</span>
+        <span class="merch-trust__text">30-Day Returns</span>
+      </div>
+      <div class="merch-trust__item">
+        <span class="merch-trust__icon">&#x1f512;</span>
+        <span class="merch-trust__text">Secure Checkout</span>
       </div>
     </div>
 
-    <!-- PAGE FOOTER (shows on mobile only) -->
-    <footer class="page-footer">
-      <div class="footer-content">
-        <p class="footer-text">
-          &copy; 2026 <strong>Powered By Gold Bottom Ent. LLC</strong> | All rights
-          reserved.
-        </p>
-      </div>
-    </footer>
+    <!-- ═══ SUPPORT CTA ═══ -->
+    <div class="merch-support-cta scroll-reveal">
+      <h3>Another Way to Support the Music</h3>
+      <p>Every purchase helps keep the soul alive. Join the Soul Fam.</p>
+      <a href="#support" class="btn btn-secondary">Visit Support Page</a>
+    </div>
+
+    <!-- Shopify Buy Button SDK placeholder — injected by MERCH-INTEGRATE-001 -->
+    <!-- <script src="https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js"></script> -->
+
   </div>
 </section>
+
+<script>
+(function () {
+  'use strict';
+
+  var merchSection = document.getElementById('merch');
+  var nav = document.getElementById('merch-theme-nav');
+  if (!nav || !merchSection) return;
+
+  var pills = nav.querySelectorAll('.merch-nav-pill');
+  var themeA = document.getElementById('merch-theme-a');
+  var themeB = document.getElementById('merch-theme-b');
+
+  /* ── Theme Nav: active pill tracking + smooth scroll ── */
+  pills.forEach(function (pill) {
+    pill.addEventListener('click', function (e) {
+      e.preventDefault();
+      pills.forEach(function (p) { p.classList.remove('active'); });
+      pill.classList.add('active');
+      var target = document.querySelector(pill.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  /* ── Scroll spy: highlight active theme pill on scroll ── */
+  if (themeA && themeB && window.IntersectionObserver) {
+    var spyObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          var theme = entry.target.id === 'merch-theme-a' ? 'a' : 'b';
+          pills.forEach(function (p) {
+            p.classList.toggle('active', p.getAttribute('data-theme') === theme);
+          });
+        }
+      });
+    }, { root: merchSection, threshold: 0.3 });
+
+    spyObserver.observe(themeA);
+    spyObserver.observe(themeB);
+  }
+
+  /* ── Scroll reveal for merch cards (uses section as root) ── */
+  if (window.IntersectionObserver) {
+    var reveals = merchSection.querySelectorAll('.scroll-reveal');
+    // Reset any previously-revealed elements so the animation replays
+    reveals.forEach(function (el) { el.classList.remove('revealed'); });
+
+    var revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { root: merchSection, threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+    reveals.forEach(function (el) { revealObserver.observe(el); });
+  }
+})();
+</script>
