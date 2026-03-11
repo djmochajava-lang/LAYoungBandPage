@@ -10,7 +10,7 @@ const Router = {
     shows: 'pages/shows.html',
     performances: 'pages/performances.html',
     LAYoungMusicPlayer: 'pages/LAYoungMusicPlayer.tpl',
-    // merch: 'pages/merch.html',  // Hidden until fully developed — local only
+    merch: 'pages/merch.html',
     support: 'pages/support.html',
     contact: 'pages/contact.html',
     fanwall: 'pages/fanwall.html',
@@ -59,8 +59,10 @@ const Router = {
       if (!link) return;
       const href = link.getAttribute('href');
       if (href === '#') return;
-      e.preventDefault();
       const pageName = href.substring(1);
+      // Only intercept if this is a known route — let in-page anchors work normally
+      if (!this.routes[pageName]) return;
+      e.preventDefault();
       this.navigateTo(pageName);
     });
   },

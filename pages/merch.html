@@ -333,6 +333,7 @@
 
   /* ── Scroll spy: highlight active theme pill on scroll ── */
   if (themeA && themeB && window.IntersectionObserver) {
+    // Use low threshold so tall single-column mobile layouts still trigger
     var spyObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
@@ -342,7 +343,7 @@
           });
         }
       });
-    }, { root: merchSection, threshold: 0.3 });
+    }, { root: merchSection, threshold: [0.05, 0.3], rootMargin: '-10% 0px -10% 0px' });
 
     spyObserver.observe(themeA);
     spyObserver.observe(themeB);

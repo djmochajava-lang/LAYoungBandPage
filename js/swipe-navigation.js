@@ -16,14 +16,16 @@ const SwipeNavigation = {
   menuItems: [
     'home',
     'bio',
+    'shows',
     'music',
     'projects',
     'LAYoungMusicPlayer',
     'gallery',
-    'videos',
-    'shows',
-    // 'merch',  // Hidden until fully developed — local only
+    'fanwall',
+    'support',
+    'merch',
     'contact',
+    'performances',
   ],
 
   init() {
