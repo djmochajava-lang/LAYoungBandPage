@@ -859,11 +859,33 @@
 
 .merch-buy-btn { flex-shrink: 0; }
 
+.merch-btn--buy {
+  font-size: 0.7rem;
+  padding: 0.45rem 0.9rem;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.merch-btn--buy:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
 .merch-btn--coming-soon {
   font-size: 0.7rem;
   padding: 0.45rem 0.9rem;
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.merch-btn--shop {
+  font-size: 0.7rem;
+  padding: 0.45rem 0.9rem;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.merch-btn--shop:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
 }
 
 /* ── Theme Divider ── */
