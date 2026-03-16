@@ -218,10 +218,12 @@ img {
 }
 .tb-brand-link {
   color: var(--gold);
-  font-weight: 500;
-  margin-left: 0.5rem;
-  letter-spacing: 0.06em;
+  font-weight: 400;
+  margin-left: 0.75rem;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
   text-decoration: none;
+  text-transform: uppercase;
   transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 .tb-brand-link:hover {
