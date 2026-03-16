@@ -217,15 +217,16 @@ img {
   text-transform: uppercase;
 }
 .tb-brand-link {
-  color: var(--text-subtle);
-  font-weight: 400;
+  color: var(--gold);
+  font-weight: 500;
   margin-left: 0.5rem;
   letter-spacing: 0.06em;
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
 }
 .tb-brand-link:hover {
-  color: var(--gold);
+  color: var(--gold-light);
+  text-shadow: 0 0 8px var(--gold-glow);
 }
 
 .tb-nav {
