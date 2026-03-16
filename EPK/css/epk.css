@@ -183,6 +183,13 @@ img {
 
 .btn-icon { font-size: 1em; }
 
+.hero-cta-text {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0.75rem 0 0.25rem;
+  letter-spacing: 0.03em;
+}
+
 .pdf-badge {
   display: inline-block;
   background: #e63946;
