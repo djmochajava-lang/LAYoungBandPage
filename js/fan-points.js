@@ -268,6 +268,19 @@ const FanPoints = {
           self._syncToFirestore();
         }
       });
+
+      // Handle redirect result (mobile sign-in flow)
+      firebase.auth().getRedirectResult()
+        .then(function(result) {
+          if (result && result.user) {
+            console.log('\uD83C\uDF89 Fan signed in via redirect: ' + (result.user.displayName || 'Anonymous'));
+          }
+        })
+        .catch(function(err) {
+          if (err.code !== 'auth/popup-closed-by-user') {
+            console.warn('FanPoints redirect result error:', err.message);
+          }
+        });
     } catch(err) {
       console.warn('FanPoints Firebase init skipped:', err.message);
     }
@@ -362,15 +375,21 @@ const FanPoints = {
       }
 
       var provider = new firebase.auth.GoogleAuthProvider();
-      firebase.auth().signInWithPopup(provider)
-        .then(function(result) {
-          console.log('\uD83C\uDF89 Fan signed in: ' + (result.user.displayName || 'Anonymous'));
-        })
-        .catch(function(err) {
-          if (err.code !== 'auth/popup-closed-by-user') {
-            console.error('Fan sign-in error:', err.message);
-          }
-        });
+      var isMobile = (typeof MobileDetect !== 'undefined' && MobileDetect.isMobile);
+
+      if (isMobile) {
+        firebase.auth().signInWithRedirect(provider);
+      } else {
+        firebase.auth().signInWithPopup(provider)
+          .then(function(result) {
+            console.log('\uD83C\uDF89 Fan signed in: ' + (result.user.displayName || 'Anonymous'));
+          })
+          .catch(function(err) {
+            if (err.code !== 'auth/popup-closed-by-user') {
+              console.error('Fan sign-in error:', err.message);
+            }
+          });
+      }
     } catch(err) {
       console.warn('FanPoints sign-in failed:', err.message);
     }

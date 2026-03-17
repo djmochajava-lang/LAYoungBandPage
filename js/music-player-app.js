@@ -431,6 +431,29 @@
       ms.setCustomParameters({ prompt: 'select_account' });
       _fbProviders.microsoft = ms;
 
+      // Handle redirect result (mobile sign-in flow)
+      _fbAuth.getRedirectResult()
+        .then(function (result) {
+          if (result && result.user) {
+            var user = result.user;
+            var email = user.email;
+            var name = user.displayName || null;
+            var provider = 'google';
+            try { provider = sessionStorage.getItem('la-young-follow-provider') || 'google'; } catch(e) {}
+            if (email) {
+              saveFollower(email, null, name, provider).then(function () {
+                if (_fbAuth.currentUser) _fbAuth.signOut();
+                try { sessionStorage.removeItem('la-young-follow-provider'); } catch(e) {}
+              });
+            }
+          }
+        })
+        .catch(function (err) {
+          if (err.code !== 'auth/popup-closed-by-user') {
+            console.warn('[Follow] Redirect result error:', err.message);
+          }
+        });
+
       console.log('[Follow] Firebase initialized');
     } catch (err) {
       console.error('[Follow] Firebase init error:', err);
@@ -559,29 +582,37 @@
     clearFollowMsg();
     showFollowMsg('Signing in...', 'info');
 
-    _fbAuth.signInWithPopup(_fbProviders[providerKey])
-      .then(function (result) {
-        var user = result.user;
-        var email = user.email;
-        var name = user.displayName || null;
-        if (!email) {
-          showFollowMsg('Could not get email. Please use the form below.', 'error');
-          return;
-        }
-        return saveFollower(email, null, name, providerKey);
-      })
-      .then(function () {
-        // Sign out — we don't need a persistent session
-        if (_fbAuth.currentUser) _fbAuth.signOut();
-      })
-      .catch(function (err) {
-        console.error('[Follow] Social sign-in error:', err);
-        if (err.code === 'auth/popup-closed-by-user') {
-          clearFollowMsg();
-        } else {
-          showFollowMsg('Sign-in failed. Try email below.', 'error');
-        }
-      });
+    var isMobile = (typeof MobileDetect !== 'undefined' && MobileDetect.isMobile);
+
+    if (isMobile) {
+      // Store which provider was used so redirect handler knows the source
+      try { sessionStorage.setItem('la-young-follow-provider', providerKey); } catch(e) {}
+      _fbAuth.signInWithRedirect(_fbProviders[providerKey]);
+    } else {
+      _fbAuth.signInWithPopup(_fbProviders[providerKey])
+        .then(function (result) {
+          var user = result.user;
+          var email = user.email;
+          var name = user.displayName || null;
+          if (!email) {
+            showFollowMsg('Could not get email. Please use the form below.', 'error');
+            return;
+          }
+          return saveFollower(email, null, name, providerKey);
+        })
+        .then(function () {
+          // Sign out — we don't need a persistent session
+          if (_fbAuth.currentUser) _fbAuth.signOut();
+        })
+        .catch(function (err) {
+          console.error('[Follow] Social sign-in error:', err);
+          if (err.code === 'auth/popup-closed-by-user') {
+            clearFollowMsg();
+          } else {
+            showFollowMsg('Sign-in failed. Try email below.', 'error');
+          }
+        });
+    }
   }
 
   if (googleBtn) googleBtn.addEventListener('click', function () { socialFollow('google'); });
@@ -718,6 +749,13 @@
       btn.textContent = 'Show more';
     }
   };
+
+  // Auto-init Firebase on load if returning from a mobile redirect sign-in
+  try {
+    if (sessionStorage.getItem('la-young-follow-provider')) {
+      initFirebase();
+    }
+  } catch(e) {}
 
   console.log('🎵 Music player app initialized');
 })();
