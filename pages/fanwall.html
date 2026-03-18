@@ -5,10 +5,10 @@
     <h2 class="section-title">Fan Wall</h2>
     <p class="section-subtitle">Leave Your Mark &mdash; Share Your L.A. Young Story</p>
 
-    <!-- Post Form -->
-    <div class="fanwall-compose scroll-reveal">
+    <!-- Post Form (always visible — triggers sign-in if not joined) -->
+    <div class="fanwall-compose scroll-reveal" id="fanwall-compose">
       <div class="fanwall-compose-header">
-        <div class="fanwall-avatar fanwall-avatar--compose">&#9834;</div>
+        <div class="fanwall-avatar fanwall-avatar--compose" id="fw-user-avatar">&#9834;</div>
         <div>
           <h3>Write on the Wall</h3>
           <p>Share a memory, a message, or just show some love</p>
@@ -16,38 +16,18 @@
       </div>
 
       <form id="fanwall-form" class="fanwall-form">
-        <div class="fanwall-form-row">
-          <div class="form-group" style="flex:1">
-            <label for="fw-name" class="form-label">Your Name</label>
-            <input type="text" id="fw-name" name="name" class="form-input" placeholder="First name or nickname" required maxlength="40" />
-          </div>
-          <div class="form-group" style="flex:1">
-            <label for="fw-location" class="form-label">Where You're From <span style="color:var(--color-text-faded);font-weight:400">(optional)</span></label>
-            <input type="text" id="fw-location" name="location" class="form-input" placeholder="City, State" maxlength="50" />
-          </div>
-        </div>
-
         <div class="form-group">
           <label for="fw-message" class="form-label">Your Message</label>
           <textarea id="fw-message" name="message" class="form-textarea" placeholder="What does L.A. Young's music mean to you?" required maxlength="500" rows="3"></textarea>
           <div class="fanwall-char-count"><span id="fw-charcount">0</span> / 500</div>
         </div>
 
-        <!-- Reaction Picker -->
-        <div class="fanwall-reaction-pick">
-          <span class="fanwall-reaction-label">How does the music make you feel?</span>
-          <div class="fanwall-reaction-options" id="fw-reactions">
-            <button type="button" class="fanwall-reaction-btn" data-reaction="soul" title="Soul">&#127925;</button>
-            <button type="button" class="fanwall-reaction-btn" data-reaction="fire" title="Fire">&#128293;</button>
-            <button type="button" class="fanwall-reaction-btn" data-reaction="love" title="Love">&#10084;&#65039;</button>
-            <button type="button" class="fanwall-reaction-btn" data-reaction="vibes" title="Good Vibes">&#10024;</button>
-            <button type="button" class="fanwall-reaction-btn" data-reaction="clap" title="Applause">&#128079;</button>
-          </div>
-        </div>
-
         <button type="submit" class="btn btn-primary fanwall-submit-btn">
           Post to the Wall &#9997;
         </button>
+        <p id="fw-form-note" class="fanwall-form-note" style="text-align:center;font-size:0.75rem;color:var(--color-text-faded,#8b949e);margin-top:8px">
+          Join the Fam to post on the wall and earn fan points
+        </p>
       </form>
     </div>
 
@@ -64,35 +44,11 @@
         <span class="fanwall-stat-num" id="fw-total">0</span>
         <span class="fanwall-stat-label">Messages</span>
       </div>
-      <div class="fanwall-stat">
-        <span class="fanwall-stat-num" id="fw-cities">0</span>
-        <span class="fanwall-stat-label">Cities</span>
-      </div>
-      <div class="fanwall-stat">
-        <span class="fanwall-stat-num" id="fw-latest">--</span>
-        <span class="fanwall-stat-label">Latest Post</span>
-      </div>
-    </div>
-
-    <!-- Filter / Sort -->
-    <div class="fanwall-controls scroll-reveal delay-1">
-      <div class="fanwall-filter-group">
-        <button class="fanwall-filter active" data-filter="all">All</button>
-        <button class="fanwall-filter" data-filter="soul">&#127925; Soul</button>
-        <button class="fanwall-filter" data-filter="fire">&#128293; Fire</button>
-        <button class="fanwall-filter" data-filter="love">&#10084;&#65039; Love</button>
-        <button class="fanwall-filter" data-filter="vibes">&#10024; Vibes</button>
-        <button class="fanwall-filter" data-filter="clap">&#128079; Applause</button>
-      </div>
-      <select class="fanwall-sort" id="fw-sort">
-        <option value="newest">Newest First</option>
-        <option value="oldest">Oldest First</option>
-      </select>
     </div>
 
     <!-- Messages Feed -->
     <div class="fanwall-feed" id="fanwall-feed">
-      <!-- Messages rendered by script -->
+      <!-- Comments rendered by script -->
     </div>
 
     <div id="fanwall-empty" class="fanwall-empty" style="display:none">
@@ -116,99 +72,29 @@
   <div class="fanwall-toast" id="fw-toast">
     <span>&#10024;</span> Your message is on the wall!
   </div>
+  <!-- Review Toast -->
+  <div class="fanwall-toast" id="fw-toast-review" style="background:var(--color-bg-secondary,#1a1a2e)">
+    <span>&#128269;</span> Your message is being reviewed before it appears.
+  </div>
 
   <script>
   (function() {
     'use strict';
 
-    var STORAGE_KEY = 'layoung-fanwall';
     var form = document.getElementById('fanwall-form');
     var feed = document.getElementById('fanwall-feed');
     var emptyState = document.getElementById('fanwall-empty');
     var charCount = document.getElementById('fw-charcount');
     var msgInput = document.getElementById('fw-message');
-    var sortSelect = document.getElementById('fw-sort');
     var toast = document.getElementById('fw-toast');
-    var selectedReaction = 'soul';
-    var currentFilter = 'all';
-    var apiAvailable = false;
+    var toastReview = document.getElementById('fw-toast-review');
+    var userAvatar = document.getElementById('fw-user-avatar');
+    var formNote = document.getElementById('fw-form-note');
+    var pendingPost = false; // flag: user tried to post before signing in
 
-    // ---- API Config ----
-    // Auto-detect: LAN → use GBE server API; GitHub Pages → localStorage fallback
-    var API_BASE = (function() {
-      var host = window.location.hostname;
-      if (host === 'localhost' || host === '127.0.0.1' ||
-          host.startsWith('192.168.') || host.startsWith('10.')) {
-        return 'http://' + host + ':3000/api/v1/fanwall';
-      }
-      return null; // GitHub Pages — no server access, localStorage only
-    })();
-
-    // ---- Seed Data (fallback when no API and no cached data) ----
-    var seedMessages = [
-      { id: 's1', name: 'Michelle T.', location: 'Baltimore, MD', message: 'I saw L.A. Young perform at a small jazz club years ago and I have been a fan ever since. Her voice just wraps around you like a warm blanket. Pure soul.', reaction: 'soul', created_at: '2026-01-15T19:30:00', seed: true },
-      { id: 's2', name: 'David R.', location: 'London, UK', message: "Discovered her music through a friend in the UK. The fact that she had five Top-5 hits over here and most people back home don't know her name is criminal. World-class talent.", reaction: 'fire', created_at: '2026-01-22T14:00:00', seed: true },
-      { id: 's3', name: 'Crystal', location: 'Washington, DC', message: 'My daughter and I play GroovyBandRush together every weekend. She loves the rhythm game and I love that she is learning about real music. Thank you for making something the whole family can enjoy!', reaction: 'love', created_at: '2026-02-03T10:15:00', seed: true },
-      { id: 's4', name: 'James P.', location: 'Annapolis, MD', message: 'Maryland Artist of the Year was well deserved. Saw her at the waterfront festival and the energy was unreal. The whole crowd was on their feet.', reaction: 'clap', created_at: '2026-02-10T20:00:00', seed: true },
-      { id: 's5', name: 'Keisha', location: 'Atlanta, GA', message: 'Just found this site and I am obsessed with the music player. The lyrics scroller is such a nice touch. You can tell this was built with love.', reaction: 'vibes', created_at: '2026-02-18T16:45:00', seed: true },
-      { id: 's6', name: 'Roberto M.', location: 'New York, NY', message: 'Real soul music in 2026. No auto-tune, no gimmicks. Just a voice that makes you feel something. This is what the world needs more of.', reaction: 'soul', created_at: '2026-02-25T21:30:00', seed: true }
-    ];
-
-    // ---- localStorage helpers ----
-    function getLocalMessages() {
-      try {
-        var stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        if (stored && stored.length) return stored;
-      } catch(e) {}
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(seedMessages));
-      return seedMessages.slice();
-    }
-
-    function saveLocalMessages(msgs) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
-    }
-
-    // ---- Get timestamp as ms (handles both server ISO and local ms formats) ----
-    function getTimestamp(msg) {
-      if (msg.created_at) return new Date(msg.created_at).getTime();
-      if (msg.timestamp) return msg.timestamp;
-      return 0;
-    }
-
-    // ---- Fetch messages (API with localStorage fallback) ----
-    function fetchMessages(callback) {
-      if (!API_BASE) {
-        callback(getLocalMessages());
-        return;
-      }
-
-      var sortVal = sortSelect ? sortSelect.value : 'newest';
-      var url = API_BASE + '?sort=' + sortVal + '&limit=200';
-      if (currentFilter !== 'all') {
-        url += '&reaction=' + currentFilter;
-      }
-
-      fetch(url)
-        .then(function(res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.json();
-        })
-        .then(function(json) {
-          apiAvailable = true;
-          // Cache server data locally for offline use
-          saveLocalMessages(json.data);
-          callback(json.data);
-        })
-        .catch(function(err) {
-          console.warn('[FanWall] API unavailable, using cached data:', err.message);
-          apiAvailable = false;
-          callback(getLocalMessages());
-        });
-    }
-
-    // ---- Render ----
-    function timeAgo(ts) {
-      var diff = Date.now() - ts;
+    // ---- Time Ago ----
+    function timeAgo(date) {
+      var diff = Date.now() - date.getTime();
       var mins = Math.floor(diff / 60000);
       if (mins < 1) return 'just now';
       if (mins < 60) return mins + 'm ago';
@@ -220,161 +106,131 @@
       return months + 'mo ago';
     }
 
-    var reactionEmoji = { soul: '\uD83C\uDFB5', fire: '\uD83D\uDD25', love: '\u2764\uFE0F', vibes: '\u2728', clap: '\uD83D\uDC4F' };
-
     function escapeHtml(str) {
       var div = document.createElement('div');
       div.textContent = str;
       return div.innerHTML;
     }
 
-    function renderMessages() {
-      fetchMessages(function(msgs) {
-        // Client-side filter/sort only needed for localStorage fallback
-        if (!apiAvailable) {
-          if (currentFilter !== 'all') {
-            msgs = msgs.filter(function(m) { return m.reaction === currentFilter; });
-          }
-          var sortVal = sortSelect ? sortSelect.value : 'newest';
-          msgs.sort(function(a, b) {
-            return sortVal === 'newest' ? getTimestamp(b) - getTimestamp(a) : getTimestamp(a) - getTimestamp(b);
-          });
-        }
+    // ---- Update UI based on auth state ----
+    function updateAuthUI() {
+      if (typeof FanPoints === 'undefined') return;
 
-        if (msgs.length === 0) {
+      if (FanPoints.isSignedIn()) {
+        var user = FanPoints.getCurrentUser();
+        if (user && userAvatar) {
+          userAvatar.textContent = user.displayName ? user.displayName.charAt(0).toUpperCase() : '?';
+        }
+        if (formNote) {
+          formNote.innerHTML = 'Posting as <strong>' + escapeHtml(user ? user.displayName : 'Fan') + '</strong> &bull; One comment per fan &mdash; new posts replace old ones';
+        }
+      } else {
+        if (userAvatar) userAvatar.textContent = '\u266A';
+        if (formNote) formNote.textContent = 'Join the Fam to post on the wall and earn fan points';
+      }
+    }
+
+    // ---- Render Comments from Firebase ----
+    function renderComments() {
+      if (typeof FanPoints === 'undefined' || !FanPoints.getRecentComments) {
+        // FanPoints not loaded or no Firebase — show empty
+        feed.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+
+      FanPoints.getRecentComments(100)
+        .then(function(comments) {
+          var totalEl = document.getElementById('fw-total');
+          if (totalEl) totalEl.textContent = comments.length;
+
+          if (comments.length === 0) {
+            feed.innerHTML = '';
+            emptyState.style.display = 'block';
+            return;
+          }
+
+          emptyState.style.display = 'none';
+
+          var html = '';
+          for (var i = 0; i < comments.length; i++) {
+            var c = comments[i];
+            var initial = c.displayName ? c.displayName.charAt(0).toUpperCase() : '?';
+            var ts = timeAgo(c.commentedAt);
+
+            html += '<div class="fanwall-msg">' +
+              '<div class="fanwall-avatar">' + initial + '</div>' +
+              '<div class="fanwall-msg-body">' +
+                '<div class="fanwall-msg-header">' +
+                  '<strong class="fanwall-msg-name">' + escapeHtml(c.displayName) + '</strong>' +
+                  '<span class="fanwall-msg-time">' + ts + '</span>' +
+                '</div>' +
+                '<p class="fanwall-msg-text">' + escapeHtml(c.comment) + '</p>' +
+              '</div>' +
+            '</div>';
+          }
+          feed.innerHTML = html;
+        })
+        .catch(function(err) {
+          console.warn('[FanWall] Failed to load comments:', err.message);
           feed.innerHTML = '';
           emptyState.style.display = 'block';
-          updateStats();
-          return;
-        }
-
-        emptyState.style.display = 'none';
-
-        var html = '';
-        for (var i = 0; i < msgs.length; i++) {
-          var m = msgs[i];
-          var emoji = reactionEmoji[m.reaction] || '\uD83C\uDFB5';
-          var initial = m.name ? m.name.charAt(0).toUpperCase() : '?';
-          var loc = m.location ? '<span class="fanwall-msg-location">' + escapeHtml(m.location) + '</span>' : '';
-          var ts = getTimestamp(m);
-
-          html += '<div class="fanwall-msg" data-id="' + m.id + '">' +
-            '<div class="fanwall-avatar">' + initial + '</div>' +
-            '<div class="fanwall-msg-body">' +
-              '<div class="fanwall-msg-header">' +
-                '<strong class="fanwall-msg-name">' + escapeHtml(m.name) + '</strong>' +
-                loc +
-                '<span class="fanwall-msg-time">' + timeAgo(ts) + '</span>' +
-              '</div>' +
-              '<p class="fanwall-msg-text">' + escapeHtml(m.message) + '</p>' +
-              '<span class="fanwall-msg-reaction">' + emoji + '</span>' +
-            '</div>' +
-          '</div>';
-        }
-        feed.innerHTML = html;
-
-        updateStats();
-      });
-    }
-
-    function updateStats() {
-      if (API_BASE && apiAvailable) {
-        fetch(API_BASE + '/stats')
-          .then(function(res) { return res.ok ? res.json() : Promise.reject(); })
-          .then(function(stats) {
-            var total = document.getElementById('fw-total');
-            var cities = document.getElementById('fw-cities');
-            var latest = document.getElementById('fw-latest');
-            if (total) total.textContent = stats.total;
-            if (cities) cities.textContent = stats.cities;
-            if (latest && stats.latestPostAt) latest.textContent = timeAgo(new Date(stats.latestPostAt).getTime());
-          })
-          .catch(function() { updateStatsLocal(); });
-      } else {
-        updateStatsLocal();
-      }
-    }
-
-    function updateStatsLocal() {
-      var msgs = getLocalMessages();
-      var total = document.getElementById('fw-total');
-      var cities = document.getElementById('fw-cities');
-      var latest = document.getElementById('fw-latest');
-
-      if (total) total.textContent = msgs.length;
-      if (cities) {
-        var uniqueCities = {};
-        msgs.forEach(function(m) {
-          if (m.location) uniqueCities[m.location.trim().toLowerCase()] = true;
         });
-        cities.textContent = Object.keys(uniqueCities).length;
-      }
-      if (latest && msgs.length > 0) {
-        var sorted = msgs.slice().sort(function(a,b) { return getTimestamp(b) - getTimestamp(a); });
-        latest.textContent = timeAgo(getTimestamp(sorted[0]));
-      }
+    }
+
+    // ---- Submit the comment (called after auth is confirmed) ----
+    function submitComment() {
+      var message = msgInput.value.trim();
+      if (!message) return;
+
+      var submitBtn = form.querySelector('.fanwall-submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Posting...';
+
+      FanPoints.saveComment(message)
+        .then(function(result) {
+          form.reset();
+          charCount.textContent = '0';
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Post to the Wall &#9997;';
+          pendingPost = false;
+
+          if (result.status === 'review') {
+            toastReview.classList.add('show');
+            setTimeout(function() { toastReview.classList.remove('show'); }, 4000);
+          } else {
+            toast.classList.add('show');
+            setTimeout(function() { toast.classList.remove('show'); }, 3000);
+          }
+
+          renderComments();
+        })
+        .catch(function(err) {
+          console.error('[FanWall] Post failed:', err.message);
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Post to the Wall &#9997;';
+          pendingPost = false;
+        });
     }
 
     // ---- Form Submit ----
-    function resetForm() {
-      form.reset();
-      charCount.textContent = '0';
-      document.querySelectorAll('.fanwall-reaction-btn').forEach(function(btn) { btn.classList.remove('active'); });
-      document.querySelector('.fanwall-reaction-btn[data-reaction="soul"]').classList.add('active');
-      selectedReaction = 'soul';
-    }
-
-    function saveLocally(payload) {
-      var msgs = getLocalMessages();
-      payload.id = 'fw_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-      payload.timestamp = Date.now();
-      msgs.push(payload);
-      saveLocalMessages(msgs);
-      resetForm();
-      renderMessages();
-      showToast();
-    }
-
     form.addEventListener('submit', function(e) {
       e.preventDefault();
 
-      var name = document.getElementById('fw-name').value.trim();
-      var location = document.getElementById('fw-location').value.trim();
-      var message = document.getElementById('fw-message').value.trim();
+      var message = msgInput.value.trim();
+      if (!message) return;
 
-      if (!name || !message) return;
+      if (typeof FanPoints === 'undefined') return;
 
-      var payload = {
-        name: name,
-        location: location,
-        message: message,
-        reaction: selectedReaction
-      };
-
-      if (API_BASE && apiAvailable) {
-        fetch(API_BASE, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        })
-        .then(function(res) {
-          if (!res.ok) throw new Error('HTTP ' + res.status);
-          return res.json();
-        })
-        .then(function(json) {
-          if (typeof FanPoints !== 'undefined') FanPoints.award('activity:fanwall-post', 25, 'Posted on Wall');
-          resetForm();
-          renderMessages();
-          showToast();
-        })
-        .catch(function(err) {
-          console.warn('[FanWall] POST failed, saving locally:', err.message);
-          saveLocally(payload);
-        });
-      } else {
-        if (typeof FanPoints !== 'undefined') FanPoints.award('activity:fanwall-post', 25, 'Posted on Wall');
-        saveLocally(payload);
+      // If not signed in, trigger sign-in (like the Join button)
+      // and flag the pending post so it submits after auth completes
+      if (!FanPoints.isSignedIn()) {
+        pendingPost = true;
+        FanPoints._handleJoinClick();
+        return;
       }
+
+      submitComment();
     });
 
     // ---- Char Counter ----
@@ -382,40 +238,34 @@
       charCount.textContent = this.value.length;
     });
 
-    // ---- Reaction Picker ----
-    document.getElementById('fw-reactions').addEventListener('click', function(e) {
-      var btn = e.target.closest('.fanwall-reaction-btn');
-      if (!btn) return;
-      document.querySelectorAll('.fanwall-reaction-btn').forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      selectedReaction = btn.getAttribute('data-reaction');
-    });
-    // Default
-    document.querySelector('.fanwall-reaction-btn[data-reaction="soul"]').classList.add('active');
+    // ---- Listen for auth state changes ----
+    // FanPoints fires onAuthStateChanged internally; we poll briefly to catch it
+    var authCheckInterval = setInterval(function() {
+      if (typeof FanPoints === 'undefined') return;
+      updateAuthUI();
+      if (FanPoints.initialized) {
+        clearInterval(authCheckInterval);
+        renderComments();
+      }
+    }, 500);
 
-    // ---- Filters ----
-    document.querySelectorAll('.fanwall-filter').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        document.querySelectorAll('.fanwall-filter').forEach(function(b) { b.classList.remove('active'); });
-        btn.classList.add('active');
-        currentFilter = btn.getAttribute('data-filter');
-        renderMessages();
-      });
-    });
-
-    // ---- Sort ----
-    if (sortSelect) {
-      sortSelect.addEventListener('change', renderMessages);
-    }
-
-    // ---- Toast ----
-    function showToast() {
-      toast.classList.add('show');
-      setTimeout(function() { toast.classList.remove('show'); }, 3000);
+    // Listen for Firebase auth changes — update UI + auto-post if pending
+    if (typeof firebase !== 'undefined' && firebase.auth) {
+      try {
+        firebase.auth().onAuthStateChanged(function(user) {
+          updateAuthUI();
+          renderComments();
+          // If the user just signed in and had a pending post, submit it now
+          if (user && pendingPost && msgInput.value.trim()) {
+            submitComment();
+          }
+        });
+      } catch(e) {}
     }
 
     // ---- Init ----
-    renderMessages();
+    updateAuthUI();
+    renderComments();
 
     // ---- Leaderboard (Fan of the Month) ----
     if (typeof FanPoints !== 'undefined' && FanPoints.renderLeaderboard) {

@@ -556,6 +556,114 @@ const FanPoints = {
     return div.innerHTML;
   },
 
+  // ── Fan Wall Comments ───────────────────────────
+
+  // Content filter patterns (profanity, spam, URL spam)
+  _BLOCKED_PATTERNS: [
+    /\b(f+u+c+k+|sh+i+t+|a+ss+h+o+l+e+|b+i+t+c+h+|d+a+m+n+|c+u+n+t+|d+i+c+k+|p+u+s+s+y+|n+i+g+g+|f+a+g+)\w*/i,
+    /\b(buy now|click here|free money|earn \$|make \$|casino|viagra|crypto pump)\b/i,
+    /https?:\/\/\S{30,}/i
+  ],
+
+  _isInappropriate: function(text) {
+    for (var i = 0; i < this._BLOCKED_PATTERNS.length; i++) {
+      if (this._BLOCKED_PATTERNS[i].test(text)) return true;
+    }
+    if (text.length > 20) {
+      var upper = text.replace(/[^A-Z]/g, '').length;
+      var alpha = text.replace(/[^A-Za-z]/g, '').length;
+      if (alpha > 0 && upper / alpha > 0.8) return true;
+    }
+    return false;
+  },
+
+  /**
+   * Save (or replace) the signed-in fan's comment.
+   * Auto-screens content: clean comments are visible immediately,
+   * flagged comments are saved but hidden (commentVisible = false).
+   * Returns a Promise that resolves with { status: 'posted' | 'review' }.
+   */
+  saveComment: function(commentText) {
+    if (!this._firebaseUser || !this._db) {
+      return Promise.reject(new Error('Must be signed in to comment'));
+    }
+    if (!commentText || !commentText.trim()) {
+      return Promise.reject(new Error('Comment cannot be empty'));
+    }
+
+    var trimmed = commentText.trim().substring(0, 500);
+    var flagged = this._isInappropriate(trimmed);
+    var uid = this._firebaseUser.uid;
+    var docRef = this._db.collection('layoung-fans').doc(uid);
+    var self = this;
+
+    return docRef.set({
+      comment: trimmed,
+      commentedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      commentVisible: !flagged,
+      displayName: this._firebaseUser.displayName || '',
+      photoURL: this._firebaseUser.photoURL || '',
+      lastActive: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).then(function() {
+      // Award points for posting (one-time)
+      var pv = self.POINT_VALUES['activity:fanwall-post'];
+      if (pv) self.award('activity:fanwall-post', pv.points, pv.label);
+      return { status: flagged ? 'review' : 'posted' };
+    });
+  },
+
+  /**
+   * Fetch the 100 most recent visible fan comments from Firestore.
+   * Only returns comments where commentVisible == true.
+   * Returns a Promise resolving to an array of { displayName, photoURL, comment, commentedAt }.
+   */
+  getRecentComments: function(limit) {
+    if (!this._db) return Promise.resolve([]);
+
+    limit = limit || 100;
+
+    return this._db.collection('layoung-fans')
+      .where('commentVisible', '==', true)
+      .orderBy('commentedAt', 'desc')
+      .limit(limit)
+      .get()
+      .then(function(snapshot) {
+        var comments = [];
+        snapshot.forEach(function(doc) {
+          var data = doc.data();
+          if (data.comment && data.commentedAt) {
+            comments.push({
+              displayName: data.displayName || 'Anonymous',
+              photoURL: data.photoURL || '',
+              comment: data.comment,
+              commentedAt: data.commentedAt.toDate ? data.commentedAt.toDate() : new Date(data.commentedAt),
+              points: data.monthlyPoints || 0
+            });
+          }
+        });
+        return comments;
+      });
+  },
+
+  /**
+   * Check if the current user is signed in to Firebase.
+   */
+  isSignedIn: function() {
+    return !!this._firebaseUser;
+  },
+
+  /**
+   * Get the current Firebase user info.
+   */
+  getCurrentUser: function() {
+    if (!this._firebaseUser) return null;
+    return {
+      displayName: this._firebaseUser.displayName || 'Anonymous',
+      photoURL: this._firebaseUser.photoURL || '',
+      uid: this._firebaseUser.uid
+    };
+  },
+
   // Debug only — reset all points
   reset: function() {
     this._points = 0;
