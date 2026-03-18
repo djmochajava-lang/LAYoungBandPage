@@ -216,6 +216,15 @@ const SwipeNavigation = {
     const diffX = this.touchEndX - this.touchStartX;
     const diffY = this.touchEndY - this.touchStartY;
 
+    // Swipe down on home page opens mobile menu
+    if (Math.abs(diffY) > Math.abs(diffX) && diffY > this.minSwipeDistance) {
+      const currentPage = window.location.hash.substring(1) || 'home';
+      if (currentPage === 'home' && typeof MobileMenu !== 'undefined' && !MobileMenu.isOpen()) {
+        MobileMenu.open();
+        return;
+      }
+    }
+
     if (Math.abs(diffX) > Math.abs(diffY)) {
       if (Math.abs(diffX) > this.minSwipeDistance) {
         if (diffX > 0) {
