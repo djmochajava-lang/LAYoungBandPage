@@ -131,30 +131,79 @@
     var toast = document.getElementById('fw-toast');
     var selectedReaction = 'soul';
     var currentFilter = 'all';
+    var apiAvailable = false;
 
-    // ---- Seed Data (pre-loaded messages so wall isn't empty) ----
+    // ---- API Config ----
+    // Auto-detect: LAN → use GBE server API; GitHub Pages → localStorage fallback
+    var API_BASE = (function() {
+      var host = window.location.hostname;
+      if (host === 'localhost' || host === '127.0.0.1' ||
+          host.startsWith('192.168.') || host.startsWith('10.')) {
+        return 'http://' + host + ':3000/api/v1/fanwall';
+      }
+      return null; // GitHub Pages — no server access, localStorage only
+    })();
+
+    // ---- Seed Data (fallback when no API and no cached data) ----
     var seedMessages = [
-      { id: 's1', name: 'Michelle T.', location: 'Baltimore, MD', message: 'I saw L.A. Young perform at a small jazz club years ago and I have been a fan ever since. Her voice just wraps around you like a warm blanket. Pure soul.', reaction: 'soul', timestamp: new Date('2026-01-15T19:30:00').getTime(), seed: true },
-      { id: 's2', name: 'David R.', location: 'London, UK', message: 'Discovered her music through a friend in the UK. The fact that she had five Top-5 hits over here and most people back home don\'t know her name is criminal. World-class talent.', reaction: 'fire', timestamp: new Date('2026-01-22T14:00:00').getTime(), seed: true },
-      { id: 's3', name: 'Crystal', location: 'Washington, DC', message: 'My daughter and I play GroovyBandRush together every weekend. She loves the rhythm game and I love that she is learning about real music. Thank you for making something the whole family can enjoy!', reaction: 'love', timestamp: new Date('2026-02-03T10:15:00').getTime(), seed: true },
-      { id: 's4', name: 'James P.', location: 'Annapolis, MD', message: 'Maryland Artist of the Year was well deserved. Saw her at the waterfront festival and the energy was unreal. The whole crowd was on their feet.', reaction: 'clap', timestamp: new Date('2026-02-10T20:00:00').getTime(), seed: true },
-      { id: 's5', name: 'Keisha', location: 'Atlanta, GA', message: 'Just found this site and I am obsessed with the music player. The lyrics scroller is such a nice touch. You can tell this was built with love.', reaction: 'vibes', timestamp: new Date('2026-02-18T16:45:00').getTime(), seed: true },
-      { id: 's6', name: 'Roberto M.', location: 'New York, NY', message: 'Real soul music in 2026. No auto-tune, no gimmicks. Just a voice that makes you feel something. This is what the world needs more of.', reaction: 'soul', timestamp: new Date('2026-02-25T21:30:00').getTime(), seed: true }
+      { id: 's1', name: 'Michelle T.', location: 'Baltimore, MD', message: 'I saw L.A. Young perform at a small jazz club years ago and I have been a fan ever since. Her voice just wraps around you like a warm blanket. Pure soul.', reaction: 'soul', created_at: '2026-01-15T19:30:00', seed: true },
+      { id: 's2', name: 'David R.', location: 'London, UK', message: "Discovered her music through a friend in the UK. The fact that she had five Top-5 hits over here and most people back home don't know her name is criminal. World-class talent.", reaction: 'fire', created_at: '2026-01-22T14:00:00', seed: true },
+      { id: 's3', name: 'Crystal', location: 'Washington, DC', message: 'My daughter and I play GroovyBandRush together every weekend. She loves the rhythm game and I love that she is learning about real music. Thank you for making something the whole family can enjoy!', reaction: 'love', created_at: '2026-02-03T10:15:00', seed: true },
+      { id: 's4', name: 'James P.', location: 'Annapolis, MD', message: 'Maryland Artist of the Year was well deserved. Saw her at the waterfront festival and the energy was unreal. The whole crowd was on their feet.', reaction: 'clap', created_at: '2026-02-10T20:00:00', seed: true },
+      { id: 's5', name: 'Keisha', location: 'Atlanta, GA', message: 'Just found this site and I am obsessed with the music player. The lyrics scroller is such a nice touch. You can tell this was built with love.', reaction: 'vibes', created_at: '2026-02-18T16:45:00', seed: true },
+      { id: 's6', name: 'Roberto M.', location: 'New York, NY', message: 'Real soul music in 2026. No auto-tune, no gimmicks. Just a voice that makes you feel something. This is what the world needs more of.', reaction: 'soul', created_at: '2026-02-25T21:30:00', seed: true }
     ];
 
-    // ---- Storage ----
-    function getMessages() {
+    // ---- localStorage helpers ----
+    function getLocalMessages() {
       try {
         var stored = JSON.parse(localStorage.getItem(STORAGE_KEY));
         if (stored && stored.length) return stored;
       } catch(e) {}
-      // First visit — seed the wall
       localStorage.setItem(STORAGE_KEY, JSON.stringify(seedMessages));
       return seedMessages.slice();
     }
 
-    function saveMessages(msgs) {
+    function saveLocalMessages(msgs) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs));
+    }
+
+    // ---- Get timestamp as ms (handles both server ISO and local ms formats) ----
+    function getTimestamp(msg) {
+      if (msg.created_at) return new Date(msg.created_at).getTime();
+      if (msg.timestamp) return msg.timestamp;
+      return 0;
+    }
+
+    // ---- Fetch messages (API with localStorage fallback) ----
+    function fetchMessages(callback) {
+      if (!API_BASE) {
+        callback(getLocalMessages());
+        return;
+      }
+
+      var sortVal = sortSelect ? sortSelect.value : 'newest';
+      var url = API_BASE + '?sort=' + sortVal + '&limit=200';
+      if (currentFilter !== 'all') {
+        url += '&reaction=' + currentFilter;
+      }
+
+      fetch(url)
+        .then(function(res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function(json) {
+          apiAvailable = true;
+          // Cache server data locally for offline use
+          saveLocalMessages(json.data);
+          callback(json.data);
+        })
+        .catch(function(err) {
+          console.warn('[FanWall] API unavailable, using cached data:', err.message);
+          apiAvailable = false;
+          callback(getLocalMessages());
+        });
     }
 
     // ---- Render ----
@@ -180,54 +229,74 @@
     }
 
     function renderMessages() {
-      var msgs = getMessages();
+      fetchMessages(function(msgs) {
+        // Client-side filter/sort only needed for localStorage fallback
+        if (!apiAvailable) {
+          if (currentFilter !== 'all') {
+            msgs = msgs.filter(function(m) { return m.reaction === currentFilter; });
+          }
+          var sortVal = sortSelect ? sortSelect.value : 'newest';
+          msgs.sort(function(a, b) {
+            return sortVal === 'newest' ? getTimestamp(b) - getTimestamp(a) : getTimestamp(a) - getTimestamp(b);
+          });
+        }
 
-      // Filter
-      if (currentFilter !== 'all') {
-        msgs = msgs.filter(function(m) { return m.reaction === currentFilter; });
-      }
+        if (msgs.length === 0) {
+          feed.innerHTML = '';
+          emptyState.style.display = 'block';
+          updateStats();
+          return;
+        }
 
-      // Sort
-      var sortVal = sortSelect ? sortSelect.value : 'newest';
-      msgs.sort(function(a, b) {
-        return sortVal === 'newest' ? b.timestamp - a.timestamp : a.timestamp - b.timestamp;
-      });
+        emptyState.style.display = 'none';
 
-      if (msgs.length === 0) {
-        feed.innerHTML = '';
-        emptyState.style.display = 'block';
-        return;
-      }
+        var html = '';
+        for (var i = 0; i < msgs.length; i++) {
+          var m = msgs[i];
+          var emoji = reactionEmoji[m.reaction] || '\uD83C\uDFB5';
+          var initial = m.name ? m.name.charAt(0).toUpperCase() : '?';
+          var loc = m.location ? '<span class="fanwall-msg-location">' + escapeHtml(m.location) + '</span>' : '';
+          var ts = getTimestamp(m);
 
-      emptyState.style.display = 'none';
-
-      var html = '';
-      for (var i = 0; i < msgs.length; i++) {
-        var m = msgs[i];
-        var emoji = reactionEmoji[m.reaction] || '\uD83C\uDFB5';
-        var initial = m.name ? m.name.charAt(0).toUpperCase() : '?';
-        var loc = m.location ? '<span class="fanwall-msg-location">' + escapeHtml(m.location) + '</span>' : '';
-
-        html += '<div class="fanwall-msg" data-id="' + m.id + '">' +
-          '<div class="fanwall-avatar">' + initial + '</div>' +
-          '<div class="fanwall-msg-body">' +
-            '<div class="fanwall-msg-header">' +
-              '<strong class="fanwall-msg-name">' + escapeHtml(m.name) + '</strong>' +
-              loc +
-              '<span class="fanwall-msg-time">' + timeAgo(m.timestamp) + '</span>' +
+          html += '<div class="fanwall-msg" data-id="' + m.id + '">' +
+            '<div class="fanwall-avatar">' + initial + '</div>' +
+            '<div class="fanwall-msg-body">' +
+              '<div class="fanwall-msg-header">' +
+                '<strong class="fanwall-msg-name">' + escapeHtml(m.name) + '</strong>' +
+                loc +
+                '<span class="fanwall-msg-time">' + timeAgo(ts) + '</span>' +
+              '</div>' +
+              '<p class="fanwall-msg-text">' + escapeHtml(m.message) + '</p>' +
+              '<span class="fanwall-msg-reaction">' + emoji + '</span>' +
             '</div>' +
-            '<p class="fanwall-msg-text">' + escapeHtml(m.message) + '</p>' +
-            '<span class="fanwall-msg-reaction">' + emoji + '</span>' +
-          '</div>' +
-        '</div>';
-      }
-      feed.innerHTML = html;
+          '</div>';
+        }
+        feed.innerHTML = html;
 
-      updateStats();
+        updateStats();
+      });
     }
 
     function updateStats() {
-      var msgs = getMessages();
+      if (API_BASE && apiAvailable) {
+        fetch(API_BASE + '/stats')
+          .then(function(res) { return res.ok ? res.json() : Promise.reject(); })
+          .then(function(stats) {
+            var total = document.getElementById('fw-total');
+            var cities = document.getElementById('fw-cities');
+            var latest = document.getElementById('fw-latest');
+            if (total) total.textContent = stats.total;
+            if (cities) cities.textContent = stats.cities;
+            if (latest && stats.latestPostAt) latest.textContent = timeAgo(new Date(stats.latestPostAt).getTime());
+          })
+          .catch(function() { updateStatsLocal(); });
+      } else {
+        updateStatsLocal();
+      }
+    }
+
+    function updateStatsLocal() {
+      var msgs = getLocalMessages();
       var total = document.getElementById('fw-total');
       var cities = document.getElementById('fw-cities');
       var latest = document.getElementById('fw-latest');
@@ -241,12 +310,31 @@
         cities.textContent = Object.keys(uniqueCities).length;
       }
       if (latest && msgs.length > 0) {
-        var sorted = msgs.slice().sort(function(a,b) { return b.timestamp - a.timestamp; });
-        latest.textContent = timeAgo(sorted[0].timestamp);
+        var sorted = msgs.slice().sort(function(a,b) { return getTimestamp(b) - getTimestamp(a); });
+        latest.textContent = timeAgo(getTimestamp(sorted[0]));
       }
     }
 
     // ---- Form Submit ----
+    function resetForm() {
+      form.reset();
+      charCount.textContent = '0';
+      document.querySelectorAll('.fanwall-reaction-btn').forEach(function(btn) { btn.classList.remove('active'); });
+      document.querySelector('.fanwall-reaction-btn[data-reaction="soul"]').classList.add('active');
+      selectedReaction = 'soul';
+    }
+
+    function saveLocally(payload) {
+      var msgs = getLocalMessages();
+      payload.id = 'fw_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+      payload.timestamp = Date.now();
+      msgs.push(payload);
+      saveLocalMessages(msgs);
+      resetForm();
+      renderMessages();
+      showToast();
+    }
+
     form.addEventListener('submit', function(e) {
       e.preventDefault();
 
@@ -256,34 +344,37 @@
 
       if (!name || !message) return;
 
-      var msgs = getMessages();
-      var newMsg = {
-        id: 'fw_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+      var payload = {
         name: name,
         location: location,
         message: message,
-        reaction: selectedReaction,
-        timestamp: Date.now()
+        reaction: selectedReaction
       };
-      msgs.push(newMsg);
-      saveMessages(msgs);
-      if (typeof FanPoints !== 'undefined') FanPoints.award('activity:fanwall-post', 25, 'Posted on Wall');
 
-      form.reset();
-      charCount.textContent = '0';
-      // Reset reaction selection
-      document.querySelectorAll('.fanwall-reaction-btn').forEach(function(btn) { btn.classList.remove('active'); });
-      document.querySelector('.fanwall-reaction-btn[data-reaction="soul"]').classList.add('active');
-      selectedReaction = 'soul';
-
-      renderMessages();
-      showToast();
-
-      // Scroll to new message
-      setTimeout(function() {
-        var newEl = feed.querySelector('[data-id="' + newMsg.id + '"]');
-        if (newEl) newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }, 100);
+      if (API_BASE && apiAvailable) {
+        fetch(API_BASE, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+        .then(function(res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function(json) {
+          if (typeof FanPoints !== 'undefined') FanPoints.award('activity:fanwall-post', 25, 'Posted on Wall');
+          resetForm();
+          renderMessages();
+          showToast();
+        })
+        .catch(function(err) {
+          console.warn('[FanWall] POST failed, saving locally:', err.message);
+          saveLocally(payload);
+        });
+      } else {
+        if (typeof FanPoints !== 'undefined') FanPoints.award('activity:fanwall-post', 25, 'Posted on Wall');
+        saveLocally(payload);
+      }
     });
 
     // ---- Char Counter ----
