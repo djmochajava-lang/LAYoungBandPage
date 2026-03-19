@@ -1,0 +1,33 @@
+{
+  "name": "L.A. Young - Soul in Full Color",
+  "short_name": "L.A. Young",
+  "description": "Live Soul, Jazz & Blues. Experience soul in full color with original music, live performances, and a story rooted in passion.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a0a2e",
+  "theme_color": "#1a0a2e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/artist/LAYoungPink.JPG",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/artist/LAYoungPink.JPG",
+      "sizes": "512x512",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/artist/LASoulLife.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["music", "entertainment"],
+  "lang": "en-US",
+  "scope": "/"
+}
