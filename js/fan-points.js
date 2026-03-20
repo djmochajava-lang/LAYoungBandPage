@@ -18,6 +18,9 @@ const FanPoints = {
   _joinBarEl: null,
   _firebaseUser: null,
   _db: null,
+  // True during the window between page load and onAuthStateChanged resolution.
+  // Prevents the join bar from flashing for users who are already signed in.
+  _authPending: false,
 
   STORAGE_KEY: 'layoung-fan-points',
   EARNED_KEY: 'layoung-fan-earned',
@@ -25,6 +28,9 @@ const FanPoints = {
   MONTHLY_PTS_KEY: 'layoung-fan-monthly-pts',
   DISMISS_KEY: 'layoung-fan-join-dismissed',
   GAME_FLAG: 'layoung-game-played',
+  // Persisted across sessions — set when user signs in, cleared on sign-out.
+  // Lets us suppress the join bar before async Firebase auth state resolves.
+  HAS_AUTH_KEY: 'layoung-fan-authed',
 
   // ── Point Values ──────────────────────────────────
 
@@ -57,6 +63,15 @@ const FanPoints = {
 
     // Load saved state
     this._load();
+
+    // If the user has signed in before, mark auth as pending until Firebase
+    // resolves onAuthStateChanged. This prevents the join bar from flashing
+    // on page load or SPA navigation for users who are already signed in.
+    try {
+      if (localStorage.getItem(this.HAS_AUTH_KEY)) {
+        this._authPending = true;
+      }
+    } catch(e) {}
 
     // Check for month rollover
     this._checkMonthRollover();
@@ -220,13 +235,17 @@ const FanPoints = {
   _showJoinBar: function() {
     if (!this._joinBarEl) return;
 
+    // Don't show while waiting for Firebase to resolve auth state — avoids
+    // flashing the bar at signed-in users on page load or SPA navigation.
+    if (this._authPending) return;
+
+    // Don't show if already signed in
+    if (this._firebaseUser) return;
+
     // Don't show if dismissed this session
     try {
       if (sessionStorage.getItem(this.DISMISS_KEY) === 'true') return;
     } catch(e) {}
-
-    // Don't show if already signed in
-    if (this._firebaseUser) return;
 
     var countEl = document.getElementById('fp-join-count');
     if (countEl) countEl.textContent = this._points;
@@ -263,9 +282,17 @@ const FanPoints = {
       var self = this;
       firebase.auth().onAuthStateChanged(function(user) {
         self._firebaseUser = user;
+        self._authPending = false; // Auth state resolved — safe to show/hide join bar
+
         if (user) {
+          // Persist that this user has signed in so the join bar stays hidden
+          // on future page loads / SPA navigations until auth resolves.
+          try { localStorage.setItem(self.HAS_AUTH_KEY, '1'); } catch(e) {}
           self._hideJoinBar();
           self._syncToFirestore();
+        } else {
+          // Signed out — remove the persistent flag so the join bar can appear again
+          try { localStorage.removeItem(self.HAS_AUTH_KEY); } catch(e) {}
         }
       });
 
