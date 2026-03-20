@@ -188,17 +188,29 @@
   background: #0f0f12;
   border: 1px solid rgba(255,215,0,0.25);
   border-radius: 16px;
-  padding: 2rem;
   width: 100%;
   max-width: 480px;
   position: relative;
   max-height: 90vh;
+  /* No overflow here — only the inner body scrolls */
+  display: flex;
+  flex-direction: column;
+}
+/* Sticky header row: close button sits here and never scrolls away */
+.checkout-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1rem 1rem 0;
+  flex-shrink: 0;
+}
+/* Scrollable form body */
+.checkout-panel-body {
   overflow-y: auto;
+  flex: 1;
+  padding: 0.5rem 2rem 2rem;
 }
 .checkout-close-btn {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
   background: rgba(255,255,255,0.08);
   border: none;
   color: #fff;
@@ -209,6 +221,7 @@
   font-size: 1rem;
   line-height: 32px;
   text-align: center;
+  flex-shrink: 0;
 }
 .checkout-close-btn:hover { background: rgba(255,255,255,0.15); }
 .checkout-event-title {
@@ -216,7 +229,6 @@
   font-size: 1.25rem;
   color: var(--color-primary, #ffd700);
   margin: 0 0 0.25rem;
-  padding-right: 2.5rem;
 }
 .checkout-event-meta {
   font-size: 0.85rem;
@@ -449,7 +461,8 @@
 
 @media (max-width: 600px) {
   .retrieve-form { flex-direction: column; }
-  .checkout-panel { padding: 1.5rem 1rem; }
+  .checkout-panel-header { padding: 0.75rem 0.75rem 0; }
+  .checkout-panel-body { padding: 0.25rem 1rem 1.5rem; }
   .conf-actions { flex-direction: column; }
   .conf-btn { width: 100%; }
 }
@@ -702,7 +715,14 @@
      ========================================================= -->
 <div id="checkout-overlay" class="checkout-overlay" hidden aria-modal="true" role="dialog">
   <div class="checkout-panel">
-    <button id="checkout-close-btn" class="checkout-close-btn" aria-label="Close">&times;</button>
+
+    <!-- Close button lives in the header — outside the scrollable body so it never scrolls away -->
+    <div class="checkout-panel-header">
+      <button id="checkout-close-btn" class="checkout-close-btn" aria-label="Close">&times;</button>
+    </div>
+
+    <!-- All scrollable content goes inside this wrapper -->
+    <div class="checkout-panel-body">
 
     <!-- Step: Order Form -->
     <div id="step-form">
@@ -788,10 +808,11 @@
           <button id="conf-close-btn" class="conf-btn conf-btn-close">Close</button>
         </div>
       </div>
-    </div>
+    </div><!-- /step-confirmation -->
 
-  </div>
-</div>
+    </div><!-- /checkout-panel-body -->
+  </div><!-- /checkout-panel -->
+</div><!-- /checkout-overlay -->
 
 <!-- QRCode.js (loaded on demand via script injection) -->
 <script>
@@ -1442,6 +1463,11 @@
   }
 
   /* ── Overlay close / keyboard ───────────────────────────── */
+
+  // Store the keydown handler so we can remove it when the SPA navigates away.
+  // Without this, each visit to shows page stacks another listener on document.
+  var _keydownHandler = null;
+
   function wireOverlayControls() {
     var closeBtn = $('checkout-close-btn');
     if (closeBtn) closeBtn.addEventListener('click', closeCheckout);
@@ -1463,11 +1489,26 @@
       });
     }
 
-    document.addEventListener('keydown', function (e) {
+    // Remove any stale keydown listener from a previous visit before adding a new one
+    if (_keydownHandler) {
+      document.removeEventListener('keydown', _keydownHandler);
+    }
+    _keydownHandler = function (e) {
       if (e.key === 'Escape') {
         var ov = $('checkout-overlay');
         if (ov && !ov.hidden) closeCheckout();
       }
+    };
+    document.addEventListener('keydown', _keydownHandler);
+
+    // Close checkout when SPA navigates to any other page (fires before new page loads)
+    document.addEventListener('layoung:page-loaded', function onPageNav(e) {
+      var newPage = e.detail && e.detail.page;
+      if (newPage !== 'shows') {
+        closeCheckout();
+      }
+      // Remove this one-shot listener — the next shows.html load will re-register
+      document.removeEventListener('layoung:page-loaded', onPageNav);
     });
   }
 
