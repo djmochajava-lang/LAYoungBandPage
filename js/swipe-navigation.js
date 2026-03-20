@@ -2,7 +2,13 @@
 
 /**
  * Mobile Swipe Navigation with Page Turning Effect
- * Swipe left = next page, Swipe right = previous page
+ *
+ * Home page  : swipe up / down / right  → open mobile menu
+ * Other pages: swipe right              → go to the last page visited on
+ *                                         this site (SPA history stack), or
+ *                                         history.back() if this was the
+ *                                         first page the user landed on
+ * Any page   : swipe left               → navigate to next page in sequence
  */
 
 const SwipeNavigation = {
@@ -12,6 +18,12 @@ const SwipeNavigation = {
   touchEndY: 0,
   minSwipeDistance: 50,
   isAnimating: false,
+
+  // Internal SPA navigation history stack
+  _spaHistory: [],
+  // Set true while executing a back-navigation so the page-loaded listener
+  // doesn't push the destination back onto the stack
+  _navigatingBack: false,
 
   menuItems: [
     'home',
@@ -35,6 +47,9 @@ const SwipeNavigation = {
       console.log('📱 Swipe navigation with page turn enabled');
     }
 
+    // Start tracking SPA history so swipe-right can navigate back
+    this._trackNavigation();
+
     window.addEventListener('resize', () => {
       if (window.innerWidth <= 1024 && !this.listenersActive) {
         this.setupSwipeListeners();
@@ -43,6 +58,57 @@ const SwipeNavigation = {
         this.removeSwipeListeners();
       }
     });
+  },
+
+  /**
+   * Track every SPA page navigation so we can go back through them.
+   * Records pages into _spaHistory; skips pushes during back-navigation.
+   */
+  _trackNavigation() {
+    var self = this;
+
+    // Seed history with the landing page
+    var landing = window.location.hash.substring(1) || 'home';
+    self._spaHistory.push(landing);
+
+    document.addEventListener('layoung:page-loaded', function (e) {
+      if (self._navigatingBack) {
+        // This event was triggered by our own back-navigation; don't push
+        self._navigatingBack = false;
+        return;
+      }
+      var page = (e.detail && e.detail.page) || (window.location.hash.substring(1) || 'home');
+      // Avoid duplicate consecutive entries
+      if (self._spaHistory[self._spaHistory.length - 1] !== page) {
+        self._spaHistory.push(page);
+      }
+    });
+  },
+
+  /**
+   * Navigate back through the SPA history stack (swipe-right on non-home pages).
+   * Falls back to history.back() if no SPA history exists (user arrived
+   * directly from an external site).
+   */
+  _navigateBack() {
+    var stack = this._spaHistory;
+    var currentPage = window.location.hash.substring(1) || 'home';
+
+    // Pop the current page off the top of the stack
+    while (stack.length > 0 && stack[stack.length - 1] === currentPage) {
+      stack.pop();
+    }
+
+    if (stack.length > 0) {
+      var prevPage = stack[stack.length - 1];
+      // Pop it too — it will be re-pushed if the user navigates forward again
+      stack.pop();
+      this._navigatingBack = true;
+      this.animatePageTurn('prev', prevPage);
+    } else {
+      // No SPA history — user came from another site; let the browser go back
+      history.back();
+    }
   },
 
   /**
@@ -207,31 +273,54 @@ const SwipeNavigation = {
   },
 
   handleSwipe() {
-    // Prevent multiple swipes during animation
     if (this.isAnimating) return;
-
-    // Skip page navigation if swipe started inside a horizontal scroll zone
     if (this.inScrollZone) return;
 
-    const diffX = this.touchEndX - this.touchStartX;
-    const diffY = this.touchEndY - this.touchStartY;
+    var diffX = this.touchEndX - this.touchStartX;
+    var diffY = this.touchEndY - this.touchStartY;
+    var currentPage = window.location.hash.substring(1) || 'home';
 
-    // Swipe down on home page opens mobile menu
-    if (Math.abs(diffY) > Math.abs(diffX) && diffY > this.minSwipeDistance) {
-      const currentPage = window.location.hash.substring(1) || 'home';
-      if (currentPage === 'home' && typeof MobileMenu !== 'undefined' && !MobileMenu.isOpen()) {
-        MobileMenu.open();
+    var absDiffX = Math.abs(diffX);
+    var absDiffY = Math.abs(diffY);
+    var isHorizontal = absDiffX > absDiffY;
+    var isVertical   = absDiffY > absDiffX;
+
+    // ── HOME PAGE ─────────────────────────────────────────────────────────
+    // Swipe up, down, or right → open mobile menu
+    // Swipe left               → navigate to next page
+    if (currentPage === 'home') {
+      var opensMenu = false;
+
+      if (isVertical && absDiffY > this.minSwipeDistance) {
+        // up or down
+        opensMenu = true;
+      } else if (isHorizontal && diffX > this.minSwipeDistance) {
+        // right
+        opensMenu = true;
+      }
+
+      if (opensMenu) {
+        if (typeof MobileMenu !== 'undefined' && !MobileMenu.isOpen()) {
+          MobileMenu.open();
+        }
         return;
       }
+
+      // Left swipe on home → go to next page
+      if (isHorizontal && diffX < -this.minSwipeDistance) {
+        this.navigateNext();
+      }
+      return;
     }
 
-    if (Math.abs(diffX) > Math.abs(diffY)) {
-      if (Math.abs(diffX) > this.minSwipeDistance) {
-        if (diffX > 0) {
-          this.navigatePrevious();
-        } else {
-          this.navigateNext();
-        }
+    // ── ALL OTHER PAGES ───────────────────────────────────────────────────
+    if (isHorizontal && absDiffX > this.minSwipeDistance) {
+      if (diffX > 0) {
+        // Swipe right → go back through SPA history (or browser back)
+        this._navigateBack();
+      } else {
+        // Swipe left → navigate to next page in sequence
+        this.navigateNext();
       }
     }
   },
