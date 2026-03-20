@@ -119,6 +119,69 @@
 .tier-btn-free { background: var(--color-accent, #e63946); color: #fff; }
 .tier-btn-coming-soon { background: transparent; border: 1px solid rgba(255,215,0,0.3); color: var(--color-primary,#ffd700); cursor: default; font-size: 0.75rem; }
 
+/* ── Show Notification Signup ────────────────────────────────── */
+.notify-confirmed {
+  margin-top: 1rem;
+  color: var(--color-primary, #ffd700);
+  font-size: 0.95rem;
+  text-align: center;
+}
+.notify-form {
+  margin-top: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+.notify-form-label {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.75);
+  margin: 0;
+  text-align: center;
+}
+.notify-form-row {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 420px;
+}
+.notify-email-input {
+  flex: 1;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255,215,0,0.3);
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  font-size: 0.95rem;
+  outline: none;
+}
+.notify-email-input:focus {
+  border-color: var(--color-primary, #ffd700);
+}
+.notify-submit-btn {
+  white-space: nowrap;
+  padding: 0.6rem 1.2rem;
+  font-size: 0.9rem;
+}
+.notify-opt-out {
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.4);
+  margin: 0;
+  text-align: center;
+  max-width: 380px;
+}
+.notify-form-msg {
+  font-size: 0.88rem;
+  margin: 0;
+  text-align: center;
+}
+.notify-form-msg.success { color: #4caf82; }
+.notify-form-msg.error   { color: #e63946; }
+@media (max-width: 480px) {
+  .notify-form-row { flex-direction: column; }
+  .notify-submit-btn { width: 100%; }
+}
+
 /* ── Retrieve Ticket ─────────────────────────────────────────── */
 .retrieve-zone {
   background: rgba(255,215,0,0.04);
@@ -494,10 +557,25 @@
           Something special is in the works. Stay connected so you don't miss
           the next time L.A. Young hits the stage.
         </p>
-        <div class="upcoming-actions">
-          <a href="#contact" class="btn btn-secondary btn-large upcoming-notify-btn">&#x1F514; Get Notified</a>
+        <!-- Notify CTA — toggles between button / form / confirmed states -->
+        <div class="upcoming-actions" id="notify-actions">
+          <button id="notify-open-btn" class="btn btn-secondary btn-large upcoming-notify-btn">&#x1F514; Get Notified</button>
           <span class="btn btn-primary btn-large upcoming-coming-soon">&#x1F3AB; Tickets Coming Soon</span>
         </div>
+
+        <!-- Confirmed state (shown once already subscribed) -->
+        <p id="notify-confirmed" class="notify-confirmed" hidden>&#x2714;&#xFE0F; You&rsquo;ll be notified when tickets go on sale!</p>
+
+        <!-- Inline notify form (shown after clicking Get Notified) -->
+        <form id="notify-form" class="notify-form" hidden novalidate>
+          <p class="notify-form-label">Enter your email and we&rsquo;ll let you know when tickets drop.</p>
+          <div class="notify-form-row">
+            <input id="notify-email" class="notify-email-input" type="email" placeholder="your@email.com" autocomplete="email" required>
+            <button type="submit" class="btn btn-secondary notify-submit-btn">Notify Me</button>
+          </div>
+          <p class="notify-opt-out">We&rsquo;ll only email you about upcoming shows. Unsubscribe at any time by replying &ldquo;stop&rdquo; to any email.</p>
+          <p id="notify-form-msg" class="notify-form-msg" hidden></p>
+        </form>
       </div>
 
     </div><!-- /ticket-zone -->
@@ -1512,11 +1590,114 @@
     });
   }
 
+  /* ── Show Notification Signup ───────────────────────────── */
+  var NOTIFY_KEY = 'layoung-shows-notified';
+
+  function initNotify() {
+    var openBtn    = $('notify-open-btn');
+    var form       = $('notify-form');
+    var confirmed  = $('notify-confirmed');
+    var emailInput = $('notify-email');
+    var msgEl      = $('notify-form-msg');
+
+    if (!openBtn) return;
+
+    // Restore confirmed state from a previous visit
+    try {
+      if (localStorage.getItem(NOTIFY_KEY)) {
+        showNotifyConfirmed();
+        return;
+      }
+    } catch (e) {}
+
+    // Open inline form on button click
+    openBtn.addEventListener('click', function () {
+      hideEl('notify-actions');
+      if (form) form.hidden = false;
+      if (emailInput) emailInput.focus();
+    });
+
+    // Handle form submission
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = emailInput ? emailInput.value.trim() : '';
+        var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!email || !re.test(email)) {
+          showNotifyMsg('Please enter a valid email address.', 'error');
+          return;
+        }
+
+        submitNotify(email);
+      });
+    }
+  }
+
+  function submitNotify(email) {
+    var msgEl      = $('notify-form-msg');
+    var submitBtn  = document.querySelector('.notify-submit-btn');
+
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
+    hideNotifyMsg();
+
+    // Write to Firestore contact_submissions (same pattern as the main email signup)
+    var db = (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length)
+      ? firebase.firestore()
+      : null;
+
+    if (!db) {
+      showNotifyMsg('Unable to subscribe right now — please try again later.', 'error');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Notify Me'; }
+      return;
+    }
+
+    db.collection('contact_submissions').add({
+      formType:    'shows-notification',
+      source:      'la-young',
+      email:       email,
+      optOut:      false,
+      submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+      // Persist so returning visitors see confirmed state
+      try { localStorage.setItem(NOTIFY_KEY, '1'); } catch (e) {}
+      // Award fan points
+      if (typeof FanPoints !== 'undefined') {
+        FanPoints.award('activity:email-signup', 20, 'Joined the Fam');
+      }
+      showNotifyConfirmed();
+    }).catch(function (err) {
+      console.error('Notify signup error:', err);
+      showNotifyMsg('Something went wrong — please try again.', 'error');
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Notify Me'; }
+    });
+  }
+
+  function showNotifyConfirmed() {
+    hideEl('notify-actions');
+    hideEl('notify-form');
+    showEl('notify-confirmed');
+  }
+
+  function showNotifyMsg(text, type) {
+    var el = $('notify-form-msg');
+    if (!el) return;
+    el.textContent = text;
+    el.className = 'notify-form-msg ' + (type || '');
+    el.hidden = false;
+  }
+
+  function hideNotifyMsg() {
+    var el = $('notify-form-msg');
+    if (el) { el.hidden = true; el.textContent = ''; }
+  }
+
   /* ── Boot ───────────────────────────────────────────────── */
   function boot() {
     loadEvents();
     initRetrieve();
     wireOverlayControls();
+    initNotify();
   }
 
   // Wait for DOM ready (page is injected into SPA, DOM is ready by the time scripts run)
