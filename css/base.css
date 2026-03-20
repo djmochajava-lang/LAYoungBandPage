@@ -61,6 +61,11 @@
   box-sizing: border-box;
 }
 
+/* Enforce the HTML hidden attribute — author CSS display values (flex, grid, etc.)
+   can override the browser's UA-stylesheet [hidden]{display:none}, which breaks
+   any element that relies on the hidden attribute to stay invisible. */
+[hidden] { display: none !important; }
+
 html,
 body {
   scroll-behavior: smooth;
