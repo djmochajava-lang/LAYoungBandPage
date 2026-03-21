@@ -1932,6 +1932,14 @@
   background: var(--color-bg-dark, #0a0a0a);
   border-bottom: 1px solid rgba(255, 215, 0, 0.12);
 }
+.mg-stories-label {
+  font-family: var(--font-primary, 'Playfair Display', serif);
+  font-size: 0.8rem;
+  color: var(--color-primary, #ffd700);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0 12px 6px;
+}
 .mg-stories-row {
   display: flex;
   gap: 10px;
