@@ -49,6 +49,24 @@
       <div class="mg-sv-nav mg-sv-next" id="mg-sv-next"></div>
     </div>
 
+    <!-- ═══════════ ADMIN EDIT FAB (hidden until authorized) ═══════════ -->
+    <button class="mg-admin-fab" id="mg-admin-fab" aria-label="Edit gallery" style="display:none">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+    </button>
+
+    <!-- ═══════════ ADD CARD PANEL (admin only) ═══════════ -->
+    <div class="mg-admin-add-panel" id="mg-admin-add-panel" style="display:none">
+      <div class="mg-admin-add-inner">
+        <h3>Add Feed Post</h3>
+        <input type="url" id="mg-admin-add-url" placeholder="Image URL" class="mg-admin-input">
+        <input type="text" id="mg-admin-add-caption" placeholder="Caption" maxlength="200" class="mg-admin-input">
+        <div class="mg-admin-add-actions">
+          <button class="mg-admin-btn mg-admin-btn-cancel" id="mg-admin-add-cancel">Cancel</button>
+          <button class="mg-admin-btn mg-admin-btn-save" id="mg-admin-add-save">Add Post</button>
+        </div>
+      </div>
+    </div>
+
     <!-- PAGE FOOTER -->
     <footer class="page-footer">
       <div class="footer-content">

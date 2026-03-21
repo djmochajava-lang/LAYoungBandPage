@@ -2474,6 +2474,131 @@
 }
 @keyframes mgSpin { to { transform: rotate(360deg); } }
 
+/* ── ADMIN: Edit FAB ── */
+.mg-admin-fab {
+  position: fixed;
+  bottom: max(24px, env(safe-area-inset-bottom, 24px));
+  right: 16px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd700, #b8960f);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  color: #000;
+  z-index: 9000;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(255, 215, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.mg-admin-fab:active {
+  transform: scale(0.92);
+}
+.mg-admin-fab.editing {
+  background: linear-gradient(135deg, #e63946, #b02a35);
+  color: #fff;
+}
+
+/* ── ADMIN: Edit mode overlays on feed cards ── */
+.mg-post.mg-edit-mode .mg-post-caption {
+  border: 1px dashed rgba(255, 215, 0, 0.5);
+  border-radius: 6px;
+  padding: 8px;
+  cursor: text;
+}
+.mg-post-edit-actions {
+  display: none;
+  gap: 8px;
+  padding: 8px 12px;
+}
+.mg-post.mg-edit-mode .mg-post-edit-actions {
+  display: flex;
+}
+.mg-admin-btn {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.mg-admin-btn-save {
+  background: #ffd700;
+  color: #000;
+}
+.mg-admin-btn-delete {
+  background: rgba(230, 57, 70, 0.15);
+  color: #e63946;
+  border: 1px solid rgba(230, 57, 70, 0.3);
+}
+.mg-admin-btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: #aaa;
+}
+
+/* ── ADMIN: Add card panel ── */
+.mg-admin-add-panel {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.mg-admin-add-inner {
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  padding: 24px;
+  width: 100%;
+  max-width: 400px;
+}
+.mg-admin-add-inner h3 {
+  color: #ffd700;
+  margin: 0 0 16px;
+  font-size: 1.1rem;
+}
+.mg-admin-input {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+.mg-admin-input:focus {
+  outline: none;
+  border-color: #ffd700;
+}
+.mg-admin-add-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* ── ADMIN: Secret login indicator ── */
+.mg-admin-status {
+  position: fixed;
+  bottom: max(80px, calc(env(safe-area-inset-bottom, 24px) + 60px));
+  right: 16px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #ffd700;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  z-index: 9000;
+  backdrop-filter: blur(4px);
+}
+
 /* === RESPONSIVE === */
 @media (max-width: 768px) {
   .bio-image {

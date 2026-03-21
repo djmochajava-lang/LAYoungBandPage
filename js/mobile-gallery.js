@@ -25,6 +25,7 @@
     buildFeed();
     setupStoryViewer();
     setupFeedViewer();
+    setupSecretLogin();
     console.log('📱 MobileGallery initialized');
   }
 
@@ -476,6 +477,336 @@
         if (idx >= 0) openFeedViewer(idx);
       });
     });
+  }
+
+  // ─── ADMIN: Gallery editing (admin/artist role only) ───
+
+  var _adminUser = null;
+  var _adminDb = null;
+  var _editMode = false;
+  var _secretTaps = 0;
+  var _secretTimer = null;
+
+  function setupSecretLogin() {
+    // Triple-tap on "Reels" label to trigger admin login
+    var label = document.querySelector('.mg-stories-label');
+    if (!label) return;
+
+    label.addEventListener('click', function () {
+      _secretTaps++;
+      clearTimeout(_secretTimer);
+      _secretTimer = setTimeout(function () { _secretTaps = 0; }, 800);
+
+      if (_secretTaps >= 3) {
+        _secretTaps = 0;
+        triggerAdminLogin();
+      }
+    });
+
+    // If user was previously authed or returning from redirect, check role silently
+    var hasAuth = false;
+    var pendingAdmin = false;
+    try { hasAuth = !!localStorage.getItem('layoung-fan-auth'); } catch (e) {}
+    try { pendingAdmin = !!localStorage.getItem('mg-admin-pending'); } catch (e) {}
+    if (hasAuth || pendingAdmin) {
+      loadFirebaseForAdmin(function () {
+        checkAdminRole();
+      });
+    }
+  }
+
+  function loadFirebaseForAdmin(callback) {
+    // Reuse FanPoints loader if available
+    if (typeof FanPoints !== 'undefined' && FanPoints._loadFirebase) {
+      FanPoints._loadFirebase(callback);
+      return;
+    }
+    // Fallback: load directly
+    if (typeof firebase !== 'undefined' && firebase.apps) {
+      callback();
+      return;
+    }
+    var scripts = [
+      'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js',
+      'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js',
+      'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js'
+    ];
+    var loaded = 0;
+    function loadNext() {
+      if (loaded >= scripts.length) { callback(); return; }
+      var s = document.createElement('script');
+      s.src = scripts[loaded];
+      s.onload = function () { loaded++; loadNext(); };
+      document.head.appendChild(s);
+    }
+    loadNext();
+  }
+
+  function triggerAdminLogin() {
+    loadFirebaseForAdmin(function () {
+      if (typeof firebase === 'undefined') return;
+
+      if (!firebase.apps.length) {
+        var config = (typeof window.SITE_CONFIG !== 'undefined') ? window.SITE_CONFIG.firebase : null;
+        if (!config) return;
+        firebase.initializeApp(config);
+      }
+
+      _adminDb = firebase.firestore();
+
+      // Check if already signed in
+      var user = firebase.auth().currentUser;
+      if (user) {
+        _adminUser = user;
+        checkAdminRole();
+        return;
+      }
+
+      // Sign in
+      var provider = new firebase.auth.GoogleAuthProvider();
+      var isMobile = (typeof MobileDetect !== 'undefined' && MobileDetect.isMobile);
+
+      if (isMobile) {
+        try { localStorage.setItem('layoung-fan-auth', '1'); } catch (e) {}
+        try { localStorage.setItem('mg-admin-pending', '1'); } catch (e) {}
+        firebase.auth().signInWithRedirect(provider);
+      } else {
+        firebase.auth().signInWithPopup(provider)
+          .then(function () { checkAdminRole(); })
+          .catch(function (err) {
+            console.warn('Admin sign-in failed:', err.message);
+          });
+      }
+    });
+  }
+
+  function checkAdminRole() {
+    if (typeof firebase === 'undefined') return;
+
+    if (!firebase.apps.length) {
+      var config = (typeof window.SITE_CONFIG !== 'undefined') ? window.SITE_CONFIG.firebase : null;
+      if (!config) return;
+      firebase.initializeApp(config);
+    }
+
+    if (!_adminDb) _adminDb = firebase.firestore();
+
+    firebase.auth().onAuthStateChanged(function (user) {
+      if (!user) {
+        hideAdminUI();
+        return;
+      }
+      _adminUser = user;
+
+      _adminDb.collection('layoung-fans').doc(user.uid).get()
+        .then(function (doc) {
+          var data = doc.exists ? doc.data() : {};
+          var role = data.role || 'fan';
+
+          if (role === 'admin' || role === 'artist') {
+            showAdminUI(user.displayName, role);
+          } else {
+            hideAdminUI();
+            // Clear the pending flag
+            try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
+          }
+        })
+        .catch(function () { hideAdminUI(); });
+    });
+  }
+
+  function showAdminUI(name, role) {
+    var fab = document.getElementById('mg-admin-fab');
+    if (fab) fab.style.display = 'flex';
+
+    // Show small status badge
+    var existing = document.querySelector('.mg-admin-status');
+    if (!existing) {
+      var badge = document.createElement('div');
+      badge.className = 'mg-admin-status';
+      badge.textContent = (role === 'artist' ? '★ ' : '⚙ ') + (name || 'Admin');
+      document.querySelector('.mg-page').appendChild(badge);
+    }
+
+    // Set up FAB click
+    fab.onclick = function () {
+      toggleEditMode();
+    };
+
+    // Set up add panel
+    document.getElementById('mg-admin-add-cancel').onclick = function () {
+      document.getElementById('mg-admin-add-panel').style.display = 'none';
+    };
+    document.getElementById('mg-admin-add-save').onclick = function () {
+      saveNewPost();
+    };
+
+    try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
+  }
+
+  function hideAdminUI() {
+    var fab = document.getElementById('mg-admin-fab');
+    if (fab) fab.style.display = 'none';
+    var badge = document.querySelector('.mg-admin-status');
+    if (badge) badge.remove();
+  }
+
+  function toggleEditMode() {
+    _editMode = !_editMode;
+    var fab = document.getElementById('mg-admin-fab');
+    var posts = document.querySelectorAll('.mg-post');
+
+    if (_editMode) {
+      fab.classList.add('editing');
+
+      // Add edit controls to each feed card
+      posts.forEach(function (post, idx) {
+        post.classList.add('mg-edit-mode');
+
+        // Make caption editable
+        var caption = post.querySelector('.mg-post-caption');
+        if (caption && !caption.hasAttribute('contenteditable')) {
+          caption.setAttribute('contenteditable', 'true');
+        }
+
+        // Add edit action buttons if not already present
+        if (!post.querySelector('.mg-post-edit-actions')) {
+          var editActions = document.createElement('div');
+          editActions.className = 'mg-post-edit-actions';
+          editActions.innerHTML =
+            '<button class="mg-admin-btn mg-admin-btn-save mg-save-caption" data-index="' + idx + '">Save Caption</button>' +
+            '<button class="mg-admin-btn mg-admin-btn-delete mg-delete-post" data-index="' + idx + '">Delete</button>';
+          caption.insertAdjacentElement('afterend', editActions);
+
+          // Bind save caption
+          editActions.querySelector('.mg-save-caption').addEventListener('click', function () {
+            var newCaption = caption.textContent.replace(/^L\.A\.\s*Young\s*/, '').trim();
+            saveCaptionEdit(idx, newCaption);
+          });
+
+          // Bind delete
+          editActions.querySelector('.mg-delete-post').addEventListener('click', function () {
+            deletePost(idx, post);
+          });
+        }
+      });
+
+      // Show add button at top of feed
+      var addBtn = document.getElementById('mg-admin-add-trigger');
+      if (!addBtn) {
+        addBtn = document.createElement('button');
+        addBtn.id = 'mg-admin-add-trigger';
+        addBtn.className = 'mg-admin-btn mg-admin-btn-save';
+        addBtn.style.cssText = 'width:100%;padding:12px;margin:12px 0;border-radius:10px;font-size:1rem;';
+        addBtn.textContent = '+ Add New Post';
+        addBtn.addEventListener('click', function () {
+          document.getElementById('mg-admin-add-panel').style.display = 'flex';
+        });
+        var feed = document.getElementById('mg-feed');
+        feed.parentNode.insertBefore(addBtn, feed);
+      }
+      addBtn.style.display = 'block';
+
+    } else {
+      fab.classList.remove('editing');
+
+      posts.forEach(function (post) {
+        post.classList.remove('mg-edit-mode');
+        var caption = post.querySelector('.mg-post-caption');
+        if (caption) caption.removeAttribute('contenteditable');
+      });
+
+      var addBtn = document.getElementById('mg-admin-add-trigger');
+      if (addBtn) addBtn.style.display = 'none';
+    }
+  }
+
+  function saveCaptionEdit(index, newCaption) {
+    if (!_adminDb || !_adminUser) return;
+
+    // Save to Firestore
+    var docId = 'event_' + String(index).padStart(3, '0');
+    _adminDb.collection('gallery_feed').doc(docId).set({
+      caption: newCaption,
+      updatedBy: _adminUser.uid,
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).then(function () {
+      showAdminToast('Caption saved');
+    }).catch(function (err) {
+      showAdminToast('Error: ' + err.message);
+    });
+  }
+
+  function deletePost(index, postEl) {
+    if (!confirm('Delete this post?')) return;
+    if (!_adminDb || !_adminUser) return;
+
+    var docId = 'event_' + String(index).padStart(3, '0');
+    _adminDb.collection('gallery_feed').doc(docId).set({
+      deleted: true,
+      deletedBy: _adminUser.uid,
+      deletedAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).then(function () {
+      postEl.style.opacity = '0.3';
+      postEl.style.pointerEvents = 'none';
+      showAdminToast('Post deleted');
+    }).catch(function (err) {
+      showAdminToast('Error: ' + err.message);
+    });
+  }
+
+  function saveNewPost() {
+    var url = document.getElementById('mg-admin-add-url').value.trim();
+    var caption = document.getElementById('mg-admin-add-caption').value.trim();
+    if (!url || !caption) { showAdminToast('URL and caption required'); return; }
+    if (!_adminDb || !_adminUser) return;
+
+    _adminDb.collection('gallery_feed').add({
+      src: url,
+      caption: caption,
+      type: 'custom',
+      createdBy: _adminUser.uid,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+      // Add to feed visually
+      var feed = document.getElementById('mg-feed');
+      var post = document.createElement('div');
+      post.className = 'mg-post';
+      post.innerHTML =
+        '<div class="mg-post-header"><span class="mg-post-author">BACKSTAGE</span></div>' +
+        '<div class="mg-post-img"><img src="' + escapeHtml(url) + '" alt="' + escapeHtml(caption) + '" loading="lazy"></div>' +
+        '<div class="mg-post-actions">' +
+          '<button class="mg-post-action mg-like-btn" aria-label="Like">' +
+            '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="currentColor" stroke-width="2"/></svg>' +
+            '<span class="mg-like-count">0</span>' +
+          '</button>' +
+          '<button class="mg-post-action mg-comment-toggle" aria-label="Comment">' +
+            '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<div class="mg-post-caption"><strong>L.A. Young</strong> ' + escapeHtml(caption) + '</div>' +
+        '<div class="mg-post-comments"><div class="mg-comments-list"></div>' +
+          '<div class="mg-comment-input"><input type="text" placeholder="Add a comment..." maxlength="200"><button class="mg-comment-send">Post</button></div></div>';
+
+      feed.insertBefore(post, feed.firstChild);
+      bindPostActions(feed);
+
+      // Clear form and close
+      document.getElementById('mg-admin-add-url').value = '';
+      document.getElementById('mg-admin-add-caption').value = '';
+      document.getElementById('mg-admin-add-panel').style.display = 'none';
+      showAdminToast('Post added');
+    }).catch(function (err) {
+      showAdminToast('Error: ' + err.message);
+    });
+  }
+
+  function showAdminToast(msg) {
+    var toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#ffd700;padding:10px 20px;border-radius:8px;font-size:0.85rem;z-index:99999;border:1px solid rgba(255,215,0,0.3);';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(function () { toast.remove(); }, 2500);
   }
 
   // ─── Expose ───
