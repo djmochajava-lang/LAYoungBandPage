@@ -129,11 +129,32 @@
   }
 
   function navigateStory(dir) {
-    svIndex += dir;
-    if (svIndex >= artistImages.length) svIndex = 0;
-    if (svIndex < 0) svIndex = artistImages.length - 1;
-    showStory();
-    startStoryTimer();
+    var svImg = document.getElementById('mg-sv-img');
+    var exitClass = dir > 0 ? 'mg-sv-exit-left' : 'mg-sv-exit-right';
+    var enterClass = dir > 0 ? 'mg-sv-enter-right' : 'mg-sv-enter-left';
+
+    // Exit animation
+    svImg.classList.add(exitClass);
+
+    setTimeout(function () {
+      svIndex += dir;
+      if (svIndex >= artistImages.length) svIndex = 0;
+      if (svIndex < 0) svIndex = artistImages.length - 1;
+
+      // Set new image + enter position
+      svImg.classList.remove(exitClass);
+      svImg.classList.add(enterClass);
+      showStory();
+
+      // Trigger enter animation
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          svImg.classList.remove(enterClass);
+        });
+      });
+
+      startStoryTimer();
+    }, 350);
   }
 
   function showStory() {
