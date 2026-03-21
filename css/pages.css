@@ -1917,12 +1917,14 @@
   align-items: flex-start !important;
   justify-content: flex-start !important;
   padding: 0 !important;
+  padding-top: 0 !important;
+  margin-top: 0 !important;
 }
 
 /* Inner wrapper — flows naturally inside the .section scroll box */
 .mg-page {
   width: 100%;
-  padding-top: 8px;
+  padding-top: 0;
 }
 
 /* ── STORIES ROW (Facebook-style horizontal squares) — sticky at top ── */
@@ -1930,7 +1932,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  padding: 8px 0 12px;
+  padding: 6px 0 10px;
   background: var(--color-bg-dark, #0a0a0a);
   border-bottom: 1px solid rgba(255, 215, 0, 0.12);
 }
