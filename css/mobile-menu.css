@@ -285,8 +285,12 @@
   padding: 0.5rem 1.5rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.07), inset 0 0 10px rgba(255, 215, 0, 0.05);
-  transition: all 0.35s ease;
+  box-shadow:
+    0 4px 0 rgba(255, 215, 0, 0.4),
+    0 6px 12px rgba(0, 0, 0, 0.4),
+    0 0 10px rgba(255, 255, 255, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  transition: all 0.15s ease;
 }
 
 /* Animated gold shimmer sweep */
@@ -309,12 +313,12 @@
 
 .mobile-menu-game:hover,
 .mobile-menu-game:active {
-  border-color: rgba(255, 255, 255, 0.75);
+  transform: translateY(3px);
   box-shadow:
-    0 0 18px rgba(255, 255, 255, 0.14),
-    0 0 40px rgba(255, 215, 0, 0.1),
-    inset 0 0 16px rgba(255, 215, 0, 0.06);
-  transform: translateY(-2px);
+    0 1px 0 rgba(255, 215, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.3),
+    0 0 10px rgba(255, 255, 255, 0.07),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
   color: #fff !important;
 }
 
