@@ -225,8 +225,7 @@
       // Post header
       var header = document.createElement('div');
       header.className = 'mg-post-header';
-      header.innerHTML = '<span class="mg-post-author">L.A. Young</span>' +
-        '<span class="mg-post-label">' + img.sub + '</span>';
+      header.innerHTML = '<span class="mg-post-author">BACKSTAGE</span>';
 
       // Image
       var imgWrap = document.createElement('div');
