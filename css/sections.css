@@ -494,5 +494,7 @@
 
   .hero {
     background-attachment: scroll;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
