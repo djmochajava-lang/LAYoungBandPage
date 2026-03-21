@@ -2024,7 +2024,7 @@
 /* ── STORY VIEWER (full-screen overlay like IG stories) ── */
 .mg-story-viewer {
   position: fixed;
-  top: 80px;
+  top: 120px;
   left: 0;
   right: 0;
   bottom: 0;
