@@ -38,6 +38,7 @@ const SwipeNavigation = {
     'support',
     'gallery',
     'fanwall',
+    'LAYoungMusicPlayer',
     'contact',
   ],
 
