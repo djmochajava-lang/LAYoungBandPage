@@ -2228,6 +2228,128 @@
   white-space: nowrap;
 }
 
+/* ── FEED VIEWER (full-screen swipeable) ── */
+.mg-feed-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.96);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+.mg-feed-viewer.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.mg-fv-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  font-size: 1.6rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.mg-fv-close:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.mg-fv-counter {
+  position: absolute;
+  top: 20px;
+  left: 16px;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.05em;
+}
+
+.mg-fv-slide {
+  max-width: 100%;
+  max-height: 70vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+.mg-fv-slide img {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+/* Slide exit animations */
+.mg-fv-exit-left {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+.mg-fv-exit-right {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+/* Slide enter animations */
+.mg-fv-enter-left {
+  transform: translateX(-60%);
+  opacity: 0;
+}
+.mg-fv-enter-right {
+  transform: translateX(60%);
+  opacity: 0;
+}
+
+.mg-fv-caption {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  margin-top: 14px;
+  text-align: center;
+  padding: 0 20px;
+  line-height: 1.4;
+}
+.mg-fv-caption strong {
+  color: #fff;
+}
+
+.mg-fv-actions {
+  margin-top: 12px;
+  display: flex;
+  gap: 16px;
+}
+.mg-fv-like {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 8px;
+  transition: color 0.15s, transform 0.15s;
+}
+.mg-fv-like:active {
+  transform: scale(1.3);
+}
+.mg-fv-like.liked {
+  color: var(--color-accent, #e63946);
+}
+.mg-fv-like.liked svg path {
+  fill: var(--color-accent, #e63946);
+  stroke: var(--color-accent, #e63946);
+}
+
 /* Infinite scroll loader */
 .mg-feed-sentinel {
   text-align: center;

@@ -24,6 +24,7 @@
     buildStories();
     buildFeed();
     setupStoryViewer();
+    setupFeedViewer();
     console.log('📱 MobileGallery initialized');
   }
 
@@ -219,6 +220,7 @@
 
     // Bind interactions for new posts
     bindPostActions(feed);
+    bindFeedImageTaps(feed);
   }
 
   function bindPostActions(feed) {
@@ -277,6 +279,125 @@
     var div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
+  }
+
+  // ─── FEED VIEWER (full-screen swipeable post viewer) ───
+
+  var fvIndex = 0;
+  var fvOpen = false;
+  var fvTouchStartX = 0;
+  var fvTouchStartY = 0;
+
+  function setupFeedViewer() {
+    var viewer = document.getElementById('mg-feed-viewer');
+    if (!viewer) return;
+
+    document.getElementById('mg-fv-close').addEventListener('click', closeFeedViewer);
+
+    // Like button in viewer
+    var likeBtn = document.getElementById('mg-fv-like');
+    likeBtn.addEventListener('click', function () {
+      likeBtn.classList.toggle('liked');
+    });
+
+    // Swipe in viewer
+    var slide = document.getElementById('mg-fv-slide');
+    slide.addEventListener('touchstart', function (e) {
+      fvTouchStartX = e.touches[0].clientX;
+      fvTouchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    slide.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - fvTouchStartX;
+      var dy = e.changedTouches[0].clientY - fvTouchStartY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx < 0) navigateFeedViewer(1);   // swipe left = next
+        else navigateFeedViewer(-1);           // swipe right = prev
+      }
+    }, { passive: true });
+
+    // Backdrop close
+    viewer.addEventListener('click', function (e) {
+      if (e.target === viewer) closeFeedViewer();
+    });
+  }
+
+  function openFeedViewer(index) {
+    fvIndex = index;
+    fvOpen = true;
+    var viewer = document.getElementById('mg-feed-viewer');
+    viewer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    showFeedSlide('none');
+  }
+
+  function closeFeedViewer() {
+    fvOpen = false;
+    var viewer = document.getElementById('mg-feed-viewer');
+    viewer.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function navigateFeedViewer(dir) {
+    var newIndex = fvIndex + dir;
+    if (newIndex < 0 || newIndex >= eventImages.length) return;
+
+    var slideDir = dir > 0 ? 'left' : 'right';
+    var slide = document.getElementById('mg-fv-slide');
+
+    // Slide out current
+    slide.classList.add('mg-fv-exit-' + slideDir);
+
+    setTimeout(function () {
+      fvIndex = newIndex;
+
+      // Ensure more images are loaded if needed
+      if (fvIndex >= feedLoaded - 2) loadMoreFeed();
+
+      showFeedSlide(slideDir === 'left' ? 'right' : 'left');
+      slide.classList.remove('mg-fv-exit-' + slideDir);
+    }, 250);
+  }
+
+  function showFeedSlide(enterFrom) {
+    var img = eventImages[fvIndex];
+    var fvImg = document.getElementById('mg-fv-img');
+    var caption = document.getElementById('mg-fv-caption');
+    var counter = document.getElementById('mg-fv-counter');
+    var slide = document.getElementById('mg-fv-slide');
+
+    fvImg.src = img.src;
+    fvImg.alt = img.caption;
+    caption.innerHTML = '<strong>L.A. Young</strong> ' + img.caption;
+    counter.textContent = (fvIndex + 1) + ' / ' + eventImages.length;
+
+    // Reset like state
+    document.getElementById('mg-fv-like').classList.remove('liked');
+
+    // Entrance animation
+    if (enterFrom !== 'none') {
+      slide.classList.add('mg-fv-enter-' + enterFrom);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          slide.classList.remove('mg-fv-enter-' + enterFrom);
+        });
+      });
+    }
+  }
+
+  // ─── Wire up feed image taps to open viewer ───
+
+  function bindFeedImageTaps(feed) {
+    feed.querySelectorAll('.mg-post-img').forEach(function (imgWrap) {
+      if (imgWrap._fvBound) return;
+      imgWrap._fvBound = true;
+      imgWrap.addEventListener('click', function () {
+        var post = imgWrap.closest('.mg-post');
+        var allPosts = feed.querySelectorAll('.mg-post');
+        var idx = Array.prototype.indexOf.call(allPosts, post);
+        if (idx >= 0) openFeedViewer(idx);
+      });
+    });
   }
 
   // ─── Expose ───

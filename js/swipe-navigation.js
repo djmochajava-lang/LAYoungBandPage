@@ -256,7 +256,7 @@ const SwipeNavigation = {
     while (el && el !== document.body) {
       if (el.tagName === 'VIDEO') break;
       // Explicit opt-out for mobile gallery scroll/overlay zones
-      if (el.classList && (el.classList.contains('mg-stories-row') || el.classList.contains('mg-story-viewer'))) {
+      if (el.classList && (el.classList.contains('mg-stories-row') || el.classList.contains('mg-story-viewer') || el.classList.contains('mg-feed-viewer'))) {
         this.inScrollZone = true;
         break;
       }
