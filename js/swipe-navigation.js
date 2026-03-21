@@ -395,8 +395,10 @@ const SwipeNavigation = {
       }
 
       // Scroll section to top so the new page starts at the top
-      var section = container.querySelector('.section, .hero');
+      var section = document.getElementById(targetPage) ||
+                    container.querySelector('.section, .hero');
       if (section) section.scrollTop = 0;
+      window.scrollTo(0, 0);
 
       // Set starting position for slide-in
       container.style.transition = 'none';
