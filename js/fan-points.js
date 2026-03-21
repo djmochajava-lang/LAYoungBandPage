@@ -488,6 +488,8 @@ const FanPoints = {
       var isMobile = (typeof MobileDetect !== 'undefined' && MobileDetect.isMobile);
 
       if (isMobile) {
+        // Set flag before redirect so Firebase loads on return
+        try { localStorage.setItem(this.HAS_AUTH_KEY, '1'); } catch(e) {}
         firebase.auth().signInWithRedirect(provider);
       } else {
         firebase.auth().signInWithPopup(provider)
