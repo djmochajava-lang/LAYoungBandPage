@@ -676,6 +676,7 @@
       if (isMobile) {
         try { localStorage.setItem('layoung-fan-auth', '1'); } catch (e) {}
         try { localStorage.setItem('mg-admin-pending', '1'); } catch (e) {}
+        try { localStorage.setItem('mg-admin-return', 'gallery'); } catch (e) {}
         firebase.auth().signInWithRedirect(provider);
       } else {
         firebase.auth().signInWithPopup(provider)

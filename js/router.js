@@ -119,6 +119,15 @@ const Router = {
       hash = 'gallery';
     }
 
+    // Admin redirect return: go back to gallery after Firebase sign-in
+    try {
+      var adminReturn = localStorage.getItem('mg-admin-return');
+      if (adminReturn) {
+        localStorage.removeItem('mg-admin-return');
+        hash = adminReturn;
+      }
+    } catch (e) {}
+
     const initialPage = hash && this.routes[hash] ? hash : this.defaultPage;
     setTimeout(() => {
       this.navigateTo(initialPage, true);
