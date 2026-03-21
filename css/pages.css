@@ -1923,7 +1923,8 @@
   height: 100%;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-  padding-top: var(--spacing-xl, 60px);
+  box-sizing: border-box;
+  padding-top: 80px;
 }
 
 /* ── STORIES ROW (Facebook-style horizontal squares) — sticky at top ── */
