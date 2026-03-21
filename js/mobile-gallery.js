@@ -336,7 +336,7 @@
       btn.addEventListener('click', function () {
         var caption = btn.getAttribute('data-caption') || '';
         var postIndex = btn.getAttribute('data-post-index') || '0';
-        var pageUrl = 'https://layoungbandpage.com/#gallery-post-' + postIndex;
+        var pageUrl = 'https://layoungbandpage.com/#gallery-post-' + (parseInt(postIndex, 10) + 1);
         if (navigator.share) {
           navigator.share({
             text: caption + '\n\n🎶 Check out L.A. Young — Soul, Jazz & Blues in Full Color!\n\n' + pageUrl
@@ -513,7 +513,7 @@
     var match = hash.match(/gallery-post-(\d+)/);
     if (!match) return;
 
-    var targetIndex = parseInt(match[1], 10);
+    var targetIndex = parseInt(match[1], 10) - 1;
     if (isNaN(targetIndex) || targetIndex < 0 || targetIndex >= eventImages.length) return;
 
     // Load enough posts to include the target
