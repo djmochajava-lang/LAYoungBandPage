@@ -205,10 +205,10 @@
   font-family: Arial, Helvetica, sans-serif;
   letter-spacing: 0.12em;
   font-size: 0.8rem;
-  border: 1.5px solid rgba(255, 215, 0, 0.65);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
   transition: all 0.35s ease;
   white-space: nowrap;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.18), inset 0 0 8px rgba(255, 215, 0, 0.05);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.08), inset 0 0 8px rgba(255, 215, 0, 0.05);
   text-transform: uppercase;
 }
 
@@ -236,12 +236,12 @@
 
 .main-nav .nav-game-btn:hover {
   background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 100%);
-  color: var(--color-primary) !important;
-  border-color: var(--color-primary);
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.75);
   box-shadow:
-    0 0 20px rgba(255, 215, 0, 0.45),
-    0 0 40px rgba(255, 215, 0, 0.12),
-    inset 0 0 12px rgba(255, 215, 0, 0.08);
+    0 0 16px rgba(255, 255, 255, 0.15),
+    0 0 35px rgba(255, 215, 0, 0.1),
+    inset 0 0 12px rgba(255, 215, 0, 0.06);
   transform: translateY(-2px);
 }
 
