@@ -1912,9 +1912,11 @@
 
 /* === MOBILE GALLERY — Stories row + Social feed === */
 
-/* Switch from flex to block so content scrolls naturally */
+/* Keep flex for scroll to work, but flow content top-down */
 .gallery-mobile-section {
-  display: block !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
 }
 
 .mg-page {
@@ -2154,6 +2156,8 @@
   width: 100%;
   height: auto;
   display: block;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
 }
 
 /* Actions bar */
