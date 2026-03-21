@@ -65,7 +65,8 @@
       var d = document.getElementById('mg-debug');
       function log(msg) { d.innerHTML += msg + '<br>'; }
 
-      log('BUILD: v15 — infinite looping stories row');
+      log('BUILD: v16 — infinite stories with append on scroll');
+      log('story thumbs: ' + document.querySelectorAll('.mg-story-thumb').length);
       log('2. artistImages: ' + (typeof artistImages !== 'undefined' ? artistImages.length + ' items' : 'UNDEFINED'));
       log('3. eventImages: ' + (typeof eventImages !== 'undefined' ? eventImages.length + ' items' : 'UNDEFINED'));
       log('4. MobileGallery: ' + (typeof MobileGallery !== 'undefined' ? 'LOADED' : 'UNDEFINED'));

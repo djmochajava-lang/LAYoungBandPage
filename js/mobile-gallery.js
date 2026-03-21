@@ -34,28 +34,23 @@
     var row = document.getElementById('mg-stories-row');
     if (!row) return;
 
-    // Build 3 copies for seamless infinite scroll
+    // Build single set
     var singleSet = '';
     for (var i = 0; i < artistImages.length; i++) {
       var img = artistImages[i];
       singleSet += '<div class="mg-story-thumb" data-index="' + i + '">' +
-        '<img src="' + img.src + '" alt="' + img.caption + '">' +
+        '<img src="' + img.src + '" alt="' + img.caption + '" loading="lazy">' +
         '<span class="mg-story-label">' + img.sub + '</span>' +
       '</div>';
     }
-    row.innerHTML = singleSet + singleSet + singleSet;
 
-    // Start scrolled to the middle set so user can scroll both directions
-    var thumbWidth = 85; // 75px + 10px gap
-    row.scrollLeft = artistImages.length * thumbWidth;
+    // Repeat 5x so the row feels endless (45 thumbs = ~3825px)
+    row.innerHTML = singleSet + singleSet + singleSet + singleSet + singleSet;
 
-    // Infinite scroll: when near edges, jump to middle set
+    // When user scrolls near the end, append more copies
     row.addEventListener('scroll', function () {
-      var setWidth = artistImages.length * thumbWidth;
-      if (row.scrollLeft < thumbWidth) {
-        row.scrollLeft += setWidth;
-      } else if (row.scrollLeft > setWidth * 2) {
-        row.scrollLeft -= setWidth;
+      if (row.scrollLeft > row.scrollWidth - row.clientWidth - 200) {
+        row.insertAdjacentHTML('beforeend', singleSet + singleSet);
       }
     });
 
