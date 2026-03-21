@@ -87,6 +87,12 @@ const Navigation = {
         link.classList.remove('active');
         if (link.getAttribute('href') === `#${current}`) {
           link.classList.add('active');
+          // Also highlight parent dropdown trigger if this is a dropdown child
+          const dropdown = link.closest('.nav-dropdown');
+          if (dropdown) {
+            const trigger = dropdown.querySelector('.nav-dropdown-trigger');
+            if (trigger) trigger.classList.add('active');
+          }
         }
       });
     };

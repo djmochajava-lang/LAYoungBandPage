@@ -115,6 +115,10 @@
   color: var(--color-primary);
 }
 
+.main-nav a.active::after {
+  width: 0;
+}
+
 /* === NAV DROPDOWN (Gallery → Photos / Videos) === */
 .nav-dropdown {
   position: relative;
@@ -174,6 +178,15 @@
 }
 
 .nav-dropdown-menu a:hover::after {
+  width: calc(100% - 1rem);
+}
+
+.nav-dropdown-menu a.active {
+  color: var(--color-primary);
+  background: rgba(255, 215, 0, 0.08);
+}
+
+.nav-dropdown-menu a.active::after {
   width: calc(100% - 1rem);
 }
 
