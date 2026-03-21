@@ -27,6 +27,7 @@
     setupFeedViewer();
     setupPageShare();
     setupSecretLogin();
+    scrollToSharedPost();
     console.log('📱 MobileGallery initialized');
   }
 
@@ -494,6 +495,38 @@
     });
   }
 
+  // ─── DEEP LINK: scroll to shared post ───
+
+  function scrollToSharedPost() {
+    var hash = window.location.hash || '';
+    var match = hash.match(/[?&]post=(\d+)/);
+    if (!match) return;
+
+    var targetIndex = parseInt(match[1], 10);
+    if (isNaN(targetIndex) || targetIndex < 0 || targetIndex >= eventImages.length) return;
+
+    // Load enough posts to include the target
+    while (feedLoaded <= targetIndex) {
+      loadMoreFeed();
+    }
+
+    // Scroll to the post and highlight it
+    setTimeout(function () {
+      var posts = document.querySelectorAll('#mg-feed .mg-post');
+      var targetPost = posts[targetIndex];
+      if (!targetPost) return;
+
+      targetPost.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Brief gold highlight
+      targetPost.style.transition = 'box-shadow 0.3s ease';
+      targetPost.style.boxShadow = '0 0 0 2px #ffd700, 0 0 20px rgba(255, 215, 0, 0.3)';
+      setTimeout(function () {
+        targetPost.style.boxShadow = '';
+      }, 2500);
+    }, 300);
+  }
+
   // ─── SHARING (native share sheet) ───
 
   function shareContent(title, text, url) {
@@ -507,7 +540,12 @@
   }
 
   function shareImage(imgSrc, caption) {
-    var pageUrl = window.location.origin + '/#gallery';
+    // Find the post index from the image src
+    var postIndex = 0;
+    for (var i = 0; i < eventImages.length; i++) {
+      if (eventImages[i].src === imgSrc) { postIndex = i; break; }
+    }
+    var pageUrl = window.location.origin + '/#gallery?post=' + postIndex;
     shareContent(
       'L.A. Young Band Page',
       caption + '\n\n🎶 Check out L.A. Young — Soul, Jazz & Blues in Full Color!\n' + pageUrl,
