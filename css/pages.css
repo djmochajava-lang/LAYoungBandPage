@@ -1912,6 +1912,13 @@
 
 /* === MOBILE GALLERY — Stories row + Social feed === */
 
+/* Override section flex centering — content must start at top to scroll */
+.gallery-mobile-section {
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  padding: 0 !important;
+}
+
 /* Inner wrapper — flows naturally inside the .section scroll box */
 .mg-page {
   width: 100%;
@@ -1939,10 +1946,10 @@
 .mg-stories-row::-webkit-scrollbar { display: none; }
 
 .mg-story-thumb {
-  flex: 0 0 80px;
-  width: 80px;
-  height: 80px;
-  border-radius: 12px;
+  flex: 0 0 70px;
+  width: 70px;
+  height: 100px;
+  border-radius: 10px;
   overflow: hidden;
   position: relative;
   cursor: pointer;
