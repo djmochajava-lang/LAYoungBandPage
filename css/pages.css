@@ -2233,14 +2233,16 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.96);
+  background: #000;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.25s ease, visibility 0.25s ease;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .mg-feed-viewer.open {
   opacity: 1;
@@ -2279,19 +2281,13 @@
 }
 
 .mg-fv-slide {
-  max-width: 100%;
-  max-height: 70vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 8px;
+  width: 100%;
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 .mg-fv-slide img {
-  max-width: 100%;
-  max-height: 70vh;
-  object-fit: contain;
-  border-radius: 4px;
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 /* Slide exit animations */
@@ -2317,9 +2313,7 @@
 .mg-fv-caption {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.9rem;
-  margin-top: 14px;
-  text-align: center;
-  padding: 0 20px;
+  padding: 12px 14px 4px;
   line-height: 1.4;
 }
 .mg-fv-caption strong {
@@ -2327,7 +2321,7 @@
 }
 
 .mg-fv-actions {
-  margin-top: 12px;
+  padding: 4px 14px;
   display: flex;
   gap: 16px;
 }
