@@ -254,7 +254,6 @@
 
     // Bind interactions for new posts
     bindPostActions(feed);
-    bindFeedImageTaps(feed);
   }
 
   function bindPostActions(feed) {
