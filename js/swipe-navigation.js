@@ -280,9 +280,12 @@ const SwipeNavigation = {
     if (this.isAnimating) return;
     if (this.inScrollZone) return;
 
+    // Disable all horizontal page-swiping on mobile gallery — it has its own rules
+    var currentPage = window.location.hash.substring(1) || 'home';
+    if (currentPage === 'gallery' && window.matchMedia('(max-width: 768px)').matches) return;
+
     var diffX = this.touchEndX - this.touchStartX;
     var diffY = this.touchEndY - this.touchStartY;
-    var currentPage = window.location.hash.substring(1) || 'home';
 
     var absDiffX = Math.abs(diffX);
     var absDiffY = Math.abs(diffY);
