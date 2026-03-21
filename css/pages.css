@@ -2234,15 +2234,9 @@
   inset: 0;
   z-index: 9999;
   background: #000;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.25s ease, visibility 0.25s ease;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
 }
 .mg-feed-viewer.open {
   opacity: 1;
@@ -2253,7 +2247,7 @@
   position: absolute;
   top: 14px;
   right: 14px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.4);
   border: none;
   color: #fff;
   font-size: 1.6rem;
@@ -2266,6 +2260,7 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 .mg-fv-close:active {
   background: rgba(255, 255, 255, 0.2);
@@ -2276,17 +2271,21 @@
   top: 20px;
   left: 16px;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.7);
   letter-spacing: 0.05em;
+  z-index: 5;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.6);
 }
 
 .mg-fv-slide {
-  width: 100%;
+  position: absolute;
+  inset: 0;
   transition: transform 0.25s ease, opacity 0.25s ease;
 }
 .mg-fv-slide img {
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: cover;
   display: block;
 }
 
@@ -2311,19 +2310,28 @@
 }
 
 .mg-fv-caption {
-  color: rgba(255, 255, 255, 0.8);
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  right: 0;
+  color: #fff;
   font-size: 0.9rem;
-  padding: 12px 14px 4px;
+  padding: 30px 14px 8px;
   line-height: 1.4;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.6));
+  z-index: 5;
 }
 .mg-fv-caption strong {
   color: #fff;
 }
 
 .mg-fv-actions {
-  padding: 4px 14px;
+  position: absolute;
+  bottom: 16px;
+  left: 14px;
   display: flex;
   gap: 16px;
+  z-index: 5;
 }
 .mg-fv-like {
   background: none;
