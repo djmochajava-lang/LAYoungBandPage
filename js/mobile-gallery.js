@@ -331,11 +331,8 @@
       btn._mgBound = true;
       btn.addEventListener('click', function () {
         var caption = btn.getAttribute('data-caption') || '';
-        shareContent(
-          'L.A. Young — ' + caption,
-          '🎶 Check out this photo from L.A. Young Band Page!',
-          window.location.origin + '/#gallery'
-        );
+        var imgSrc = btn.getAttribute('data-src') || '';
+        shareImage(imgSrc, caption);
       });
     });
 
@@ -504,9 +501,45 @@
       navigator.share({ title: title, text: text, url: url })
         .catch(function () { /* user cancelled — ignore */ });
     } else {
-      // Desktop fallback: copy link to clipboard
       copyToClipboard(url);
       showAdminToast('Link copied to clipboard');
+    }
+  }
+
+  function shareImage(imgSrc, caption) {
+    var fullUrl = new URL(imgSrc, window.location.href).href;
+    var title = 'L.A. Young — ' + caption;
+    var text = caption + '\n\n🎶 L.A. Young Band Page';
+
+    // Try to share the actual image file
+    if (navigator.share && navigator.canShare) {
+      fetch(fullUrl)
+        .then(function (res) { return res.blob(); })
+        .then(function (blob) {
+          var ext = fullUrl.split('.').pop().split('?')[0].toLowerCase();
+          var mime = ext === 'png' ? 'image/png' : 'image/jpeg';
+          var file = new File([blob], 'la-young-' + Date.now() + '.' + ext, { type: mime });
+          var shareData = { title: title, text: text, files: [file] };
+
+          if (navigator.canShare(shareData)) {
+            return navigator.share(shareData);
+          } else {
+            // Device can't share files — fall back to text + URL
+            return navigator.share({ title: title, text: text, url: fullUrl });
+          }
+        })
+        .catch(function () {
+          // Fetch failed or share cancelled — try text-only
+          if (navigator.share) {
+            navigator.share({ title: title, text: text, url: fullUrl }).catch(function () {});
+          }
+        });
+    } else if (navigator.share) {
+      navigator.share({ title: title, text: text, url: fullUrl })
+        .catch(function () {});
+    } else {
+      copyToClipboard(fullUrl);
+      showAdminToast('Image link copied');
     }
   }
 
