@@ -2157,9 +2157,10 @@
 }
 
 .mg-post {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  padding-bottom: 4px;
-  margin-bottom: 12px;
+  border: 1px solid var(--color-primary, #ffd700);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 0 10px 14px;
 }
 
 .mg-post-header {
