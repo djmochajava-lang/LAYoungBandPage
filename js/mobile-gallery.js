@@ -71,6 +71,7 @@
 
   var svTimer = null;
   var svIndex = 0;
+  var svAnimating = false;
 
   var svTouchStartX = 0;
   var svTouchStartY = 0;
@@ -88,6 +89,7 @@
     }, { passive: true });
 
     viewer.addEventListener('touchend', function (e) {
+      if (svAnimating) return;
       var dx = e.changedTouches[0].clientX - svTouchStartX;
       var dy = e.changedTouches[0].clientY - svTouchStartY;
       if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
@@ -140,6 +142,9 @@
   }
 
   function navigateStory(dir) {
+    if (svAnimating) return;
+    svAnimating = true;
+
     var svImg = document.getElementById('mg-sv-img');
     var exitClass = dir > 0 ? 'mg-sv-exit-left' : 'mg-sv-exit-right';
     var enterClass = dir > 0 ? 'mg-sv-enter-right' : 'mg-sv-enter-left';
@@ -161,6 +166,7 @@
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
           svImg.classList.remove(enterClass);
+          svAnimating = false;
         });
       });
 
