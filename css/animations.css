@@ -365,6 +365,12 @@
   transform: scale(1.05);
 }
 
+/* === PLAYER BUTTON SHIMMER === */
+@keyframes playerShimmer {
+  0%   { left: -75%; }
+  100% { left: 125%; }
+}
+
 /* === REDUCED MOTION === */
 @media (prefers-reduced-motion: reduce) {
   *,

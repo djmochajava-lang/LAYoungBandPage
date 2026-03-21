@@ -193,17 +193,41 @@
   cursor: default;
 }
 
-/* === GAME BUTTON IN HEADER NAV === */
+/* === PLAYER BUTTON IN HEADER NAV === */
 .main-nav .nav-game-btn {
-  padding: 0.4rem 1rem;
-  background: linear-gradient(135deg, #e8751a, #d4681a);
-  color: white !important;
+  position: relative;
+  overflow: hidden;
+  padding: 0.45rem 1.1rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #0d0d1a 100%);
+  color: var(--color-primary) !important;
   border-radius: 20px;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  border: 2px solid #ffd700;
-  transition: all 0.3s ease;
+  font-weight: 600;
+  font-family: var(--font-primary);
+  letter-spacing: 0.12em;
+  font-size: 0.8rem;
+  border: 1.5px solid rgba(255, 215, 0, 0.65);
+  transition: all 0.35s ease;
   white-space: nowrap;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.18), inset 0 0 8px rgba(255, 215, 0, 0.05);
+  text-transform: uppercase;
+}
+
+/* Animated gold shimmer sweep */
+.main-nav .nav-game-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255, 215, 0, 0.18) 50%,
+    transparent 100%
+  );
+  animation: playerShimmer 2.8s ease-in-out infinite;
+  pointer-events: none;
 }
 
 .main-nav .nav-game-btn::after {
@@ -211,10 +235,14 @@
 }
 
 .main-nav .nav-game-btn:hover {
-  background: linear-gradient(135deg, #ffd700, #e8751a);
-  color: #1a1a2e !important;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-  transform: scale(1.05);
+  background: linear-gradient(135deg, #1a1a2e 0%, #0a0a0a 100%);
+  color: var(--color-primary) !important;
+  border-color: var(--color-primary);
+  box-shadow:
+    0 0 20px rgba(255, 215, 0, 0.45),
+    0 0 40px rgba(255, 215, 0, 0.12),
+    inset 0 0 12px rgba(255, 215, 0, 0.08);
+  transform: translateY(-2px);
 }
 
 /* === EPK BUTTON IN HEADER === */
