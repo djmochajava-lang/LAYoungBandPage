@@ -120,6 +120,8 @@
     var viewer = document.getElementById('mg-story-viewer');
     viewer.classList.add('open');
     document.body.style.overflow = 'hidden';
+    var banner = document.querySelector('.top-banner');
+    if (banner) banner.style.display = 'none';
     showStory();
     startStoryTimer();
   }
@@ -129,6 +131,8 @@
     var viewer = document.getElementById('mg-story-viewer');
     viewer.classList.remove('open');
     document.body.style.overflow = '';
+    var banner = document.querySelector('.top-banner');
+    if (banner) banner.style.display = '';
   }
 
   function navigateStory(dir) {
