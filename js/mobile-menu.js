@@ -76,6 +76,15 @@ const MobileMenu = {
       });
     }
 
+    // Close menu when Player button is clicked
+    var playerBtn = document.querySelector('.mobile-menu-game');
+    if (playerBtn) {
+      playerBtn.addEventListener('click', () => {
+        console.log('🎵 Player button clicked - Closing menu');
+        this.close();
+      });
+    }
+
     // Close menu when clicking backdrop
     if (this.menu) {
       this.menu.addEventListener('click', (e) => {
