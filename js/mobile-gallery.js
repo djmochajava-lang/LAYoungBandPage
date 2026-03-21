@@ -988,7 +988,7 @@
     if (!banner) {
       banner = document.createElement('div');
       banner.id = 'mg-debug-banner';
-      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ffd700;color:#000;padding:12px 16px;font-size:0.85rem;font-weight:bold;z-index:999999;text-align:center;font-family:monospace;max-height:40vh;overflow-y:auto;';
+      banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;background:#ffd700;color:#000;padding:12px 16px;font-size:0.75rem;font-weight:bold;z-index:999999;text-align:left;font-family:monospace;max-height:30vh;overflow-y:auto;';
       document.body.appendChild(banner);
     }
     banner.textContent = (banner.textContent ? banner.textContent + ' → ' : '') + msg;
