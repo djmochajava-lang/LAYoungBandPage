@@ -41,18 +41,32 @@
     </footer>
   </div>
 
-  <!-- Init mobile gallery (executed by page-loader's executeInlineScripts) -->
+  <!-- Init mobile gallery + on-screen debug (remove after testing) -->
+  <div id="mg-debug" style="position:fixed;bottom:60px;left:8px;right:8px;background:rgba(0,0,0,0.9);color:#0f0;font-family:monospace;font-size:11px;padding:10px;border-radius:8px;z-index:99999;max-height:40vh;overflow-y:auto;border:1px solid #0f0"></div>
   <script>
     (function() {
-      console.log('📱 gallery-mobile.html inline script running');
-      console.log('  artistImages defined:', typeof artistImages !== 'undefined');
-      console.log('  eventImages defined:', typeof eventImages !== 'undefined');
-      console.log('  MobileGallery defined:', typeof MobileGallery !== 'undefined');
-      console.log('  mg-stories-row found:', !!document.getElementById('mg-stories-row'));
+      var d = document.getElementById('mg-debug');
+      function log(msg) { d.innerHTML += msg + '<br>'; }
+
+      log('1. Inline script running');
+      log('2. artistImages: ' + (typeof artistImages !== 'undefined' ? artistImages.length + ' items' : 'UNDEFINED'));
+      log('3. eventImages: ' + (typeof eventImages !== 'undefined' ? eventImages.length + ' items' : 'UNDEFINED'));
+      log('4. MobileGallery: ' + (typeof MobileGallery !== 'undefined' ? 'LOADED' : 'UNDEFINED'));
+      log('5. stories-row element: ' + (document.getElementById('mg-stories-row') ? 'FOUND' : 'NOT FOUND'));
+      log('6. feed element: ' + (document.getElementById('mg-feed') ? 'FOUND' : 'NOT FOUND'));
+      log('7. screen width: ' + window.innerWidth + 'px');
+
       if (typeof MobileGallery !== 'undefined') {
-        MobileGallery.init();
+        try {
+          MobileGallery.init();
+          log('8. MobileGallery.init() called OK');
+          log('9. stories count: ' + document.querySelectorAll('.mg-story-thumb').length);
+          log('10. feed posts: ' + document.querySelectorAll('.mg-post').length);
+        } catch(e) {
+          log('ERROR: ' + e.message);
+        }
       } else {
-        console.error('MobileGallery not loaded!');
+        log('ERROR: MobileGallery not loaded - check js/mobile-gallery.js');
       }
     })();
   </script>
