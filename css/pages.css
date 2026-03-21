@@ -2184,7 +2184,8 @@
   width: 100%;
   height: auto;
   display: block;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
   object-position: top;
   object-fit: cover;
 }
