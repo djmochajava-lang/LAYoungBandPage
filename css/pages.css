@@ -1948,9 +1948,9 @@
 .mg-stories-row::-webkit-scrollbar { display: none; }
 
 .mg-story-thumb {
-  flex: 0 0 70px;
-  width: 70px;
-  height: 100px;
+  flex: 0 0 75px;
+  width: 75px;
+  height: 130px;
   border-radius: 10px;
   overflow: hidden;
   position: relative;
