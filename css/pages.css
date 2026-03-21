@@ -1976,6 +1976,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top;
   display: block;
 }
 /* Liked state — gold glow */
@@ -2183,6 +2184,7 @@
   height: auto;
   display: block;
   aspect-ratio: 4 / 3;
+  object-position: top;
   object-fit: cover;
 }
 
