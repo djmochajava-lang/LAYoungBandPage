@@ -336,12 +336,15 @@
       btn.addEventListener('click', function () {
         var caption = btn.getAttribute('data-caption') || '';
         var postIndex = btn.getAttribute('data-post-index') || '0';
-        var pageUrl = window.location.origin + '/#gallery-post-' + postIndex;
-        shareContent(
-          'L.A. Young Band Page',
-          caption + '\n\n🎶 Check out L.A. Young — Soul, Jazz & Blues in Full Color!',
-          pageUrl
-        );
+        var pageUrl = 'https://layoungbandpage.com/#gallery-post-' + postIndex;
+        if (navigator.share) {
+          navigator.share({
+            text: caption + '\n\n🎶 Check out L.A. Young — Soul, Jazz & Blues in Full Color!\n\n' + pageUrl
+          }).catch(function () {});
+        } else {
+          copyToClipboard(pageUrl);
+          showAdminToast('Link copied');
+        }
       });
     });
 
