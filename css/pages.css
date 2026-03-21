@@ -1924,7 +1924,7 @@
 /* Inner wrapper — flows naturally inside the .section scroll box */
 .mg-page {
   width: 100%;
-  padding-top: 70px; /* clear the fixed top-banner header */
+  padding-top: 56px; /* clear fixed top-banner on mobile */
 }
 
 /* ── STORIES ROW (Facebook-style horizontal squares) — sticky at top ── */

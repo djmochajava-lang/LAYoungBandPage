@@ -48,7 +48,9 @@
       var d = document.getElementById('mg-debug');
       function log(msg) { d.innerHTML += msg + '<br>'; }
 
-      log('BUILD: v3 — stories below banner, 70px top pad');
+      log('BUILD: v4 — 56px pad, story viewer swipe fix');
+      var banner = document.querySelector('.top-banner');
+      log('banner height: ' + (banner ? banner.offsetHeight + 'px' : 'not found'));
       log('2. artistImages: ' + (typeof artistImages !== 'undefined' ? artistImages.length + ' items' : 'UNDEFINED'));
       log('3. eventImages: ' + (typeof eventImages !== 'undefined' ? eventImages.length + ' items' : 'UNDEFINED'));
       log('4. MobileGallery: ' + (typeof MobileGallery !== 'undefined' ? 'LOADED' : 'UNDEFINED'));

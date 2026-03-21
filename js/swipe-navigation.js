@@ -255,6 +255,11 @@ const SwipeNavigation = {
     var el = e.target;
     while (el && el !== document.body) {
       if (el.tagName === 'VIDEO') break;
+      // Explicit opt-out for mobile gallery scroll/overlay zones
+      if (el.classList && (el.classList.contains('mg-stories-row') || el.classList.contains('mg-story-viewer'))) {
+        this.inScrollZone = true;
+        break;
+      }
       var style = window.getComputedStyle(el);
       var overflowX = style.getPropertyValue('overflow-x');
       if ((overflowX === 'auto' || overflowX === 'scroll') && el.scrollWidth > el.clientWidth) {
