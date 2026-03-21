@@ -2024,13 +2024,13 @@
 /* ── STORY VIEWER (full-screen overlay like IG stories) ── */
 .mg-story-viewer {
   position: fixed;
-  top: 0;
+  top: auto;
   left: 0;
   right: 0;
   bottom: 0;
+  height: calc(100vh - 80px);
   z-index: 10000;
   background: #000;
-  border-top: 10px solid #ffd700;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.2s ease, visibility 0.2s ease;
