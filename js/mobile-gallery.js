@@ -54,23 +54,13 @@
       }
     });
 
-    // Single tap = like, double tap = open story viewer
-    var lastTapTime = 0;
+    // Tap to open story viewer
     row.addEventListener('click', function (e) {
       var thumb = e.target.closest('.mg-story-thumb');
-      if (!thumb) return;
-
-      var now = Date.now();
-      if (now - lastTapTime < 350) {
-        // Double tap — open story viewer
+      if (thumb) {
         var idx = parseInt(thumb.getAttribute('data-index'), 10);
         openStoryViewer(idx);
-      } else {
-        // Single tap — like with heart animation
-        thumb.classList.toggle('liked');
-        showThumbHeart(thumb);
       }
-      lastTapTime = now;
     });
   }
 
@@ -79,21 +69,47 @@
   var svTimer = null;
   var svIndex = 0;
 
+  var svTouchStartX = 0;
+  var svTouchStartY = 0;
+
   function setupStoryViewer() {
     var viewer = document.getElementById('mg-story-viewer');
     if (!viewer) return;
 
     document.getElementById('mg-sv-close').addEventListener('click', closeStoryViewer);
 
-    // Tap left/right halves to navigate
-    document.getElementById('mg-sv-prev').addEventListener('click', function () {
-      clearTimeout(svTimer);
-      navigateStory(-1);
+    // Swipe left/right to navigate
+    viewer.addEventListener('touchstart', function (e) {
+      svTouchStartX = e.touches[0].clientX;
+      svTouchStartY = e.touches[0].clientY;
+    }, { passive: true });
+
+    viewer.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - svTouchStartX;
+      var dy = e.changedTouches[0].clientY - svTouchStartY;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        clearTimeout(svTimer);
+        if (dx < 0) navigateStory(1);   // swipe left = next
+        else navigateStory(-1);           // swipe right = prev
+      }
+    }, { passive: true });
+
+    // Tap anywhere on image = heart
+    var svImg = document.getElementById('mg-sv-img');
+    svImg.addEventListener('click', function (e) {
+      showStoryHeart(e.clientX, e.clientY);
     });
-    document.getElementById('mg-sv-next').addEventListener('click', function () {
-      clearTimeout(svTimer);
-      navigateStory(1);
-    });
+  }
+
+  function showStoryHeart(x, y) {
+    var viewer = document.getElementById('mg-story-viewer');
+    var heart = document.createElement('div');
+    heart.className = 'mg-sv-heart';
+    heart.textContent = '\u2764';
+    heart.style.left = x + 'px';
+    heart.style.top = y + 'px';
+    viewer.appendChild(heart);
+    setTimeout(function () { heart.remove(); }, 800);
   }
 
   function openStoryViewer(index) {

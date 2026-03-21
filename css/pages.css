@@ -2091,16 +2091,22 @@
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.7);
 }
 /* Tap zones: left half = prev, right half = next */
-.mg-sv-nav {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 40%;
-  z-index: 5;
-  cursor: pointer;
+/* Heart animation on tap in story viewer */
+.mg-sv-heart {
+  position: fixed;
+  font-size: 3rem;
+  color: var(--color-accent, #e63946);
+  pointer-events: none;
+  z-index: 20;
+  transform: translate(-50%, -50%) scale(0);
+  animation: mgSvHeart 0.7s ease-out forwards;
+  filter: drop-shadow(0 0 8px rgba(230, 57, 70, 0.6));
 }
-.mg-sv-prev { left: 0; }
-.mg-sv-next { right: 0; }
+@keyframes mgSvHeart {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  40%  { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
+  100% { transform: translate(-50%, -80%) scale(1.6); opacity: 0; }
+}
 
 /* ── SOCIAL FEED (full-width images + comments) ── */
 .mg-feed-label {
