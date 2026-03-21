@@ -507,40 +507,12 @@
   }
 
   function shareImage(imgSrc, caption) {
-    var fullUrl = new URL(imgSrc, window.location.href).href;
-    var title = 'L.A. Young — ' + caption;
-    var text = caption + '\n\n🎶 L.A. Young Band Page';
-
-    // Try to share the actual image file
-    if (navigator.share && navigator.canShare) {
-      fetch(fullUrl)
-        .then(function (res) { return res.blob(); })
-        .then(function (blob) {
-          var ext = fullUrl.split('.').pop().split('?')[0].toLowerCase();
-          var mime = ext === 'png' ? 'image/png' : 'image/jpeg';
-          var file = new File([blob], 'la-young-' + Date.now() + '.' + ext, { type: mime });
-          var shareData = { title: title, text: text, files: [file] };
-
-          if (navigator.canShare(shareData)) {
-            return navigator.share(shareData);
-          } else {
-            // Device can't share files — fall back to text + URL
-            return navigator.share({ title: title, text: text, url: fullUrl });
-          }
-        })
-        .catch(function () {
-          // Fetch failed or share cancelled — try text-only
-          if (navigator.share) {
-            navigator.share({ title: title, text: text, url: fullUrl }).catch(function () {});
-          }
-        });
-    } else if (navigator.share) {
-      navigator.share({ title: title, text: text, url: fullUrl })
-        .catch(function () {});
-    } else {
-      copyToClipboard(fullUrl);
-      showAdminToast('Image link copied');
-    }
+    var pageUrl = window.location.origin + '/#gallery';
+    shareContent(
+      'L.A. Young Band Page',
+      caption + '\n\n🎶 Check out L.A. Young — Soul, Jazz & Blues in Full Color!\n' + pageUrl,
+      pageUrl
+    );
   }
 
   function copyToClipboard(text) {
