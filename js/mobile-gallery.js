@@ -768,30 +768,57 @@
       posts.forEach(function (post, idx) {
         post.classList.add('mg-edit-mode');
 
-        // Make caption editable
         var caption = post.querySelector('.mg-post-caption');
-        if (caption && !caption.hasAttribute('contenteditable')) {
-          caption.setAttribute('contenteditable', 'true');
-        }
 
-        // Add edit action buttons in the header if not already present
+        // Add Edit button in header
         var header = post.querySelector('.mg-post-header');
-        if (header && !header.querySelector('.mg-post-edit-actions')) {
-          var editActions = document.createElement('div');
-          editActions.className = 'mg-post-edit-actions';
-          editActions.innerHTML =
-            '<button class="mg-admin-btn mg-admin-btn-save mg-save-caption" data-index="' + idx + '">Save</button>' +
-            '<button class="mg-admin-btn mg-admin-btn-delete mg-delete-post" data-index="' + idx + '">Delete</button>';
-          header.appendChild(editActions);
+        if (header && !header.querySelector('.mg-edit-btn')) {
+          var editBtn = document.createElement('button');
+          editBtn.className = 'mg-admin-btn mg-admin-btn-edit mg-edit-btn';
+          editBtn.textContent = 'Edit';
+          header.appendChild(editBtn);
 
-          // Bind save caption
-          editActions.querySelector('.mg-save-caption').addEventListener('click', function () {
+          // Save bar (hidden until Edit is tapped)
+          var saveBar = document.createElement('div');
+          saveBar.className = 'mg-post-save-bar';
+          saveBar.style.display = 'none';
+          saveBar.innerHTML =
+            '<button class="mg-admin-btn mg-admin-btn-save mg-save-caption">Save</button>' +
+            '<button class="mg-admin-btn mg-admin-btn-cancel mg-cancel-edit">Cancel</button>';
+          caption.insertAdjacentElement('afterend', saveBar);
+
+          // Delete at bottom of card
+          var deleteWrap = document.createElement('div');
+          deleteWrap.className = 'mg-post-delete-wrap';
+          deleteWrap.innerHTML = '<button class="mg-admin-btn mg-admin-btn-delete mg-delete-post">Delete Post</button>';
+          post.appendChild(deleteWrap);
+
+          // Edit button: enable caption editing
+          editBtn.addEventListener('click', function () {
+            caption.setAttribute('contenteditable', 'true');
+            caption.focus();
+            saveBar.style.display = 'flex';
+            editBtn.style.display = 'none';
+          });
+
+          // Save caption
+          saveBar.querySelector('.mg-save-caption').addEventListener('click', function () {
             var newCaption = caption.textContent.replace(/^L\.A\.\s*Young\s*/, '').trim();
+            caption.removeAttribute('contenteditable');
+            saveBar.style.display = 'none';
+            editBtn.style.display = '';
             saveCaptionEdit(idx, newCaption);
           });
 
-          // Bind delete
-          editActions.querySelector('.mg-delete-post').addEventListener('click', function () {
+          // Cancel edit
+          saveBar.querySelector('.mg-cancel-edit').addEventListener('click', function () {
+            caption.removeAttribute('contenteditable');
+            saveBar.style.display = 'none';
+            editBtn.style.display = '';
+          });
+
+          // Delete
+          deleteWrap.querySelector('.mg-delete-post').addEventListener('click', function () {
             deletePost(idx, post);
           });
         }
@@ -820,6 +847,11 @@
         post.classList.remove('mg-edit-mode');
         var caption = post.querySelector('.mg-post-caption');
         if (caption) caption.removeAttribute('contenteditable');
+        // Reset edit state on each card
+        var saveBar = post.querySelector('.mg-post-save-bar');
+        var editBtn = post.querySelector('.mg-edit-btn');
+        if (saveBar) saveBar.style.display = 'none';
+        if (editBtn) editBtn.style.display = '';
       });
 
       var addBtn = document.getElementById('mg-admin-add-trigger');

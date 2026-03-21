@@ -2519,19 +2519,38 @@
 }
 
 /* ── ADMIN: Edit mode overlays on feed cards ── */
-.mg-post.mg-edit-mode .mg-post-caption {
+.mg-post.mg-edit-mode .mg-post-caption[contenteditable="true"] {
   border: 1px dashed rgba(255, 215, 0, 0.5);
   border-radius: 6px;
   padding: 8px;
   cursor: text;
 }
-.mg-post-edit-actions {
+.mg-edit-btn,
+.mg-post-edit-actions,
+.mg-post-save-bar,
+.mg-post-delete-wrap {
   display: none;
-  gap: 6px;
-  align-items: center;
 }
-.mg-post.mg-edit-mode .mg-post-edit-actions {
+.mg-post.mg-edit-mode .mg-edit-btn {
+  display: inline-block;
+}
+.mg-post.mg-edit-mode .mg-post-delete-wrap {
   display: flex;
+  justify-content: center;
+  padding: 12px 14px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 8px;
+}
+.mg-admin-btn-edit {
+  background: rgba(255, 215, 0, 0.15);
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  font-size: 0.75rem;
+  padding: 4px 12px;
+}
+.mg-post-save-bar {
+  gap: 8px;
+  padding: 8px 14px;
 }
 .mg-admin-btn {
   padding: 6px 14px;
