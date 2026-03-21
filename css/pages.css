@@ -1912,19 +1912,15 @@
 
 /* === MOBILE GALLERY — Stories row + Social feed === */
 
-/* Override section flex centering — content must start at top to scroll */
+/* Let the section system handle positioning like every other page.
+   Only override what's needed: start content at top instead of centering. */
 .gallery-mobile-section {
   align-items: flex-start !important;
   justify-content: flex-start !important;
-  padding: 0 !important;
-  padding-top: 0 !important;
-  margin-top: 0 !important;
 }
 
-/* Inner wrapper — flows naturally inside the .section scroll box */
 .mg-page {
   width: 100%;
-  padding-top: 56px; /* clear fixed top-banner on mobile */
 }
 
 /* ── STORIES ROW (Facebook-style horizontal squares) — sticky at top ── */
