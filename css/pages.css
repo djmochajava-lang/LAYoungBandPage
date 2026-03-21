@@ -2023,7 +2023,10 @@
 /* ── STORY VIEWER (full-screen overlay like IG stories) ── */
 .mg-story-viewer {
   position: fixed;
-  inset: 0;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 56px;
   z-index: 9999;
   background: #000;
   opacity: 0;
@@ -2064,8 +2067,8 @@
 
 .mg-sv-close {
   position: absolute;
-  top: 16px;
-  right: 14px;
+  top: 10px;
+  right: 10px;
   background: rgba(0, 0, 0, 0.5);
   border: none;
   color: #fff;
@@ -2084,9 +2087,9 @@
 /* Progress bars at top (like IG stories) */
 .mg-sv-progress {
   position: absolute;
-  top: 12px;
+  top: 6px;
   left: 8px;
-  right: 8px;
+  right: 50px;
   display: flex;
   gap: 3px;
   z-index: 10;
@@ -2297,7 +2300,10 @@
 /* ── FEED VIEWER (full-screen swipeable) ── */
 .mg-feed-viewer {
   position: fixed;
-  inset: 0;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 56px;
   z-index: 9999;
   background: #000;
   opacity: 0;
