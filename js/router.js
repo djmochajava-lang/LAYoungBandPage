@@ -6,7 +6,9 @@ const Router = {
     music: 'pages/music.html',
     projects: 'pages/projects.html',
     videos: 'pages/videos.html',
-    gallery: 'pages/gallery.html',
+    gallery: window.matchMedia('(max-width: 768px)').matches
+      ? 'pages/gallery-mobile.html'
+      : 'pages/gallery.html',
     shows: 'pages/shows.html',
     performances: 'pages/performances.html',
     LAYoungMusicPlayer: 'pages/LAYoungMusicPlayer.tpl',

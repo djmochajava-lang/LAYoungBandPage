@@ -146,9 +146,15 @@ const PageLoader = {
     if (pageName === 'gallery') {
       // Small delay to ensure DOM is fully rendered
       setTimeout(() => {
-        if (typeof Gallery !== 'undefined') Gallery.init();
-        if (typeof EventGallery !== 'undefined') EventGallery.init();
-        if (typeof GalleryCoordinator !== 'undefined') GalleryCoordinator.init();
+        if (window.matchMedia('(max-width: 768px)').matches) {
+          // Mobile: social-media-inspired gallery
+          if (typeof MobileGallery !== 'undefined') MobileGallery.init();
+        } else {
+          // Desktop: futuristic showcase gallery
+          if (typeof Gallery !== 'undefined') Gallery.init();
+          if (typeof EventGallery !== 'undefined') EventGallery.init();
+          if (typeof GalleryCoordinator !== 'undefined') GalleryCoordinator.init();
+        }
       }, 50);
     }
 

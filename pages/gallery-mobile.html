@@ -1,0 +1,64 @@
+<!-- pages/gallery-mobile.html — Mobile-first social gallery experience -->
+
+<section class="section gallery-mobile-section" id="gallery">
+
+  <!-- ═══════════ REELS: Artist Photos (TikTok/IG Reels style) ═══════════ -->
+  <div class="mg-reels" id="mg-reels">
+    <div class="mg-reels-header">
+      <h2 class="mg-title">My Gallery</h2>
+      <p class="mg-subtitle">Moments in Color</p>
+    </div>
+
+    <div class="mg-reels-viewport" id="mg-reels-viewport">
+      <!-- JS injects .mg-reel-slide items from artistImages -->
+    </div>
+
+    <!-- Reel indicators (dots on the right, like TikTok) -->
+    <div class="mg-reels-indicators" id="mg-reels-indicators"></div>
+
+    <!-- Counter overlay -->
+    <div class="mg-reels-counter" id="mg-reels-counter">1 / 9</div>
+  </div>
+
+  <!-- ═══════════ FEED: BackStage Gallery (IG grid + FB feed) ═══════════ -->
+  <div class="mg-feed" id="mg-feed">
+    <div class="mg-feed-header">
+      <h2 class="mg-title">BackStage Gallery</h2>
+      <p class="mg-subtitle">Backstage Sneak Peeks & More</p>
+    </div>
+
+    <!-- IG-style 3-column grid -->
+    <div class="mg-feed-grid" id="mg-feed-grid">
+      <!-- JS injects .mg-feed-card items from eventImages -->
+    </div>
+
+    <!-- Load more sentinel for infinite scroll -->
+    <div class="mg-feed-sentinel" id="mg-feed-sentinel">
+      <div class="mg-feed-loader"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ LIGHTBOX (tap to expand) ═══════════ -->
+  <div class="mg-lightbox" id="mg-lightbox">
+    <button class="mg-lb-close" id="mg-lb-close" aria-label="Close">&times;</button>
+    <div class="mg-lb-img-wrap" id="mg-lb-img-wrap">
+      <img id="mg-lb-img" src="" alt="">
+    </div>
+    <div class="mg-lb-caption" id="mg-lb-caption"></div>
+    <div class="mg-lb-counter" id="mg-lb-counter"></div>
+    <button class="mg-lb-nav mg-lb-prev" id="mg-lb-prev" aria-label="Previous">&#8249;</button>
+    <button class="mg-lb-nav mg-lb-next" id="mg-lb-next" aria-label="Next">&#8250;</button>
+    <!-- Double-tap love animation -->
+    <div class="mg-love-burst" id="mg-love-burst"></div>
+  </div>
+
+  <!-- PAGE FOOTER -->
+  <footer class="page-footer">
+    <div class="footer-content">
+      <p class="footer-text">
+        &copy; 2026 <strong>Gold Bottom Entertainment LLC</strong> | All rights
+        reserved.
+      </p>
+    </div>
+  </footer>
+</section>
