@@ -40,4 +40,20 @@
       </div>
     </footer>
   </div>
+
+  <!-- Init mobile gallery (executed by page-loader's executeInlineScripts) -->
+  <script>
+    (function() {
+      console.log('📱 gallery-mobile.html inline script running');
+      console.log('  artistImages defined:', typeof artistImages !== 'undefined');
+      console.log('  eventImages defined:', typeof eventImages !== 'undefined');
+      console.log('  MobileGallery defined:', typeof MobileGallery !== 'undefined');
+      console.log('  mg-stories-row found:', !!document.getElementById('mg-stories-row'));
+      if (typeof MobileGallery !== 'undefined') {
+        MobileGallery.init();
+      } else {
+        console.error('MobileGallery not loaded!');
+      }
+    })();
+  </script>
 </section>
