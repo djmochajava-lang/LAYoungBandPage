@@ -613,7 +613,7 @@
     // If user was previously authed or returning from redirect, check role silently
     var hasAuth = false;
     var pendingAdmin = false;
-    try { hasAuth = !!localStorage.getItem('layoung-fan-auth'); } catch (e) {}
+    try { hasAuth = !!localStorage.getItem('layoung-fan-authed'); } catch (e) {}
     try { pendingAdmin = !!localStorage.getItem('mg-admin-pending'); } catch (e) {}
     if (hasAuth || pendingAdmin) {
       showAdminToast('Auth check: hasAuth=' + hasAuth + ' pending=' + pendingAdmin);
@@ -676,7 +676,7 @@
       var isMobile = (typeof MobileDetect !== 'undefined' && MobileDetect.isMobile);
 
       if (isMobile) {
-        try { localStorage.setItem('layoung-fan-auth', '1'); } catch (e) {}
+        try { localStorage.setItem('layoung-fan-authed', '1'); } catch (e) {}
         try { localStorage.setItem('mg-admin-pending', '1'); } catch (e) {}
         try { localStorage.setItem('mg-admin-return', 'gallery'); } catch (e) {}
         firebase.auth().signInWithRedirect(provider);
@@ -722,24 +722,51 @@
       return;
     }
 
-    // User not available yet — wait for auth to resolve
-    showAdminToast('Waiting for auth...');
-    var attempts = 0;
-    var pollInterval = setInterval(function () {
-      attempts++;
-      var u = tryGetUser();
-      if (u) {
-        clearInterval(pollInterval);
-        showAdminToast('User found: ' + u.email);
-        _adminUser = u;
-        fetchRole(u);
-      } else if (attempts >= 20) {
-        clearInterval(pollInterval);
-        showAdminToast('No sign-in detected after 10s. Triple-tap to try again.');
-        try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
-        hideAdminUI();
-      }
-    }, 500);
+    // Handle redirect result directly
+    firebase.auth().getRedirectResult()
+      .then(function (result) {
+        if (result && result.user) {
+          showAdminToast('Redirect user: ' + result.user.email);
+          _adminUser = result.user;
+          fetchRole(result.user);
+          return;
+        }
+        // No redirect result — listen for auth state
+        startAuthPoll();
+      })
+      .catch(function () {
+        startAuthPoll();
+      });
+
+    function startAuthPoll() {
+      // Also register our own auth listener
+      firebase.auth().onAuthStateChanged(function (authUser) {
+        if (authUser) {
+          showAdminToast('Auth resolved: ' + authUser.email);
+          _adminUser = authUser;
+          fetchRole(authUser);
+        }
+      });
+
+      // Poll as fallback
+      showAdminToast('Waiting for auth...');
+      var attempts = 0;
+      var pollInterval = setInterval(function () {
+        attempts++;
+        var u = tryGetUser();
+        if (u) {
+          clearInterval(pollInterval);
+          showAdminToast('User found: ' + u.email);
+          _adminUser = u;
+          fetchRole(u);
+        } else if (attempts >= 20) {
+          clearInterval(pollInterval);
+          showAdminToast('No sign-in after 10s. Triple-tap to try again.');
+          try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
+          hideAdminUI();
+        }
+      }, 500);
+    }
   }
 
   function fetchRole(user) {
