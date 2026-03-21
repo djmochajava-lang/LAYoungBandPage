@@ -2083,9 +2083,15 @@
   border-radius: 6px;
   backdrop-filter: blur(4px);
 }
+.mg-sv-branding-page {
+  color: #ffd700;
+}
 .mg-sv-branding-divider {
   opacity: 0.4;
   margin: 0 2px;
+}
+.mg-sv-branding-reels {
+  color: #999;
 }
 .mg-sv-close {
   position: absolute;
