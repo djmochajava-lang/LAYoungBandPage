@@ -616,7 +616,9 @@
     try { hasAuth = !!localStorage.getItem('layoung-fan-auth'); } catch (e) {}
     try { pendingAdmin = !!localStorage.getItem('mg-admin-pending'); } catch (e) {}
     if (hasAuth || pendingAdmin) {
+      showAdminToast('Auth check: hasAuth=' + hasAuth + ' pending=' + pendingAdmin);
       loadFirebaseForAdmin(function () {
+        showAdminToast('Firebase loaded');
         checkAdminRole();
       });
     }
@@ -969,11 +971,15 @@
   }
 
   function showAdminToast(msg) {
-    var toast = document.createElement('div');
-    toast.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);color:#ffd700;padding:10px 20px;border-radius:8px;font-size:0.85rem;z-index:99999;border:1px solid rgba(255,215,0,0.3);';
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    setTimeout(function () { toast.remove(); }, 2500);
+    // Persistent debug banner at top of screen
+    var banner = document.getElementById('mg-debug-banner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'mg-debug-banner';
+      banner.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#ffd700;color:#000;padding:12px 16px;font-size:0.85rem;font-weight:bold;z-index:999999;text-align:center;font-family:monospace;max-height:40vh;overflow-y:auto;';
+      document.body.appendChild(banner);
+    }
+    banner.textContent = (banner.textContent ? banner.textContent + ' → ' : '') + msg;
   }
 
   // ─── Expose ───
