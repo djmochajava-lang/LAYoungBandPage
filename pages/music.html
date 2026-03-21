@@ -927,6 +927,14 @@
               closeLyrics();
             }
           });
+
+          // Clean up: remove overlay from body when leaving music page
+          window.addEventListener('hashchange', function onLeave() {
+            if (overlay && overlay.parentNode === document.body) {
+              overlay.remove();
+            }
+            window.removeEventListener('hashchange', onLeave);
+          });
         })();
         </script>
 
@@ -1182,6 +1190,14 @@
             if (e.key === 'Escape' && overlay && overlay.classList.contains('open')) {
               closeLyrics();
             }
+          });
+
+          // Clean up: remove overlay from body when leaving music page
+          window.addEventListener('hashchange', function onLeave() {
+            if (overlay && overlay.parentNode === document.body) {
+              overlay.remove();
+            }
+            window.removeEventListener('hashchange', onLeave);
           });
         })();
         </script>

@@ -3,7 +3,9 @@
 /**
  * Mobile Swipe Navigation with Page Turning Effect
  *
- * Home page  : swipe up / down / right  → open mobile menu
+ * Home page  : swipe right               → open mobile menu
+ *              swipe left                → go to next page
+ * Vertical swipes are never captured — they always scroll the page
  * Other pages: swipe right              → go to the last page visited on
  *                                         this site (SPA history stack), or
  *                                         history.back() if this was the
@@ -25,19 +27,18 @@ const SwipeNavigation = {
   // doesn't push the destination back onto the stack
   _navigatingBack: false,
 
+  // Swipe sequence matches the mobile menu layout
   menuItems: [
     'home',
     'bio',
-    'shows',
     'music',
     'projects',
-    'LAYoungMusicPlayer',
+    'shows',
+    'merch',
+    'support',
     'gallery',
     'fanwall',
-    'support',
-    'merch',
     'contact',
-    'performances',
   ],
 
   init() {
@@ -230,21 +231,17 @@ const SwipeNavigation = {
   },
 
   setupSwipeListeners() {
-    document.addEventListener('touchstart', this.handleTouchStart.bind(this), {
-      passive: true,
-    });
-    document.addEventListener('touchend', this.handleTouchEnd.bind(this), {
-      passive: true,
-    });
+    // Store bound references so we can remove them later
+    this._boundTouchStart = this.handleTouchStart.bind(this);
+    this._boundTouchEnd = this.handleTouchEnd.bind(this);
+    document.addEventListener('touchstart', this._boundTouchStart, { passive: true });
+    document.addEventListener('touchend', this._boundTouchEnd, { passive: true });
     this.listenersActive = true;
   },
 
   removeSwipeListeners() {
-    document.removeEventListener(
-      'touchstart',
-      this.handleTouchStart.bind(this),
-    );
-    document.removeEventListener('touchend', this.handleTouchEnd.bind(this));
+    document.removeEventListener('touchstart', this._boundTouchStart);
+    document.removeEventListener('touchend', this._boundTouchEnd);
     this.listenersActive = false;
   },
 
@@ -256,6 +253,7 @@ const SwipeNavigation = {
     this.inScrollZone = false;
     var el = e.target;
     while (el && el !== document.body) {
+      if (el.tagName === 'VIDEO') break;
       var style = window.getComputedStyle(el);
       var overflowX = style.getPropertyValue('overflow-x');
       if ((overflowX === 'auto' || overflowX === 'scroll') && el.scrollWidth > el.clientWidth) {
@@ -283,45 +281,31 @@ const SwipeNavigation = {
     var absDiffX = Math.abs(diffX);
     var absDiffY = Math.abs(diffY);
     var isHorizontal = absDiffX > absDiffY;
-    var isVertical   = absDiffY > absDiffX;
+
+    // Only act on horizontal swipes — never interfere with vertical scrolling
+    if (!isHorizontal || absDiffX < this.minSwipeDistance) return;
 
     // ── HOME PAGE ─────────────────────────────────────────────────────────
-    // Swipe up, down, or right → open mobile menu
-    // Swipe left               → navigate to next page
+    // Swipe left  → go to next page
+    // Swipe right → open mobile menu
     if (currentPage === 'home') {
-      var opensMenu = false;
-
-      if (isVertical && absDiffY > this.minSwipeDistance) {
-        // up or down
-        opensMenu = true;
-      } else if (isHorizontal && diffX > this.minSwipeDistance) {
-        // right
-        opensMenu = true;
-      }
-
-      if (opensMenu) {
+      if (diffX < 0) {
+        this.navigateNext();
+      } else {
         if (typeof MobileMenu !== 'undefined' && !MobileMenu.isOpen()) {
           MobileMenu.open();
         }
-        return;
-      }
-
-      // Left swipe on home → go to next page
-      if (isHorizontal && diffX < -this.minSwipeDistance) {
-        this.navigateNext();
       }
       return;
     }
 
     // ── ALL OTHER PAGES ───────────────────────────────────────────────────
-    if (isHorizontal && absDiffX > this.minSwipeDistance) {
-      if (diffX > 0) {
-        // Swipe right → go back through SPA history (or browser back)
-        this._navigateBack();
-      } else {
-        // Swipe left → navigate to next page in sequence
-        this.navigateNext();
-      }
+    if (diffX > 0) {
+      // Swipe right → go back through SPA history (or browser back)
+      this._navigateBack();
+    } else {
+      // Swipe left → navigate to next page in sequence
+      this.navigateNext();
     }
   },
 
@@ -335,7 +319,10 @@ const SwipeNavigation = {
    */
   navigateNext() {
     const currentIndex = this.getCurrentPageIndex();
-    const nextIndex = (currentIndex + 1) % this.menuItems.length;
+    // If current page isn't in menuItems, start from the beginning
+    const nextIndex = currentIndex === -1
+      ? 0
+      : (currentIndex + 1) % this.menuItems.length;
     const nextPage = this.menuItems[nextIndex];
 
     this.animatePageTurn('next', nextPage);
@@ -406,6 +393,10 @@ const SwipeNavigation = {
       } else {
         window.location.hash = `#${targetPage}`;
       }
+
+      // Scroll section to top so the new page starts at the top
+      var section = container.querySelector('.section, .hero');
+      if (section) section.scrollTop = 0;
 
       // Set starting position for slide-in
       container.style.transition = 'none';
