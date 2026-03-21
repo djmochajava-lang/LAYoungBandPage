@@ -39,13 +39,16 @@
     for (var i = 0; i < artistImages.length; i++) {
       var img = artistImages[i];
       singleSet += '<div class="mg-story-thumb" data-index="' + i + '">' +
-        '<img src="' + img.src + '" alt="' + img.caption + '" loading="lazy">' +
+        '<img src="' + img.src + '" alt="' + img.caption + '">' +
         '<span class="mg-story-label">' + img.sub + '</span>' +
       '</div>';
     }
 
-    // Repeat 5x so the row feels endless (45 thumbs = ~3825px)
+    // Repeat 5x so the row feels endless
     row.innerHTML = singleSet + singleSet + singleSet + singleSet + singleSet;
+
+    // Ensure first reel is at top-left
+    row.scrollLeft = 0;
 
     // When user scrolls near the end, append more copies
     row.addEventListener('scroll', function () {
