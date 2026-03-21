@@ -90,6 +90,15 @@ const FanPoints = {
       if (pv) {
         self.award(key, pv.points, pv.label);
       }
+      // Show/hide join bar based on current page (home only)
+      if (pageName === 'home') {
+        var earnedCount = Object.keys(self._earned).length;
+        if (earnedCount >= 3 && !self._firebaseUser) {
+          self._showJoinBar();
+        }
+      } else {
+        self._hideJoinBar();
+      }
     });
 
     // Check for game-played flag (GroovyBandRush sets this)
@@ -234,6 +243,13 @@ const FanPoints = {
 
   _showJoinBar: function() {
     if (!this._joinBarEl) return;
+
+    // Only show on home page
+    var currentPage = window.location.hash.substring(1) || 'home';
+    if (currentPage !== 'home') {
+      this._hideJoinBar();
+      return;
+    }
 
     // Don't show while waiting for Firebase to resolve auth state — avoids
     // flashing the bar at signed-in users on page load or SPA navigation.
