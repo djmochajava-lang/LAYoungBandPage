@@ -94,10 +94,8 @@
 
   function navigateStory(dir) {
     svIndex += dir;
-    if (svIndex < 0 || svIndex >= artistImages.length) {
-      closeStoryViewer();
-      return;
-    }
+    if (svIndex >= artistImages.length) svIndex = 0;
+    if (svIndex < 0) svIndex = artistImages.length - 1;
     showStory();
     startStoryTimer();
   }
