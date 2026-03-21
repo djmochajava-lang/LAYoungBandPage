@@ -1,11 +1,10 @@
 // js/mobile-gallery.js
 
 /**
- * Mobile Gallery — Social-media-inspired gallery experience
+ * Mobile Gallery — Social-media-inspired gallery
  *
- * Top: Reels (TikTok/IG vertical snap-scroll, one image at a time)
- * Bottom: Feed grid (IG 3-column grid, infinite scroll, tap-to-expand)
- * Lightbox: Full-screen with swipe nav + double-tap love animation
+ * Top: Stories row (Facebook-style horizontal squares, tap to view)
+ * Below: Social feed (full-width images, vertical scroll, comments under each)
  *
  * Uses global artistImages[] and eventImages[] from gallery.js
  */
@@ -13,126 +12,144 @@
 (function () {
   'use strict';
 
-  var BATCH_SIZE = 12;
+  var BATCH_SIZE = 6;
   var feedLoaded = 0;
   var feedObserver = null;
-  var lbImages = [];
-  var lbIndex = 0;
-  var lbOpen = false;
-  var touchStartX = 0;
-  var touchStartY = 0;
-  var lastTap = 0;
 
   function init() {
-    var container = document.getElementById('mg-reels');
-    if (!container) return;
+    var storiesRow = document.getElementById('mg-stories-row');
+    if (!storiesRow) return;
     if (typeof artistImages === 'undefined' || typeof eventImages === 'undefined') return;
 
-    buildReels();
+    buildStories();
     buildFeed();
-    setupLightbox();
+    setupStoryViewer();
     console.log('📱 MobileGallery initialized');
   }
 
-  // ─── REELS (Artist Photos) ───
+  // ─── STORIES ROW (horizontal squares) ───
 
-  function buildReels() {
-    var viewport = document.getElementById('mg-reels-viewport');
-    var indicators = document.getElementById('mg-reels-indicators');
-    var counter = document.getElementById('mg-reels-counter');
-    if (!viewport) return;
+  function buildStories() {
+    var row = document.getElementById('mg-stories-row');
+    if (!row) return;
 
     var html = '';
     for (var i = 0; i < artistImages.length; i++) {
       var img = artistImages[i];
-      html += '<div class="mg-reel-slide" data-index="' + i + '">' +
-        '<img src="' + img.src + '" alt="' + img.caption + '" loading="' + (i < 2 ? 'eager' : 'lazy') + '">' +
-        '<div class="mg-reel-caption">' +
-          '<div class="mg-reel-caption-title">' + img.caption + '</div>' +
-          '<div class="mg-reel-caption-sub">' + img.sub + '</div>' +
-        '</div>' +
+      html += '<div class="mg-story-thumb" data-index="' + i + '">' +
+        '<img src="' + img.src + '" alt="' + img.caption + '">' +
+        '<span class="mg-story-label">' + img.sub + '</span>' +
       '</div>';
     }
-    viewport.innerHTML = html;
+    row.innerHTML = html;
 
-    // Dot indicators
-    var dots = '';
-    for (var j = 0; j < artistImages.length; j++) {
-      dots += '<div class="mg-dot' + (j === 0 ? ' active' : '') + '" data-i="' + j + '"></div>';
-    }
-    indicators.innerHTML = dots;
-
-    // Scroll-snap observer to update active dot + counter
-    var slides = viewport.querySelectorAll('.mg-reel-slide');
-    var observer = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (entry.isIntersecting) {
-          var idx = parseInt(entry.target.getAttribute('data-index'), 10);
-          updateReelIndicator(idx);
-        }
-      });
-    }, { root: viewport, threshold: 0.6 });
-
-    slides.forEach(function (slide) { observer.observe(slide); });
-
-    // Tap to navigate (left half = prev, right half = next)
-    viewport.addEventListener('click', function (e) {
-      // Don't navigate if double-tap love triggered
-      var now = Date.now();
-      if (now - lastTap < 350) return;
-
-      var rect = viewport.getBoundingClientRect();
-      var tapX = e.clientX - rect.left;
-      var midpoint = rect.width / 2;
-      var currentSlide = viewport.querySelector('.mg-reel-slide.visible') ||
-        slides[getCurrentReelIndex(viewport, slides)];
-      var idx = getCurrentReelIndex(viewport, slides);
-
-      if (tapX < midpoint && idx > 0) {
-        slides[idx - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      } else if (tapX >= midpoint && idx < slides.length - 1) {
-        slides[idx + 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Tap to open story viewer
+    row.addEventListener('click', function (e) {
+      var thumb = e.target.closest('.mg-story-thumb');
+      if (thumb) {
+        var idx = parseInt(thumb.getAttribute('data-index'), 10);
+        openStoryViewer(idx);
       }
     });
   }
 
-  function getCurrentReelIndex(viewport, slides) {
-    var scrollTop = viewport.scrollTop;
-    var slideHeight = viewport.clientHeight;
-    return Math.round(scrollTop / slideHeight);
+  // ─── STORY VIEWER (full-screen overlay) ───
+
+  var svTimer = null;
+  var svIndex = 0;
+
+  function setupStoryViewer() {
+    var viewer = document.getElementById('mg-story-viewer');
+    if (!viewer) return;
+
+    document.getElementById('mg-sv-close').addEventListener('click', closeStoryViewer);
+
+    // Tap left/right halves to navigate
+    document.getElementById('mg-sv-prev').addEventListener('click', function () {
+      clearTimeout(svTimer);
+      navigateStory(-1);
+    });
+    document.getElementById('mg-sv-next').addEventListener('click', function () {
+      clearTimeout(svTimer);
+      navigateStory(1);
+    });
   }
 
-  function updateReelIndicator(idx) {
-    var dots = document.querySelectorAll('#mg-reels-indicators .mg-dot');
-    dots.forEach(function (d) { d.classList.remove('active'); });
-    if (dots[idx]) dots[idx].classList.add('active');
-
-    var counter = document.getElementById('mg-reels-counter');
-    if (counter) counter.textContent = (idx + 1) + ' / ' + artistImages.length;
+  function openStoryViewer(index) {
+    svIndex = index;
+    var viewer = document.getElementById('mg-story-viewer');
+    viewer.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    showStory();
+    startStoryTimer();
   }
 
-  // ─── FEED GRID (Event/BackStage Photos) ───
+  function closeStoryViewer() {
+    clearTimeout(svTimer);
+    var viewer = document.getElementById('mg-story-viewer');
+    viewer.classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  function navigateStory(dir) {
+    svIndex += dir;
+    if (svIndex < 0 || svIndex >= artistImages.length) {
+      closeStoryViewer();
+      return;
+    }
+    showStory();
+    startStoryTimer();
+  }
+
+  function showStory() {
+    var img = artistImages[svIndex];
+    document.getElementById('mg-sv-img').src = img.src;
+    document.getElementById('mg-sv-img').alt = img.caption;
+    document.getElementById('mg-sv-caption').textContent = img.caption;
+
+    // Update progress bars
+    var progressWrap = document.getElementById('mg-sv-progress');
+    var html = '';
+    for (var i = 0; i < artistImages.length; i++) {
+      var cls = 'mg-sv-bar';
+      if (i < svIndex) cls += ' viewed';
+      if (i === svIndex) cls += ' active';
+      html += '<div class="' + cls + '"><div class="mg-sv-bar-fill"></div></div>';
+    }
+    progressWrap.innerHTML = html;
+
+    // Mark story thumb as viewed
+    var thumbs = document.querySelectorAll('.mg-story-thumb');
+    if (thumbs[svIndex]) thumbs[svIndex].classList.add('viewed');
+  }
+
+  function startStoryTimer() {
+    clearTimeout(svTimer);
+    svTimer = setTimeout(function () {
+      navigateStory(1);
+    }, 5000);
+  }
+
+  // ─── SOCIAL FEED (full-width images + comments) ───
 
   function buildFeed() {
     feedLoaded = 0;
     loadMoreFeed();
 
-    // Infinite scroll via IntersectionObserver
     var sentinel = document.getElementById('mg-feed-sentinel');
     if (sentinel) {
       feedObserver = new IntersectionObserver(function (entries) {
         if (entries[0].isIntersecting) {
           loadMoreFeed();
         }
-      }, { rootMargin: '200px' });
+      }, { rootMargin: '300px' });
       feedObserver.observe(sentinel);
     }
   }
 
   function loadMoreFeed() {
-    var grid = document.getElementById('mg-feed-grid');
-    if (!grid || feedLoaded >= eventImages.length) {
-      // Hide sentinel when done
+    var feed = document.getElementById('mg-feed');
+    if (!feed || feedLoaded >= eventImages.length) {
       var sentinel = document.getElementById('mg-feed-sentinel');
       if (sentinel) sentinel.style.display = 'none';
       return;
@@ -143,161 +160,123 @@
 
     for (var i = feedLoaded; i < end; i++) {
       var img = eventImages[i];
-      var card = document.createElement('div');
-      card.className = 'mg-feed-card';
-      card.setAttribute('data-feed-index', i);
+      var post = document.createElement('div');
+      post.className = 'mg-post';
 
+      // Post header
+      var header = document.createElement('div');
+      header.className = 'mg-post-header';
+      header.innerHTML = '<span class="mg-post-author">L.A. Young</span>' +
+        '<span class="mg-post-label">' + img.sub + '</span>';
+
+      // Image
+      var imgWrap = document.createElement('div');
+      imgWrap.className = 'mg-post-img';
       var imgEl = document.createElement('img');
       imgEl.src = img.src;
       imgEl.alt = img.caption;
       imgEl.loading = 'lazy';
+      imgWrap.appendChild(imgEl);
 
-      card.appendChild(imgEl);
-      fragment.appendChild(card);
+      // Actions bar (like, comment, share icons)
+      var actions = document.createElement('div');
+      actions.className = 'mg-post-actions';
+      actions.innerHTML =
+        '<button class="mg-post-action mg-like-btn" aria-label="Like">' +
+          '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="currentColor" stroke-width="2"/></svg>' +
+          '<span class="mg-like-count">0</span>' +
+        '</button>' +
+        '<button class="mg-post-action mg-comment-toggle" aria-label="Comment">' +
+          '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg>' +
+        '</button>';
 
-      // Attach tap handler immediately
-      attachFeedCardHandler(card);
+      // Caption
+      var caption = document.createElement('div');
+      caption.className = 'mg-post-caption';
+      caption.innerHTML = '<strong>L.A. Young</strong> ' + img.caption;
+
+      // Comment section
+      var comments = document.createElement('div');
+      comments.className = 'mg-post-comments';
+      comments.setAttribute('data-post-index', i);
+      comments.innerHTML =
+        '<div class="mg-comments-list"></div>' +
+        '<div class="mg-comment-input">' +
+          '<input type="text" placeholder="Add a comment..." maxlength="200">' +
+          '<button class="mg-comment-send">Post</button>' +
+        '</div>';
+
+      post.appendChild(header);
+      post.appendChild(imgWrap);
+      post.appendChild(actions);
+      post.appendChild(caption);
+      post.appendChild(comments);
+      fragment.appendChild(post);
     }
 
-    grid.appendChild(fragment);
+    feed.appendChild(fragment);
     feedLoaded = end;
+
+    // Bind interactions for new posts
+    bindPostActions(feed);
   }
 
-  function attachFeedCardHandler(card) {
-    if (card._mgBound) return;
-    card._mgBound = true;
-
-    card.addEventListener('click', function () {
-      var idx = parseInt(card.getAttribute('data-feed-index'), 10);
-      openLightbox(eventImages, idx);
-    });
-  }
-
-  // ─── LIGHTBOX ───
-
-  function setupLightbox() {
-    var lb = document.getElementById('mg-lightbox');
-    if (!lb) return;
-
-    // Close button
-    document.getElementById('mg-lb-close').addEventListener('click', closeLightbox);
-
-    // Nav buttons
-    document.getElementById('mg-lb-prev').addEventListener('click', function (e) {
-      e.stopPropagation();
-      navigateLB(-1);
-    });
-    document.getElementById('mg-lb-next').addEventListener('click', function (e) {
-      e.stopPropagation();
-      navigateLB(1);
+  function bindPostActions(feed) {
+    // Like buttons
+    feed.querySelectorAll('.mg-like-btn').forEach(function (btn) {
+      if (btn._mgBound) return;
+      btn._mgBound = true;
+      btn.addEventListener('click', function () {
+        btn.classList.toggle('liked');
+        var count = btn.querySelector('.mg-like-count');
+        var val = parseInt(count.textContent, 10);
+        count.textContent = btn.classList.contains('liked') ? val + 1 : Math.max(0, val - 1);
+      });
     });
 
-    // Swipe navigation in lightbox
-    var imgWrap = document.getElementById('mg-lb-img-wrap');
-    imgWrap.addEventListener('touchstart', function (e) {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    imgWrap.addEventListener('touchend', function (e) {
-      var dx = e.changedTouches[0].clientX - touchStartX;
-      var dy = e.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
-        navigateLB(dx < 0 ? 1 : -1);
-      }
-    }, { passive: true });
-
-    // Double-tap to love
-    imgWrap.addEventListener('touchend', function (e) {
-      var now = Date.now();
-      if (now - lastTap < 300) {
-        showLoveBurst(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-      }
-      lastTap = now;
-    }, { passive: true });
-
-    // Backdrop close
-    lb.addEventListener('click', function (e) {
-      if (e.target === lb) closeLightbox();
-    });
-
-    // Keyboard
-    document.addEventListener('keydown', function (e) {
-      if (!lbOpen) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowLeft') navigateLB(-1);
-      if (e.key === 'ArrowRight') navigateLB(1);
-    });
-
-    // Also allow reels images to open lightbox
-    var reelsViewport = document.getElementById('mg-reels-viewport');
-    if (reelsViewport) {
-      reelsViewport.addEventListener('dblclick', function (e) {
-        var slide = e.target.closest('.mg-reel-slide');
-        if (slide) {
-          var idx = parseInt(slide.getAttribute('data-index'), 10);
-          openLightbox(artistImages, idx);
+    // Comment toggle
+    feed.querySelectorAll('.mg-comment-toggle').forEach(function (btn) {
+      if (btn._mgBound) return;
+      btn._mgBound = true;
+      btn.addEventListener('click', function () {
+        var post = btn.closest('.mg-post');
+        var comments = post.querySelector('.mg-post-comments');
+        comments.classList.toggle('open');
+        if (comments.classList.contains('open')) {
+          comments.querySelector('input').focus();
         }
       });
-    }
+    });
+
+    // Comment submit
+    feed.querySelectorAll('.mg-comment-send').forEach(function (btn) {
+      if (btn._mgBound) return;
+      btn._mgBound = true;
+      btn.addEventListener('click', function () {
+        var input = btn.previousElementSibling;
+        var text = input.value.trim();
+        if (!text) return;
+
+        var list = btn.closest('.mg-post-comments').querySelector('.mg-comments-list');
+        var comment = document.createElement('div');
+        comment.className = 'mg-comment';
+        comment.innerHTML = '<strong>Fan</strong> ' + escapeHtml(text);
+        list.appendChild(comment);
+        input.value = '';
+      });
+
+      // Enter key to submit
+      var input = btn.previousElementSibling;
+      input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') btn.click();
+      });
+    });
   }
 
-  function openLightbox(images, index) {
-    lbImages = images;
-    lbIndex = index;
-    lbOpen = true;
-
-    var lb = document.getElementById('mg-lightbox');
-    lb.classList.add('open');
-    document.body.style.overflow = 'hidden';
-    showLBImage();
-  }
-
-  function closeLightbox() {
-    lbOpen = false;
-    var lb = document.getElementById('mg-lightbox');
-    lb.classList.remove('open');
-    document.body.style.overflow = '';
-  }
-
-  function navigateLB(dir) {
-    lbIndex += dir;
-    if (lbIndex < 0) lbIndex = lbImages.length - 1;
-    if (lbIndex >= lbImages.length) lbIndex = 0;
-    showLBImage();
-  }
-
-  function showLBImage() {
-    var img = lbImages[lbIndex];
-    var lbImg = document.getElementById('mg-lb-img');
-    var caption = document.getElementById('mg-lb-caption');
-    var counter = document.getElementById('mg-lb-counter');
-
-    lbImg.src = img.src;
-    lbImg.alt = img.caption;
-    caption.textContent = img.caption;
-    counter.textContent = (lbIndex + 1) + ' / ' + lbImages.length;
-  }
-
-  // ─── DOUBLE-TAP LOVE BURST ───
-
-  function showLoveBurst(x, y) {
-    var burst = document.getElementById('mg-love-burst');
-    if (!burst) return;
-
-    burst.innerHTML = '';
-    burst.style.left = x + 'px';
-    burst.style.top = y + 'px';
-
-    var heart = document.createElement('div');
-    heart.className = 'mg-heart';
-    heart.textContent = '\u2764';
-    burst.appendChild(heart);
-
-    burst.classList.add('active');
-    setTimeout(function () {
-      burst.classList.remove('active');
-    }, 900);
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
   }
 
   // ─── Expose ───
