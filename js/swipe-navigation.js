@@ -33,12 +33,12 @@ const SwipeNavigation = {
     'bio',
     'music',
     'projects',
+    'LAYoungMusicPlayer',
     'shows',
     'merch',
     'support',
     'gallery',
     'fanwall',
-    'LAYoungMusicPlayer',
     'contact',
   ],
 
