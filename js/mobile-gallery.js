@@ -34,15 +34,30 @@
     var row = document.getElementById('mg-stories-row');
     if (!row) return;
 
-    var html = '';
+    // Build 3 copies for seamless infinite scroll
+    var singleSet = '';
     for (var i = 0; i < artistImages.length; i++) {
       var img = artistImages[i];
-      html += '<div class="mg-story-thumb" data-index="' + i + '">' +
+      singleSet += '<div class="mg-story-thumb" data-index="' + i + '">' +
         '<img src="' + img.src + '" alt="' + img.caption + '">' +
         '<span class="mg-story-label">' + img.sub + '</span>' +
       '</div>';
     }
-    row.innerHTML = html;
+    row.innerHTML = singleSet + singleSet + singleSet;
+
+    // Start scrolled to the middle set so user can scroll both directions
+    var thumbWidth = 85; // 75px + 10px gap
+    row.scrollLeft = artistImages.length * thumbWidth;
+
+    // Infinite scroll: when near edges, jump to middle set
+    row.addEventListener('scroll', function () {
+      var setWidth = artistImages.length * thumbWidth;
+      if (row.scrollLeft < thumbWidth) {
+        row.scrollLeft += setWidth;
+      } else if (row.scrollLeft > setWidth * 2) {
+        row.scrollLeft -= setWidth;
+      }
+    });
 
     // Tap to open story viewer
     row.addEventListener('click', function (e) {
