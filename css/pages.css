@@ -2527,8 +2527,8 @@
 }
 .mg-post-edit-actions {
   display: none;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: 6px;
+  align-items: center;
 }
 .mg-post.mg-edit-mode .mg-post-edit-actions {
   display: flex;

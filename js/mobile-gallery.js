@@ -774,14 +774,15 @@
           caption.setAttribute('contenteditable', 'true');
         }
 
-        // Add edit action buttons if not already present
-        if (!post.querySelector('.mg-post-edit-actions')) {
+        // Add edit action buttons in the header if not already present
+        var header = post.querySelector('.mg-post-header');
+        if (header && !header.querySelector('.mg-post-edit-actions')) {
           var editActions = document.createElement('div');
           editActions.className = 'mg-post-edit-actions';
           editActions.innerHTML =
-            '<button class="mg-admin-btn mg-admin-btn-save mg-save-caption" data-index="' + idx + '">Save Caption</button>' +
+            '<button class="mg-admin-btn mg-admin-btn-save mg-save-caption" data-index="' + idx + '">Save</button>' +
             '<button class="mg-admin-btn mg-admin-btn-delete mg-delete-post" data-index="' + idx + '">Delete</button>';
-          caption.insertAdjacentElement('afterend', editActions);
+          header.appendChild(editActions);
 
           // Bind save caption
           editActions.querySelector('.mg-save-caption').addEventListener('click', function () {
