@@ -604,6 +604,8 @@
 
       if (_secretTaps >= 3) {
         _secretTaps = 0;
+        console.log('🔑 Triple-tap detected — triggering admin login');
+        showAdminToast('Connecting...');
         triggerAdminLogin();
       }
     });
@@ -703,20 +705,28 @@
       }
       _adminUser = user;
 
+      console.log('🔑 Checking role for uid:', user.uid, 'email:', user.email);
+
       _adminDb.collection('layoung-fans').doc(user.uid).get()
         .then(function (doc) {
           var data = doc.exists ? doc.data() : {};
           var role = data.role || 'fan';
+          console.log('🔑 Doc exists:', doc.exists, '| Role found:', role, '| Full data:', JSON.stringify(data));
 
           if (role === 'admin' || role === 'artist') {
             showAdminUI(user.displayName, role);
           } else {
+            console.log('🔑 Role not admin/artist — showing toast with info');
+            showAdminToast('Role: ' + role + ' (need admin or artist)');
             hideAdminUI();
-            // Clear the pending flag
             try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
           }
         })
-        .catch(function () { hideAdminUI(); });
+        .catch(function (err) {
+          console.log('🔑 Firestore error:', err.message);
+          showAdminToast('Error: ' + err.message);
+          hideAdminUI();
+        });
     });
   }
 
