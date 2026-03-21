@@ -16,6 +16,9 @@
   var feedLoaded = 0;
   var feedObserver = null;
 
+  // Capture the original hash early before router may change it
+  var _originalHash = window.location.hash || '';
+
   function init() {
     var storiesRow = document.getElementById('mg-stories-row');
     if (!storiesRow) return;
@@ -333,10 +336,10 @@
       btn.addEventListener('click', function () {
         var caption = btn.getAttribute('data-caption') || '';
         var postIndex = btn.getAttribute('data-post-index') || '0';
-        var pageUrl = window.location.origin + '/#gallery?post=' + postIndex;
+        var pageUrl = window.location.origin + '/#gallery-post-' + postIndex;
         shareContent(
           'L.A. Young Band Page',
-          caption + '\n\n🎶 Check out L.A. Young — Soul, Jazz & Blues in Full Color!\n' + pageUrl,
+          caption + '\n\n🎶 Check out L.A. Young — Soul, Jazz & Blues in Full Color!',
           pageUrl
         );
       });
@@ -503,8 +506,8 @@
   // ─── DEEP LINK: scroll to shared post ───
 
   function scrollToSharedPost() {
-    var hash = window.location.hash || '';
-    var match = hash.match(/[?&]post=(\d+)/);
+    var hash = _originalHash || window.location.hash || '';
+    var match = hash.match(/gallery-post-(\d+)/);
     if (!match) return;
 
     var targetIndex = parseInt(match[1], 10);

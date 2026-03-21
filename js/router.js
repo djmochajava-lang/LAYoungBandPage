@@ -112,7 +112,13 @@ const Router = {
   },
 
   handleInitialRoute() {
-    const hash = window.location.hash.substring(1);
+    let hash = window.location.hash.substring(1);
+
+    // Deep link: #gallery-post-N → load gallery page (mobile-gallery.js handles scrolling)
+    if (/^gallery-post-\d+$/.test(hash)) {
+      hash = 'gallery';
+    }
+
     const initialPage = hash && this.routes[hash] ? hash : this.defaultPage;
     setTimeout(() => {
       this.navigateTo(initialPage, true);
@@ -121,7 +127,8 @@ const Router = {
 
   handleBrowserNavigation() {
     window.addEventListener('popstate', () => {
-      const hash = window.location.hash.substring(1);
+      let hash = window.location.hash.substring(1);
+      if (/^gallery-post-\d+$/.test(hash)) hash = 'gallery';
       const pageName = hash || this.defaultPage;
 
       // If navigating to music player on desktop, open popup window
