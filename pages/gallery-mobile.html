@@ -12,6 +12,7 @@
     </div>
 
     <!-- ═══════════ FEED (Full-size images with comments, vertical scroll) ═══════════ -->
+    <div class="mg-feed-label">Feed</div>
     <div class="mg-feed" id="mg-feed">
       <!-- JS injects .mg-post items from eventImages -->
     </div>
@@ -49,7 +50,7 @@
       var d = document.getElementById('mg-debug');
       function log(msg) { d.innerHTML += msg + '<br>'; }
 
-      log('BUILD: v8 — display:block for scroll fix');
+      log('BUILD: v9 — Feed label above feed section');
       log('2. artistImages: ' + (typeof artistImages !== 'undefined' ? artistImages.length + ' items' : 'UNDEFINED'));
       log('3. eventImages: ' + (typeof eventImages !== 'undefined' ? eventImages.length + ' items' : 'UNDEFINED'));
       log('4. MobileGallery: ' + (typeof MobileGallery !== 'undefined' ? 'LOADED' : 'UNDEFINED'));

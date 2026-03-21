@@ -2078,6 +2078,14 @@
 .mg-sv-next { right: 0; }
 
 /* ── SOCIAL FEED (full-width images + comments) ── */
+.mg-feed-label {
+  font-family: var(--font-primary, 'Playfair Display', serif);
+  font-size: 0.8rem;
+  color: var(--color-primary, #ffd700);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 14px 14px 8px;
+}
 .mg-feed {
   padding: 0;
 }
