@@ -1923,6 +1923,7 @@
   height: 100%;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  padding-top: var(--spacing-xl, 60px);
 }
 
 /* ── STORIES ROW (Facebook-style horizontal squares) — sticky at top ── */
@@ -2184,7 +2185,7 @@
   width: 100%;
   height: auto;
   display: block;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 3 / 4;
   object-fit: cover;
   object-position: top;
   object-fit: cover;
