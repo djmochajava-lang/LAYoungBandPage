@@ -59,40 +59,7 @@
   </div>
 
   <!-- Init mobile gallery + on-screen debug (remove after testing) -->
-  <div id="mg-debug" style="position:fixed;bottom:60px;left:8px;right:8px;background:rgba(0,0,0,0.9);color:#0f0;font-family:monospace;font-size:11px;padding:10px;border-radius:8px;z-index:99999;max-height:40vh;overflow-y:auto;border:1px solid #0f0"></div>
   <script>
-    (function() {
-      var d = document.getElementById('mg-debug');
-      function log(msg) { d.innerHTML += msg + '<br>'; }
-
-      log('BUILD: v19 — no feed expand, scroll debug');
-      var sec = document.getElementById('gallery');
-      if (sec) {
-        log('section height: ' + sec.clientHeight + ', scrollHeight: ' + sec.scrollHeight);
-        log('section overflow: ' + getComputedStyle(sec).overflowY);
-        log('section display: ' + getComputedStyle(sec).display);
-      }
-      var mgp = document.querySelector('.mg-page');
-      if (mgp) log('mg-page height: ' + mgp.scrollHeight);
-      log('2. artistImages: ' + (typeof artistImages !== 'undefined' ? artistImages.length + ' items' : 'UNDEFINED'));
-      log('3. eventImages: ' + (typeof eventImages !== 'undefined' ? eventImages.length + ' items' : 'UNDEFINED'));
-      log('4. MobileGallery: ' + (typeof MobileGallery !== 'undefined' ? 'LOADED' : 'UNDEFINED'));
-      log('5. stories-row element: ' + (document.getElementById('mg-stories-row') ? 'FOUND' : 'NOT FOUND'));
-      log('6. feed element: ' + (document.getElementById('mg-feed') ? 'FOUND' : 'NOT FOUND'));
-      log('7. screen width: ' + window.innerWidth + 'px');
-
-      if (typeof MobileGallery !== 'undefined') {
-        try {
-          MobileGallery.init();
-          log('8. MobileGallery.init() called OK');
-          log('9. stories count: ' + document.querySelectorAll('.mg-story-thumb').length);
-          log('10. feed posts: ' + document.querySelectorAll('.mg-post').length);
-        } catch(e) {
-          log('ERROR: ' + e.message);
-        }
-      } else {
-        log('ERROR: MobileGallery not loaded - check js/mobile-gallery.js');
-      }
-    })();
+    if (typeof MobileGallery !== 'undefined') MobileGallery.init();
   </script>
 </section>
