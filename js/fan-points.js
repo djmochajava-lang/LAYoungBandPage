@@ -281,7 +281,62 @@ const FanPoints = {
 
   // ── Firebase Auth & Firestore ─────────────────────
 
+  // ── Lazy-load Firebase SDK (no CDN on page load) ──────────
+  _firebaseLoaded: false,
+  _firebaseLoading: false,
+  _firebaseCallbacks: [],
+
+  _loadFirebase: function(callback) {
+    if (this._firebaseLoaded && typeof firebase !== 'undefined') {
+      callback();
+      return;
+    }
+    this._firebaseCallbacks.push(callback);
+    if (this._firebaseLoading) return;
+    this._firebaseLoading = true;
+
+    var scripts = [
+      'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js',
+      'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js',
+      'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js'
+    ];
+    var loaded = 0;
+    var self = this;
+
+    function loadNext() {
+      if (loaded >= scripts.length) {
+        self._firebaseLoaded = true;
+        self._firebaseLoading = false;
+        var cbs = self._firebaseCallbacks.slice();
+        self._firebaseCallbacks = [];
+        cbs.forEach(function(cb) { cb(); });
+        return;
+      }
+      var s = document.createElement('script');
+      s.src = scripts[loaded];
+      s.onload = function() { loaded++; loadNext(); };
+      s.onerror = function() {
+        console.warn('FanPoints: Failed to load Firebase SDK');
+        self._firebaseLoading = false;
+      };
+      document.head.appendChild(s);
+    }
+    loadNext();
+  },
+
   _initFirebaseSync: function() {
+    // Only load Firebase if user has previously signed in
+    var hasAuth = false;
+    try { hasAuth = !!localStorage.getItem(this.HAS_AUTH_KEY); } catch(e) {}
+    if (!hasAuth) return;
+
+    var self = this;
+    this._loadFirebase(function() {
+      self._connectFirebase();
+    });
+  },
+
+  _connectFirebase: function() {
     if (typeof firebase === 'undefined') return;
 
     try {
@@ -408,6 +463,13 @@ const FanPoints = {
   },
 
   _handleJoinClick: function() {
+    var self = this;
+    this._loadFirebase(function() {
+      self._doSignIn();
+    });
+  },
+
+  _doSignIn: function() {
     if (typeof firebase === 'undefined') return;
 
     try {
@@ -415,6 +477,11 @@ const FanPoints = {
         var config = (typeof window.SITE_CONFIG !== 'undefined') ? window.SITE_CONFIG.firebase : null;
         if (!config) return;
         firebase.initializeApp(config);
+      }
+
+      // Set up auth listener if not already connected
+      if (!this._db) {
+        this._connectFirebase();
       }
 
       var provider = new firebase.auth.GoogleAuthProvider();

@@ -35,9 +35,8 @@
     <meta name="twitter:image" content="https://layoungbandpage.com/images/artist/LAYoungPink.JPG" />
 
     <!-- All meta tags, fonts, CSS links here (keeping original) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Self-hosted fonts (no CDN) -->
+    <link rel="stylesheet" href="css/fonts.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/components.css" />
     <link rel="stylesheet" href="css/layout.css" />
@@ -199,10 +198,7 @@
       </div>
     </footer>
 
-    <!-- Firebase SDK (shared goldbottoment project) -->
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+    <!-- Firebase SDK loaded on demand by fan-points.js (not on page load) -->
 
     <!-- JavaScript Modules -->
     <script src="js/config.js"></script>
