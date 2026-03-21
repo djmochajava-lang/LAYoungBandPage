@@ -154,16 +154,13 @@
 
       card.appendChild(imgEl);
       fragment.appendChild(card);
+
+      // Attach tap handler immediately
+      attachFeedCardHandler(card);
     }
 
     grid.appendChild(fragment);
     feedLoaded = end;
-
-    // Attach tap handlers to new cards
-    var cards = grid.querySelectorAll('.mg-feed-card');
-    for (var j = feedLoaded - (end - (feedLoaded - BATCH_SIZE > 0 ? BATCH_SIZE : feedLoaded)); j < cards.length; j++) {
-      attachFeedCardHandler(cards[j]);
-    }
   }
 
   function attachFeedCardHandler(card) {
