@@ -1976,6 +1976,31 @@
   object-fit: cover;
   display: block;
 }
+/* Liked state — gold glow */
+.mg-story-thumb.liked {
+  border-color: var(--color-accent, #e63946);
+  box-shadow: 0 0 10px rgba(230, 57, 70, 0.4);
+}
+
+/* Heart pop animation on tap */
+.mg-thumb-heart {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 2rem;
+  color: var(--color-accent, #e63946);
+  pointer-events: none;
+  z-index: 5;
+  animation: mgThumbHeart 0.7s ease-out forwards;
+  filter: drop-shadow(0 0 6px rgba(230, 57, 70, 0.6));
+}
+@keyframes mgThumbHeart {
+  0%   { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+  40%  { transform: translate(-50%, -50%) scale(1.4); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+
 .mg-story-label {
   position: absolute;
   bottom: 0;

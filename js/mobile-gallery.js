@@ -54,13 +54,23 @@
       }
     });
 
-    // Tap to open story viewer
+    // Single tap = like, double tap = open story viewer
+    var lastTapTime = 0;
     row.addEventListener('click', function (e) {
       var thumb = e.target.closest('.mg-story-thumb');
-      if (thumb) {
+      if (!thumb) return;
+
+      var now = Date.now();
+      if (now - lastTapTime < 350) {
+        // Double tap — open story viewer
         var idx = parseInt(thumb.getAttribute('data-index'), 10);
         openStoryViewer(idx);
+      } else {
+        // Single tap — like with heart animation
+        thumb.classList.toggle('liked');
+        showThumbHeart(thumb);
       }
+      lastTapTime = now;
     });
   }
 
@@ -281,6 +291,14 @@
         if (e.key === 'Enter') btn.click();
       });
     });
+  }
+
+  function showThumbHeart(thumb) {
+    var heart = document.createElement('div');
+    heart.className = 'mg-thumb-heart';
+    heart.textContent = '\u2764';
+    thumb.appendChild(heart);
+    setTimeout(function () { heart.remove(); }, 800);
   }
 
   function escapeHtml(str) {
