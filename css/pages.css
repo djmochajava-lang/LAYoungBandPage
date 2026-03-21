@@ -2182,6 +2182,20 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   padding: 14px 14px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.mg-page-share {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s;
+}
+.mg-page-share:active {
+  color: #ffd700;
 }
 .mg-feed {
   padding: 0;
@@ -2247,6 +2261,9 @@
 }
 .mg-post-action:active {
   color: var(--color-primary, #ffd700);
+}
+.mg-share-btn {
+  margin-left: auto;
 }
 .mg-like-btn.liked {
   color: var(--color-accent, #e63946);

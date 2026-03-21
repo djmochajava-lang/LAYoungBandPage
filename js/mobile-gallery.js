@@ -25,6 +25,7 @@
     buildFeed();
     setupStoryViewer();
     setupFeedViewer();
+    setupPageShare();
     setupSecretLogin();
     console.log('📱 MobileGallery initialized');
   }
@@ -261,6 +262,9 @@
         '</button>' +
         '<button class="mg-post-action mg-comment-toggle" aria-label="Comment">' +
           '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg>' +
+        '</button>' +
+        '<button class="mg-post-action mg-share-btn" aria-label="Share" data-caption="' + escapeHtml(img.caption) + '" data-src="' + escapeHtml(img.src) + '">' +
+          '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>' +
         '</button>';
 
       // Caption
@@ -318,6 +322,20 @@
         if (comments.classList.contains('open')) {
           comments.querySelector('input').focus();
         }
+      });
+    });
+
+    // Share buttons
+    feed.querySelectorAll('.mg-share-btn').forEach(function (btn) {
+      if (btn._mgBound) return;
+      btn._mgBound = true;
+      btn.addEventListener('click', function () {
+        var caption = btn.getAttribute('data-caption') || '';
+        shareContent(
+          'L.A. Young — ' + caption,
+          '🎶 Check out this photo from L.A. Young Band Page!',
+          window.location.origin + '/#gallery'
+        );
       });
     });
 
@@ -477,6 +495,52 @@
         if (idx >= 0) openFeedViewer(idx);
       });
     });
+  }
+
+  // ─── SHARING (native share sheet) ───
+
+  function shareContent(title, text, url) {
+    if (navigator.share) {
+      navigator.share({ title: title, text: text, url: url })
+        .catch(function () { /* user cancelled — ignore */ });
+    } else {
+      // Desktop fallback: copy link to clipboard
+      copyToClipboard(url);
+      showAdminToast('Link copied to clipboard');
+    }
+  }
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).catch(function () {});
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      ta.remove();
+    }
+  }
+
+  function setupPageShare() {
+    // Add a share button next to the "Feed" label
+    var feedLabel = document.querySelector('.mg-feed-label');
+    if (!feedLabel || feedLabel.querySelector('.mg-page-share')) return;
+
+    var btn = document.createElement('button');
+    btn.className = 'mg-page-share';
+    btn.setAttribute('aria-label', 'Share page');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>';
+    btn.addEventListener('click', function () {
+      shareContent(
+        'L.A. Young Band Page',
+        '🎶 Check out L.A. Young — Soul, Jazz & Blues in Full Color!',
+        window.location.origin + '/#gallery'
+      );
+    });
+    feedLabel.appendChild(btn);
   }
 
   // ─── ADMIN: Gallery editing (admin/artist role only) ───
