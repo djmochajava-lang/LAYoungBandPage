@@ -701,54 +701,66 @@
 
     if (!_adminDb) _adminDb = firebase.firestore();
 
-    // Handle redirect result first (mobile sign-in flow)
-    firebase.auth().getRedirectResult()
-      .then(function (result) {
-        if (result && result.user) {
-          console.log('🔑 Redirect sign-in complete:', result.user.email);
+    // Try to get user from FanPoints first (it handles redirect result)
+    function tryGetUser() {
+      // Check FanPoints user
+      if (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser) {
+        return FanPoints._firebaseUser;
+      }
+      // Check Firebase directly
+      if (typeof firebase !== 'undefined' && firebase.auth) {
+        return firebase.auth().currentUser;
+      }
+      return null;
+    }
+
+    var user = tryGetUser();
+    if (user) {
+      showAdminToast('User found: ' + user.email);
+      _adminUser = user;
+      fetchRole(user);
+      return;
+    }
+
+    // User not available yet — wait for auth to resolve
+    showAdminToast('Waiting for auth...');
+    var attempts = 0;
+    var pollInterval = setInterval(function () {
+      attempts++;
+      var u = tryGetUser();
+      if (u) {
+        clearInterval(pollInterval);
+        showAdminToast('User found: ' + u.email);
+        _adminUser = u;
+        fetchRole(u);
+      } else if (attempts >= 20) {
+        clearInterval(pollInterval);
+        showAdminToast('No sign-in detected after 10s. Triple-tap to try again.');
+        try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
+        hideAdminUI();
+      }
+    }, 500);
+  }
+
+  function fetchRole(user) {
+    _adminDb.collection('layoung-fans').doc(user.uid).get()
+      .then(function (doc) {
+        var data = doc.exists ? doc.data() : {};
+        var role = data.role || 'fan';
+        showAdminToast('Doc exists: ' + doc.exists + ' | Role: ' + role);
+
+        if (role === 'admin' || role === 'artist') {
+          showAdminUI(user.displayName, role);
+        } else {
+          showAdminToast('Need role "admin" or "artist" in layoung-fans/' + user.uid);
+          hideAdminUI();
+          try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
         }
       })
       .catch(function (err) {
-        console.log('🔑 Redirect result error:', err.message);
-      });
-
-    firebase.auth().onAuthStateChanged(function (user) {
-      if (!user) {
+        showAdminToast('Firestore error: ' + err.message);
         hideAdminUI();
-        // Show toast so user knows auth didn't work
-        var pending = false;
-        try { pending = !!localStorage.getItem('mg-admin-pending'); } catch (e) {}
-        if (pending) {
-          showAdminToast('Sign-in not detected. Try triple-tap again.');
-          try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
-        }
-        return;
-      }
-      _adminUser = user;
-
-      console.log('🔑 Checking role for uid:', user.uid, 'email:', user.email);
-      showAdminToast('Signed in as ' + (user.email || user.displayName));
-
-      _adminDb.collection('layoung-fans').doc(user.uid).get()
-        .then(function (doc) {
-          var data = doc.exists ? doc.data() : {};
-          var role = data.role || 'fan';
-          console.log('🔑 Doc exists:', doc.exists, '| Role found:', role, '| Full data:', JSON.stringify(data));
-
-          if (role === 'admin' || role === 'artist') {
-            showAdminUI(user.displayName, role);
-          } else {
-            showAdminToast('Signed in but role is "' + role + '" — need "admin" or "artist" in layoung-fans/' + user.uid);
-            hideAdminUI();
-            try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
-          }
-        })
-        .catch(function (err) {
-          console.log('🔑 Firestore error:', err.message);
-          showAdminToast('Firestore error: ' + err.message);
-          hideAdminUI();
-        });
-    });
+      });
   }
 
   function showAdminUI(name, role) {
