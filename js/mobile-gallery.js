@@ -121,7 +121,9 @@
     viewer.classList.add('open');
     document.body.style.overflow = 'hidden';
     var banner = document.querySelector('.top-banner');
+    var footer = document.querySelector('.site-footer');
     if (banner) banner.style.display = 'none';
+    if (footer) footer.style.display = 'none';
     showStory();
     startStoryTimer();
   }
@@ -132,7 +134,9 @@
     viewer.classList.remove('open');
     document.body.style.overflow = '';
     var banner = document.querySelector('.top-banner');
+    var footer = document.querySelector('.site-footer');
     if (banner) banner.style.display = '';
+    if (footer) footer.style.display = '';
   }
 
   function navigateStory(dir) {
