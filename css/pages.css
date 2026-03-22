@@ -2609,6 +2609,88 @@
   color: #aaa;
 }
 
+/* ── ADMIN: Trash / Deleted Posts Panel ── */
+.mg-trash-panel {
+  display: none;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.92);
+  z-index: 9400;
+  overflow-y: auto;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.mg-trash-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.25);
+}
+
+.mg-trash-title {
+  color: #ffd700;
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.mg-trash-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.mg-trash-empty {
+  color: #888;
+  text-align: center;
+  padding: 32px 0;
+  font-size: 0.9rem;
+}
+
+.mg-trash-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.mg-trash-thumb {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+  background: #222;
+}
+
+.mg-trash-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mg-trash-caption {
+  color: #ccc;
+  font-size: 0.8rem;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mg-restore-btn {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
 /* ── ADMIN: Add card panel overlay ── */
 .mg-admin-add-panel {
   position: fixed;

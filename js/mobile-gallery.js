@@ -213,8 +213,17 @@
 
   function buildFeed() {
     feedLoaded = 0;
-    loadMoreFeed();
+    // Try Firestore first; fall back to static eventImages on failure
+    loadFirestoreFeed(function (success) {
+      if (!success) {
+        loadMoreFeed();
+        setupFeedSentinel();
+      }
+      // If success, Firestore handled the full feed — no sentinel needed for static images
+    });
+  }
 
+  function setupFeedSentinel() {
     var sentinel = document.getElementById('mg-feed-sentinel');
     if (sentinel) {
       feedObserver = new IntersectionObserver(function (entries) {
@@ -224,6 +233,102 @@
       }, { rootMargin: '300px' });
       feedObserver.observe(sentinel);
     }
+  }
+
+  // ─── FIRESTORE FEED LOADER ───
+
+  function loadFirestoreFeed(callback) {
+    loadFirebaseForAdmin(function () {
+      try { ensureFirebase(); } catch (e) {
+        console.warn('[Gallery] Firebase init failed:', e.message);
+        if (callback) callback(false);
+        return;
+      }
+
+      _publicDb = _adminDb;
+
+      _publicDb.collection('gallery_feed')
+        .orderBy('createdAt', 'desc')
+        .limit(50)
+        .get()
+        .then(function (snapshot) {
+          var feed = document.getElementById('mg-feed');
+          if (!feed) { if (callback) callback(false); return; }
+
+          if (snapshot.empty) { if (callback) callback(false); return; }
+
+          var fragment = document.createDocumentFragment();
+          var count = 0;
+
+          snapshot.forEach(function (doc) {
+            var data = doc.data();
+            if (data.deleted === true) return; // skip soft-deleted
+
+            var post = document.createElement('div');
+            post.className = 'mg-post';
+            post.dataset.docid = doc.id;
+            post.dataset.source = 'firestore';
+
+            var header = document.createElement('div');
+            header.className = 'mg-post-header';
+            header.innerHTML = '<span class="mg-post-author">BACKSTAGE</span>';
+
+            var imgWrap = document.createElement('div');
+            imgWrap.className = 'mg-post-img';
+            var imgEl = document.createElement('img');
+            imgEl.src = data.src || '';
+            imgEl.alt = data.caption || '';
+            imgEl.loading = 'lazy';
+            imgWrap.appendChild(imgEl);
+
+            var actions = document.createElement('div');
+            actions.className = 'mg-post-actions';
+            actions.innerHTML =
+              '<button class="mg-post-action mg-like-btn" aria-label="Like">' +
+                '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="none" stroke="currentColor" stroke-width="2"/></svg>' +
+                '<span class="mg-like-count">0</span>' +
+              '</button>' +
+              '<button class="mg-post-action mg-comment-toggle" aria-label="Comment">' +
+                '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg>' +
+              '</button>' +
+              '<button class="mg-post-action mg-share-btn" aria-label="Share" data-caption="' + escapeHtml(data.caption || '') + '">' +
+                '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>' +
+              '</button>';
+
+            var caption = document.createElement('div');
+            caption.className = 'mg-post-caption';
+            caption.innerHTML = '<strong class="mg-caption-name">L.A. Young:</strong> <span class="mg-caption-text">' + escapeHtml(data.caption || '') + '</span>';
+
+            var comments = document.createElement('div');
+            comments.className = 'mg-post-comments';
+            comments.innerHTML =
+              '<div class="mg-comments-list"></div>' +
+              '<div class="mg-comment-input">' +
+                '<input type="text" placeholder="Add a comment..." maxlength="200">' +
+                '<button class="mg-comment-send">Post</button>' +
+              '</div>';
+
+            post.appendChild(header);
+            post.appendChild(imgWrap);
+            post.appendChild(actions);
+            post.appendChild(caption);
+            post.appendChild(comments);
+            fragment.appendChild(post);
+            count++;
+          });
+
+          if (count === 0) { if (callback) callback(false); return; }
+
+          feed.appendChild(fragment);
+          bindPostActions(feed);
+          _firestoreMode = true;
+          if (callback) callback(true);
+        })
+        .catch(function (err) {
+          console.warn('[Gallery] Firestore feed failed:', err.message);
+          if (callback) callback(false);
+        });
+    });
   }
 
   function loadMoreFeed() {
@@ -593,6 +698,10 @@
   var _editMode = false;
   var _secretTaps = 0;
   var _secretTimer = null;
+  var _publicDb = null;        // Firestore instance for public reads (set by loadFirestoreFeed)
+  var _firestoreMode = false;  // true when feed loaded from Firestore (vs static fallback)
+  var _trashVisible = false;
+  var _trashBtn = null;
 
   function setupSecretLogin() {
     var label = document.querySelector('.mg-stories-label');
@@ -985,6 +1094,18 @@
       }
       addBtn.style.display = 'block';
 
+      // Trash button — view deleted posts
+      if (!_trashBtn) {
+        _trashBtn = document.createElement('button');
+        _trashBtn.className = 'mg-admin-btn mg-admin-btn-cancel';
+        _trashBtn.style.cssText = 'width:100%;padding:10px;margin:4px 0 12px;border-radius:10px;font-size:0.9rem;';
+        _trashBtn.textContent = '🗑 View Deleted Posts';
+        _trashBtn.addEventListener('click', function () { toggleTrashView(); });
+        var feedEl = document.getElementById('mg-feed');
+        feedEl.parentNode.insertBefore(_trashBtn, feedEl);
+      }
+      _trashBtn.style.display = 'block';
+
     } else {
       fab.classList.remove('editing');
 
@@ -1001,6 +1122,9 @@
 
       var addBtn = document.getElementById('mg-admin-add-trigger');
       if (addBtn) addBtn.style.display = 'none';
+
+      if (_trashBtn) _trashBtn.style.display = 'none';
+      if (_trashVisible) toggleTrashView(); // close trash if open
     }
   }
 
@@ -1027,9 +1151,8 @@
       deletedBy: _adminUser.uid,
       deletedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true }).then(function () {
-      postEl.style.opacity = '0.3';
-      postEl.style.pointerEvents = 'none';
-      showAdminToast('Post deleted');
+      postEl.remove();
+      showAdminToast('Post deleted — tap 🗑 Trash to restore');
     }).catch(function (err) {
       showAdminToast('Error: ' + err.message);
     });
@@ -1045,6 +1168,7 @@
       src: url,
       caption: caption,
       type: 'custom',
+      deleted: false,
       createdBy: _adminUser.uid,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }).then(function (docRef) {
@@ -1089,6 +1213,104 @@
       if (charCount) charCount.textContent = '0';
       document.getElementById('mg-admin-add-panel').style.display = 'none';
       showAdminToast('✓ Post added');
+    }).catch(function (err) {
+      showAdminToast('Error: ' + err.message);
+    });
+  }
+
+  // ─── TRASH VIEW (restore deleted posts) ───
+
+  function toggleTrashView() {
+    _trashVisible = !_trashVisible;
+    var panel = document.getElementById('mg-trash-panel');
+    if (!panel) panel = createTrashPanel();
+    if (_trashVisible) {
+      panel.style.display = 'flex';
+      loadTrashView(panel);
+    } else {
+      panel.style.display = 'none';
+    }
+  }
+
+  function createTrashPanel() {
+    var panel = document.createElement('div');
+    panel.id = 'mg-trash-panel';
+    panel.className = 'mg-trash-panel';
+    panel.innerHTML =
+      '<div class="mg-trash-header">' +
+        '<h3 class="mg-trash-title">🗑 Deleted Posts</h3>' +
+        '<button class="mg-admin-btn mg-admin-btn-cancel mg-trash-close">✕ Close</button>' +
+      '</div>' +
+      '<div class="mg-trash-list" id="mg-trash-list">' +
+        '<p class="mg-trash-empty">Loading…</p>' +
+      '</div>';
+    var page = document.querySelector('.mg-page') || document.body;
+    page.appendChild(panel);
+    panel.querySelector('.mg-trash-close').addEventListener('click', function () {
+      _trashVisible = false;
+      panel.style.display = 'none';
+    });
+    return panel;
+  }
+
+  function loadTrashView(panel) {
+    var list = panel.querySelector('#mg-trash-list');
+    if (!list) return;
+    list.innerHTML = '<p class="mg-trash-empty">Loading…</p>';
+
+    var db = _adminDb || _publicDb;
+    if (!db) { list.innerHTML = '<p class="mg-trash-empty">Not connected to database</p>'; return; }
+
+    db.collection('gallery_feed')
+      .orderBy('createdAt', 'desc')
+      .limit(100)
+      .get()
+      .then(function (snapshot) {
+        var items = [];
+        snapshot.forEach(function (doc) {
+          if (doc.data().deleted === true) items.push({ id: doc.id, data: doc.data() });
+        });
+
+        if (items.length === 0) {
+          list.innerHTML = '<p class="mg-trash-empty">No deleted posts — trash is empty</p>';
+          return;
+        }
+
+        var html = '';
+        items.forEach(function (item) {
+          html +=
+            '<div class="mg-trash-item" data-docid="' + escapeHtml(item.id) + '">' +
+              '<img src="' + escapeHtml(item.data.src || '') + '" alt="" class="mg-trash-thumb">' +
+              '<div class="mg-trash-info">' +
+                '<p class="mg-trash-caption">' + escapeHtml(item.data.caption || item.id) + '</p>' +
+              '</div>' +
+              '<button class="mg-admin-btn mg-admin-btn-save mg-restore-btn" data-docid="' + escapeHtml(item.id) + '">Restore</button>' +
+            '</div>';
+        });
+        list.innerHTML = html;
+
+        list.querySelectorAll('.mg-restore-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            restorePost(btn.dataset.docid, btn.closest('.mg-trash-item'));
+          });
+        });
+      })
+      .catch(function (err) {
+        list.innerHTML = '<p class="mg-trash-empty">Error: ' + escapeHtml(err.message) + '</p>';
+      });
+  }
+
+  function restorePost(docId, trashItemEl) {
+    var db = _adminDb || _publicDb;
+    if (!db || !_adminUser) return;
+
+    db.collection('gallery_feed').doc(docId).update({
+      deleted: false,
+      restoredBy: _adminUser.uid,
+      restoredAt: firebase.firestore.FieldValue.serverTimestamp()
+    }).then(function () {
+      showAdminToast('✓ Restored — reload page to see it in the feed');
+      if (trashItemEl) trashItemEl.remove();
     }).catch(function (err) {
       showAdminToast('Error: ' + err.message);
     });
