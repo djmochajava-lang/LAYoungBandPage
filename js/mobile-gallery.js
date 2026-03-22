@@ -728,24 +728,36 @@
   }
 
   function fetchRole(user) {
-    _adminDb.collection('layoung-fans').doc(user.uid).get()
-      .then(function (doc) {
-        var data = doc.exists ? doc.data() : {};
-        var role = data.role || 'fan';
-        showAdminToast('Doc exists: ' + doc.exists + ' | Role: ' + role);
+    // Always log to console so UID is visible even if toast is missed
+    console.log('🔑 Admin auth resolved:', user.email, '| UID:', user.uid);
+    showAdminToast('Signed in: ' + (user.email || user.uid.slice(0, 8)));
 
-        if (role === 'admin' || role === 'artist') {
-          showAdminUI(user.displayName, role);
-        } else {
-          showAdminToast('Need role "admin" or "artist" in layoung-fans/' + user.uid);
+    if (!_adminDb) _adminDb = firebase.firestore();
+
+    setTimeout(function () {
+      showAdminToast('Checking role…');
+      _adminDb.collection('layoung-fans').doc(user.uid).get()
+        .then(function (doc) {
+          var data = doc.exists ? doc.data() : {};
+          var role = data.role || 'fan';
+          console.log('🔑 Firestore doc:', doc.exists, '| role:', role, '| path: layoung-fans/' + user.uid);
+
+          if (role === 'admin' || role === 'artist') {
+            showAdminToast('✓ ' + role + ' access granted');
+            showAdminUI(user.displayName, role);
+          } else {
+            // Keep toast long enough to read — UID is in console
+            showAdminToast('No role. Check console for UID.', 8000);
+            console.warn('🔑 Need role admin/artist in Firestore.\nCollection: layoung-fans\nDocument ID (UID):', user.uid, '\nAdd field: role = "admin" or role = "artist"');
+            hideAdminUI();
+          }
+        })
+        .catch(function (err) {
+          showAdminToast('Firestore error: ' + err.message, 6000);
+          console.error('🔑 Firestore read failed:', err.code, err.message);
           hideAdminUI();
-          try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
-        }
-      })
-      .catch(function (err) {
-        showAdminToast('Firestore error: ' + err.message);
-        hideAdminUI();
-      });
+        });
+    }, 800);
   }
 
   function showAdminUI(name, role) {
