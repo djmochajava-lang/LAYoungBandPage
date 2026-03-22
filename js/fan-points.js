@@ -737,6 +737,13 @@ const FanPoints = {
    * flagged comments are saved but hidden (commentVisible = false).
    * Returns a Promise that resolves with { status: 'posted' | 'review' }.
    */
+  /**
+   * Post (or replace) the signed-in fan's wall comment.
+   * Writes to the dedicated `fan-wall` collection (doc ID = uid).
+   * Using set() without merge replaces the whole doc, so re-posting
+   * automatically removes the old comment and bumps the fan to the top.
+   * One comment per fan — enforced by the doc ID being the fan's uid.
+   */
   saveComment: function(commentText) {
     if (!this._firebaseUser || !this._db) {
       return Promise.reject(new Error('Must be signed in to comment'));
@@ -746,29 +753,33 @@ const FanPoints = {
     }
 
     var trimmed = commentText.trim().substring(0, 500);
-    var flagged = this._isInappropriate(trimmed);
-    var uid = this._firebaseUser.uid;
-    var docRef = this._db.collection('layoung-fans').doc(uid);
-    var self = this;
+    var flagged  = this._isInappropriate(trimmed);
+    var uid      = this._firebaseUser.uid;
+    var self     = this;
 
-    return docRef.set({
-      comment: trimmed,
-      commentedAt: firebase.firestore.FieldValue.serverTimestamp(),
-      commentVisible: !flagged,
+    // Full replace (no merge) so old comment fields are gone on re-post
+    return this._db.collection('fan-wall').doc(uid).set({
+      uid:         uid,
       displayName: this._firebaseUser.displayName || '',
-      photoURL: this._firebaseUser.photoURL || '',
-      lastActive: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).then(function() {
-      // Award points for posting (one-time)
+      photoURL:    this._firebaseUser.photoURL    || '',
+      comment:     trimmed,
+      commentedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      visible:     !flagged
+    }).then(function() {
+      // Award points for posting (one-time only)
       var pv = self.POINT_VALUES['activity:fanwall-post'];
-      if (pv) self.award('activity:fanwall-post', pv.points, pv.label);
+      if (pv && !self._earned['activity:fanwall-post']) {
+        self.award('activity:fanwall-post', pv.points, pv.label);
+      }
       return { status: flagged ? 'review' : 'posted' };
     });
   },
 
   /**
-   * Fetch the 100 most recent visible fan comments from Firestore.
-   * Only returns comments where commentVisible == true.
+   * Fetch the most recent fan wall comments from the `fan-wall` collection.
+   * Ordered by commentedAt desc — newest first.
+   * Invisible (flagged) comments are filtered client-side so no composite
+   * index is needed (keeps Firestore free tier costs minimal).
    * Returns a Promise resolving to an array of { displayName, photoURL, comment, commentedAt }.
    */
   getRecentComments: function(limit) {
@@ -776,8 +787,7 @@ const FanPoints = {
 
     limit = limit || 100;
 
-    return this._db.collection('layoung-fans')
-      .where('commentVisible', '==', true)
+    return this._db.collection('fan-wall')
       .orderBy('commentedAt', 'desc')
       .limit(limit)
       .get()
@@ -785,13 +795,16 @@ const FanPoints = {
         var comments = [];
         snapshot.forEach(function(doc) {
           var data = doc.data();
-          if (data.comment && data.commentedAt) {
+          // Skip flagged comments (visible === false) — filtered here to avoid
+          // a composite index on visible+commentedAt which would cost more reads
+          if (data.comment && data.commentedAt && data.visible !== false) {
             comments.push({
               displayName: data.displayName || 'Anonymous',
-              photoURL: data.photoURL || '',
-              comment: data.comment,
-              commentedAt: data.commentedAt.toDate ? data.commentedAt.toDate() : new Date(data.commentedAt),
-              points: data.monthlyPoints || 0
+              photoURL:    data.photoURL    || '',
+              comment:     data.comment,
+              commentedAt: data.commentedAt.toDate
+                ? data.commentedAt.toDate()
+                : new Date(data.commentedAt)
             });
           }
         });
