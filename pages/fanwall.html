@@ -163,9 +163,18 @@
     // ---- Render Comments from Firebase ----
     function renderComments() {
       if (typeof FanPoints === 'undefined' || !FanPoints.getRecentComments) {
-        // FanPoints not loaded or no Firebase — show empty
         feed.innerHTML = '';
         emptyState.style.display = 'block';
+        return;
+      }
+
+      // If Firestore isn't connected yet (user not signed in on this device),
+      // load Firebase anyway so public comments are always visible to everyone.
+      if (!FanPoints._db) {
+        FanPoints._loadFirebase(function() {
+          FanPoints._connectFirebase();
+          renderComments();
+        });
         return;
       }
 
