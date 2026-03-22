@@ -613,23 +613,48 @@
         try { localStorage.removeItem('mg-admin-intent'); } catch (e) {}
         showAdminToast('Verifying…');
 
-        // onAuthStateChanged fires null FIRST on every page load before
-        // Firebase resolves the redirect. Only show an error after a timeout.
         var _authResolved = false;
-        firebase.auth().onAuthStateChanged(function (user) {
-          if (_authResolved) return;
-          if (user) {
-            _authResolved = true;
-            _adminUser = user;
-            fetchRole(user);
+
+        function resolveAdminUser(user) {
+          if (_authResolved || !user) return false;
+          _authResolved = true;
+          _adminUser = user;
+          _adminDb = _adminDb || firebase.firestore();
+          fetchRole(user);
+          return true;
+        }
+
+        // Strategy 1: FanPoints may have already resolved the user
+        // (shares the same Firebase instance, already has auth from fan join)
+        if (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser) {
+          resolveAdminUser(FanPoints._firebaseUser);
+        }
+
+        // Strategy 2: Firebase auth may already have currentUser
+        if (!_authResolved && firebase.auth().currentUser) {
+          resolveAdminUser(firebase.auth().currentUser);
+        }
+
+        // Strategy 3: onAuthStateChanged — fires immediately with current state
+        if (!_authResolved) {
+          firebase.auth().onAuthStateChanged(function (user) {
+            resolveAdminUser(user);
+          });
+        }
+
+        // Strategy 4: Poll every 500ms — catches late auth resolution
+        var _pollCount = 0;
+        var _poll = setInterval(function () {
+          _pollCount++;
+          var u = (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser)
+                  || firebase.auth().currentUser;
+          if (resolveAdminUser(u) || _pollCount >= 20) {
+            clearInterval(_poll);
+            if (!_authResolved) {
+              showAdminToast('Sign-in failed — triple-tap to try again');
+            }
           }
-          // null on first fire is normal — the timeout below catches real failures
-        });
-        setTimeout(function () {
-          if (!_authResolved) {
-            showAdminToast('Sign-in failed — triple-tap to try again');
-          }
-        }, 6000);
+        }, 500);
       }
     });
 
@@ -696,35 +721,31 @@
       return;
     }
 
+    // Always try popup first — Firebase is preloaded so this fires synchronously
+    // within the tap gesture (works on iOS Safari). Only fall back to redirect
+    // if the browser explicitly blocks the popup.
+    showAdminToast('Opening sign-in…');
     var provider = new firebase.auth.GoogleAuthProvider();
 
-    // Touch device = redirect (popup is blocked by mobile browsers unless
-    // called synchronously from a tap, and Firebase/iOS uses redirect internally anyway)
-    // Desktop = popup (instant result, no page reload)
-    var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
-
-    if (isTouch) {
-      showAdminToast('Opening sign-in…');
-      try { localStorage.setItem('mg-admin-intent', '1'); } catch (e) {}
-      firebase.auth().signInWithRedirect(provider);
-    } else {
-      showAdminToast('Opening sign-in…');
-      firebase.auth().signInWithPopup(provider)
-        .then(function (result) {
-          _adminUser = result.user;
-          fetchRole(result.user);
-        })
-        .catch(function (err) {
-          if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
-            showAdminToast('Sign-in cancelled');
-          } else if (err.code === 'auth/popup-blocked') {
-            showAdminToast('Popup blocked — allow popups for this site');
-          } else {
-            showAdminToast('Sign-in error: ' + err.message);
-          }
-          console.warn('🔑 Admin sign-in failed:', err.code, err.message);
-        });
-    }
+    firebase.auth().signInWithPopup(provider)
+      .then(function (result) {
+        _adminUser = result.user;
+        _adminDb = _adminDb || firebase.firestore();
+        fetchRole(result.user);
+      })
+      .catch(function (err) {
+        console.warn('🔑 Admin sign-in:', err.code, err.message);
+        if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+          showAdminToast('Sign-in cancelled');
+        } else if (err.code === 'auth/popup-blocked') {
+          // Popup blocked — fall back to redirect
+          showAdminToast('Opening sign-in page…');
+          try { localStorage.setItem('mg-admin-intent', '1'); } catch (e) {}
+          firebase.auth().signInWithRedirect(provider);
+        } else {
+          showAdminToast('Error: ' + err.code);
+        }
+      });
   }
 
   function fetchRole(user) {
