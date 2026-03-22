@@ -684,8 +684,14 @@
         firebase.auth().signInWithRedirect(provider);
       } else {
         firebase.auth().signInWithPopup(provider)
-          .then(function () { checkAdminRole(); })
+          .then(function (result) {
+            _adminUser = result.user;
+            fetchRole(result.user);
+          })
           .catch(function (err) {
+            if (err.code !== 'auth/popup-closed-by-user') {
+              showAdminToast('Sign-in failed: ' + err.message);
+            }
             console.warn('Admin sign-in failed:', err.message);
           });
       }
