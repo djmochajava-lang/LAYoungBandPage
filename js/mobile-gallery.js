@@ -595,33 +595,43 @@
   var _secretTimer = null;
 
   function setupSecretLogin() {
-    // Triple-tap on "Reels" label to trigger admin login
     var label = document.querySelector('.mg-stories-label');
     if (!label) return;
 
+    // Preload Firebase now so it's ready synchronously when user triple-taps
+    // (mobile browsers block popups if Firebase loads async inside the tap handler)
+    loadFirebaseForAdmin(function () {
+      if (typeof firebase === 'undefined') return;
+      ensureFirebase();
+
+      // If returning from a mobile admin redirect, pick up the signed-in user
+      // via onAuthStateChanged — avoids calling getRedirectResult() which
+      // FanPoints already consumed.
+      var adminIntent = false;
+      try { adminIntent = !!localStorage.getItem('mg-admin-intent'); } catch (e) {}
+      if (adminIntent) {
+        try { localStorage.removeItem('mg-admin-intent'); } catch (e) {}
+        showAdminToast('Verifying…');
+        firebase.auth().onAuthStateChanged(function (user) {
+          if (user && !_adminUser) {
+            _adminUser = user;
+            fetchRole(user);
+          } else if (!user) {
+            showAdminToast('Sign-in failed — try again');
+          }
+        });
+      }
+    });
+
+    // Triple-tap handler — Firebase is already loaded by now
     label.addEventListener('click', function () {
       _secretTaps++;
       clearTimeout(_secretTimer);
       _secretTimer = setTimeout(function () { _secretTaps = 0; }, 800);
-
       if (_secretTaps >= 3) {
         _secretTaps = 0;
-        console.log('🔑 Triple-tap detected — triggering admin login');
-        showAdminToast('Connecting...');
         triggerAdminLogin();
       }
-    });
-
-    // If Firebase is already loaded and a user is signed in, silently restore admin UI
-    loadFirebaseForAdmin(function () {
-      ensureFirebase();
-      firebase.auth().onAuthStateChanged(function (user) {
-        if (user && !_adminUser) {
-          _adminUser = user;
-          _adminDb = _adminDb || firebase.firestore();
-          fetchRole(user);
-        }
-      });
     });
   }
 
@@ -661,26 +671,34 @@
   }
 
   function triggerAdminLogin() {
-    loadFirebaseForAdmin(function () {
-      if (typeof firebase === 'undefined') {
-        showAdminToast('Firebase unavailable');
-        return;
-      }
-      ensureFirebase();
+    if (typeof firebase === 'undefined') {
+      showAdminToast('Not ready — try again');
+      return;
+    }
+    ensureFirebase();
 
-      // Already signed in — go straight to role check
-      var currentUser = firebase.auth().currentUser
-        || (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser);
-      if (currentUser) {
-        _adminUser = currentUser;
-        fetchRole(currentUser);
-        return;
-      }
+    // Already signed in — go straight to role check
+    var currentUser = firebase.auth().currentUser
+      || (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser);
+    if (currentUser) {
+      _adminUser = currentUser;
+      fetchRole(currentUser);
+      return;
+    }
 
-      // Always use popup — never redirect (redirect is consumed by FanPoints,
-      // causes white-screen flash, and loses the result on return)
+    var provider = new firebase.auth.GoogleAuthProvider();
+
+    // Touch device = redirect (popup is blocked by mobile browsers unless
+    // called synchronously from a tap, and Firebase/iOS uses redirect internally anyway)
+    // Desktop = popup (instant result, no page reload)
+    var isTouch = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+    if (isTouch) {
       showAdminToast('Opening sign-in…');
-      var provider = new firebase.auth.GoogleAuthProvider();
+      try { localStorage.setItem('mg-admin-intent', '1'); } catch (e) {}
+      firebase.auth().signInWithRedirect(provider);
+    } else {
+      showAdminToast('Opening sign-in…');
       firebase.auth().signInWithPopup(provider)
         .then(function (result) {
           _adminUser = result.user;
@@ -696,7 +714,7 @@
           }
           console.warn('🔑 Admin sign-in failed:', err.code, err.message);
         });
-    });
+    }
   }
 
   function fetchRole(user) {
