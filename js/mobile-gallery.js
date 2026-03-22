@@ -612,18 +612,17 @@
       }
     });
 
-    // If user was previously authed or returning from redirect, check role silently
-    var hasAuth = false;
-    var pendingAdmin = false;
-    try { hasAuth = !!localStorage.getItem('layoung-fan-authed'); } catch (e) {}
-    try { pendingAdmin = !!localStorage.getItem('mg-admin-pending'); } catch (e) {}
-    if (hasAuth || pendingAdmin) {
-      showAdminToast('Auth check: hasAuth=' + hasAuth + ' pending=' + pendingAdmin);
-      loadFirebaseForAdmin(function () {
-        showAdminToast('Firebase loaded');
-        checkAdminRole();
+    // If Firebase is already loaded and a user is signed in, silently restore admin UI
+    loadFirebaseForAdmin(function () {
+      ensureFirebase();
+      firebase.auth().onAuthStateChanged(function (user) {
+        if (user && !_adminUser) {
+          _adminUser = user;
+          _adminDb = _adminDb || firebase.firestore();
+          fetchRole(user);
+        }
       });
-    }
+    });
   }
 
   function loadFirebaseForAdmin(callback) {
@@ -653,128 +652,51 @@
     loadNext();
   }
 
+  function ensureFirebase() {
+    if (!firebase.apps.length) {
+      var config = window.SITE_CONFIG && window.SITE_CONFIG.firebase;
+      if (config) firebase.initializeApp(config);
+    }
+    if (!_adminDb) _adminDb = firebase.firestore();
+  }
+
   function triggerAdminLogin() {
     loadFirebaseForAdmin(function () {
-      if (typeof firebase === 'undefined') return;
-
-      if (!firebase.apps.length) {
-        var config = (typeof window.SITE_CONFIG !== 'undefined') ? window.SITE_CONFIG.firebase : null;
-        if (!config) return;
-        firebase.initializeApp(config);
+      if (typeof firebase === 'undefined') {
+        showAdminToast('Firebase unavailable');
+        return;
       }
+      ensureFirebase();
 
-      _adminDb = firebase.firestore();
-
-      // Check if already signed in
-      var user = firebase.auth().currentUser;
-      if (user) {
-        _adminUser = user;
-        checkAdminRole();
+      // Already signed in — go straight to role check
+      var currentUser = firebase.auth().currentUser
+        || (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser);
+      if (currentUser) {
+        _adminUser = currentUser;
+        fetchRole(currentUser);
         return;
       }
 
-      // Sign in
+      // Always use popup — never redirect (redirect is consumed by FanPoints,
+      // causes white-screen flash, and loses the result on return)
+      showAdminToast('Opening sign-in…');
       var provider = new firebase.auth.GoogleAuthProvider();
-      var isMobile = (typeof MobileDetect !== 'undefined' && MobileDetect.isMobile);
-
-      if (isMobile) {
-        try { localStorage.setItem('layoung-fan-authed', '1'); } catch (e) {}
-        try { localStorage.setItem('mg-admin-pending', '1'); } catch (e) {}
-        try { localStorage.setItem('mg-admin-return', 'gallery'); } catch (e) {}
-        firebase.auth().signInWithRedirect(provider);
-      } else {
-        firebase.auth().signInWithPopup(provider)
-          .then(function (result) {
-            _adminUser = result.user;
-            fetchRole(result.user);
-          })
-          .catch(function (err) {
-            if (err.code !== 'auth/popup-closed-by-user') {
-              showAdminToast('Sign-in failed: ' + err.message);
-            }
-            console.warn('Admin sign-in failed:', err.message);
-          });
-      }
-    });
-  }
-
-  function checkAdminRole() {
-    if (typeof firebase === 'undefined') return;
-
-    if (!firebase.apps.length) {
-      var config = (typeof window.SITE_CONFIG !== 'undefined') ? window.SITE_CONFIG.firebase : null;
-      if (!config) return;
-      firebase.initializeApp(config);
-    }
-
-    if (!_adminDb) _adminDb = firebase.firestore();
-
-    // Try to get user from FanPoints first (it handles redirect result)
-    function tryGetUser() {
-      // Check FanPoints user
-      if (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser) {
-        return FanPoints._firebaseUser;
-      }
-      // Check Firebase directly
-      if (typeof firebase !== 'undefined' && firebase.auth) {
-        return firebase.auth().currentUser;
-      }
-      return null;
-    }
-
-    var user = tryGetUser();
-    if (user) {
-      showAdminToast('User found: ' + user.email);
-      _adminUser = user;
-      fetchRole(user);
-      return;
-    }
-
-    // Handle redirect result directly
-    firebase.auth().getRedirectResult()
-      .then(function (result) {
-        if (result && result.user) {
-          showAdminToast('Redirect user: ' + result.user.email);
+      firebase.auth().signInWithPopup(provider)
+        .then(function (result) {
           _adminUser = result.user;
           fetchRole(result.user);
-          return;
-        }
-        // No redirect result — listen for auth state
-        startAuthPoll();
-      })
-      .catch(function () {
-        startAuthPoll();
-      });
-
-    function startAuthPoll() {
-      // Also register our own auth listener
-      firebase.auth().onAuthStateChanged(function (authUser) {
-        if (authUser) {
-          showAdminToast('Auth resolved: ' + authUser.email);
-          _adminUser = authUser;
-          fetchRole(authUser);
-        }
-      });
-
-      // Poll as fallback
-      showAdminToast('Waiting for auth...');
-      var attempts = 0;
-      var pollInterval = setInterval(function () {
-        attempts++;
-        var u = tryGetUser();
-        if (u) {
-          clearInterval(pollInterval);
-          showAdminToast('User found: ' + u.email);
-          _adminUser = u;
-          fetchRole(u);
-        } else if (attempts >= 20) {
-          clearInterval(pollInterval);
-          showAdminToast('No sign-in after 10s. Triple-tap to try again.');
-          try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
-          hideAdminUI();
-        }
-      }, 500);
-    }
+        })
+        .catch(function (err) {
+          if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+            showAdminToast('Sign-in cancelled');
+          } else if (err.code === 'auth/popup-blocked') {
+            showAdminToast('Popup blocked — allow popups for this site');
+          } else {
+            showAdminToast('Sign-in error: ' + err.message);
+          }
+          console.warn('🔑 Admin sign-in failed:', err.code, err.message);
+        });
+    });
   }
 
   function fetchRole(user) {
