@@ -706,46 +706,49 @@
   }
 
   function triggerAdminLogin() {
-    if (typeof firebase === 'undefined') {
-      showAdminToast('Not ready — try again');
+    // The admin is already signed in as a fan via FanPoints.
+    // Check their existing session — no new sign-in needed.
+    showAdminToast('Checking…');
+
+    // Get the currently signed-in user from any available source
+    function getSignedInUser() {
+      if (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser) {
+        return FanPoints._firebaseUser;
+      }
+      if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length
+          && firebase.auth && firebase.auth().currentUser) {
+        return firebase.auth().currentUser;
+      }
+      return null;
+    }
+
+    var user = getSignedInUser();
+
+    if (user) {
+      // Signed in — check their role in Firestore
+      ensureFirebase();
+      _adminUser = user;
+      fetchRole(user);
       return;
     }
-    ensureFirebase();
 
-    // Already signed in — go straight to role check
-    var currentUser = firebase.auth().currentUser
-      || (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser);
-    if (currentUser) {
-      _adminUser = currentUser;
-      fetchRole(currentUser);
-      return;
-    }
-
-    // Always try popup first — Firebase is preloaded so this fires synchronously
-    // within the tap gesture (works on iOS Safari). Only fall back to redirect
-    // if the browser explicitly blocks the popup.
-    showAdminToast('Opening sign-in…');
-    var provider = new firebase.auth.GoogleAuthProvider();
-
-    firebase.auth().signInWithPopup(provider)
-      .then(function (result) {
-        _adminUser = result.user;
-        _adminDb = _adminDb || firebase.firestore();
-        fetchRole(result.user);
-      })
-      .catch(function (err) {
-        console.warn('🔑 Admin sign-in:', err.code, err.message);
-        if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
-          showAdminToast('Sign-in cancelled');
-        } else if (err.code === 'auth/popup-blocked') {
-          // Popup blocked — fall back to redirect
-          showAdminToast('Opening sign-in page…');
-          try { localStorage.setItem('mg-admin-intent', '1'); } catch (e) {}
-          firebase.auth().signInWithRedirect(provider);
-        } else {
-          showAdminToast('Error: ' + err.code);
-        }
-      });
+    // Not signed in — wait up to 6s for FanPoints to resolve auth state
+    // (FanPoints loads Firebase async on page load; may not be ready yet)
+    showAdminToast('Waiting for sign-in…');
+    var attempts = 0;
+    var wait = setInterval(function () {
+      attempts++;
+      var u = getSignedInUser();
+      if (u) {
+        clearInterval(wait);
+        ensureFirebase();
+        _adminUser = u;
+        fetchRole(u);
+      } else if (attempts >= 12) {
+        clearInterval(wait);
+        showAdminToast('Not signed in — join first, then triple-tap');
+      }
+    }, 500);
   }
 
   function fetchRole(user) {
