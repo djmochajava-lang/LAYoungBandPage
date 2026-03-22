@@ -249,7 +249,7 @@
 
       _publicDb.collection('gallery_feed')
         .orderBy('createdAt', 'desc')
-        .limit(50)
+        .limit(100)
         .get()
         .then(function (snapshot) {
           var feed = document.getElementById('mg-feed');
@@ -1131,15 +1131,32 @@
   function saveCaptionEdit(docId, newCaption) {
     if (!_adminDb || !_adminUser) return;
 
-    _adminDb.collection('gallery_feed').doc(docId).set({
-      caption: newCaption,
-      updatedBy: _adminUser.uid,
-      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).then(function () {
-      showAdminToast('Caption saved');
-    }).catch(function (err) {
-      showAdminToast('Error: ' + err.message);
-    });
+    var db = _adminDb;
+    var serverTs = firebase.firestore.FieldValue.serverTimestamp;
+
+    // Read the doc first so we can add createdAt if missing.
+    // Firestore excludes docs without the orderBy field from results,
+    // so any doc saved without createdAt would never appear in the feed.
+    db.collection('gallery_feed').doc(docId).get()
+      .then(function (docSnap) {
+        var update = {
+          caption: newCaption,
+          updatedBy: _adminUser.uid,
+          updatedAt: serverTs()
+        };
+        // If the doc doesn't exist or is missing createdAt, stamp it now
+        if (!docSnap.exists || !docSnap.data().createdAt) {
+          update.createdAt = serverTs();
+          update.deleted = false;
+        }
+        return db.collection('gallery_feed').doc(docId).set(update, { merge: true });
+      })
+      .then(function () {
+        showAdminToast('Caption saved');
+      })
+      .catch(function (err) {
+        showAdminToast('Error: ' + err.message);
+      });
   }
 
   function deletePost(docId, postEl) {
