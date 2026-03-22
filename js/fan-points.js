@@ -351,13 +351,17 @@ const FanPoints = {
 
       // Listen for auth state changes
       var self = this;
+      var _authEverResolved = false; // tracks whether we've seen a real user this session
+
       firebase.auth().onAuthStateChanged(function(user) {
         self._firebaseUser = user;
-        self._authPending = false; // Auth state resolved — safe to show/hide join bar
 
         if (user) {
-          // Persist that this user has signed in so the join bar stays hidden
-          // on future page loads / SPA navigations until auth resolves.
+          // Confirmed signed-in user — safe to unblock join bar logic
+          _authEverResolved = true;
+          self._authPending = false;
+
+          // Persist so join bar stays hidden on future page loads before auth resolves
           try { localStorage.setItem(self.HAS_AUTH_KEY, '1'); } catch(e) {}
           self._hideJoinBar();
           self._syncToFirestore();
@@ -373,8 +377,16 @@ const FanPoints = {
             }
           }));
         } else {
-          // Signed out — remove the persistent flag so the join bar can appear again
-          try { localStorage.removeItem(self.HAS_AUTH_KEY); } catch(e) {}
+          // null fires: either (a) Firebase initializing — keep authPending so join bar
+          // stays hidden until the real state resolves, or (b) explicit sign-out after
+          // a confirmed session — then clear everything.
+          if (_authEverResolved) {
+            // Explicit sign-out
+            self._authPending = false;
+            try { localStorage.removeItem(self.HAS_AUTH_KEY); } catch(e) {}
+          }
+          // If !_authEverResolved: this is the initial null state during Firebase startup.
+          // Leave _authPending as-is so the join bar stays suppressed until user resolves.
         }
       });
 
