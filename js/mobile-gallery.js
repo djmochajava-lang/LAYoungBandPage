@@ -612,14 +612,24 @@
       if (adminIntent) {
         try { localStorage.removeItem('mg-admin-intent'); } catch (e) {}
         showAdminToast('Verifying…');
+
+        // onAuthStateChanged fires null FIRST on every page load before
+        // Firebase resolves the redirect. Only show an error after a timeout.
+        var _authResolved = false;
         firebase.auth().onAuthStateChanged(function (user) {
-          if (user && !_adminUser) {
+          if (_authResolved) return;
+          if (user) {
+            _authResolved = true;
             _adminUser = user;
             fetchRole(user);
-          } else if (!user) {
-            showAdminToast('Sign-in failed — try again');
           }
+          // null on first fire is normal — the timeout below catches real failures
         });
+        setTimeout(function () {
+          if (!_authResolved) {
+            showAdminToast('Sign-in failed — triple-tap to try again');
+          }
+        }, 6000);
       }
     });
 
