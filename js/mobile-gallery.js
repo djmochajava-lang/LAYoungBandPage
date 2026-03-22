@@ -273,10 +273,10 @@
           '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>' +
         '</button>';
 
-      // Caption
+      // Caption — name label is permanent; only caption-text is editable
       var caption = document.createElement('div');
       caption.className = 'mg-post-caption';
-      caption.innerHTML = '<strong>L.A. Young</strong> ' + img.caption;
+      caption.innerHTML = '<strong class="mg-caption-name">L.A. Young:</strong> <span class="mg-caption-text">' + img.caption + '</span>';
 
       // Comment section
       var comments = document.createElement('div');
@@ -868,9 +868,10 @@
   /* ---- Add edit controls to a single post card ---- */
   function addEditControls(post) {
     var docId = post.dataset.docid || ('event_' + String(post.dataset.idx || 0).padStart(3, '0'));
-    var caption = post.querySelector('.mg-post-caption');
-    var header = post.querySelector('.mg-post-header');
-    if (!header || header.querySelector('.mg-edit-btn') || !caption) return;
+    var captionWrap = post.querySelector('.mg-post-caption');
+    var captionText = post.querySelector('.mg-caption-text'); // only this is editable
+    var header      = post.querySelector('.mg-post-header');
+    if (!header || header.querySelector('.mg-edit-btn') || !captionWrap) return;
 
     var editBtn = document.createElement('button');
     editBtn.className = 'mg-admin-btn mg-admin-btn-edit mg-edit-btn';
@@ -884,7 +885,7 @@
     saveBar.innerHTML =
       '<button class="mg-admin-btn mg-admin-btn-save mg-save-caption">Save</button>' +
       '<button class="mg-admin-btn mg-admin-btn-cancel mg-cancel-edit">Cancel</button>';
-    caption.insertAdjacentElement('afterend', saveBar);
+    captionWrap.insertAdjacentElement('afterend', saveBar);
 
     // Delete button at bottom of card
     var deleteWrap = document.createElement('div');
@@ -892,18 +893,27 @@
     deleteWrap.innerHTML = '<button class="mg-admin-btn mg-admin-btn-delete mg-delete-post">Delete Post</button>';
     post.appendChild(deleteWrap);
 
-    // Edit: enable inline caption editing
+    // Edit: only the caption text span becomes editable — "L.A. Young:" stays fixed
     editBtn.addEventListener('click', function () {
-      caption.setAttribute('contenteditable', 'true');
-      caption.focus();
+      if (captionText) {
+        captionText.setAttribute('contenteditable', 'true');
+        captionText.focus();
+        // Place cursor at end
+        var range = document.createRange();
+        var sel = window.getSelection();
+        range.selectNodeContents(captionText);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
       saveBar.style.display = 'flex';
       editBtn.style.display = 'none';
     });
 
-    // Save caption
+    // Save — read only from the caption text span
     saveBar.querySelector('.mg-save-caption').addEventListener('click', function () {
-      var newCaption = caption.textContent.replace(/^L\.A\.\s*Young\s*/, '').trim();
-      caption.removeAttribute('contenteditable');
+      var newCaption = captionText ? captionText.textContent.trim() : '';
+      if (captionText) captionText.removeAttribute('contenteditable');
       saveBar.style.display = 'none';
       editBtn.style.display = '';
       saveCaptionEdit(docId, newCaption);
@@ -911,7 +921,7 @@
 
     // Cancel
     saveBar.querySelector('.mg-cancel-edit').addEventListener('click', function () {
-      caption.removeAttribute('contenteditable');
+      if (captionText) captionText.removeAttribute('contenteditable');
       saveBar.style.display = 'none';
       editBtn.style.display = '';
     });
@@ -957,8 +967,8 @@
 
       posts.forEach(function (post) {
         post.classList.remove('mg-edit-mode');
-        var caption = post.querySelector('.mg-post-caption');
-        if (caption) caption.removeAttribute('contenteditable');
+        var captionText = post.querySelector('.mg-caption-text');
+        if (captionText) captionText.removeAttribute('contenteditable');
         // Reset edit state on each card
         var saveBar = post.querySelector('.mg-post-save-bar');
         var editBtn = post.querySelector('.mg-edit-btn');
@@ -1032,7 +1042,7 @@
             '<svg viewBox="0 0 24 24" width="24" height="24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" fill="none" stroke="currentColor" stroke-width="2"/></svg>' +
           '</button>' +
         '</div>' +
-        '<div class="mg-post-caption"><strong>L.A. Young</strong> ' + escapeHtml(caption) + '</div>' +
+        '<div class="mg-post-caption"><strong class="mg-caption-name">L.A. Young:</strong> <span class="mg-caption-text">' + escapeHtml(caption) + '</span></div>' +
         '<div class="mg-post-comments"><div class="mg-comments-list"></div>' +
           '<div class="mg-comment-input"><input type="text" placeholder="Add a comment..." maxlength="200"><button class="mg-comment-send">Post</button></div></div>';
 

@@ -2216,9 +2216,15 @@
 }
 .mg-post-author {
   font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  color: #fff;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--color-primary, #ffd700);
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 4px;
+  padding: 2px 8px;
 }
 .mg-post-label {
   font-size: 0.7rem;
@@ -2518,12 +2524,29 @@
   color: #fff;
 }
 
+/* Caption name label — always fixed, never editable */
+.mg-caption-name {
+  color: #fff;
+  margin-right: 4px;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Caption text — the editable portion */
+.mg-caption-text {
+  color: var(--color-text-secondary, #ccc);
+}
+
 /* ── ADMIN: Edit mode overlays on feed cards ── */
-.mg-post.mg-edit-mode .mg-post-caption[contenteditable="true"] {
+/* Highlight only the caption text span, not the whole caption div */
+.mg-post.mg-edit-mode .mg-caption-text[contenteditable="true"] {
+  display: inline-block;
   border: 1px dashed rgba(255, 215, 0, 0.5);
   border-radius: 6px;
-  padding: 8px;
+  padding: 4px 8px;
   cursor: text;
+  outline: none;
+  min-width: 60px;
 }
 .mg-edit-btn,
 .mg-post-edit-actions,
