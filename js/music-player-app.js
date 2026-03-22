@@ -29,26 +29,34 @@
     { title: 'Shopaholic Teaser', src: 'music/ShopaholicTeaserSoft.mp3' }
   ];
 
-  var currentIndex = -1;
-  // IMPORTANT: use createElement('audio') instead of new Audio().
-  // new Audio() created inside dynamically-injected scripts doesn't
-  // properly connect to Chrome's media resource manager, causing
-  // permanent stalls (readyState=0, networkState=2).
-  //
-  // Reuse existing audio if navigating back (SPA), otherwise create new.
-  // Store on window so it can be stopped when navigating away.
-  if (window.__musicPlayerAudio) {
-    window.__musicPlayerAudio.pause();
-    window.__musicPlayerAudio.src = '';
+  // Restore state if navigating back while music is still playing
+  var resumingPlayback = !!(window.__musicPlayerAudio && !window.__musicPlayerAudio.paused);
+  var savedState = window.__musicPlayerState || {};
+
+  var audio;
+  if (resumingPlayback) {
+    // Reuse the live audio element — don't interrupt playback
+    audio = window.__musicPlayerAudio;
+  } else {
+    // IMPORTANT: use createElement('audio') instead of new Audio().
+    // new Audio() created inside dynamically-injected scripts doesn't
+    // properly connect to Chrome's media resource manager, causing
+    // permanent stalls (readyState=0, networkState=2).
+    if (window.__musicPlayerAudio) {
+      window.__musicPlayerAudio.pause();
+      window.__musicPlayerAudio.src = '';
+    }
+    audio = document.createElement('audio');
+    audio.preload = 'metadata';
+    window.__musicPlayerAudio = audio;
   }
-  var audio = document.createElement('audio');
-  audio.preload = 'metadata';
-  window.__musicPlayerAudio = audio;
-  var isPlaying = false;
+
+  var isPlaying = resumingPlayback;
   var bgMusicWasEnabled = false;
-  var isShuffled = false;
-  var repeatMode = 0; // 0 = off, 1 = repeat all, 2 = repeat one
-  var shuffleOrder = [];
+  var isShuffled = savedState.isShuffled || false;
+  var repeatMode = savedState.repeatMode !== undefined ? savedState.repeatMode : 1; // default: repeat all
+  var shuffleOrder = savedState.shuffleOrder ? savedState.shuffleOrder.slice() : [];
+  var currentIndex = resumingPlayback && savedState.currentIndex !== undefined ? savedState.currentIndex : -1;
 
   /* ---- DOM Refs ---- */
   var trackItems = document.querySelectorAll('#spTrackList .sp-track-item');
@@ -149,6 +157,21 @@
     }
   }
 
+  /* ---- Broadcast state to mini-player and global state ---- */
+  function broadcastState() {
+    window.__musicPlayerState = {
+      playlist: playlist,
+      currentIndex: currentIndex,
+      isPlaying: isPlaying,
+      repeatMode: repeatMode,
+      isShuffled: isShuffled,
+      shuffleOrder: shuffleOrder.slice()
+    };
+    window.dispatchEvent(new CustomEvent('layoung:player-state', {
+      detail: window.__musicPlayerState
+    }));
+  }
+
   /* ---- Load & Play ---- */
   function loadTrack(index, autoplay) {
     if (index < 0 || index >= playlist.length) return;
@@ -239,6 +262,7 @@
 
   function updatePlayBtn() {
     mainPlayBtn.innerHTML = isPlaying ? pauseSVG : playSVG;
+    broadcastState();
   }
 
   /* ---- Track click handlers ---- */
@@ -757,5 +781,63 @@
     }
   } catch(e) {}
 
-  console.log('🎵 Music player app initialized');
+  /* ---- Expose controls for mini-player ---- */
+  window.__musicPlayer = {
+    prev: function() {
+      if (audio.currentTime > 3 && currentIndex >= 0) {
+        audio.currentTime = 0;
+        return;
+      }
+      var prev = getPrevIndex();
+      if (prev >= 0) {
+        loadTrack(prev, true);
+      } else if (repeatMode >= 1 && currentIndex >= 0) {
+        loadTrack(isShuffled ? shuffleOrder[shuffleOrder.length - 1] : playlist.length - 1, true);
+      }
+    },
+    next: function() {
+      var next = getNextIndex();
+      if (next >= 0) {
+        loadTrack(next, true);
+      } else if (repeatMode >= 1) {
+        if (isShuffled) { generateShuffleOrder(); loadTrack(shuffleOrder[0], true); }
+        else { loadTrack(0, true); }
+      }
+    },
+    toggle: toggleCurrent
+  };
+
+  /* ---- Listen for mini-player events ---- */
+  window.addEventListener('layoung:player-prev', function() {
+    if (window.__musicPlayer) window.__musicPlayer.prev();
+  });
+  window.addEventListener('layoung:player-next', function() {
+    if (window.__musicPlayer) window.__musicPlayer.next();
+  });
+
+  /* ---- Set initial repeat button state (repeat all by default) ---- */
+  if (repeatBtn && repeatMode > 0) {
+    repeatBtn.classList.add('sp-ctrl-active');
+    repeatBtn.title = repeatMode === 2 ? 'Repeat One' : 'Repeat All';
+  }
+
+  /* ---- Restore visual state if resuming playback ---- */
+  if (resumingPlayback && currentIndex >= 0) {
+    for (var ri = 0; ri < trackItems.length; ri++) {
+      trackItems[ri].classList.toggle('sp-active', ri === currentIndex);
+    }
+    updatePlayBtn();
+    updateEqState();
+    progressWrap.classList.add('sp-visible');
+    var activeItem = trackItems[currentIndex];
+    if (activeItem && activeItem.parentNode) {
+      activeItem.parentNode.insertBefore(progressWrap, activeItem.nextSibling);
+    }
+    stopBgMusic();
+  }
+
+  /* ---- Initial state broadcast ---- */
+  broadcastState();
+
+  console.log('🎵 Music player app initialized' + (resumingPlayback ? ' (resumed)' : ''));
 })();

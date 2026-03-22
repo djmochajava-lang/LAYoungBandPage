@@ -382,3 +382,111 @@ ys.music-toggle-btn.enabled {
   }
 }
 
+
+/* ===================================================
+   MINI MUSIC PLAYER
+   Fixed bar shown when player is active on other pages
+   =================================================== */
+
+.mini-player {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, rgba(10,10,10,0.97) 0%, rgba(26,26,46,0.97) 100%);
+  border-top: 1px solid rgba(255, 215, 0, 0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 950;
+  transform: translateY(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mini-player--hidden {
+  transform: translateY(100%);
+}
+
+.mini-player-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.mini-player-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.mini-player-note {
+  color: var(--color-primary);
+  font-size: 1rem;
+  flex-shrink: 0;
+  animation: musicBounce 1.5s ease-in-out infinite;
+}
+
+.mini-player-track {
+  color: #fff;
+  font-size: 0.82rem;
+  font-family: var(--font-secondary);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mini-player-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.mini-player-btn {
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.9rem;
+  cursor: pointer;
+  padding: 6px 8px;
+  line-height: 1;
+  border-radius: 4px;
+  transition: color 0.2s, background 0.2s;
+  touch-action: manipulation;
+}
+
+.mini-player-btn:hover {
+  color: var(--color-primary);
+  background: rgba(255,215,0,0.08);
+}
+
+.mini-player-btn--play {
+  color: var(--color-primary);
+  font-size: 1rem;
+}
+
+.mini-player-btn--open {
+  color: rgba(255,255,255,0.45);
+  font-size: 1rem;
+}
+
+.mini-player-btn--stop {
+  color: rgba(255,255,255,0.35);
+  font-size: 0.8rem;
+}
+
+/* On mobile, shift up above the page footer if visible */
+@media (max-width: 768px), (orientation: portrait) {
+  .mini-player-inner {
+    padding: 8px 12px;
+  }
+  .mini-player-btn {
+    padding: 5px 7px;
+  }
+}

@@ -83,6 +83,12 @@ const BackgroundMusic = {
       return;
     }
 
+    // Don't start background music if the music player is actively playing
+    if (window.__musicPlayerAudio && !window.__musicPlayerAudio.paused) {
+      this.stop();
+      return;
+    }
+
     if (!this.enabled) {
       this.stop();
       return;

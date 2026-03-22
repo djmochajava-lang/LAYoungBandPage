@@ -198,6 +198,23 @@
       </div>
     </footer>
 
+    <!-- Mini Music Player — shown when music player is active on other pages -->
+    <div id="mini-player" class="mini-player mini-player--hidden" role="region" aria-label="Now Playing">
+      <div class="mini-player-inner">
+        <div class="mini-player-info">
+          <span class="mini-player-note">&#9834;</span>
+          <span class="mini-player-track" id="miniPlayerTrack">L.A. Young</span>
+        </div>
+        <div class="mini-player-controls">
+          <button class="mini-player-btn" id="miniPrevBtn" title="Previous" aria-label="Previous track">&#9664;&#9664;</button>
+          <button class="mini-player-btn mini-player-btn--play" id="miniPlayBtn" title="Play / Pause" aria-label="Play or pause">&#9646;&#9646;</button>
+          <button class="mini-player-btn" id="miniNextBtn" title="Next" aria-label="Next track">&#9654;&#9654;</button>
+          <button class="mini-player-btn mini-player-btn--open" id="miniOpenBtn" title="Open Player" aria-label="Open music player">&#9835;</button>
+          <button class="mini-player-btn mini-player-btn--stop" id="miniStopBtn" title="Stop" aria-label="Stop music">&#10005;</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Firebase SDK loaded on demand by fan-points.js (not on page load) -->
 
     <!-- JavaScript Modules -->
@@ -221,6 +238,7 @@
     <script src="js/scroll-indicators.js"></script>
     <script src="js/slideshow.js"></script>
     <script src="js/fan-points.js"></script>
+    <script src="js/mini-player.js"></script>
     <script src="js/main.js"></script>
 
   </body>
