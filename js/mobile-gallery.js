@@ -887,6 +887,29 @@
       '<button class="mg-admin-btn mg-admin-btn-cancel mg-cancel-edit">Cancel</button>';
     captionWrap.insertAdjacentElement('afterend', saveBar);
 
+    // Download button — opens image full-screen so artist can long-press → Save to Photos
+    var imgEl   = post.querySelector('.mg-post-img img');
+    var imgSrc  = imgEl ? imgEl.src : '';
+    var dlWrap  = document.createElement('div');
+    dlWrap.className = 'mg-post-download-wrap';
+    dlWrap.innerHTML = '<button class="mg-admin-btn mg-admin-btn-download mg-download-post">⬇ Save Image</button>';
+    post.appendChild(dlWrap);
+
+    dlWrap.querySelector('.mg-download-post').addEventListener('click', function () {
+      if (!imgSrc) return;
+      // Try native download first (works on Android + desktop same-origin)
+      var a = document.createElement('a');
+      a.href = imgSrc;
+      a.download = 'layoung-' + (post.dataset.docid || 'photo') + '.jpg';
+      a.target = '_blank';
+      a.rel = 'noopener';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      // Toast guides iOS users (Safari ignores download attr for cross-origin)
+      showAdminToast('On iPhone: tap & hold the image → Save to Photos');
+    });
+
     // Delete button at bottom of card
     var deleteWrap = document.createElement('div');
     deleteWrap.className = 'mg-post-delete-wrap';

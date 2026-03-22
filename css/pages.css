@@ -2551,16 +2551,22 @@
 .mg-edit-btn,
 .mg-post-edit-actions,
 .mg-post-save-bar,
-.mg-post-delete-wrap {
+.mg-post-delete-wrap,
+.mg-post-download-wrap {
   display: none;
 }
 .mg-post.mg-edit-mode .mg-edit-btn {
   display: inline-block;
 }
+.mg-post.mg-edit-mode .mg-post-download-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 8px 14px 0;
+}
 .mg-post.mg-edit-mode .mg-post-delete-wrap {
   display: flex;
   justify-content: center;
-  padding: 12px 14px 16px;
+  padding: 8px 14px 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   margin-top: 8px;
 }
@@ -2586,6 +2592,12 @@
 .mg-admin-btn-save {
   background: #ffd700;
   color: #000;
+}
+.mg-admin-btn-download {
+  background: rgba(255, 215, 0, 0.08);
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  width: 100%;
 }
 .mg-admin-btn-delete {
   background: rgba(230, 57, 70, 0.15);
