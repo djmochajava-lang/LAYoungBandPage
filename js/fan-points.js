@@ -95,6 +95,9 @@ const FanPoints = {
         var earnedCount = Object.keys(self._earned).length;
         if (earnedCount >= 3 && !self._firebaseUser) {
           self._showJoinBar();
+          // Preload Firebase SDK in the background NOW so it's already loaded
+          // when the user taps Join — preserves the tap gesture for signInWithPopup
+          self._loadFirebase(function() { /* preloaded and ready */ });
         }
       } else {
         self._hideJoinBar();
@@ -269,6 +272,11 @@ const FanPoints = {
 
     // Shift counter up
     if (this._counterEl) this._counterEl.style.bottom = '60px';
+
+    // Preload Firebase SDK so it's ready when the user taps Join.
+    // signInWithPopup on iOS requires the call to happen in the direct
+    // tap gesture — async script loading would break that chain.
+    this._loadFirebase(function() { /* preloaded */ });
   },
 
   _hideJoinBar: function() {
@@ -504,12 +512,15 @@ const FanPoints = {
   },
 
   _doSignIn: function() {
-    if (typeof firebase === 'undefined') return;
+    if (typeof firebase === 'undefined') {
+      console.warn('FanPoints: Firebase not loaded yet — cannot sign in');
+      return;
+    }
 
     try {
       if (!firebase.apps.length) {
         var config = (typeof window.SITE_CONFIG !== 'undefined') ? window.SITE_CONFIG.firebase : null;
-        if (!config) return;
+        if (!config) { console.warn('FanPoints: No Firebase config'); return; }
         firebase.initializeApp(config);
       }
 
@@ -519,23 +530,20 @@ const FanPoints = {
       }
 
       var provider = new firebase.auth.GoogleAuthProvider();
-      var isMobile = (typeof MobileDetect !== 'undefined' && MobileDetect.isMobile);
 
-      if (isMobile) {
-        // Set flag before redirect so Firebase loads on return
-        try { localStorage.setItem(this.HAS_AUTH_KEY, '1'); } catch(e) {}
-        firebase.auth().signInWithRedirect(provider);
-      } else {
-        firebase.auth().signInWithPopup(provider)
-          .then(function(result) {
-            console.log('\uD83C\uDF89 Fan signed in: ' + (result.user.displayName || 'Anonymous'));
-          })
-          .catch(function(err) {
-            if (err.code !== 'auth/popup-closed-by-user') {
-              console.error('Fan sign-in error:', err.message);
-            }
-          });
-      }
+      // Always use popup — signInWithRedirect is unreliable on iOS Safari due to
+      // third-party cookie restrictions (ITP) that break the redirect-back flow.
+      // Firebase is preloaded when the join bar appears so the popup opens
+      // synchronously in the user's tap gesture context (required by iOS).
+      firebase.auth().signInWithPopup(provider)
+        .then(function(result) {
+          console.log('\uD83C\uDF89 Fan signed in via popup: ' + (result.user.displayName || 'Anonymous'));
+        })
+        .catch(function(err) {
+          if (err.code !== 'auth/popup-closed-by-user') {
+            console.error('Fan sign-in popup error:', err.code, err.message);
+          }
+        });
     } catch(err) {
       console.warn('FanPoints sign-in failed:', err.message);
     }
