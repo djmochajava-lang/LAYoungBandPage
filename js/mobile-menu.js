@@ -11,6 +11,9 @@ const MobileMenu = {
   closeBtn: null,
   menuLinks: null,
 
+  /** localStorage key for cached fan profile */
+  FAN_PROFILE_KEY: 'layoung_fan_profile',
+
   /**
    * Initialize mobile menu
    */
@@ -39,7 +42,89 @@ const MobileMenu = {
     // Setup event listeners
     this.setupEventListeners();
 
+    // Fan profile card — restore from cache, then live-update when auth resolves
+    this.initFanProfile();
+
     console.log('✅ Mobile menu initialized successfully');
+  },
+
+  /**
+   * Fan profile card
+   * - Loads cached profile from localStorage immediately (no Firebase wait)
+   * - Updates and re-saves cache whenever layoung:fan-signed-in fires
+   */
+  initFanProfile() {
+    var self = this;
+    var card = document.getElementById('mm-fan-profile');
+    if (!card) return;
+
+    /** Populate the card DOM from a plain profile object */
+    function renderProfile(profile) {
+      if (!profile) return;
+
+      var name = profile.displayName || profile.email || 'Fan';
+      var pts  = typeof profile.points === 'number' ? profile.points : 0;
+
+      // First name only keeps it tidy
+      var firstName = name.split(' ')[0];
+      var nameEl = document.getElementById('mm-fan-name');
+      if (nameEl) nameEl.textContent = firstName;
+
+      var ptsEl = document.getElementById('mm-fan-pts');
+      if (ptsEl) ptsEl.textContent = pts;
+
+      // Avatar: prefer Google photo, fall back to initials
+      var photoEl    = document.getElementById('mm-fan-photo');
+      var initialsEl = document.getElementById('mm-fan-initials');
+
+      if (profile.photoURL && photoEl) {
+        photoEl.src          = profile.photoURL;
+        photoEl.style.display = 'block';
+        if (initialsEl) initialsEl.style.display = 'none';
+      } else if (initialsEl) {
+        var parts    = name.trim().split(' ');
+        var initials = parts.length >= 2
+          ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
+          : (parts[0][0] || '★').toUpperCase();
+        initialsEl.textContent  = initials;
+        initialsEl.style.display = 'flex';
+        if (photoEl) photoEl.style.display = 'none';
+      }
+
+      // Reveal the card
+      card.style.display   = 'flex';
+      card.setAttribute('aria-hidden', 'false');
+      console.log('👤 Fan profile shown:', firstName, pts + ' pts');
+    }
+
+    // ── Step 1: Restore cached profile instantly (no Firebase needed) ──
+    try {
+      var cached = localStorage.getItem(self.FAN_PROFILE_KEY);
+      if (cached) {
+        var profile = JSON.parse(cached);
+        console.log('👤 Restoring fan profile from localStorage');
+        renderProfile(profile);
+      }
+    } catch (e) { /* ignore parse errors */ }
+
+    // ── Step 2: Live update + re-cache when Firebase auth resolves ──
+    window.addEventListener('layoung:fan-signed-in', function (e) {
+      var d = e.detail || {};
+      var profile = {
+        displayName: d.displayName || '',
+        photoURL:    d.photoURL    || '',
+        email:       d.email       || '',
+        uid:         d.uid         || '',
+        points:      typeof d.points === 'number' ? d.points : 0
+      };
+
+      // Persist to localStorage so next visit is instant
+      try {
+        localStorage.setItem(self.FAN_PROFILE_KEY, JSON.stringify(profile));
+      } catch (e) { /* storage full — ignore */ }
+
+      renderProfile(profile);
+    });
   },
 
   /**

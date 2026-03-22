@@ -322,6 +322,83 @@
   color: #fff !important;
 }
 
+/* === FAN PROFILE CARD (shown between header and nav when signed in) === */
+.mm-fan-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.9rem 1.5rem;
+  background: rgba(255, 215, 0, 0.05);
+  border-top: 1px solid rgba(255, 215, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 215, 0, 0.18);
+  animation: mmFanFadeIn 0.35s ease forwards;
+}
+
+@keyframes mmFanFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mm-fan-avatar-wrap {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.mm-fan-photo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ffd700;
+  display: block;
+}
+
+.mm-fan-initials {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #b8860b 0%, #ffd700 100%);
+  color: #0a0a0a;
+  font-size: 1.1rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-primary);
+  letter-spacing: 0;
+}
+
+.mm-fan-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.mm-fan-name {
+  font-family: var(--font-primary);
+  font-size: 0.98rem;
+  color: #fff;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.mm-fan-points {
+  font-size: 0.76rem;
+  color: var(--color-primary);
+  letter-spacing: 0.06em;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
+
+.mm-fan-star {
+  color: #ffd700;
+  font-size: 0.8rem;
+}
+
 /* Menu Footer */
 .mobile-menu-footer {
   padding: 1.5rem 2rem;

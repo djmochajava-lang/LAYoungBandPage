@@ -361,6 +361,17 @@ const FanPoints = {
           try { localStorage.setItem(self.HAS_AUTH_KEY, '1'); } catch(e) {}
           self._hideJoinBar();
           self._syncToFirestore();
+
+          // Notify other modules (mobile menu, etc.) that a fan is signed in
+          window.dispatchEvent(new CustomEvent('layoung:fan-signed-in', {
+            detail: {
+              displayName: user.displayName || '',
+              photoURL:    user.photoURL    || '',
+              email:       user.email       || '',
+              uid:         user.uid,
+              points:      self._points     || 0
+            }
+          }));
         } else {
           // Signed out — remove the persistent flag so the join bar can appear again
           try { localStorage.removeItem(self.HAS_AUTH_KEY); } catch(e) {}
@@ -434,6 +445,17 @@ const FanPoints = {
         self._monthKey = currentMonthKey;
         self._save();
         self._updateCounter();
+
+        // Re-broadcast with accurate Firestore points (updates menu card + localStorage cache)
+        window.dispatchEvent(new CustomEvent('layoung:fan-signed-in', {
+          detail: {
+            displayName: self._firebaseUser.displayName || '',
+            photoURL:    self._firebaseUser.photoURL    || '',
+            email:       self._firebaseUser.email       || '',
+            uid:         self._firebaseUser.uid,
+            points:      mergedTotal
+          }
+        }));
 
         // Write merged state back
         docRef.update({
