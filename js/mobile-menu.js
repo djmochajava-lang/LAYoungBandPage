@@ -55,12 +55,12 @@ const MobileMenu = {
    */
   initFanProfile() {
     var self = this;
-    var card = document.getElementById('mm-fan-profile');
-    if (!card) return;
 
     /** Populate the card DOM from a plain profile object */
     function renderProfile(profile) {
       if (!profile) return;
+
+      var card = document.getElementById('mm-fan-profile');
 
       var name = profile.displayName || profile.email || 'Fan';
       var pts  = typeof profile.points === 'number' ? profile.points : 0;
@@ -78,7 +78,7 @@ const MobileMenu = {
       var initialsEl = document.getElementById('mm-fan-initials');
 
       if (profile.photoURL && photoEl) {
-        photoEl.src          = profile.photoURL;
+        photoEl.src           = profile.photoURL;
         photoEl.style.display = 'block';
         if (initialsEl) initialsEl.style.display = 'none';
       } else if (initialsEl) {
@@ -86,28 +86,20 @@ const MobileMenu = {
         var initials = parts.length >= 2
           ? (parts[0][0] + parts[parts.length - 1][0]).toUpperCase()
           : (parts[0][0] || '★').toUpperCase();
-        initialsEl.textContent  = initials;
+        initialsEl.textContent   = initials;
         initialsEl.style.display = 'flex';
         if (photoEl) photoEl.style.display = 'none';
       }
 
-      // Reveal the card
-      card.style.display   = 'flex';
-      card.setAttribute('aria-hidden', 'false');
+      // Reveal the card if it exists
+      if (card) {
+        card.style.display = 'flex';
+        card.setAttribute('aria-hidden', 'false');
+      }
       console.log('👤 Fan profile shown:', firstName, pts + ' pts');
     }
 
-    // ── Step 1: Restore cached profile instantly (no Firebase needed) ──
-    try {
-      var cached = localStorage.getItem(self.FAN_PROFILE_KEY);
-      if (cached) {
-        var profile = JSON.parse(cached);
-        console.log('👤 Restoring fan profile from localStorage');
-        renderProfile(profile);
-      }
-    } catch (e) { /* ignore parse errors */ }
-
-    // ── Step 2: Live update + re-cache when Firebase auth resolves ──
+    // ── Step 1: Always attach the event listener first (no guard that can exit early) ──
     window.addEventListener('layoung:fan-signed-in', function (e) {
       var d = e.detail || {};
       var profile = {
@@ -118,13 +110,24 @@ const MobileMenu = {
         points:      typeof d.points === 'number' ? d.points : 0
       };
 
-      // Persist to localStorage so next visit is instant
+      // Always persist to localStorage — this is the source of truth for next visit
       try {
         localStorage.setItem(self.FAN_PROFILE_KEY, JSON.stringify(profile));
-      } catch (e) { /* storage full — ignore */ }
+        console.log('👤 Fan profile saved to localStorage');
+      } catch (err) { /* storage full — ignore */ }
 
       renderProfile(profile);
     });
+
+    // ── Step 2: Restore cached profile instantly (no Firebase needed) ──
+    try {
+      var cached = localStorage.getItem(self.FAN_PROFILE_KEY);
+      if (cached) {
+        var profile = JSON.parse(cached);
+        console.log('👤 Restoring fan profile from localStorage cache');
+        renderProfile(profile);
+      }
+    } catch (e) { /* ignore parse errors */ }
   },
 
   /**
