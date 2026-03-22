@@ -2574,7 +2574,7 @@
   color: #aaa;
 }
 
-/* ── ADMIN: Add card panel ── */
+/* ── ADMIN: Add card panel overlay ── */
 .mg-admin-add-panel {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -2585,40 +2585,177 @@
   justify-content: center;
   padding: 20px;
 }
-.mg-admin-add-inner {
-  background: #1a1a2e;
-  border: 1px solid rgba(255, 215, 0, 0.3);
-  border-radius: 12px;
-  padding: 24px;
-  width: 100%;
-  max-width: 400px;
-}
-.mg-admin-add-inner h3 {
+
+/* ── ADMIN: Toast notification ── */
+.mg-admin-toast {
+  position: fixed;
+  bottom: max(90px, calc(env(safe-area-inset-bottom, 24px) + 70px));
+  left: 50%;
+  transform: translateX(-50%) translateY(12px);
+  background: rgba(10, 10, 10, 0.92);
   color: #ffd700;
-  margin: 0 0 16px;
-  font-size: 1.1rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  white-space: nowrap;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.mg-admin-input {
+.mg-admin-toast--visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ── ADMIN: Facebook-style Compose Box ── */
+.mg-compose-box {
+  background: #1a1a2e;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 14px;
+  padding: 0;
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+}
+.mg-compose-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 12px;
+}
+.mg-compose-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd700, #b8960f);
+  color: #000;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.mg-compose-name {
+  flex: 1;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+.mg-compose-close {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 50%;
+  transition: color 0.2s, background 0.2s;
+}
+.mg-compose-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+.mg-compose-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 0;
+}
+.mg-compose-textarea {
   display: block;
   width: 100%;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
+  padding: 14px 16px 8px;
+  background: transparent;
+  border: none;
   color: #fff;
-  font-size: 0.95rem;
-  box-sizing: border-box;
-}
-.mg-admin-input:focus {
+  font-size: 1rem;
+  font-family: inherit;
+  resize: none;
   outline: none;
-  border-color: #ffd700;
+  box-sizing: border-box;
+  line-height: 1.5;
+  min-height: 80px;
 }
-.mg-admin-add-actions {
+.mg-compose-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+.mg-compose-counter {
+  text-align: right;
+  padding: 0 16px 8px;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.35);
+}
+.mg-compose-img-wrap {
+  position: relative;
+  margin: 0 16px 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.4);
+}
+.mg-compose-preview {
+  display: block;
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.mg-compose-img-remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  border: none;
+  color: #fff;
+  font-size: 0.8rem;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  cursor: pointer;
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 8px;
+  align-items: center;
+  justify-content: center;
+}
+.mg-compose-url-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+.mg-compose-url-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  padding: 4px 0;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+.mg-compose-url-input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+.mg-compose-url-input:focus {
+  border-bottom-color: #ffd700;
+  color: #fff;
+}
+.mg-compose-post-btn {
+  display: block;
+  width: calc(100% - 32px);
+  margin: 0 16px 14px;
+  padding: 11px;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  text-align: center;
 }
 
 /* ── ADMIN: Secret login indicator ── */

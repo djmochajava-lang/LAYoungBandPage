@@ -241,6 +241,8 @@
       var img = eventImages[i];
       var post = document.createElement('div');
       post.className = 'mg-post';
+      post.dataset.idx = String(i);
+      post.dataset.docid = 'event_' + String(i).padStart(3, '0');
 
       // Post header
       var header = document.createElement('div');
@@ -808,15 +810,60 @@
       toggleEditMode();
     };
 
-    // Set up add panel
-    document.getElementById('mg-admin-add-cancel').onclick = function () {
+    // Set up add panel compose box
+    var addCancel = document.getElementById('mg-admin-add-cancel');
+    var addSave = document.getElementById('mg-admin-add-save');
+    var urlInput = document.getElementById('mg-admin-add-url');
+    var captionInput = document.getElementById('mg-admin-add-caption');
+    var charCount = document.getElementById('mg-caption-count');
+    var preview = document.getElementById('mg-compose-preview');
+    var previewWrap = document.getElementById('mg-compose-img-wrap');
+    var removeImg = document.getElementById('mg-compose-img-remove');
+    var nameEl = document.getElementById('mg-compose-name');
+    var avatarEl = document.getElementById('mg-compose-avatar');
+
+    if (nameEl) nameEl.textContent = name || 'Admin';
+    if (avatarEl) avatarEl.textContent = role === 'artist' ? '★' : '⚙';
+
+    if (addCancel) addCancel.onclick = function () {
       document.getElementById('mg-admin-add-panel').style.display = 'none';
     };
-    document.getElementById('mg-admin-add-save').onclick = function () {
-      saveNewPost();
-    };
+    if (addSave) addSave.onclick = function () { saveNewPost(); };
+
+    // Live image preview on URL paste
+    if (urlInput && preview && previewWrap) {
+      urlInput.addEventListener('input', function () {
+        var url = urlInput.value.trim();
+        if (url) {
+          preview.src = url;
+          previewWrap.style.display = 'block';
+        } else {
+          previewWrap.style.display = 'none';
+          preview.src = '';
+        }
+      });
+    }
+    if (removeImg && urlInput && previewWrap && preview) {
+      removeImg.onclick = function () {
+        urlInput.value = '';
+        preview.src = '';
+        previewWrap.style.display = 'none';
+      };
+    }
+
+    // Caption character counter
+    if (captionInput && charCount) {
+      captionInput.addEventListener('input', function () {
+        charCount.textContent = captionInput.value.length;
+      });
+    }
 
     try { localStorage.removeItem('mg-admin-pending'); } catch (e) {}
+
+    // Auto-enter edit mode so buttons appear immediately
+    if (!_editMode) {
+      setTimeout(function () { toggleEditMode(); }, 150);
+    }
   }
 
   function hideAdminUI() {
@@ -824,6 +871,63 @@
     if (fab) fab.style.display = 'none';
     var badge = document.querySelector('.mg-admin-status');
     if (badge) badge.remove();
+  }
+
+  /* ---- Add edit controls to a single post card ---- */
+  function addEditControls(post) {
+    var docId = post.dataset.docid || ('event_' + String(post.dataset.idx || 0).padStart(3, '0'));
+    var caption = post.querySelector('.mg-post-caption');
+    var header = post.querySelector('.mg-post-header');
+    if (!header || header.querySelector('.mg-edit-btn') || !caption) return;
+
+    var editBtn = document.createElement('button');
+    editBtn.className = 'mg-admin-btn mg-admin-btn-edit mg-edit-btn';
+    editBtn.textContent = 'Edit';
+    header.appendChild(editBtn);
+
+    // Save bar (hidden until Edit is tapped)
+    var saveBar = document.createElement('div');
+    saveBar.className = 'mg-post-save-bar';
+    saveBar.style.display = 'none';
+    saveBar.innerHTML =
+      '<button class="mg-admin-btn mg-admin-btn-save mg-save-caption">Save</button>' +
+      '<button class="mg-admin-btn mg-admin-btn-cancel mg-cancel-edit">Cancel</button>';
+    caption.insertAdjacentElement('afterend', saveBar);
+
+    // Delete button at bottom of card
+    var deleteWrap = document.createElement('div');
+    deleteWrap.className = 'mg-post-delete-wrap';
+    deleteWrap.innerHTML = '<button class="mg-admin-btn mg-admin-btn-delete mg-delete-post">Delete Post</button>';
+    post.appendChild(deleteWrap);
+
+    // Edit: enable inline caption editing
+    editBtn.addEventListener('click', function () {
+      caption.setAttribute('contenteditable', 'true');
+      caption.focus();
+      saveBar.style.display = 'flex';
+      editBtn.style.display = 'none';
+    });
+
+    // Save caption
+    saveBar.querySelector('.mg-save-caption').addEventListener('click', function () {
+      var newCaption = caption.textContent.replace(/^L\.A\.\s*Young\s*/, '').trim();
+      caption.removeAttribute('contenteditable');
+      saveBar.style.display = 'none';
+      editBtn.style.display = '';
+      saveCaptionEdit(docId, newCaption);
+    });
+
+    // Cancel
+    saveBar.querySelector('.mg-cancel-edit').addEventListener('click', function () {
+      caption.removeAttribute('contenteditable');
+      saveBar.style.display = 'none';
+      editBtn.style.display = '';
+    });
+
+    // Delete
+    deleteWrap.querySelector('.mg-delete-post').addEventListener('click', function () {
+      deletePost(docId, post);
+    });
   }
 
   function toggleEditMode() {
@@ -835,63 +939,9 @@
       fab.classList.add('editing');
 
       // Add edit controls to each feed card
-      posts.forEach(function (post, idx) {
+      posts.forEach(function (post) {
+        addEditControls(post);
         post.classList.add('mg-edit-mode');
-
-        var caption = post.querySelector('.mg-post-caption');
-
-        // Add Edit button in header
-        var header = post.querySelector('.mg-post-header');
-        if (header && !header.querySelector('.mg-edit-btn')) {
-          var editBtn = document.createElement('button');
-          editBtn.className = 'mg-admin-btn mg-admin-btn-edit mg-edit-btn';
-          editBtn.textContent = 'Edit';
-          header.appendChild(editBtn);
-
-          // Save bar (hidden until Edit is tapped)
-          var saveBar = document.createElement('div');
-          saveBar.className = 'mg-post-save-bar';
-          saveBar.style.display = 'none';
-          saveBar.innerHTML =
-            '<button class="mg-admin-btn mg-admin-btn-save mg-save-caption">Save</button>' +
-            '<button class="mg-admin-btn mg-admin-btn-cancel mg-cancel-edit">Cancel</button>';
-          caption.insertAdjacentElement('afterend', saveBar);
-
-          // Delete at bottom of card
-          var deleteWrap = document.createElement('div');
-          deleteWrap.className = 'mg-post-delete-wrap';
-          deleteWrap.innerHTML = '<button class="mg-admin-btn mg-admin-btn-delete mg-delete-post">Delete Post</button>';
-          post.appendChild(deleteWrap);
-
-          // Edit button: enable caption editing
-          editBtn.addEventListener('click', function () {
-            caption.setAttribute('contenteditable', 'true');
-            caption.focus();
-            saveBar.style.display = 'flex';
-            editBtn.style.display = 'none';
-          });
-
-          // Save caption
-          saveBar.querySelector('.mg-save-caption').addEventListener('click', function () {
-            var newCaption = caption.textContent.replace(/^L\.A\.\s*Young\s*/, '').trim();
-            caption.removeAttribute('contenteditable');
-            saveBar.style.display = 'none';
-            editBtn.style.display = '';
-            saveCaptionEdit(idx, newCaption);
-          });
-
-          // Cancel edit
-          saveBar.querySelector('.mg-cancel-edit').addEventListener('click', function () {
-            caption.removeAttribute('contenteditable');
-            saveBar.style.display = 'none';
-            editBtn.style.display = '';
-          });
-
-          // Delete
-          deleteWrap.querySelector('.mg-delete-post').addEventListener('click', function () {
-            deletePost(idx, post);
-          });
-        }
       });
 
       // Show add button at top of feed
@@ -929,11 +979,9 @@
     }
   }
 
-  function saveCaptionEdit(index, newCaption) {
+  function saveCaptionEdit(docId, newCaption) {
     if (!_adminDb || !_adminUser) return;
 
-    // Save to Firestore
-    var docId = 'event_' + String(index).padStart(3, '0');
     _adminDb.collection('gallery_feed').doc(docId).set({
       caption: newCaption,
       updatedBy: _adminUser.uid,
@@ -945,11 +993,10 @@
     });
   }
 
-  function deletePost(index, postEl) {
+  function deletePost(docId, postEl) {
     if (!confirm('Delete this post?')) return;
     if (!_adminDb || !_adminUser) return;
 
-    var docId = 'event_' + String(index).padStart(3, '0');
     _adminDb.collection('gallery_feed').doc(docId).set({
       deleted: true,
       deletedBy: _adminUser.uid,
@@ -975,11 +1022,12 @@
       type: 'custom',
       createdBy: _adminUser.uid,
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function () {
+    }).then(function (docRef) {
       // Add to feed visually
       var feed = document.getElementById('mg-feed');
       var post = document.createElement('div');
       post.className = 'mg-post';
+      post.dataset.docid = docRef.id; // store Firestore ID for edit/delete
       post.innerHTML =
         '<div class="mg-post-header"><span class="mg-post-author">BACKSTAGE</span></div>' +
         '<div class="mg-post-img"><img src="' + escapeHtml(url) + '" alt="' + escapeHtml(caption) + '" loading="lazy"></div>' +
@@ -999,11 +1047,23 @@
       feed.insertBefore(post, feed.firstChild);
       bindPostActions(feed);
 
+      // If still in edit mode, add edit controls to the new card
+      if (_editMode) {
+        addEditControls(post);
+        post.classList.add('mg-edit-mode');
+      }
+
       // Clear form and close
       document.getElementById('mg-admin-add-url').value = '';
       document.getElementById('mg-admin-add-caption').value = '';
+      var previewWrap = document.getElementById('mg-compose-img-wrap');
+      var preview = document.getElementById('mg-compose-preview');
+      if (previewWrap) previewWrap.style.display = 'none';
+      if (preview) preview.src = '';
+      var charCount = document.getElementById('mg-caption-count');
+      if (charCount) charCount.textContent = '0';
       document.getElementById('mg-admin-add-panel').style.display = 'none';
-      showAdminToast('Post added');
+      showAdminToast('✓ Post added');
     }).catch(function (err) {
       showAdminToast('Error: ' + err.message);
     });
@@ -1011,6 +1071,14 @@
 
   function showAdminToast(msg) {
     console.log('🔑 Admin:', msg);
+    var toast = document.getElementById('mg-admin-toast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add('mg-admin-toast--visible');
+    clearTimeout(toast._hideTimer);
+    toast._hideTimer = setTimeout(function () {
+      toast.classList.remove('mg-admin-toast--visible');
+    }, 3500);
   }
 
   // ─── Expose ───
