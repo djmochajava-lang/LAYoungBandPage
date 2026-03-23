@@ -1215,3 +1215,89 @@
     </footer>
   </div>
 </section>
+
+<!-- JSON-LD Structured Data — GEO-03 (FRD-GEO-03) -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MusicRecording",
+  "@id": "https://layoungbandpage.com/music#no-one-can-love-you-more",
+  "name": "No One Can Love You More",
+  "byArtist": {
+    "@type": "MusicGroup",
+    "@id": "https://layoungbandpage.com/#artist",
+    "name": "LA Young"
+  },
+  "description": "LA Young's recording of 'No One Can Love You More,' originally performed by Phyllis Hyman. This recording achieved a UK Number One chart position, marking a significant international milestone in LA Young's career.",
+  "inAlbum": {
+    "@type": "MusicAlbum",
+    "name": "No One Can Love You More — Single",
+    "byArtist": { "@type": "MusicGroup", "name": "LA Young" }
+  },
+  "recordingOf": {
+    "@type": "MusicComposition",
+    "name": "No One Can Love You More",
+    "composer": { "@type": "Person", "name": "Phyllis Hyman" }
+  },
+  "award": "UK Number One Chart Position",
+  "genre": ["Soul", "R&B", "Blues"],
+  "url": "https://layoungbandpage.com/#music"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MusicRecording",
+  "@id": "https://layoungbandpage.com/music#the-woman-in-me",
+  "name": "The Woman in Me",
+  "byArtist": {
+    "@type": "MusicGroup",
+    "@id": "https://layoungbandpage.com/#artist",
+    "name": "LA Young"
+  },
+  "description": "LA Young's soul and R&B interpretation of 'The Woman in Me,' originally recorded by Shania Twain. This release showcases LA Young's ability to reinterpret iconic songs across genres through the lens of blues, soul, and R&B.",
+  "inAlbum": {
+    "@type": "MusicAlbum",
+    "name": "The Woman in Me — Single",
+    "byArtist": { "@type": "MusicGroup", "name": "LA Young" }
+  },
+  "recordingOf": {
+    "@type": "MusicComposition",
+    "name": "The Woman in Me",
+    "composer": [
+      { "@type": "Person", "name": "Shania Twain" },
+      { "@type": "Person", "name": "Robert John Lange" }
+    ]
+  },
+  "genre": ["Soul", "R&B", "Blues", "Country"],
+  "url": "https://layoungbandpage.com/#music"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "LA Young — Official Releases",
+  "description": "The official recorded releases of LA Young, available on her artist platform at layoungbandpage.com.",
+  "url": "https://layoungbandpage.com/#music",
+  "numberOfItems": 2,
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "item": { "@id": "https://layoungbandpage.com/music#no-one-can-love-you-more" } },
+    { "@type": "ListItem", "position": 2, "item": { "@id": "https://layoungbandpage.com/music#the-woman-in-me" } }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Music", "item": "https://layoungbandpage.com/#music" }
+  ]
+}
+</script>

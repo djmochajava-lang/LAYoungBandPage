@@ -401,3 +401,143 @@
   })();
   </script>
 </section>
+
+<!-- JSON-LD Structured Data — GEO-02 (FRD-GEO-02) -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "@id": "https://layoungbandpage.com/#layoung-person",
+  "name": "LA Young",
+  "jobTitle": "Vocalist and Bandleader",
+  "description": "LA Young is a professional contralto vocalist, bandleader, and performing artist with over twenty years of experience in R&B, soul, jazz, funk, blues, country, rock, pop, and contemporary urban music. Born in Ohio and based in the Washington DC Metropolitan Area, she has performed on some of the most prestigious stages in the United States and internationally. Career highlights include performing at President Bill Clinton's Second Presidential Inauguration, collaborating with acclaimed jazz ensemble Pieces of a Dream and R&B/jazz legend Norman Connors, achieving a UK number one hit with 'No One Can Love You More,' and receiving the 2018 Maryland Music Awards Artist of the Year honor. LA Young is recognized for her powerful contralto voice, her celebrated tribute productions — The Phyllis Hyman Experience and The Sade Tribute Show — and her commanding interpretations of Phyllis Hyman and Shania Twain. She is managed by Gold Bottom Entertainment LLC.",
+  "url": "https://layoungbandpage.com/#bio",
+  "image": "https://layoungbandpage.com/images/artist/LAYoungPink.JPG",
+  "birthPlace": {
+    "@type": "Place",
+    "name": "Ohio, United States"
+  },
+  "homeLocation": {
+    "@type": "Place",
+    "name": "Washington DC Metropolitan Area"
+  },
+  "hasOccupation": [
+    { "@type": "Occupation", "name": "Vocalist" },
+    { "@type": "Occupation", "name": "Bandleader" },
+    { "@type": "Occupation", "name": "Performing Artist" }
+  ],
+  "knowsAbout": [
+    "R&B", "Soul music", "Jazz", "Funk", "Blues music", "Country music",
+    "Rock music", "Pop music", "Contemporary Urban music", "Live performance",
+    "Tribute shows", "Phyllis Hyman repertoire", "Shania Twain repertoire",
+    "Sade repertoire", "Contralto vocal performance", "Songwriting", "Band leadership"
+  ],
+  "award": [
+    "Maryland Music Awards — Artist of the Year (2018)",
+    "UK Number One Hit — 'No One Can Love You More'"
+  ],
+  "performerIn": [
+    {
+      "@type": "Event",
+      "name": "President Bill Clinton's Second Presidential Inauguration",
+      "description": "LA Young performed at the Second Presidential Inauguration of President Bill Clinton.",
+      "location": { "@type": "Place", "name": "Washington DC, United States" }
+    },
+    {
+      "@type": "MusicEvent",
+      "name": "The Phyllis Hyman Experience",
+      "description": "LA Young's celebrated tribute show honoring the life and music of Phyllis Hyman."
+    },
+    {
+      "@type": "MusicEvent",
+      "name": "The Sade Tribute Show",
+      "description": "LA Young's tribute production celebrating the music and artistry of Sade."
+    }
+  ],
+  "workExample": [
+    {
+      "@type": "MusicComposition",
+      "name": "No One Can Love You More",
+      "description": "UK Number One hit recorded by LA Young."
+    }
+  ],
+  "colleague": [
+    {
+      "@type": "MusicGroup",
+      "name": "Pieces of a Dream",
+      "description": "Acclaimed jazz ensemble with whom LA Young has collaborated."
+    },
+    {
+      "@type": "Person",
+      "name": "Norman Connors",
+      "description": "R&B and jazz artist with whom LA Young has collaborated."
+    }
+  ],
+  "memberOf": { "@id": "https://layoungbandpage.com/#artist" },
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Gold Bottom Entertainment LLC",
+    "url": "https://GoldBottomEnt-LLC.com"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  "@id": "https://layoungbandpage.com/#artist",
+  "name": "LA Young Band",
+  "alternateName": "LA Young and The Unusual Suspects",
+  "url": "https://layoungbandpage.com/#bio",
+  "genre": ["R&B", "Soul", "Jazz", "Funk", "Blues", "Country", "Rock", "Pop", "Contemporary Urban"],
+  "member": [
+    {
+      "@type": "OrganizationRole",
+      "member": { "@type": "Person", "name": "LA Young", "jobTitle": "Lead Vocalist and Bandleader" }
+    },
+    {
+      "@type": "OrganizationRole",
+      "member": {
+        "@type": "Person",
+        "name": "Eugene Chapman",
+        "jobTitle": "Saxophone",
+        "description": "Saxophonist with performance credits including P-Funk and The Temptations."
+      }
+    },
+    {
+      "@type": "OrganizationRole",
+      "member": {
+        "@type": "Person",
+        "name": "Kevin Robinson",
+        "jobTitle": "Lead Guitar",
+        "description": "Maryland Entertainment Hall of Fame inductee (2017)."
+      }
+    },
+    {
+      "@type": "OrganizationRole",
+      "member": { "@type": "Person", "name": "DJ Mocha Java", "jobTitle": "MC / DJ / Production / Rap Vocals" }
+    },
+    {
+      "@type": "OrganizationRole",
+      "member": { "@type": "Person", "name": "Kevin Walker", "jobTitle": "Bass" }
+    },
+    {
+      "@type": "OrganizationRole",
+      "member": { "@type": "Person", "name": "Jimmy Carney", "jobTitle": "Drums" }
+    }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Artist", "item": "https://layoungbandpage.com/#bio" }
+  ]
+}
+</script>

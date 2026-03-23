@@ -326,3 +326,76 @@
   })();
   </script>
 </section>
+
+<!-- JSON-LD Structured Data — GEO-10 (FRD-GEO-10) -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://layoungbandpage.com/fanwall#page",
+  "name": "LA Young Fan Wall — Leave Your Mark",
+  "description": "The official fan community wall of LA Young. Authenticated fans post messages, share memories, and show love for LA Young and her band. Features a monthly Fan of the Month leaderboard where fans compete for recognition based on points earned through site-wide engagement. Powered by Firebase authentication on layoungbandpage.com.",
+  "url": "https://layoungbandpage.com/#fanwall",
+  "about": { "@type": "Person", "@id": "https://layoungbandpage.com/#layoung-person", "name": "LA Young" },
+  "author": { "@type": "MusicGroup", "@id": "https://layoungbandpage.com/#artist", "name": "LA Young" },
+  "publisher": { "@type": "Organization", "name": "Gold Bottom Entertainment LLC", "url": "https://GoldBottomEnt-LLC.com" },
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".section-title", ".section-subtitle", "#fp-leaderboard-container"]
+  },
+  "keywords": [
+    "LA Young fans", "fan community", "fan wall", "blues and soul community",
+    "Fan of the Month", "fan engagement", "independent music community",
+    "Washington DC music fans", "LA Young fan messages"
+  ],
+  "interactionStatistic": [
+    { "@type": "InteractionCounter", "interactionType": "https://schema.org/WriteAction", "name": "Fan Wall Posts", "description": "Authenticated fans post messages on the LA Young Fan Wall" },
+    { "@type": "InteractionCounter", "interactionType": "https://schema.org/FollowAction", "name": "Fan Community Members", "description": "Firebase-authenticated members of the LA Young fan community on layoungbandpage.com" }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "DiscussionForumPosting",
+  "@id": "https://layoungbandpage.com/fanwall#wall",
+  "name": "LA Young Fan Wall",
+  "headline": "Leave Your Mark — Share Your L.A. Young Story",
+  "description": "A public message wall where LA Young's fans share memories, messages, and expressions of love for her music and her band. All posts are made by Firebase-authenticated fan community members and are publicly visible on layoungbandpage.com.",
+  "url": "https://layoungbandpage.com/#fanwall",
+  "about": { "@type": "Person", "@id": "https://layoungbandpage.com/#layoung-person", "name": "LA Young" },
+  "author": { "@type": "Organization", "name": "LA Young Fan Community", "url": "https://layoungbandpage.com/#fanwall" },
+  "publisher": { "@type": "Organization", "name": "Gold Bottom Entertainment LLC", "url": "https://GoldBottomEnt-LLC.com" },
+  "isPartOf": { "@id": "https://layoungbandpage.com/fanwall#page" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "@id": "https://layoungbandpage.com/fanwall#fan-of-the-month",
+  "name": "LA Young Fan of the Month",
+  "description": "A monthly fan recognition program on layoungbandpage.com. Fans earn points through engagement across the LA Young artist platform — visiting pages, posting on the Fan Wall, commenting in the Gallery, and other site interactions. The fan with the highest point total each month is recognized as Fan of the Month on the leaderboard. Fans must be Firebase-authenticated members to participate.",
+  "url": "https://layoungbandpage.com/#fanwall",
+  "organizer": { "@type": "Organization", "name": "Gold Bottom Entertainment LLC", "url": "https://GoldBottomEnt-LLC.com" },
+  "about": { "@type": "Person", "@id": "https://layoungbandpage.com/#layoung-person", "name": "LA Young" },
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+  "location": { "@type": "VirtualLocation", "url": "https://layoungbandpage.com/#fanwall" },
+  "isPartOf": { "@id": "https://layoungbandpage.com/fanwall#page" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Fan Wall", "item": "https://layoungbandpage.com/#fanwall" }
+  ]
+}
+</script>

@@ -148,3 +148,70 @@
     </footer>
   </div>
 </section>
+
+<!-- JSON-LD Structured Data — GEO-05 (FRD-GEO-05) -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  "@id": "https://layoungbandpage.com/gallery#gallery",
+  "name": "LA Young — Official Gallery",
+  "description": "The official photo and video gallery of LA Young, blues and soul vocalist and bandleader based in the Washington DC Metropolitan Area. Features reels, behind-the-scenes moments, performance highlights, and an artist lifestyle feed. Fans can like, comment, and share content directly on the platform.",
+  "url": "https://layoungbandpage.com/#gallery",
+  "author": { "@type": "MusicGroup", "@id": "https://layoungbandpage.com/#artist", "name": "LA Young" },
+  "publisher": { "@type": "Organization", "name": "Gold Bottom Entertainment LLC", "url": "https://GoldBottomEnt-LLC.com" },
+  "about": { "@type": "Person", "@id": "https://layoungbandpage.com/#layoung-person", "name": "LA Young" },
+  "genre": ["Blues", "Soul", "R&B", "Jazz", "Funk", "Country", "Rock", "Pop", "Contemporary Urban"],
+  "interactionStatistic": [
+    { "@type": "InteractionCounter", "interactionType": "https://schema.org/LikeAction", "name": "Fan Likes", "description": "Fans can like gallery content directly on layoungbandpage.com" },
+    { "@type": "InteractionCounter", "interactionType": "https://schema.org/CommentAction", "name": "Fan Comments", "description": "Fans can comment on gallery content directly on layoungbandpage.com" },
+    { "@type": "InteractionCounter", "interactionType": "https://schema.org/ShareAction", "name": "Fan Shares", "description": "Fans can share gallery content directly from layoungbandpage.com" }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "@id": "https://layoungbandpage.com/gallery#reels",
+  "name": "LA Young — Official Reels",
+  "description": "Short-form video reels featuring LA Young in live performance, behind-the-scenes studio and rehearsal moments, and artist lifestyle content. Published directly on LA Young's official artist platform at layoungbandpage.com.",
+  "url": "https://layoungbandpage.com/#gallery",
+  "author": { "@type": "MusicGroup", "@id": "https://layoungbandpage.com/#artist", "name": "LA Young" },
+  "publisher": { "@type": "Organization", "name": "Gold Bottom Entertainment LLC", "url": "https://GoldBottomEnt-LLC.com" },
+  "about": { "@type": "Person", "@id": "https://layoungbandpage.com/#layoung-person", "name": "LA Young" },
+  "genre": ["Blues", "Soul", "R&B", "Jazz", "Funk", "Country", "Rock", "Pop", "Contemporary Urban"],
+  "isPartOf": { "@id": "https://layoungbandpage.com/gallery#gallery" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SocialMediaPosting",
+  "@id": "https://layoungbandpage.com/gallery#feed",
+  "name": "LA Young — Official Artist Feed",
+  "description": "A continuously updated social media style photo and post feed published by LA Young on her official artist platform. Features performance photos, event highlights, studio moments, and artist updates. Fans can like, comment, and share posts directly on the platform.",
+  "url": "https://layoungbandpage.com/#gallery",
+  "author": { "@type": "Person", "@id": "https://layoungbandpage.com/#layoung-person", "name": "LA Young" },
+  "publisher": { "@type": "Organization", "name": "Gold Bottom Entertainment LLC", "url": "https://GoldBottomEnt-LLC.com" },
+  "isPartOf": { "@id": "https://layoungbandpage.com/gallery#gallery" },
+  "interactionStatistic": [
+    { "@type": "InteractionCounter", "interactionType": "https://schema.org/LikeAction", "name": "Post Likes" },
+    { "@type": "InteractionCounter", "interactionType": "https://schema.org/CommentAction", "name": "Post Comments" }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Gallery", "item": "https://layoungbandpage.com/#gallery" }
+  ]
+}
+</script>

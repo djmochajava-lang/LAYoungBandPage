@@ -50,24 +50,139 @@
     <link rel="stylesheet" href="css/slideshow-styles.css" />
     <link rel="stylesheet" href="css/fan-points.css" />
 
-    <!-- JSON-LD Structured Data -->
+    <!-- JSON-LD Structured Data — GEO Initiative (FRD-GEO-01) -->
+
+    <!-- Block 1: MusicGroup (Primary Artist Entity) -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "MusicGroup",
-      "name": "L.A. Young",
-      "description": "Live Soul, Jazz & Blues — Soul in Full Color",
-      "genre": ["Soul", "Jazz", "Blues"],
+      "@id": "https://layoungbandpage.com/#artist",
+      "name": "LA Young",
+      "alternateName": "LA Young Band",
+      "description": "LA Young is a seasoned blues and soul vocalist and bandleader based in the Washington DC/Maryland area. With roots in Ohio and a career spanning decades, LA Young has performed on national and international stages, including President Bill Clinton's Second Presidential Inauguration. She has collaborated with acclaimed jazz and R&B artists including Pieces of a Dream and Norman Connors, and achieved a UK number one hit with 'No One Can Love You More.' In 2018, she was named Artist of the Year by the Maryland Music Awards.",
       "url": "https://layoungbandpage.com",
       "image": "https://layoungbandpage.com/images/artist/LAYoungPink.JPG",
+      "genre": ["R&B", "Soul", "Jazz", "Funk", "Blues", "Country", "Rock", "Pop", "Contemporary Urban"],
+      "foundingLocation": {
+        "@type": "Place",
+        "name": "Ohio, United States"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Washington DC Metropolitan Area"
+      },
       "member": [
         {
-          "@type": "Person",
-          "name": "L.A. Young",
-          "roleName": "Lead Vocalist"
+          "@type": "OrganizationRole",
+          "member": {
+            "@type": "Person",
+            "name": "LA Young",
+            "jobTitle": "Lead Vocalist and Bandleader"
+          },
+          "startDate": "1990"
         }
       ],
-      "sameAs": []
+      "award": [
+        "Maryland Music Awards — Artist of the Year (2018)",
+        "UK Number One Hit — 'No One Can Love You More'"
+      ],
+      "affiliation": {
+        "@type": "Organization",
+        "name": "Gold Bottom Entertainment LLC",
+        "description": "Gold Bottom Entertainment LLC is the management company representing LA Young.",
+        "url": "https://GoldBottomEnt-LLC.com"
+      }
+    }
+    </script>
+
+    <!-- Block 2: WebSite (Official Platform Declaration) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://layoungbandpage.com/#website",
+      "name": "LA Young — Official Artist Platform",
+      "url": "https://layoungbandpage.com",
+      "description": "The official artist platform for LA Young. Features music, biography, gallery, merchandise, event booking, and fan community.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Gold Bottom Entertainment LLC"
+      },
+      "about": {
+        "@id": "https://layoungbandpage.com/#artist"
+      },
+      "inLanguage": "en-US"
+    }
+    </script>
+
+    <!-- Block 3: BreadcrumbList (Site Architecture Signal) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://layoungbandpage.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Artist",
+          "item": "https://layoungbandpage.com/#bio"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Music",
+          "item": "https://layoungbandpage.com/#music"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Projects",
+          "item": "https://layoungbandpage.com/#projects"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Gallery",
+          "item": "https://layoungbandpage.com/#gallery"
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "name": "Merchandise",
+          "item": "https://layoungbandpage.com/#merch"
+        },
+        {
+          "@type": "ListItem",
+          "position": 7,
+          "name": "Support",
+          "item": "https://layoungbandpage.com/#support"
+        },
+        {
+          "@type": "ListItem",
+          "position": 8,
+          "name": "EPK",
+          "item": "https://layoungbandpage.com/EPK/layoungepk.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 9,
+          "name": "Performances",
+          "item": "https://layoungbandpage.com/#performances"
+        },
+        {
+          "@type": "ListItem",
+          "position": 10,
+          "name": "Fan Wall",
+          "item": "https://layoungbandpage.com/#fanwall"
+        }
+      ]
     }
     </script>
   </head>

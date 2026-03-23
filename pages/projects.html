@@ -219,3 +219,102 @@
     </footer>
   </div>
 </section>
+
+<!-- JSON-LD Structured Data — GEO-04 (FRD-GEO-04) -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "@id": "https://layoungbandpage.com/projects#sentimental-mood",
+  "name": "Sentimental Mood — Studio Session",
+  "description": "A behind-the-scenes studio video of LA Young recording her contemporary R&B and soul interpretation of 'Sentimental Mood,' a composition associated with Duke Ellington. This video captures the arrangement and recording process as LA Young and her collaborators bring new life to a classic piece of American music.",
+  "url": "https://layoungbandpage.com/#projects",
+  "author": { "@type": "MusicGroup", "@id": "https://layoungbandpage.com/#artist", "name": "LA Young" },
+  "about": {
+    "@type": "MusicComposition",
+    "@id": "https://layoungbandpage.com/projects#sentimental-mood-composition",
+    "name": "Sentimental Mood",
+    "composer": { "@type": "Person", "name": "Duke Ellington" }
+  },
+  "genre": ["Jazz", "Soul", "R&B", "Blues", "Contemporary Urban"],
+  "productionCompany": { "@type": "Organization", "name": "Gold Bottom Entertainment LLC", "url": "https://GoldBottomEnt-LLC.com" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "@id": "https://layoungbandpage.com/projects#studio-performance",
+  "name": "LA Young Band — Studio Performance Session",
+  "description": "A behind-the-scenes studio video featuring LA Young performing live alongside her musicians Bobby Lyles on keyboards and Robert Turner on keys. This video showcases the live musicianship, creative chemistry, and collaborative energy that define the LA Young Band's studio process.",
+  "url": "https://layoungbandpage.com/#projects",
+  "author": { "@type": "MusicGroup", "@id": "https://layoungbandpage.com/#artist", "name": "LA Young" },
+  "actor": [
+    { "@type": "Person", "name": "LA Young", "jobTitle": "Lead Vocalist and Bandleader" },
+    { "@type": "Person", "name": "Bobby Lyles", "jobTitle": "Keyboards" },
+    { "@type": "Person", "name": "Robert Turner", "jobTitle": "Keys" }
+  ],
+  "genre": ["Blues", "Soul", "R&B", "Jazz", "Funk", "Contemporary Urban"],
+  "productionCompany": { "@type": "Organization", "name": "Gold Bottom Entertainment LLC", "url": "https://GoldBottomEnt-LLC.com" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "@id": "https://layoungbandpage.com/projects#production-crew",
+  "name": "The Production Crew — LA Young in the Studio with Norman Connors",
+  "description": "A behind-the-scenes studio video documenting the production process behind LA Young's upcoming music. Features acclaimed R&B and jazz producer Norman Connors directing the sessions, working with session musicians, and collaborating with audio engineer Ralph Sutton to shape the sound of LA Young's next release.",
+  "url": "https://layoungbandpage.com/#projects",
+  "author": { "@type": "MusicGroup", "@id": "https://layoungbandpage.com/#artist", "name": "LA Young" },
+  "actor": [
+    { "@type": "Person", "name": "LA Young", "jobTitle": "Lead Vocalist and Bandleader" },
+    { "@type": "Person", "name": "Norman Connors", "jobTitle": "Music Producer" },
+    { "@type": "Person", "name": "Ralph Sutton", "jobTitle": "Audio Engineer" }
+  ],
+  "genre": ["Blues", "Soul", "R&B", "Jazz", "Funk", "Contemporary Urban"],
+  "productionCompany": { "@type": "Organization", "name": "Gold Bottom Entertainment LLC", "url": "https://GoldBottomEnt-LLC.com" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MusicComposition",
+  "@id": "https://layoungbandpage.com/projects#sentimental-mood-composition",
+  "name": "Sentimental Mood",
+  "composer": { "@type": "Person", "name": "Duke Ellington" },
+  "description": "A classic composition associated with Duke Ellington, reinterpreted by LA Young as a contemporary R&B and soul recording currently in production.",
+  "recordedAs": { "@id": "https://layoungbandpage.com/projects#sentimental-mood" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "LA Young — Active Studio Projects",
+  "description": "A curated collection of behind-the-scenes studio videos documenting LA Young's active music production work and upcoming releases.",
+  "url": "https://layoungbandpage.com/#projects",
+  "numberOfItems": 3,
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "item": { "@id": "https://layoungbandpage.com/projects#sentimental-mood" } },
+    { "@type": "ListItem", "position": 2, "item": { "@id": "https://layoungbandpage.com/projects#studio-performance" } },
+    { "@type": "ListItem", "position": 3, "item": { "@id": "https://layoungbandpage.com/projects#production-crew" } }
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Projects", "item": "https://layoungbandpage.com/#projects" }
+  ]
+}
+</script>

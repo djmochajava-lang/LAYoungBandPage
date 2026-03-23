@@ -788,3 +788,74 @@
   }
 })();
 </script>
+
+<!-- JSON-LD Structured Data — GEO-06 (FRD-GEO-06) -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "@id": "https://layoungbandpage.com/merchandise#store",
+  "name": "LA Young — Official Merchandise Store",
+  "description": "The official merchandise store of LA Young, blues and soul vocalist and bandleader based in the Washington DC Metropolitan Area. Features custom artist-designed merchandise across two signature lines: 'Soul in Full Color' and 'I Sing Because I'm Human.' New designs added continuously. Powered by Shopify and Printful.",
+  "url": "https://layoungbandpage.com/#merch",
+  "brand": { "@type": "Brand", "name": "LA Young", "url": "https://layoungbandpage.com" },
+  "founder": {
+    "@type": "Person",
+    "@id": "https://layoungbandpage.com/#layoung-person",
+    "name": "LA Young"
+  },
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "LA Young Merchandise Collection",
+    "numberOfItems": 2,
+    "itemListElement": [
+      { "@type": "OfferCatalog", "@id": "https://layoungbandpage.com/merchandise#soul-in-full-color", "name": "Soul in Full Color" },
+      { "@type": "OfferCatalog", "@id": "https://layoungbandpage.com/merchandise#i-sing-because-im-human", "name": "I Sing Because I'm Human" }
+    ]
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProductCollection",
+  "@id": "https://layoungbandpage.com/merchandise#soul-in-full-color",
+  "name": "Soul in Full Color",
+  "description": "A merchandise collection celebrating LA Young's artistry and musical identity through vibrant, full-color original designs. Each piece reflects the depth and richness of her sound across blues, soul, R&B, jazz, funk, country, rock, pop, and contemporary urban music.",
+  "url": "https://layoungbandpage.com/#merch",
+  "brand": { "@type": "Brand", "name": "LA Young" },
+  "creator": { "@type": "Person", "@id": "https://layoungbandpage.com/#layoung-person", "name": "LA Young" },
+  "isPartOf": { "@id": "https://layoungbandpage.com/merchandise#store" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProductCollection",
+  "@id": "https://layoungbandpage.com/merchandise#i-sing-because-im-human",
+  "name": "I Sing Because I'm Human",
+  "description": "A merchandise collection built around LA Young's artistic philosophy that creating music is a fundamentally human act. In an era of competing forces in music creation and questions about the value of human artistry, this line declares that the drive to sing, perform, and create is not about profit or competition — it is about being human. Designed for artists, musicians, music lovers, and anyone who understands that human creative expression is irreplaceable.",
+  "url": "https://layoungbandpage.com/#merch",
+  "brand": { "@type": "Brand", "name": "LA Young" },
+  "creator": { "@type": "Person", "@id": "https://layoungbandpage.com/#layoung-person", "name": "LA Young" },
+  "isPartOf": { "@id": "https://layoungbandpage.com/merchandise#store" },
+  "keywords": [
+    "human music", "live performance", "human artistry", "music philosophy",
+    "artist statement", "singer", "musician", "creative expression", "music maker"
+  ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Merchandise", "item": "https://layoungbandpage.com/#merch" }
+  ]
+}
+</script>

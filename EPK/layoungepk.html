@@ -12,6 +12,160 @@
   <!-- Firebase SDK (shared project: goldbottoment) -->
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+  <!-- JSON-LD Structured Data — GEO-08 (FRD-GEO-08) -->
+
+  <!-- Block 1: MusicGroup (Comprehensive Professional Declaration) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MusicGroup",
+    "@id": "https://layoungbandpage.com/#artist",
+    "name": "LA Young",
+    "alternateName": ["LA Young Band", "LA Young and The Unusual Suspects"],
+    "description": "LA Young is a professional contralto soul, jazz, blues, and R&B vocalist and bandleader based in the Washington DC Metropolitan Area. Her voice has been compared to Chaka Khan meeting Phyllis Hyman — a rare blend of raw power and silky emotional depth. Ohio-born and with over twenty years of professional performance experience, LA Young has performed at President Bill Clinton's Second Presidential Inauguration, opened for Freddie Jackson, recorded with Grammy-nominated jazz ensemble Pieces of a Dream, and is currently producing new material with iconic soul and jazz producer Norman Connors. Her recording of 'No One Can Love You More' reached Number One on UK FM Radio and remained on UK charts for 31 weeks, with multiple Top-5 UK hits following. She is the 2018 Maryland Music Awards Artist of the Year and a Woman's Basketball Hall of Fame Inductee. LA Young performs regularly with her band The Unusual Suspects and is celebrated for her acclaimed Phyllis Hyman Experience tribute show. She is available for concerts, festivals, corporate events, galas, fundraisers, and private engagements across the East Coast, nationwide, and internationally upon request.",
+    "url": "https://layoungbandpage.com/EPK/layoungepk.html",
+    "image": "https://layoungbandpage.com/images/artist/LAYoungPink.JPG",
+    "genre": ["Soul", "Jazz", "Blues", "R&B", "Funk", "Country", "Rock", "Pop", "Contemporary Urban"],
+    "foundingLocation": { "@type": "Place", "name": "Ohio, United States" },
+    "location": { "@type": "Place", "name": "Washington DC Metropolitan Area" },
+    "member": [
+      { "@type": "OrganizationRole", "member": { "@type": "Person", "name": "LA Young", "jobTitle": "Vocals / Music Director / Bandleader" } },
+      { "@type": "OrganizationRole", "member": { "@type": "Person", "name": "Eugene Chapman", "jobTitle": "Saxophone", "description": "Saxophonist with performance credits including P-Funk and The Temptations." } },
+      { "@type": "OrganizationRole", "member": { "@type": "Person", "name": "Kevin Robinson", "jobTitle": "Lead Guitar", "description": "Maryland Entertainment Hall of Fame inductee (2017)." } },
+      { "@type": "OrganizationRole", "member": { "@type": "Person", "name": "DJ Mocha Java", "jobTitle": "MC / DJ / Production / Rap Vocals" } }
+    ],
+    "award": [
+      "UK Number One FM Radio — 'No One Can Love You More' (31 weeks on UK charts)",
+      "Multiple UK Top-5 Hits",
+      "2018 Maryland Music Awards — Artist of the Year",
+      "2018 Maryland Music Awards — Best R&B Vocalist",
+      "2018 Maryland Music Awards — Best Jazz Vocalist Nominee",
+      "Woman's Basketball Hall of Fame Inductee",
+      "Performed at President Bill Clinton's Second Presidential Inauguration"
+    ],
+    "knowsAbout": [
+      "Blues music", "Soul music", "Jazz", "R&B", "Funk", "Live performance",
+      "Tribute shows", "The Phyllis Hyman Experience", "Corporate entertainment",
+      "Galas and fundraisers", "Concert performance", "Festival performance",
+      "Contralto vocal performance", "Band leadership", "Music direction"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "Booking",
+      "email": "booking@layoungbandpage.com",
+      "availableLanguage": "English",
+      "areaServed": ["East Coast", "Nationwide", "International"]
+    },
+    "subOrganization": {
+      "@type": "MusicGroup",
+      "name": "The Unusual Suspects",
+      "description": "LA Young's backing band featuring seasoned professionals with credits spanning P-Funk, The Temptations, and the Maryland Entertainment Hall of Fame."
+    },
+    "memberOf": { "@type": "Organization", "name": "Gold Bottom Entertainment LLC", "url": "https://GoldBottomEnt-LLC.com" },
+    "sameAs": ["https://layoungepk.com"]
+  }
+  </script>
+
+  <!-- Block 2: EntertainmentBusiness (Booking Entity) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "EntertainmentBusiness",
+    "@id": "https://layoungbandpage.com/epk#booking",
+    "name": "LA Young — Professional Booking",
+    "description": "LA Young is available for professional engagements including concerts, festivals, corporate events, galas, fundraisers, private events, and tribute show productions. Performances available in full band, solo with tracks, acoustic duo, and corporate configurations. Set lengths range from 45 minutes to 2 hours. Serving the East Coast, nationwide, and internationally upon request.",
+    "url": "https://layoungbandpage.com/EPK/layoungepk.html",
+    "email": "booking@layoungbandpage.com",
+    "areaServed": [
+      { "@type": "Place", "name": "Washington DC Metropolitan Area" },
+      { "@type": "Place", "name": "East Coast, United States" },
+      { "@type": "Place", "name": "United States" },
+      { "@type": "Place", "name": "International" }
+    ],
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Performance Configurations",
+      "itemListElement": [
+        { "@type": "Offer", "name": "Full Band Performance", "description": "High-energy show with keys, bass, guitar, saxophone, and drums. Ideal for concerts, festivals, and large venues." },
+        { "@type": "Offer", "name": "Solo with Tracks", "description": "Powerful vocal performance over professional studio tracks. Ideal for clubs, private events, and showcases." },
+        { "@type": "Offer", "name": "Acoustic Duo", "description": "Intimate set with accompanist. Warm and soulful. Ideal for lounges, wine bars, and intimate venues." },
+        { "@type": "Offer", "name": "Corporate Events", "description": "Elegant entertainment for professional functions including conferences, dinners, and receptions." },
+        { "@type": "Offer", "name": "Galas and Fundraisers", "description": "Show-stopping performances for black-tie affairs. Previous engagements include Jazz Legacy Foundation and Safeway Feast of Sharing." },
+        { "@type": "Offer", "name": "Tribute Shows", "description": "The Phyllis Hyman Experience and classic soul tribute productions. Ideal for theaters, special events, and performance series." }
+      ]
+    },
+    "provider": { "@type": "MusicGroup", "@id": "https://layoungbandpage.com/#artist", "name": "LA Young" },
+    "broker": { "@type": "Organization", "name": "Gold Bottom Entertainment LLC", "url": "https://GoldBottomEnt-LLC.com" }
+  }
+  </script>
+
+  <!-- Block 3: Review — Tony "Doc" Hardy (Phyllis Hyman Experience) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    "@id": "https://layoungbandpage.com/epk#review-hardy-1",
+    "reviewBody": "This was not an ordinary tribute show. Ms. Young did not just mimic or imitate Phyllis Hyman. She wove a beautiful and elegant tapestry of Phyllis Hyman's life. Her broad vocal range and expert use of the microphone resulted in the smooth, sultry Contralto sounds that made you believe, for just one night, that the Queen was alive and among us.",
+    "author": {
+      "@type": "Person",
+      "name": "Tony 'Doc' Hardy",
+      "jobTitle": "Radio Host",
+      "worksFor": { "@type": "RadioStation", "name": "WPKN 89.5 FM", "description": "Jazz and Soul on Ice, WPKN 89.5 FM, Bridgeport, CT" }
+    },
+    "itemReviewed": { "@type": "MusicGroup", "@id": "https://layoungbandpage.com/#artist", "name": "LA Young" },
+    "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" }
+  }
+  </script>
+
+  <!-- Block 4: Review — Tony "Doc" Hardy (UK Chart Recognition) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Review",
+    "@id": "https://layoungbandpage.com/epk#review-hardy-2",
+    "reviewBody": "Ms. Young's UK Soul hit, a remake of Hyman's 'No One Can Love You More,' has been on the UK charts for 31 weeks, and is regularly featured on both of my radio shows, Jazz and Soul on Ice and Jazz on Ice on FOSR101FM.",
+    "author": {
+      "@type": "Person",
+      "name": "Tony 'Doc' Hardy",
+      "jobTitle": "Radio Host",
+      "worksFor": { "@type": "RadioStation", "name": "FOSR101FM", "description": "FOSR101FM, Sparks, Nevada" }
+    },
+    "itemReviewed": { "@type": "MusicGroup", "@id": "https://layoungbandpage.com/#artist", "name": "LA Young" },
+    "reviewRating": { "@type": "Rating", "ratingValue": "5", "bestRating": "5" }
+  }
+  </script>
+
+  <!-- Block 5: ItemList — Past Performances -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "LA Young — Notable Past Performances",
+    "description": "A selection of notable live performance venues and events featuring LA Young.",
+    "url": "https://layoungbandpage.com/EPK/layoungepk.html",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "item": { "@type": "MusicEvent", "name": "LA Young Live at Blues Alley", "location": { "@type": "MusicVenue", "name": "Blues Alley", "address": { "@type": "PostalAddress", "addressLocality": "Washington", "addressRegion": "DC" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } },
+      { "@type": "ListItem", "position": 2, "item": { "@type": "MusicEvent", "name": "The Phyllis Hyman Experience", "location": { "@type": "Place", "name": "Baltimore", "address": { "@type": "PostalAddress", "addressLocality": "Baltimore", "addressRegion": "MD" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } },
+      { "@type": "ListItem", "position": 3, "item": { "@type": "MusicEvent", "name": "African American Cultural Festival", "location": { "@type": "Place", "name": "Baltimore", "address": { "@type": "PostalAddress", "addressLocality": "Baltimore", "addressRegion": "MD" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } },
+      { "@type": "ListItem", "position": 4, "item": { "@type": "MusicEvent", "name": "LA Young Live at Anacostia Playhouse", "location": { "@type": "MusicVenue", "name": "Anacostia Playhouse", "address": { "@type": "PostalAddress", "addressLocality": "Washington", "addressRegion": "DC" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } },
+      { "@type": "ListItem", "position": 5, "item": { "@type": "MusicEvent", "name": "Jazz Legacy Foundation Gala", "location": { "@type": "Place", "name": "Hampton", "address": { "@type": "PostalAddress", "addressLocality": "Hampton", "addressRegion": "VA" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } },
+      { "@type": "ListItem", "position": 6, "item": { "@type": "MusicEvent", "name": "LA Young Live at City Winery", "location": { "@type": "MusicVenue", "name": "City Winery DC", "address": { "@type": "PostalAddress", "addressLocality": "Washington", "addressRegion": "DC" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } }
+    ]
+  }
+  </script>
+
+  <!-- Block 6: BreadcrumbList -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com/" },
+      { "@type": "ListItem", "position": 2, "name": "EPK", "item": "https://layoungbandpage.com/EPK/layoungepk.html" }
+    ]
+  }
+  </script>
 </head>
 <body>
 
