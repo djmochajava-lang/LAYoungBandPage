@@ -183,6 +183,12 @@
   <span class="pdf-text">Save as PDF</span>
 </button>
 
+<!-- Share EPK Button (visible when folder is open) -->
+<button class="share-epk-btn" id="shareEpkBtn" onclick="shareEpk()" title="Share EPK">
+  <span class="share-icon">&#x1F4E4;</span>
+  <span class="pdf-text">Share EPK</span>
+</button>
+
 <div class="folder-container">
   <div class="folder" id="folder">
 
@@ -593,6 +599,9 @@
           <a href="javascript:void(0)" class="cta-btn btn-gold-retro" onclick="saveAsPdf()">
             &#x1F4C4; Save as PDF
           </a>
+          <a href="javascript:void(0)" class="cta-btn btn-outline-retro" onclick="shareEpk()" id="shareEpkCardBtn">
+            &#x1F4E4; Share EPK
+          </a>
           <a href="https://goldbottoment-llc.com/#ent-quote" class="cta-btn btn-outline-retro" target="_blank">
             &#x2709; Get a Quote
           </a>
@@ -702,11 +711,13 @@
       setTimeout(function() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         document.getElementById('savePdfBtn').classList.add('visible');
+        document.getElementById('shareEpkBtn').classList.add('visible');
       }, 400);
     } else {
       folder.classList.remove('open');
       document.body.classList.remove('folder-is-open');
       document.getElementById('savePdfBtn').classList.remove('visible');
+      document.getElementById('shareEpkBtn').classList.remove('visible');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -717,6 +728,31 @@
       toggleFolder();
     }
   }, 3000);
+
+  /* --- Share EPK --- */
+  window.shareEpk = function() {
+    var url = 'https://layoungbandpage.com/EPK/layoungepk.html';
+    var title = 'L.A. Young — Electronic Press Kit';
+    var text = 'Check out the official Electronic Press Kit for L.A. Young — Soul, Jazz, Blues & R&B vocalist.';
+    if (navigator.share) {
+      navigator.share({ title: title, text: text, url: url }).catch(function() {});
+    } else {
+      navigator.clipboard.writeText(url).then(function() {
+        var fixedBtn = document.getElementById('shareEpkBtn');
+        var cardBtn  = document.getElementById('shareEpkCardBtn');
+        var origFixed = fixedBtn ? fixedBtn.innerHTML : null;
+        var origCard  = cardBtn  ? cardBtn.innerHTML  : null;
+        if (fixedBtn) fixedBtn.innerHTML = '<span class="share-icon">&#x2713;</span><span class="pdf-text">Link Copied!</span>';
+        if (cardBtn)  cardBtn.innerHTML  = '&#x2713; Link Copied!';
+        setTimeout(function() {
+          if (fixedBtn && origFixed) fixedBtn.innerHTML = origFixed;
+          if (cardBtn  && origCard)  cardBtn.innerHTML  = origCard;
+        }, 2000);
+      }).catch(function() {
+        window.prompt('Copy this link to share the EPK:', url);
+      });
+    }
+  };
 
   /* --- Save as PDF (triggers browser print dialog) --- */
   window.saveAsPdf = function() {

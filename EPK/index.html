@@ -26,6 +26,9 @@
       <a href="layoungepk.html" class="btn btn-outline btn-sm">
         <span class="btn-icon pdf-badge">PDF</span> EPK on the GO
       </a>
+      <button class="btn btn-ghost btn-sm" onclick="shareEpk()" id="shareEpkTopBtn" style="margin-left:8px">
+        &#x1F4E4; Share EPK
+      </button>
     </div>
   </nav>
 </div>
@@ -507,6 +510,9 @@
         <a href="layoungepk.html" class="btn btn-outline">
           <span class="btn-icon pdf-badge">PDF</span> EPK on the GO
         </a>
+        <button class="btn btn-outline" onclick="shareEpk()" id="shareEpkCardBtn">
+          &#x1F4E4; Share EPK
+        </button>
         <a href="https://goldbottoment-llc.com/#ent-quote" class="btn btn-outline" target="_blank">
           <span class="btn-icon">&#x2709;</span> Get a Quote
         </a>
@@ -531,6 +537,28 @@
 </footer>
 
 <script>
+// Share EPK
+function shareEpk() {
+  var url   = 'https://layoungbandpage.com/EPK/layoungepk.html';
+  var title = 'L.A. Young — Electronic Press Kit';
+  var text  = 'Check out the official Electronic Press Kit for L.A. Young — Soul, Jazz, Blues & R&B vocalist.';
+  if (navigator.share) {
+    navigator.share({ title: title, text: text, url: url }).catch(function() {});
+  } else {
+    navigator.clipboard.writeText(url).then(function() {
+      ['shareEpkTopBtn','shareEpkCardBtn'].forEach(function(id) {
+        var btn = document.getElementById(id);
+        if (!btn) return;
+        var orig = btn.innerHTML;
+        btn.innerHTML = '&#x2713; Link Copied!';
+        setTimeout(function() { btn.innerHTML = orig; }, 2000);
+      });
+    }).catch(function() {
+      window.prompt('Copy this link to share the EPK:', url);
+    });
+  }
+}
+
 // Return to the band page tab that opened this EPK popup
 document.addEventListener('click', function(e) {
   var link = e.target.closest('a[href*="../index.html"]');
