@@ -640,3 +640,17 @@ body.mobile-menu-open {
   border-color: rgba(255, 215, 0, 0.6);
   padding-left: 1rem !important;
 }
+
+.mm-sub-icon {
+  display: inline-block;
+  margin-right: 6px;
+  filter: grayscale(1) brightness(10);
+  font-style: normal;
+}
+
+.mm-sub-text {
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+}
