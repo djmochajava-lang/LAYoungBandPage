@@ -253,6 +253,12 @@ const MobileMenu = {
         this.hamburger.classList.add('active');
       }
 
+      // Preload Firebase now so Subscribers View tap fires signInWithPopup
+      // synchronously (within the gesture context) — prevents iOS Safari popup block
+      if (typeof FanPoints !== 'undefined' && FanPoints._loadFirebase) {
+        FanPoints._loadFirebase(function() {});
+      }
+
       console.log('✅ Mobile menu opened');
     }
   },
