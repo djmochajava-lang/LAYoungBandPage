@@ -658,3 +658,8 @@ body.mobile-menu-open {
 .mm-subscribe-btn::before {
   content: none;
 }
+
+.mm-subscribe-btn.mobile-menu-link::before {
+  content: none !important;
+  display: none !important;
+}
