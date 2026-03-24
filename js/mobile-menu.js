@@ -13,6 +13,33 @@ const MobileMenu = {
 
   /** localStorage key for cached fan profile */
   FAN_PROFILE_KEY: 'layoung_fan_profile',
+  /** Cookie name for fan profile (survives iOS Safari ITP localStorage clears) */
+  FAN_COOKIE_KEY: 'layoung_fan',
+
+  /** Save profile to cookie — 30-day expiry, same-site */
+  _saveCookie: function(profile) {
+    try {
+      var val = encodeURIComponent(JSON.stringify(profile));
+      var maxAge = 30 * 24 * 60 * 60;
+      document.cookie = this.FAN_COOKIE_KEY + '=' + val +
+        '; max-age=' + maxAge + '; path=/; SameSite=Lax';
+    } catch(e) {}
+  },
+
+  /** Read profile from cookie, returns object or null */
+  _readCookie: function() {
+    try {
+      var match = document.cookie.match(
+        new RegExp('(^| )' + this.FAN_COOKIE_KEY + '=([^;]+)')
+      );
+      return match ? JSON.parse(decodeURIComponent(match[2])) : null;
+    } catch(e) { return null; }
+  },
+
+  /** Clear fan cookie on sign-out */
+  _clearCookie: function() {
+    document.cookie = this.FAN_COOKIE_KEY + '=; max-age=0; path=/';
+  },
 
   /**
    * Initialize mobile menu
@@ -45,10 +72,10 @@ const MobileMenu = {
     // Fan profile card — restore from cache, then live-update when auth resolves
     this.initFanProfile();
 
-    // Hide subscribe CTA immediately if fan profile is already cached
-    // (guards against timing issues in renderProfile during initFanProfile)
+    // Hide subscribe CTA immediately if fan profile is cached (localStorage or cookie)
     try {
-      if (localStorage.getItem(this.FAN_PROFILE_KEY)) {
+      var hasCached = !!localStorage.getItem(this.FAN_PROFILE_KEY) || !!this._readCookie();
+      if (hasCached) {
         var cta = document.getElementById('mm-subscribe-cta');
         if (cta) cta.style.display = 'none';
       }
@@ -124,13 +151,14 @@ const MobileMenu = {
 
       // Check if returning (had cached profile) before we overwrite
       var isReturning = false;
-      try { isReturning = !!localStorage.getItem(self.FAN_PROFILE_KEY); } catch(e) {}
+      try { isReturning = !!localStorage.getItem(self.FAN_PROFILE_KEY) || !!self._readCookie(); } catch(e) {}
 
-      // Always persist to localStorage — this is the source of truth for next visit
+      // Persist to localStorage AND cookie (cookie survives iOS Safari ITP clears)
       try {
         localStorage.setItem(self.FAN_PROFILE_KEY, JSON.stringify(profile));
         console.log('👤 Fan profile saved to localStorage');
       } catch (err) { /* storage full — ignore */ }
+      self._saveCookie(profile);
 
       renderProfile(profile);
 
@@ -144,13 +172,20 @@ const MobileMenu = {
       }
     });
 
-    // ── Step 2: Restore cached profile instantly (no Firebase needed) ──
+    // ── Step 2: Restore cached profile instantly (localStorage → cookie fallback) ──
     try {
       var cached = localStorage.getItem(self.FAN_PROFILE_KEY);
       if (cached) {
         var profile = JSON.parse(cached);
-        console.log('👤 Restoring fan profile from localStorage cache');
+        console.log('👤 Restoring fan profile from localStorage');
         renderProfile(profile);
+      } else {
+        // localStorage cleared (iOS ITP) — try cookie fallback
+        var cookieProfile = self._readCookie();
+        if (cookieProfile) {
+          console.log('👤 Restoring fan profile from cookie');
+          renderProfile(cookieProfile);
+        }
       }
     } catch (e) { /* ignore parse errors */ }
   },
