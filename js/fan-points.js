@@ -506,7 +506,35 @@ const FanPoints = {
 
   _handleJoinClick: function() {
     var self = this;
+
+    // If Firebase is still restoring a previous session, don't open a new popup —
+    // onAuthStateChanged will fire shortly and restore the UI automatically.
+    if (this._authPending) {
+      console.log('FanPoints: Auth restoring — skipping popup');
+      return;
+    }
+
     this._loadFirebase(function() {
+      // After Firebase loads, check if session was already restored
+      var currentUser = (typeof firebase !== 'undefined' && firebase.apps.length)
+        ? firebase.auth().currentUser
+        : null;
+
+      if (currentUser) {
+        // Already signed in — re-dispatch event to restore UI without popup
+        window.dispatchEvent(new CustomEvent('layoung:fan-signed-in', {
+          detail: {
+            displayName: currentUser.displayName || '',
+            photoURL:    currentUser.photoURL    || '',
+            email:       currentUser.email       || '',
+            uid:         currentUser.uid,
+            points:      self._points            || 0
+          }
+        }));
+        return;
+      }
+
+      // Truly not signed in — open Google popup
       self._doSignIn();
     });
   },
