@@ -122,6 +122,10 @@ const MobileMenu = {
         points:      typeof d.points === 'number' ? d.points : 0
       };
 
+      // Check if returning (had cached profile) before we overwrite
+      var isReturning = false;
+      try { isReturning = !!localStorage.getItem(self.FAN_PROFILE_KEY); } catch(e) {}
+
       // Always persist to localStorage — this is the source of truth for next visit
       try {
         localStorage.setItem(self.FAN_PROFILE_KEY, JSON.stringify(profile));
@@ -129,6 +133,15 @@ const MobileMenu = {
       } catch (err) { /* storage full — ignore */ }
 
       renderProfile(profile);
+
+      // Welcome notification
+      var firstName = (profile.displayName || '').split(' ')[0] || 'Friend';
+      var msg = isReturning
+        ? 'Welcome Back, ' + firstName + '! \u2605'
+        : 'Welcome, ' + firstName + '! \u2605';
+      if (typeof App !== 'undefined' && App.showNotification) {
+        App.showNotification(msg, 'success');
+      }
     });
 
     // ── Step 2: Restore cached profile instantly (no Firebase needed) ──
