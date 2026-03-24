@@ -240,13 +240,32 @@
 
         <div class="mobile-menu-footer">
           <a href="#LAYoungMusicPlayer" class="mobile-menu-game"><span style="color:#ffd700">♪</span> Player</a>
-          <a
-            href="EPK/index.html"
-            class="mobile-menu-epk"
-            onclick="event.preventDefault(); window.open(this.href, 'epk_window', 'width=900,height=800,scrollbars=yes,resizable=yes');"
-          >
-            View EPK
-          </a>
+          <div style="display:flex;gap:8px;align-items:stretch">
+            <a
+              href="EPK/index.html"
+              class="mobile-menu-epk"
+              style="flex:1"
+              onclick="event.preventDefault(); window.open(this.href, 'epk_window', 'width=900,height=800,scrollbars=yes,resizable=yes');"
+            >
+              View EPK
+            </a>
+            <button
+              class="mobile-menu-epk"
+              style="flex:0 0 auto;width:44px;font-size:1.2rem;padding:0"
+              title="Share this site"
+              onclick="(function(){
+                var url='https://layoungbandpage.com/';
+                var title='L.A. Young — Official Band Page';
+                var text='Soul. Jazz. Blues. R\u0026B. Check out the official L.A. Young Band Page.';
+                if(navigator.share){navigator.share({title:title,text:text,url:url}).catch(function(){});}
+                else{navigator.clipboard.writeText(url).then(function(){
+                  var b=event.currentTarget;var o=b.innerHTML;
+                  b.innerHTML='\u2713';
+                  setTimeout(function(){b.innerHTML=o;},2000);
+                }).catch(function(){window.prompt('Copy to share:',url);});}
+              })()"
+            >&#x1F4E4;</button>
+          </div>
           <p class="mobile-menu-copyright">&copy; 2026 LA Young Band<br>Powered by <strong>Gold Bottom Entertainment LLC</strong><br>All rights reserved.</p>
         </div>
       </div>
