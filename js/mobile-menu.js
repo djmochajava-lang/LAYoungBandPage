@@ -96,6 +96,9 @@ const MobileMenu = {
         card.style.display = 'flex';
         card.setAttribute('aria-hidden', 'false');
       }
+      // Hide subscribe CTA once signed in
+      var subscribeCta = document.getElementById('mm-subscribe-cta');
+      if (subscribeCta) subscribeCta.style.display = 'none';
       console.log('👤 Fan profile shown:', firstName, pts + ' pts');
     }
 

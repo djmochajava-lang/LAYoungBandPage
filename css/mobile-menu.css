@@ -614,3 +614,29 @@ body.mobile-menu-open {
     color: #000;
   }
 }
+
+/* Subscribe CTA — shown in profile area when not signed in */
+.mm-subscribe-cta {
+  padding: 0.75rem 1.5rem 0;
+}
+
+.mm-subscribe-btn {
+  display: block;
+  text-align: center;
+  padding: 0.75rem 1rem !important;
+  background: rgba(255, 215, 0, 0.08);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 4px;
+  color: #ffd700 !important;
+  font-size: 0.85rem !important;
+  letter-spacing: 0.05em;
+  text-transform: none !important;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.mm-subscribe-btn:hover {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.6);
+  padding-left: 1rem !important;
+}
