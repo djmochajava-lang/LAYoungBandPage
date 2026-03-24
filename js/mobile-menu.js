@@ -45,6 +45,15 @@ const MobileMenu = {
     // Fan profile card — restore from cache, then live-update when auth resolves
     this.initFanProfile();
 
+    // Hide subscribe CTA immediately if fan profile is already cached
+    // (guards against timing issues in renderProfile during initFanProfile)
+    try {
+      if (localStorage.getItem(this.FAN_PROFILE_KEY)) {
+        var cta = document.getElementById('mm-subscribe-cta');
+        if (cta) cta.style.display = 'none';
+      }
+    } catch (e) { /* ignore */ }
+
     console.log('✅ Mobile menu initialized successfully');
   },
 
