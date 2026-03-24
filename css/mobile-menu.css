@@ -654,3 +654,7 @@ body.mobile-menu-open {
   font-weight: 400;
   letter-spacing: 0.05em;
 }
+
+.mm-subscribe-btn::before {
+  content: none;
+}
