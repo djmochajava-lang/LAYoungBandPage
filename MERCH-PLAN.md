@@ -24,7 +24,7 @@ This plan lays out a complete merch strategy for L.A. Young — from product des
 | **Steel mill → stage origin story** | "Forged in the heat, sung from the heart" |
 | **Phyllis Hyman tribute legacy** | "The Phyllis Hyman Experience" sub-brand |
 | **DC/DMV scene credibility** | Blues Alley, City Winery venue cred |
-| **"The Unusual Suspects" band** | Band-themed merch line |
+| **"Soul Society" band** | Band-themed merch line |
 | **"Soul Fam" community** | Fan identity merch |
 | **UK chart success** | "#1 UK FM Radio" achievement merch |
 | **"I sing because I am human"** | Anti-algorithm anthem |
@@ -107,7 +107,7 @@ This is the merch line NO OTHER ARTIST can copy. L.A. Young was the **first fema
 L.A. Young's Phyllis Hyman tribute is so significant that people say "they close their eyes and she's right there in the room." This deserves its own merch line.
 
 #### Product 3A: The Phyllis Hyman Experience Event Tee
-- **Design:** Vintage concert poster style. "THE PHYLLIS HYMAN EXPERIENCE" in retro 1970s soul typography. "featuring L.A. Young & The Unusual Suspects" below. Venue name and date can be customized per show. Gold and cream on black.
+- **Design:** Vintage concert poster style. "THE PHYLLIS HYMAN EXPERIENCE" in retro 1970s soul typography. "featuring L.A. Young & Soul Society" below. Venue name and date can be customized per show. Gold and cream on black.
 - **Blank:** Bella+Canvas 3001 in BLACK
 - **Print:** Gold + cream/off-white two-color print
 - **Base cost:** ~$9.50 | **Retail:** $29.99 | **Profit:** $20.49
