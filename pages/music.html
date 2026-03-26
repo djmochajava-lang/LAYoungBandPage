@@ -694,6 +694,39 @@
 
           /* --- Lyrics Responsive --- */
           @media (max-width: 768px) {
+            .player-controls {
+              flex-wrap: wrap;
+              justify-content: center;
+              gap: 8px;
+              border-radius: 20px;
+              padding: 10px 14px;
+            }
+            .player-controls > .player-btn {
+              order: -1;
+            }
+            .player-progress-wrap {
+              width: 100%;
+              order: 10;
+            }
+            .player-time {
+              font-size: 11px;
+              order: 11;
+              width: 100%;
+              text-align: center;
+            }
+            .player-volume {
+              gap: 4px;
+            }
+            .volume-slider {
+              width: 45px !important;
+            }
+            .lyrics-inline-btn {
+              font-size: 11px;
+              padding: 0 10px;
+              height: 28px;
+            }
+          }
+          @media (max-width: 768px) {
             .lyrics-overlay {
               padding: 20px 10px;
             }
