@@ -10,7 +10,7 @@ try {
 } catch (e) {
   const adminPath = path.resolve(
     __dirname,
-    '../../GoldBottomEntLLC-private/server/node_modules/firebase-admin'
+    '../../GBE-HomeOffice/server/node_modules/firebase-admin'
   );
   try {
     admin = require(adminPath);
@@ -25,7 +25,7 @@ try {
 
 const SERVICE_ACCOUNT_PATH = path.resolve(
   __dirname,
-  '../../GoldBottomEntLLC-private/server/.secrets/firebase-admin-key.json'
+  '../../GBE-HomeOffice/server/.secrets/firebase-admin-key.json'
 );
 
 admin.initializeApp({

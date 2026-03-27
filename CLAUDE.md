@@ -8,7 +8,7 @@ This project is part of a three-site ecosystem. Before making changes, verify wh
 |------|---------------|-------------|-----------|----------|
 | **L.A. Young Band Page** (this site) | `C:\Projects\goldbottom-ent-site\LAYoungBandPage\` | `index.html` | GitHub Pages: `layoungbandpage.com` | `LAYoungBandPage` (public) |
 | **GBE Public** | `C:\Projects\goldbottom-ent-site\GoldBottomEntLLC\` | `index.html` (CDN assets) | GitHub Pages: `djmochajava-lang.github.io/GoldBottomEntLLC/` | `GoldBottomEntLLC` (public) |
-| **GBE Local/Private** | Same as GBE Public | `index-local.html` (bundled assets) | Home server: `http://LAN-IP:3000` | `GoldBottomEntLLC-private` (private, D: drive) |
+| **GBE Local/Private** | Same as GBE Public | `index-local.html` (bundled assets) | Home server: `http://LAN-IP:3000` | `GBE-HomeOffice` (private, D: drive) |
 
 **This site (LAYoungBandPage) is completely independent from GBE.** It has its own CSS, JS, pages, routing, design system, and Git repo. Do NOT confuse files here with GBE's files — they share a similar SPA architecture but are separate codebases.
 
