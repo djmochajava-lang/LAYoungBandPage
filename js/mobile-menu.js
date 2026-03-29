@@ -81,45 +81,27 @@ const MobileMenu = {
       }
     } catch (e) { /* ignore */ }
 
-    // Auto-open menu if ?menu=open in URL (linked from Band Portal)
+    // Arriving from GBE Band Portal (?from=portal)
+    // Land on homepage. If not signed in, swap subscribe CTA to a "Sign In" button.
     try {
       var params = new URLSearchParams(window.location.search);
-      if (params.get('menu') === 'open') {
-        var self2 = this;
-
-        // Clean up URL without reload
+      if (params.get('from') === 'portal' || params.get('menu') === 'open') {
         if (window.history.replaceState) {
-          var cleanUrl = window.location.pathname + window.location.hash;
-          window.history.replaceState(null, '', cleanUrl);
+          window.history.replaceState(null, '', window.location.pathname + window.location.hash);
         }
-
-        // Wait for Firebase auth to restore, then open menu + auto-sign-in if needed
-        var opened = false;
-        function openOnce() {
-          if (opened) return;
-          opened = true;
-          self2.open();
-        }
-
-        // Listen for sign-in event — open menu when profile is ready
-        window.addEventListener('layoung:fan-signed-in', function() {
-          openOnce();
-        });
-
-        // Give Firebase time to restore session, then check
-        setTimeout(function() {
-          if (opened) return;
-          // If FanPoints is available and user not signed in, trigger sign-in
-          var hasProfile = false;
-          try { hasProfile = !!localStorage.getItem(self2.FAN_PROFILE_KEY) || !!self2._readCookie(); } catch(e) {}
-          if (!hasProfile && typeof FanPoints !== 'undefined' && FanPoints._handleJoinClick) {
-            FanPoints._handleJoinClick();
+        var hasProfile = false;
+        try { hasProfile = !!localStorage.getItem(this.FAN_PROFILE_KEY) || !!this._readCookie(); } catch(e) {}
+        if (!hasProfile) {
+          // Replace "Subscribers View" with "Sign In" — triggers on user tap (mobile popup safe)
+          var cta = document.getElementById('mm-subscribe-cta');
+          if (cta) {
+            cta.innerHTML = '<button class="mm-subscribe-btn" onclick="FanPoints._handleJoinClick();">' +
+              '<span class="mm-sub-icon">\uD83C\uDFB5</span><em class="mm-sub-text">Tap to Sign In</em>' +
+              '</button>';
           }
-          // Open menu regardless after a moment
-          setTimeout(openOnce, 500);
-        }, 1500);
+        }
       }
-    } catch (e) { /* ignore — URLSearchParams not supported */ }
+    } catch (e) { /* ignore */ }
 
     console.log('✅ Mobile menu initialized successfully');
   },
