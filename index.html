@@ -5,13 +5,39 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>L.A. Young - Soul in Full Color | Live Soul, Jazz & Blues</title>
 
+    <!-- Meta Description -->
+    <meta name="description" content="L.A. Young — Washington DC soul, jazz &amp; blues vocalist. Maryland Artist of the Year. UK #1 hit. Live performances, original music, and booking info." />
+
+    <!-- Favicon -->
+    <link rel="icon" href="images/artist/LAYoungPink.JPG" type="image/jpeg" />
+    <link rel="apple-touch-icon" href="images/artist/PhyllisHyman-Signing.jpg" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#1a0a2e" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="L.A. Young - Soul in Full Color" />
+    <meta property="og:description" content="Washington DC soul, jazz & blues vocalist. Maryland Artist of the Year. UK #1 hit. Live performances, original music, and booking info." />
+    <meta property="og:image" content="https://layoungbandpage.com/images/artist/PhyllisHyman-Signing.jpg" />
+    <meta property="og:url" content="https://layoungbandpage.com/" />
+    <meta property="og:type" content="music.musician" />
+    <meta property="og:site_name" content="L.A. Young" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="L.A. Young - Soul in Full Color" />
+    <meta name="twitter:description" content="Washington DC soul, jazz & blues vocalist. Maryland Artist of the Year. UK #1 hit. Live performances, original music, and booking info." />
+    <meta name="twitter:image" content="https://layoungbandpage.com/images/artist/PhyllisHyman-Signing.jpg" />
+
     <!-- All meta tags, fonts, CSS links here (keeping original) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <!-- Self-hosted fonts (no CDN) -->
+    <link rel="stylesheet" href="css/fonts.css" />
     <link rel="stylesheet" href="css/base.css" />
     <link rel="stylesheet" href="css/components.css" />
     <link rel="stylesheet" href="css/layout.css" />
@@ -23,6 +49,149 @@
     <link rel="stylesheet" href="css/scroll-indicators.css" />
     <!--  <link rel="stylesheet" href="css/mobile-improvements.css" />-->
     <link rel="stylesheet" href="css/slideshow-styles.css" />
+    <link rel="stylesheet" href="css/fan-points.css" />
+
+    <!-- JSON-LD Structured Data — GEO Initiative (FRD-GEO-01) -->
+
+    <!-- Block 1: MusicGroup (Primary Artist Entity) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MusicGroup",
+      "@id": "https://layoungbandpage.com/#artist",
+      "name": "LA Young",
+      "alternateName": ["LA Young Band", "LA Young and Soul Society"],
+      "description": "LA Young is a seasoned blues and soul vocalist and bandleader based in the Washington DC/Maryland area. With roots in Ohio and a career spanning decades, LA Young has performed on national and international stages, including President Bill Clinton's Second Presidential Inauguration. She has collaborated with acclaimed jazz and R&B artists including Pieces of a Dream and Norman Connors, and achieved a UK number one hit with 'No One Can Love You More.' In 2018, she was named Artist of the Year by the Maryland Music Awards.",
+      "url": "https://layoungbandpage.com",
+      "image": "https://layoungbandpage.com/images/artist/LAYoungPink.JPG",
+      "genre": ["R&B", "Soul", "Jazz", "Funk", "Blues", "Country", "Rock", "Pop", "Contemporary Urban"],
+      "foundingLocation": {
+        "@type": "Place",
+        "name": "Ohio, United States"
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Washington DC Metropolitan Area"
+      },
+      "member": [
+        {
+          "@type": "OrganizationRole",
+          "member": {
+            "@type": "Person",
+            "name": "LA Young",
+            "jobTitle": "Lead Vocalist and Bandleader"
+          },
+          "startDate": "1990"
+        }
+      ],
+      "award": [
+        "Maryland Music Awards — Artist of the Year (2018)",
+        "UK Number One Hit — 'No One Can Love You More'"
+      ],
+      "subOrganization": {
+        "@type": "MusicGroup",
+        "name": "Soul Society",
+        "description": "LA Young's backing band, performing as Soul Society — seasoned professionals with credits spanning P-Funk, The Temptations, and the Maryland Entertainment Hall of Fame."
+      },
+      "affiliation": {
+        "@type": "Organization",
+        "name": "Gold Bottom Entertainment LLC",
+        "description": "Gold Bottom Entertainment LLC is the management company representing LA Young.",
+        "url": "https://GoldBottomEnt-LLC.com"
+      },
+      "sameAs": ["https://layoungepk.com"]
+    }
+    </script>
+
+    <!-- Block 2: WebSite (Official Platform Declaration) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "@id": "https://layoungbandpage.com/#website",
+      "name": "LA Young — Official Artist Platform",
+      "url": "https://layoungbandpage.com",
+      "description": "The official artist platform for LA Young. Features music, biography, gallery, merchandise, event booking, and fan community.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Gold Bottom Entertainment LLC"
+      },
+      "about": {
+        "@id": "https://layoungbandpage.com/#artist"
+      },
+      "inLanguage": "en-US"
+    }
+    </script>
+
+    <!-- Block 3: BreadcrumbList (Site Architecture Signal) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "https://layoungbandpage.com/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Artist",
+          "item": "https://layoungbandpage.com/#bio"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Music",
+          "item": "https://layoungbandpage.com/#music"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Projects",
+          "item": "https://layoungbandpage.com/#projects"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "Gallery",
+          "item": "https://layoungbandpage.com/#gallery"
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "name": "Merchandise",
+          "item": "https://layoungbandpage.com/#merch"
+        },
+        {
+          "@type": "ListItem",
+          "position": 7,
+          "name": "Support",
+          "item": "https://layoungbandpage.com/#support"
+        },
+        {
+          "@type": "ListItem",
+          "position": 8,
+          "name": "EPK",
+          "item": "https://layoungbandpage.com/EPK/layoungepk.html"
+        },
+        {
+          "@type": "ListItem",
+          "position": 9,
+          "name": "Performances",
+          "item": "https://layoungbandpage.com/#performances"
+        },
+        {
+          "@type": "ListItem",
+          "position": 10,
+          "name": "Fan Wall",
+          "item": "https://layoungbandpage.com/#fanwall"
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <!-- Mobile Menu Overlay -->
@@ -35,6 +204,29 @@
           </button>
         </div>
 
+        <!-- Subscribe CTA (shown when not signed in) -->
+        <div class="mm-subscribe-cta" id="mm-subscribe-cta">
+          <button class="mm-subscribe-btn" onclick="FanPoints._handleJoinClick();">
+            <span class="mm-sub-icon">👤</span><em class="mm-sub-text">Subscribers View</em>
+          </button>
+        </div>
+
+        <!-- Fan profile card (shown when signed in via FanPoints) -->
+        <div class="mm-fan-profile" id="mm-fan-profile" style="display:none" aria-hidden="true">
+          <div class="mm-fan-avatar-wrap">
+            <img class="mm-fan-photo" id="mm-fan-photo" src="" alt="" style="display:none">
+            <div class="mm-fan-initials" id="mm-fan-initials">★</div>
+          </div>
+          <div class="mm-fan-info">
+            <div class="mm-fan-name" id="mm-fan-name">Fan</div>
+            <div class="mm-fan-points"><span class="mm-fan-star">★</span> <span id="mm-fan-pts">0</span> pts</div>
+          </div>
+          <a href="https://goldbottoment-llc.com/?autologin=true#dashboard-musician-home" id="mm-band-portal-btn"
+             style="display:none;margin-left:auto;padding:5px 10px;border-radius:20px;background:rgba(212,160,23,0.15);border:1px solid rgba(212,160,23,0.35);color:#ffd700;font-size:11px;font-weight:600;text-decoration:none;white-space:nowrap;">
+            <i class="fa-solid fa-music" style="margin-right:3px;font-size:10px;"></i>Portal
+          </a>
+        </div>
+
         <nav class="mobile-menu-nav" aria-label="Mobile navigation">
           <a href="#home" class="mobile-menu-link">Home</a>
           <a href="#bio" class="mobile-menu-link">Artist</a>
@@ -42,41 +234,56 @@
             <a href="#music" class="mobile-menu-link mobile-menu-dropdown-trigger">Music</a>
             <div class="mobile-menu-dropdown-items">
               <a href="#music" class="mobile-menu-link mobile-menu-sub-link">Records</a>
-              <a href="#records2" class="mobile-menu-link mobile-menu-sub-link">Player</a>
               <a href="#projects" class="mobile-menu-link mobile-menu-sub-link">Projects</a>
             </div>
           </div>
+          <a href="#shows" class="mobile-menu-link">Tickets</a>
           <div class="mobile-menu-dropdown">
-            <a href="#gallery" class="mobile-menu-link mobile-menu-dropdown-trigger">Gallery</a>
+            <a href="#gallery" class="mobile-menu-link mobile-menu-dropdown-trigger">Hangout</a>
             <div class="mobile-menu-dropdown-items">
-              <a href="#gallery" class="mobile-menu-link mobile-menu-sub-link">Photos</a>
-              <a href="#videos" class="mobile-menu-link mobile-menu-sub-link">Videos</a>
+              <a href="#gallery" class="mobile-menu-link mobile-menu-sub-link">Back Stage</a>
+              <a href="#fanwall" class="mobile-menu-link mobile-menu-sub-link">Fan Wall</a>
+              <a href="#contact" class="mobile-menu-link mobile-menu-sub-link">Connect</a>
+              <a href="GroovyBandRush/index.html" class="mobile-menu-link mobile-menu-sub-link">Kids</a>
             </div>
           </div>
-          <a href="#shows" class="mobile-menu-link">Live</a>
           <div class="mobile-menu-dropdown">
-            <a href="#merch" class="mobile-menu-link mobile-menu-dropdown-trigger">Store</a>
+            <a href="#merch" class="mobile-menu-link mobile-menu-dropdown-trigger">$Support</a>
             <div class="mobile-menu-dropdown-items">
               <a href="#merch" class="mobile-menu-link mobile-menu-sub-link">Merch</a>
-              <a href="#contact" class="mobile-menu-link mobile-menu-sub-link">Connect</a>
-            </div>
-          </div>
-          <div class="mobile-menu-dropdown">
-            <a href="#" class="mobile-menu-link mobile-menu-dropdown-trigger">Hangout</a>
-            <div class="mobile-menu-dropdown-items">
-              <a href="GroovyBandRush/index.html" class="mobile-menu-link mobile-menu-sub-link">Kids Game</a>
+              <a href="#support" class="mobile-menu-link mobile-menu-sub-link">$Support</a>
             </div>
           </div>
         </nav>
 
         <div class="mobile-menu-footer">
-          <a
-            href="EPK/index.html"
-            class="mobile-menu-epk"
-            target="_blank"
-          >
-            View EPK
-          </a>
+          <a href="#LAYoungMusicPlayer" class="mobile-menu-game"><span style="color:#ffd700">♪</span> Player</a>
+          <div style="display:flex;gap:8px;align-items:stretch">
+            <a
+              href="EPK/index.html"
+              class="mobile-menu-epk"
+              style="flex:1"
+              onclick="event.preventDefault(); window.open(this.href, 'epk_window', 'width=900,height=800,scrollbars=yes,resizable=yes');"
+            >
+              View EPK
+            </a>
+            <button
+              class="mobile-menu-epk"
+              style="flex:0 0 auto;width:44px;font-size:1.2rem;padding:0"
+              title="Share this site"
+              onclick="(function(){
+                var url='https://layoungbandpage.com/';
+                var title='L.A. Young — Official Band Page';
+                var text='Soul. Jazz. Blues. R\u0026B. Check out the official L.A. Young Band Page.';
+                if(navigator.share){navigator.share({title:title,text:text,url:url}).catch(function(){});}
+                else{navigator.clipboard.writeText(url).then(function(){
+                  var b=event.currentTarget;var o=b.innerHTML;
+                  b.innerHTML='\u2713';
+                  setTimeout(function(){b.innerHTML=o;},2000);
+                }).catch(function(){window.prompt('Copy to share:',url);});}
+              })()"
+            >&#x1F4E4;</button>
+          </div>
           <p class="mobile-menu-copyright">&copy; 2026 LA Young Band<br>Powered by <strong>Gold Bottom Entertainment LLC</strong><br>All rights reserved.</p>
         </div>
       </div>
@@ -110,29 +317,30 @@
             <a href="#music" data-page="music" class="nav-dropdown-trigger">Music</a>
             <div class="nav-dropdown-menu">
               <a href="#music" data-page="music">Records</a>
-              <a href="#records2" data-page="records2">Player</a>
               <a href="#projects" data-page="projects">Projects</a>
             </div>
           </div>
+          <a href="#shows" data-page="shows" class="nav-link">Tickets</a>
           <div class="nav-dropdown">
-            <a href="#gallery" data-page="gallery" class="nav-dropdown-trigger">Gallery</a>
+            <a href="#gallery" data-page="gallery" class="nav-dropdown-trigger">Hangout</a>
             <div class="nav-dropdown-menu">
-              <a href="#gallery" data-page="gallery">Photos</a>
-              <a href="#videos" data-page="videos">Videos</a>
+              <a href="#gallery" data-page="gallery">Back Stage</a>
+              <a href="#fanwall" data-page="fanwall">Fan Wall</a>
+              <a href="#contact" data-page="contact">Connect</a>
+              <a href="GroovyBandRush/index.html">Kids</a>
             </div>
           </div>
-          <a href="#shows" data-page="shows" class="nav-link">Live</a>
           <div class="nav-dropdown">
-            <a href="#merch" data-page="merch" class="nav-dropdown-trigger">Store</a>
+            <a href="#merch" data-page="merch" class="nav-dropdown-trigger">$Support</a>
             <div class="nav-dropdown-menu">
               <a href="#merch" data-page="merch">Merch</a>
-              <a href="#contact" data-page="contact">Connect</a>
+              <a href="#support" data-page="support">$Support</a>
             </div>
           </div>
-          <a href="GroovyBandRush/index.html" class="nav-game-btn">Game</a>
+          <a href="#LAYoungMusicPlayer" data-page="LAYoungMusicPlayer" class="nav-game-btn"><span style="color:#ffd700">♪</span> Player</a>
         </nav>
 
-        <a href="EPK/index.html" class="epk-button" target="_blank">
+        <a href="EPK/index.html" class="epk-button" onclick="event.preventDefault(); window.open(this.href, 'epk_window', 'width=900,height=800,scrollbars=yes,resizable=yes');">
           View EPK
         </a>
       </div>
@@ -154,6 +362,25 @@
       </div>
     </footer>
 
+    <!-- Mini Music Player — shown when music player is active on other pages -->
+    <div id="mini-player" class="mini-player mini-player--hidden" role="region" aria-label="Now Playing">
+      <div class="mini-player-inner">
+        <div class="mini-player-info">
+          <span class="mini-player-note">&#9834;</span>
+          <span class="mini-player-track" id="miniPlayerTrack">L.A. Young</span>
+        </div>
+        <div class="mini-player-controls">
+          <button class="mini-player-btn" id="miniPrevBtn" title="Previous" aria-label="Previous track">&#9664;&#9664;</button>
+          <button class="mini-player-btn mini-player-btn--play" id="miniPlayBtn" title="Play / Pause" aria-label="Play or pause">&#9646;&#9646;</button>
+          <button class="mini-player-btn" id="miniNextBtn" title="Next" aria-label="Next track">&#9654;&#9654;</button>
+          <button class="mini-player-btn mini-player-btn--open" id="miniOpenBtn" title="Open Player" aria-label="Open music player">&#9835;</button>
+          <button class="mini-player-btn mini-player-btn--stop" id="miniStopBtn" title="Stop" aria-label="Stop music">&#10005;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Firebase SDK loaded on demand by fan-points.js (not on page load) -->
+
     <!-- JavaScript Modules -->
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
@@ -166,6 +393,7 @@
     <script src="js/scroll-effects.js"></script>
     <script src="js/forms.js"></script>
     <script src="js/gallery.js"></script>
+    <script src="js/mobile-gallery.js"></script>
     <script src="js/media-player.js"></script>
     <script src="js/mobile-menu.js"></script>
     <script src="js/sound-effects.js"></script>
@@ -173,6 +401,9 @@
     <script src="js/swipe-navigation.js"></script>
     <script src="js/scroll-indicators.js"></script>
     <script src="js/slideshow.js"></script>
+    <script src="js/fan-points.js"></script>
+    <script src="js/mini-player.js"></script>
     <script src="js/main.js"></script>
+
   </body>
 </html>
