@@ -82,24 +82,15 @@ const MobileMenu = {
     } catch (e) { /* ignore */ }
 
     // Arriving from GBE Band Portal (?from=portal)
-    // Land on homepage. If not signed in, swap subscribe CTA to a "Sign In" button.
+    // Band members aren't fans — hide the subscribe CTA entirely
     try {
       var params = new URLSearchParams(window.location.search);
       if (params.get('from') === 'portal' || params.get('menu') === 'open') {
         if (window.history.replaceState) {
           window.history.replaceState(null, '', window.location.pathname + window.location.hash);
         }
-        var hasProfile = false;
-        try { hasProfile = !!localStorage.getItem(this.FAN_PROFILE_KEY) || !!this._readCookie(); } catch(e) {}
-        if (!hasProfile) {
-          // Replace "Subscribers View" with "Sign In" — triggers on user tap (mobile popup safe)
-          var cta = document.getElementById('mm-subscribe-cta');
-          if (cta) {
-            cta.innerHTML = '<button class="mm-subscribe-btn" onclick="FanPoints._handleJoinClick();">' +
-              '<span class="mm-sub-icon">\uD83C\uDFB5</span><em class="mm-sub-text">Tap to Sign In</em>' +
-              '</button>';
-          }
-        }
+        var cta = document.getElementById('mm-subscribe-cta');
+        if (cta) cta.style.display = 'none';
       }
     } catch (e) { /* ignore */ }
 
