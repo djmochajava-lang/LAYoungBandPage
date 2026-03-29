@@ -82,15 +82,42 @@ const MobileMenu = {
     } catch (e) { /* ignore */ }
 
     // Arriving from GBE Band Portal (?from=portal)
-    // Band members aren't fans — hide the subscribe CTA entirely
+    // Auto-sign-in: band members should be logged in seamlessly
     try {
       var params = new URLSearchParams(window.location.search);
       if (params.get('from') === 'portal' || params.get('menu') === 'open') {
+        // Clean URL
         if (window.history.replaceState) {
           window.history.replaceState(null, '', window.location.pathname + window.location.hash);
         }
+        // Hide subscriber CTA — band members aren't fans
         var cta = document.getElementById('mm-subscribe-cta');
         if (cta) cta.style.display = 'none';
+
+        // Mark that we came from portal (survives the redirect)
+        try { sessionStorage.setItem('gbe_from_portal', '1'); } catch(e) {}
+
+        // Auto-sign-in via redirect (no popup, no user tap needed)
+        var hasProfile = false;
+        try { hasProfile = !!localStorage.getItem(this.FAN_PROFILE_KEY) || !!this._readCookie(); } catch(e) {}
+        if (!hasProfile) {
+          setTimeout(function() {
+            if (typeof FanPoints !== 'undefined') {
+              FanPoints._loadFirebase(function() {
+                if (firebase.auth().currentUser) return; // Already signed in
+                var provider = new firebase.auth.GoogleAuthProvider();
+                firebase.auth().signInWithRedirect(provider);
+              });
+            }
+          }, 500);
+        }
+      }
+
+      // After redirect back: hide subscriber CTA if we came from portal
+      if (sessionStorage.getItem('gbe_from_portal')) {
+        var cta2 = document.getElementById('mm-subscribe-cta');
+        if (cta2) cta2.style.display = 'none';
+        sessionStorage.removeItem('gbe_from_portal');
       }
     } catch (e) { /* ignore */ }
 
