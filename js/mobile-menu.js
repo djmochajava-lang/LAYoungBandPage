@@ -81,6 +81,20 @@ const MobileMenu = {
       }
     } catch (e) { /* ignore */ }
 
+    // Auto-open menu if ?menu=open in URL (linked from Band Portal)
+    try {
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('menu') === 'open') {
+        var self2 = this;
+        setTimeout(function() { self2.open(); }, 300);
+        // Clean up URL without reload
+        if (window.history.replaceState) {
+          var cleanUrl = window.location.pathname + window.location.hash;
+          window.history.replaceState(null, '', cleanUrl);
+        }
+      }
+    } catch (e) { /* ignore — URLSearchParams not supported */ }
+
     console.log('✅ Mobile menu initialized successfully');
   },
 
