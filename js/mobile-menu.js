@@ -162,6 +162,9 @@ const MobileMenu = {
 
       renderProfile(profile);
 
+      // Check Firestore role — show Band Portal button for band members
+      self._checkBandRole(profile.uid);
+
       // Welcome notification
       var firstName = (profile.displayName || '').split(' ')[0] || 'Friend';
       var msg = isReturning
@@ -188,6 +191,40 @@ const MobileMenu = {
         }
       }
     } catch (e) { /* ignore parse errors */ }
+
+    // Also check band role from cached uid
+    try {
+      var c2 = localStorage.getItem(self.FAN_PROFILE_KEY);
+      if (c2) {
+        var p2 = JSON.parse(c2);
+        if (p2.uid) self._checkBandRole(p2.uid);
+      }
+    } catch (e) { /* ignore */ }
+  },
+
+  /**
+   * Check Firestore user doc for band_member/artist role → show Band Portal button
+   */
+  _checkBandRole(uid) {
+    if (!uid) return;
+    // Need Firestore — it's lazy-loaded by FanPoints, so wait for it
+    var check = function() {
+      if (typeof firebase === 'undefined' || !firebase.firestore) return;
+      try {
+        firebase.firestore().collection('users').doc(uid).get().then(function(doc) {
+          if (!doc.exists) return;
+          var role = doc.data().role || '';
+          var btn = document.getElementById('mm-band-portal-btn');
+          if (btn && (role === 'band_member' || role === 'artist' || role === 'band_manager' || role === 'admin')) {
+            btn.style.display = 'block';
+            console.log('🎸 Band Portal button shown for role:', role);
+          }
+        }).catch(function() { /* silent — not critical */ });
+      } catch (e) { /* Firestore not ready */ }
+    };
+    // Try now, retry after a short delay (Firestore may still be loading)
+    check();
+    setTimeout(check, 2000);
   },
 
   /**
