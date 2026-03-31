@@ -985,33 +985,140 @@
   }
 
   /* ══════════════════════════════════════════════════════════
-   * EVENT LOADING
+   * EVENT LOADING (Firestore — works on GitHub Pages)
    * ═════════════════════════════════════════════════════════ */
+
+  /** Ensure Firebase + Firestore SDK is loaded before querying */
+  function ensureFirebase(cb) {
+    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+      cb(firebase.firestore());
+      return;
+    }
+    // Firebase not loaded yet — try loading via FanPoints helper or direct script injection
+    if (typeof FanPoints !== 'undefined' && typeof FanPoints._loadFirebase === 'function') {
+      FanPoints._loadFirebase(function () {
+        if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+          cb(firebase.firestore());
+        } else {
+          cb(null);
+        }
+      });
+      return;
+    }
+    // Fallback: load Firebase SDKs directly
+    var scripts = [
+      'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js',
+      'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js'
+    ];
+    var loaded = 0;
+    function onLoad() {
+      loaded++;
+      if (loaded < scripts.length) return;
+      // Initialize if not already done
+      if (typeof firebase !== 'undefined' && !firebase.apps.length) {
+        var cfg = (typeof SiteConfig !== 'undefined' && SiteConfig.firebase)
+          ? SiteConfig.firebase
+          : { apiKey: 'AIzaSyBQkd-C5MYFGqEMLqLkmjfCr12SV-bCNis', authDomain: 'goldbottoment.firebaseapp.com', projectId: 'goldbottoment' };
+        firebase.initializeApp(cfg);
+      }
+      if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
+        cb(firebase.firestore());
+      } else {
+        cb(null);
+      }
+    }
+    scripts.forEach(function (src) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = onLoad;
+      s.onerror = onLoad;
+      document.head.appendChild(s);
+    });
+  }
+
+  /** Compute tier status from quantity/sold counts */
+  function deriveTierStatus(tier) {
+    var qty  = tier.quantity || 0;
+    var sold = tier.sold     || 0;
+    var avail = qty - sold;
+    if (avail <= 0) return 'sold_out';
+    var pct = qty > 0 ? (sold / qty) * 100 : 0;
+    if (pct >= 90) return 'almost_sold_out';
+    if (pct >= 60) return 'selling_fast';
+    return 'on_sale';
+  }
+
+  /** Map a Firestore event doc to the shape renderEvents expects */
+  function mapFirestoreEvent(doc) {
+    var d = doc.data();
+    var tiers = (d.tiers || []).map(function (t, idx) {
+      var qty   = t.quantity || 0;
+      var sold  = t.sold     || 0;
+      var avail = qty - sold;
+      // Firestore stores price in dollars (number); render expects cents
+      var priceCents = typeof t.price === 'number' ? Math.round(t.price * 100) : 0;
+      return {
+        id:          doc.id + '_tier_' + idx,
+        tier_name:   t.tierName   || t.tier_name   || 'General',
+        price_cents: priceCents,
+        available:   avail > 0 ? avail : 0,
+        status:      deriveTierStatus(t),
+        description: t.description || ''
+      };
+    });
+
+    // eventDate may be a Firestore Timestamp or an ISO string
+    var eventDate = d.eventDate;
+    if (eventDate && typeof eventDate.toDate === 'function') {
+      eventDate = eventDate.toDate().toISOString();
+    }
+
+    return {
+      id:          doc.id,
+      event_name:  d.eventName  || d.event_name  || 'Untitled Event',
+      event_date:  eventDate    || d.event_date   || '',
+      venue:       d.venueName  || d.venue_name   || d.venue || '',
+      description: d.description || '',
+      imageUrl:    d.imageUrl    || '',
+      tiers:       tiers
+    };
+  }
+
   function loadEvents() {
     showEl('ticket-loading');
     hideEl('ticket-events');
     hideEl('ticket-fallback');
 
-    fetchWithTimeout(API + '/events/public', {
-      headers: { 'Accept': 'application/json' }
-    }, 5000)
-      .then(function (res) {
-        if (!res.ok) throw new Error('Server error ' + res.status);
-        return res.json();
-      })
-      .then(function (data) {
-        hideEl('ticket-loading');
-        if (!Array.isArray(data) || data.length === 0) {
-          showFallback();
-          return;
-        }
-        _events = data;
-        renderEvents(data);
-      })
-      .catch(function () {
+    ensureFirebase(function (db) {
+      if (!db) {
         hideEl('ticket-loading');
         showFallback();
-      });
+        return;
+      }
+
+      db.collection('ticket_events')
+        .where('status', '==', 'published')
+        .orderBy('eventDate', 'asc')
+        .get()
+        .then(function (snap) {
+          hideEl('ticket-loading');
+          if (snap.empty) {
+            showFallback();
+            return;
+          }
+          var events = [];
+          snap.forEach(function (doc) {
+            events.push(mapFirestoreEvent(doc));
+          });
+          _events = events;
+          renderEvents(events);
+        })
+        .catch(function (err) {
+          console.warn('[shows] Firestore event load failed:', err.message || err);
+          hideEl('ticket-loading');
+          showFallback();
+        });
+    });
   }
 
   function showFallback() {
@@ -1031,8 +1138,10 @@
                         : isAnnounced ? 'tier-btn-coming-soon'
                         : isFree      ? 'tier-btn-free'
                         : '';
+        var _lan        = isOnLAN();
         var btnLabel    = isSoldOut   ? 'Sold Out'
                         : isAnnounced ? 'Coming Soon'
+                        : !_lan       ? 'Reserve'
                         : isFree      ? 'Free Ticket'
                         : 'Buy Ticket';
         var btnOnClick  = (!isSoldOut && !isAnnounced)
@@ -1088,7 +1197,22 @@
   /* ══════════════════════════════════════════════════════════
    * CHECKOUT
    * ═════════════════════════════════════════════════════════ */
+
+  /** Detect if the site is running on LAN (home server) vs GitHub Pages */
+  function isOnLAN() {
+    var h = window.location.hostname;
+    return h === 'localhost' || h === '127.0.0.1' || /^192\.168\./.test(h) || /^10\./.test(h) || /^172\.(1[6-9]|2\d|3[01])\./.test(h);
+  }
+
   function openCheckout(ev, tier) {
+    // On GitHub Pages (not LAN), the Express checkout API is unavailable.
+    // Redirect the user to the GBE contact page to reserve tickets.
+    if (!isOnLAN()) {
+      var contactUrl = 'https://goldbottoment-llc.com/#ent-contact';
+      window.open(contactUrl, '_blank', 'noopener');
+      return;
+    }
+
     _selectedEvent = ev;
     _selectedTier  = tier;
 
