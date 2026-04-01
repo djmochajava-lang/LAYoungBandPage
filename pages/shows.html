@@ -1,5 +1,65 @@
 <!-- pages/shows.html -->
 
+<!-- JSON-LD Structured Data — GEO Initiative (FRD-GEO-01) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "https://layoungbandpage.com/#shows",
+  "name": "L.A. Young — Live Shows & Performances",
+  "url": "https://layoungbandpage.com/#shows",
+  "description": "See L.A. Young live. Upcoming shows, ticket sales, and performance history for L.A. Young and Soul Society in the Washington DC Metropolitan Area.",
+  "about": {
+    "@id": "https://layoungbandpage.com/#artist"
+  },
+  "mainEntity": {
+    "@type": "PerformingGroup",
+    "@id": "https://layoungbandpage.com/#artist",
+    "name": "L.A. Young",
+    "alternateName": ["LA Young and Soul Society"],
+    "genre": ["Soul", "R&B", "Jazz", "Funk", "Blues"],
+    "areaServed": {
+      "@type": "Place",
+      "name": "Washington DC Metropolitan Area"
+    },
+    "event": [
+      {
+        "@type": "MusicEvent",
+        "name": "L.A. Young Live Performance",
+        "performer": { "@id": "https://layoungbandpage.com/#artist" },
+        "description": "Live soul, jazz, and blues performance by L.A. Young and Soul Society.",
+        "organizer": {
+          "@type": "Organization",
+          "name": "Gold Bottom Entertainment LLC",
+          "url": "https://GoldBottomEnt-LLC.com"
+        },
+        "eventStatus": "https://schema.org/EventScheduled",
+        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+        "offers": {
+          "@type": "Offer",
+          "url": "https://layoungbandpage.com/#shows",
+          "availability": "https://schema.org/InStock"
+        }
+      }
+    ]
+  },
+  "isPartOf": {
+    "@id": "https://layoungbandpage.com/#website"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Shows", "item": "https://layoungbandpage.com/#shows" }
+  ]
+}
+</script>
+
 <style>
 /* ── Ticket Zone ──────────────────────────────────────────────── */
 .ticket-zone { margin-bottom: 3rem; }
@@ -623,36 +683,18 @@
         <span class="venue-badge">DC Spy Museum</span>
         <span class="venue-badge">DC Convention Center</span>
         <span class="venue-badge">DC Rotary Gala</span>
-        <span class="venue-badge">President Clinton Inaugural</span>
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <!-- Booking CTA heading -->
-    <div class="booking-cta scroll-reveal">
-      <h3>Bring L.A. Young to Your Stage</h3>
-      <p>From intimate jazz lounges to grand galas — every performance is crafted for your moment</p>
-    </div>
-
-    <h2 class="section-title">Show Formats</h2>
-    <p class="section-subtitle">Find the Perfect Format for Your Event</p>
+    <h2 class="section-title">What to Expect Live</h2>
+    <p class="section-subtitle">Every show is a different experience</p>
 
     <div class="shows-grid">
 
-      <!-- Full Band -->
-      <div class="show-card scroll-reveal">
-        <div class="show-card-icon">&#127929;</div>
-        <h3 class="show-card-title">Full Band</h3>
-        <p class="show-card-desc">
-          The complete L.A. Young experience. A high-energy, fully-produced
-          show with a live band featuring keys, bass, guitar, sax, and drums.
-        </p>
-        <span class="show-card-tag">Concerts &bull; Festivals &bull; Large Venues</span>
-      </div>
-
       <!-- Solo w/ Tracks -->
-      <div class="show-card scroll-reveal delay-1">
+      <div class="show-card scroll-reveal">
         <div class="show-card-icon">&#127908;</div>
         <h3 class="show-card-title">Solo w/ Tracks</h3>
         <p class="show-card-desc">
@@ -663,7 +705,7 @@
       </div>
 
       <!-- Acoustic Duo -->
-      <div class="show-card scroll-reveal delay-2">
+      <div class="show-card scroll-reveal delay-1">
         <div class="show-card-icon">&#127928;</div>
         <h3 class="show-card-title">Acoustic Duo</h3>
         <p class="show-card-desc">
@@ -673,8 +715,52 @@
         <span class="show-card-tag">Lounges &bull; Wine Bars &bull; Intimate Venues</span>
       </div>
 
-      <!-- Corporate Events -->
+      <!-- Small Band -->
+      <div class="show-card scroll-reveal delay-2">
+        <div class="show-card-icon">&#127929;</div>
+        <h3 class="show-card-title">Small Band</h3>
+        <p class="show-card-desc">
+          L.A. Young with a tight 4-piece band &mdash; keys, bass, guitar, and drums.
+          The perfect balance of power and intimacy for mid-size venues.
+        </p>
+        <span class="show-card-tag">Corporate Events &bull; Receptions &bull; Supper Clubs</span>
+      </div>
+
+      <!-- Full Band -->
       <div class="show-card scroll-reveal delay-3">
+        <div class="show-card-icon">&#127929;</div>
+        <h3 class="show-card-title">Full Band</h3>
+        <p class="show-card-desc">
+          The complete L.A. Young experience. A high-energy, fully-produced
+          show with a live band featuring keys, bass, guitar, sax, and drums.
+        </p>
+        <span class="show-card-tag">Concerts &bull; Festivals &bull; Large Venues</span>
+      </div>
+
+      <!-- Full Show -->
+      <div class="show-card scroll-reveal delay-4">
+        <div class="show-card-icon">&#10024;</div>
+        <h3 class="show-card-title">Full Show Production</h3>
+        <p class="show-card-desc">
+          The ultimate L.A. Young production &mdash; full band with backup singers,
+          multimedia elements, costume changes, and theatrical staging. A headline experience.
+        </p>
+        <span class="show-card-tag">Galas &bull; Theaters &bull; Black-Tie Events &bull; Festivals</span>
+      </div>
+
+      <!-- Tribute Shows -->
+      <div class="show-card scroll-reveal delay-5">
+        <div class="show-card-icon">&#127775;</div>
+        <h3 class="show-card-title">Tribute Shows</h3>
+        <p class="show-card-desc">
+          Honoring the legends of soul, R&amp;B, and jazz. The Phyllis Hyman Experience,
+          The Sade Tribute, and more &mdash; relive the classics with L.A. Young's signature style.
+        </p>
+        <span class="show-card-tag">Tribute Nights &bull; Theater Shows &bull; Special Events</span>
+      </div>
+
+      <!-- Corporate Events -->
+      <div class="show-card scroll-reveal delay-6">
         <div class="show-card-icon">&#127970;</div>
         <h3 class="show-card-title">Corporate Events</h3>
         <p class="show-card-desc">
@@ -684,30 +770,8 @@
         <span class="show-card-tag">Conferences &bull; Award Dinners &bull; Receptions</span>
       </div>
 
-      <!-- Galas -->
-      <div class="show-card scroll-reveal delay-4">
-        <div class="show-card-icon">&#10024;</div>
-        <h3 class="show-card-title">Galas</h3>
-        <p class="show-card-desc">
-          Sophisticated, show-stopping performances for black-tie affairs
-          and fundraising galas. Class, style, and soul.
-        </p>
-        <span class="show-card-tag">Charity Galas &bull; Black-Tie Events &bull; Banquets</span>
-      </div>
-
-      <!-- Tribute Shows -->
-      <div class="show-card scroll-reveal delay-5">
-        <div class="show-card-icon">&#127775;</div>
-        <h3 class="show-card-title">Tribute Shows</h3>
-        <p class="show-card-desc">
-          Honoring the legends of soul, R&amp;B, and jazz. From Phyllis Hyman
-          to Anita Baker, relive the classics with L.A. Young's signature style.
-        </p>
-        <span class="show-card-tag">Tribute Nights &bull; Theater Shows &bull; Special Events</span>
-      </div>
-
       <!-- Studio Recording -->
-      <div class="show-card scroll-reveal delay-6">
+      <div class="show-card scroll-reveal delay-7">
         <div class="show-card-icon">&#127899;</div>
         <h3 class="show-card-title">Studio Recording</h3>
         <p class="show-card-desc">
@@ -718,7 +782,7 @@
       </div>
 
       <!-- Hosting Services -->
-      <div class="show-card scroll-reveal delay-7">
+      <div class="show-card scroll-reveal delay-8">
         <div class="show-card-icon">&#127897;</div>
         <h3 class="show-card-title">Hosting &amp; MC</h3>
         <p class="show-card-desc">
@@ -729,7 +793,7 @@
       </div>
 
       <!-- LA with DJ -->
-      <div class="show-card scroll-reveal delay-8">
+      <div class="show-card scroll-reveal delay-9">
         <div class="show-card-icon">&#127926;</div>
         <h3 class="show-card-title">L.A. with DJ</h3>
         <p class="show-card-desc">
@@ -740,6 +804,7 @@
       </div>
 
     </div>
+
 
     <!-- Live Performance Video -->
     <div class="video-grid">
@@ -760,21 +825,12 @@
 
     <div class="divider"></div>
 
-    <!-- Booking CTA buttons -->
-    <div class="booking-cta scroll-reveal">
-      <div class="cta-buttons">
-        <a href="https://goldbottoment-llc.com/#ent-quote" class="btn btn-primary btn-large" target="_blank">
-          Request Booking
-        </a>
-        <a
-          href="../EPK/layoungepk.html"
-          class="btn btn-secondary btn-large"
-          target="_blank"
-        >
-          View EPK
-        </a>
-      </div>
-    </div>
+    <!-- Subtle booking link for promoters -->
+    <p style="text-align:center;font-size:0.8rem;color:rgba(255,255,255,0.35);margin-top:2rem;letter-spacing:0.02em;">
+      Interested in booking L.A. Young for your event?
+      <a href="https://goldbottoment-llc.com/#ent-quote" target="_blank"
+         style="color:rgba(255,215,0,0.45);text-decoration:none;border-bottom:1px solid rgba(255,215,0,0.2);">Request info &rarr;</a>
+    </p>
 
     <!-- PAGE FOOTER (shows on mobile only) -->
     <footer class="page-footer">

@@ -1,5 +1,54 @@
 <!-- pages/home.html -->
 
+<!-- JSON-LD Structured Data — GEO Initiative (FRD-GEO-01) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://layoungbandpage.com/#website",
+  "name": "L.A. Young — Soul in Full Color",
+  "url": "https://layoungbandpage.com",
+  "description": "Official artist website for L.A. Young — soulful contralto vocalist and bandleader. Live performances, tribute shows, corporate events, and studio sessions in the Washington DC Metropolitan Area.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Gold Bottom Entertainment LLC",
+    "url": "https://GoldBottomEnt-LLC.com"
+  },
+  "about": {
+    "@id": "https://layoungbandpage.com/#artist"
+  },
+  "inLanguage": "en-US"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  "@id": "https://layoungbandpage.com/#artist",
+  "name": "L.A. Young",
+  "alternateName": ["LA Young", "LA Young Band", "LA Young and Soul Society"],
+  "description": "L.A. Young — a powerhouse soul singer blending jazz, blues, funk, hip-hop, and country into a live experience you feel in your bones. Based in the Washington DC Metropolitan Area.",
+  "url": "https://layoungbandpage.com",
+  "image": "https://layoungbandpage.com/images/artist/LAYoungPink.JPG",
+  "genre": ["Soul", "R&B", "Jazz", "Funk", "Blues"],
+  "areaServed": {
+    "@type": "Place",
+    "name": "Washington DC Metropolitan Area"
+  },
+  "award": [
+    "Maryland Music Awards — Artist of the Year (2018)",
+    "Women's Basketball Hall of Fame Inductee"
+  ],
+  "subOrganization": {
+    "@type": "MusicGroup",
+    "name": "Soul Society",
+    "description": "L.A. Young's backing band — seasoned professionals with credits spanning P-Funk, The Temptations, and the Maryland Entertainment Hall of Fame."
+  },
+  "sameAs": ["https://layoungepk.com"]
+}
+</script>
+
 <section class="hero" id="home" style="background-image: none !important;">
   <video class="hero-video" autoplay muted loop playsinline
          poster="images/backgrounds/hero-home.jpg"
@@ -22,6 +71,26 @@
     .hero-cta-buttons .btn {
       min-width: 160px;
     }
+    /* Hero Credential Badges */
+    .hero-credentials {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+    .hero-credential-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-primary, #ffd700);
+      background: rgba(255, 215, 0, 0.08);
+      border: 1px solid rgba(255, 215, 0, 0.25);
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
   </style>
   <div class="hero-overlay"></div>
 
@@ -42,7 +111,17 @@
 
     <div class="hero-cta-buttons">
       <a href="#LAYoungMusicPlayer" class="btn btn-primary btn-large">Listen Now</a>
-      <a href="#shows" class="btn btn-secondary btn-large">See Live Shows</a>
+      <a href="#shows" class="btn btn-primary btn-large">See Live Shows</a>
+    </div>
+    <p style="margin-top:0.75rem;font-size:0.75rem;color:rgba(255,255,255,0.45);letter-spacing:0.03em;">
+      Event planners? <a href="https://goldbottoment-llc.com/#ent-quote" target="_blank" style="color:rgba(255,215,0,0.5);text-decoration:none;border-bottom:1px solid rgba(255,215,0,0.25);">Book L.A. Young &rarr;</a>
+    </p>
+
+    <!-- Social Proof Badges -->
+    <div class="hero-credentials">
+      <span class="hero-credential-badge">MD Artist of the Year</span>
+      <span class="hero-credential-badge">Rare Contralto Voice</span>
+      <span class="hero-credential-badge">Soul Society — World-Class Musicians</span>
     </div>
   </div>
 </section>
