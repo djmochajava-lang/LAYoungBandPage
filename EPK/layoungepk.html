@@ -140,21 +140,21 @@
   }
   </script>
 
-  <!-- Block 5: ItemList — Past Performances -->
+  <!-- Block 5: ItemList — Notable Performance Venues (non-Event types to avoid GSC validation errors for past shows without dates) -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    "name": "LA Young — Notable Past Performances",
+    "name": "LA Young — Notable Performance Venues",
     "description": "A selection of notable live performance venues and events featuring LA Young.",
     "url": "https://layoungbandpage.com/EPK/layoungepk.html",
     "itemListElement": [
-      { "@type": "ListItem", "position": 1, "item": { "@type": "MusicEvent", "name": "LA Young Live at Blues Alley", "location": { "@type": "MusicVenue", "name": "Blues Alley", "address": { "@type": "PostalAddress", "addressLocality": "Washington", "addressRegion": "DC" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } },
-      { "@type": "ListItem", "position": 2, "item": { "@type": "MusicEvent", "name": "The Phyllis Hyman Experience", "location": { "@type": "Place", "name": "Baltimore", "address": { "@type": "PostalAddress", "addressLocality": "Baltimore", "addressRegion": "MD" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } },
-      { "@type": "ListItem", "position": 3, "item": { "@type": "MusicEvent", "name": "African American Cultural Festival", "location": { "@type": "Place", "name": "Baltimore", "address": { "@type": "PostalAddress", "addressLocality": "Baltimore", "addressRegion": "MD" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } },
-      { "@type": "ListItem", "position": 4, "item": { "@type": "MusicEvent", "name": "LA Young Live at Anacostia Playhouse", "location": { "@type": "MusicVenue", "name": "Anacostia Playhouse", "address": { "@type": "PostalAddress", "addressLocality": "Washington", "addressRegion": "DC" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } },
-      { "@type": "ListItem", "position": 5, "item": { "@type": "MusicEvent", "name": "Jazz Legacy Foundation Gala", "location": { "@type": "Place", "name": "Hampton", "address": { "@type": "PostalAddress", "addressLocality": "Hampton", "addressRegion": "VA" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } },
-      { "@type": "ListItem", "position": 6, "item": { "@type": "MusicEvent", "name": "LA Young Live at City Winery", "location": { "@type": "MusicVenue", "name": "City Winery DC", "address": { "@type": "PostalAddress", "addressLocality": "Washington", "addressRegion": "DC" } }, "performer": { "@id": "https://layoungbandpage.com/#artist" } } }
+      { "@type": "ListItem", "position": 1, "name": "LA Young Live at Blues Alley", "item": { "@type": "MusicVenue", "name": "Blues Alley", "address": { "@type": "PostalAddress", "addressLocality": "Washington", "addressRegion": "DC" } } },
+      { "@type": "ListItem", "position": 2, "name": "The Phyllis Hyman Experience — Baltimore", "item": { "@type": "Place", "name": "Baltimore", "address": { "@type": "PostalAddress", "addressLocality": "Baltimore", "addressRegion": "MD" } } },
+      { "@type": "ListItem", "position": 3, "name": "African American Cultural Festival — Baltimore", "item": { "@type": "Place", "name": "Baltimore", "address": { "@type": "PostalAddress", "addressLocality": "Baltimore", "addressRegion": "MD" } } },
+      { "@type": "ListItem", "position": 4, "name": "LA Young Live at Anacostia Playhouse", "item": { "@type": "MusicVenue", "name": "Anacostia Playhouse", "address": { "@type": "PostalAddress", "addressLocality": "Washington", "addressRegion": "DC" } } },
+      { "@type": "ListItem", "position": 5, "name": "Jazz Legacy Foundation Gala — Hampton", "item": { "@type": "Place", "name": "Hampton", "address": { "@type": "PostalAddress", "addressLocality": "Hampton", "addressRegion": "VA" } } },
+      { "@type": "ListItem", "position": 6, "name": "LA Young Live at City Winery", "item": { "@type": "MusicVenue", "name": "City Winery DC", "address": { "@type": "PostalAddress", "addressLocality": "Washington", "addressRegion": "DC" } } }
     ]
   }
   </script>
