@@ -294,39 +294,7 @@
     }
     </script>
 
-    <!-- Block 4: MusicRecording — Featured Tracks (AI music queries) -->
-    <script type="application/ld+json">
-    [
-      {
-        "@context": "https://schema.org",
-        "@type": "MusicRecording",
-        "@id": "https://layoungbandpage.com/#the-woman-in-me",
-        "name": "The Woman In Me",
-        "byArtist": { "@id": "https://layoungbandpage.com/#artist" },
-        "genre": ["Soul", "R&B", "Country"],
-        "description": "L.A. Young's soulful rendition of the Shania Twain classic, reimagined with jazz and R&B influences. Produced by Gold Bottom Entertainment LLC.",
-        "recordLabel": {
-          "@type": "Organization",
-          "name": "Gold Bottom Entertainment LLC"
-        },
-        "url": "https://layoungbandpage.com/#music"
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "MusicRecording",
-        "@id": "https://layoungbandpage.com/#no-one-can-love-you-more",
-        "name": "No One Can Love You More",
-        "byArtist": { "@id": "https://layoungbandpage.com/#artist" },
-        "genre": ["Soul", "R&B"],
-        "description": "An original soul and R&B track by L.A. Young. Produced by Gold Bottom Entertainment LLC.",
-        "recordLabel": {
-          "@type": "Organization",
-          "name": "Gold Bottom Entertainment LLC"
-        },
-        "url": "https://layoungbandpage.com/#music"
-      }
-    ]
-    </script>
+    <!-- Block 4: (Removed — replaced by Blocks 9-10 with per-track detail) -->
 
     <!-- Block 5: OfferCatalog — Booking Services (AI "hire a band" queries) -->
     <script type="application/ld+json">
@@ -494,13 +462,17 @@
       "@id": "https://layoungbandpage.com/#track-no-one-can-love-you-more",
       "name": "No One Can Love You More",
       "byArtist": { "@id": "https://layoungbandpage.com/#artist" },
-      "description": "An original soul ballad by L.A. Young that reached #1 on UK FM Radio. Features rich contralto vocals over lush R&B production.",
-      "genre": ["Soul", "R&B"],
+      "description": "L.A. Young's recording of 'No One Can Love You More,' originally performed by Phyllis Hyman. This recording achieved a UK Number One chart position. Features rich contralto vocals over lush R&B production.",
+      "genre": ["Soul", "R&B", "Blues"],
       "url": "https://layoungbandpage.com/#music",
+      "recordLabel": {
+        "@type": "Organization",
+        "name": "Gold Bottom Entertainment LLC"
+      },
       "recordingOf": {
         "@type": "MusicComposition",
         "name": "No One Can Love You More",
-        "composer": { "@id": "https://layoungbandpage.com/#la-young" }
+        "composer": { "@type": "Person", "name": "Skip Scarborough" }
       },
       "award": ["#1 UK FM Radio"]
     }
@@ -514,13 +486,20 @@
       "@id": "https://layoungbandpage.com/#track-the-woman-in-me",
       "name": "The Woman in Me",
       "byArtist": { "@id": "https://layoungbandpage.com/#artist" },
-      "description": "A signature soul track by L.A. Young showcasing her powerful vocal range and emotional depth. Part of the UK Top-5 catalog.",
-      "genre": ["Soul", "R&B"],
+      "description": "L.A. Young's soulful rendition of the Shania Twain classic, showcasing her powerful vocal range and emotional depth. Reimagined with jazz and R&B influences. Produced by Gold Bottom Entertainment LLC.",
+      "genre": ["Soul", "R&B", "Country"],
       "url": "https://layoungbandpage.com/#music",
+      "recordLabel": {
+        "@type": "Organization",
+        "name": "Gold Bottom Entertainment LLC"
+      },
       "recordingOf": {
         "@type": "MusicComposition",
         "name": "The Woman in Me",
-        "composer": { "@id": "https://layoungbandpage.com/#la-young" }
+        "composer": [
+          { "@type": "Person", "name": "Robert John Lange" },
+          { "@type": "Person", "name": "Shania Twain" }
+        ]
       }
     }
     </script>
