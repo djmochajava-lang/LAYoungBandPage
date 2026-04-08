@@ -416,6 +416,231 @@
       }
     }
     </script>
+
+    <!-- Block 7: Person — Artist Bio Page (FRD-GEO-02) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "@id": "https://layoungbandpage.com/#la-young",
+      "name": "L.A. Young",
+      "alternateName": ["LA Young", "L.A. Young"],
+      "description": "L.A. Young is a powerhouse soul, jazz, and blues vocalist with over two decades of captivating audiences worldwide. Based in the Washington DC/Maryland area, she leads L.A. Young and Soul Society — performing R&B, soul, jazz, blues, funk, country, rock, and pop. Her rare contralto voice and commanding stage presence have earned her the Maryland Music Awards Artist of the Year (2018), 5 UK Top-5 Hits, and a #1 on UK FM Radio.",
+      "url": "https://layoungbandpage.com/#bio",
+      "image": "https://layoungbandpage.com/images/artist/LAYoungPink.JPG",
+      "jobTitle": "Lead Vocalist and Bandleader",
+      "birthPlace": {
+        "@type": "Place",
+        "name": "Ohio, United States"
+      },
+      "homeLocation": {
+        "@type": "Place",
+        "name": "Washington DC Metropolitan Area"
+      },
+      "hasOccupation": [
+        {
+          "@type": "Occupation",
+          "name": "Vocalist",
+          "occupationLocation": { "@type": "Place", "name": "Washington DC Metropolitan Area" }
+        },
+        {
+          "@type": "Occupation",
+          "name": "Bandleader",
+          "occupationLocation": { "@type": "Place", "name": "Washington DC Metropolitan Area" }
+        }
+      ],
+      "knowsAbout": ["Soul music", "Jazz vocals", "Blues performance", "R&B entertainment", "Live music performance", "Corporate event entertainment", "Wedding live music"],
+      "award": [
+        "Maryland Music Awards — Artist of the Year (2018)",
+        "5 UK Top-5 Hits",
+        "#1 UK FM Radio"
+      ],
+      "performerIn": { "@id": "https://layoungbandpage.com/#artist" },
+      "worksFor": {
+        "@type": "Organization",
+        "name": "Gold Bottom Entertainment LLC",
+        "url": "https://GoldBottomEnt-LLC.com"
+      },
+      "sameAs": [
+        "https://www.youtube.com/@LAYoungBandPage",
+        "https://layoungbandpage.com/EPK/layoungepk.html"
+      ],
+      "subjectOf": {
+        "@type": "WebPage",
+        "url": "https://layoungbandpage.com/#bio",
+        "name": "L.A. Young — Biography",
+        "isPartOf": { "@id": "https://layoungbandpage.com/#website" }
+      }
+    }
+    </script>
+
+    <!-- Block 8: Person BreadcrumbList — Bio Page (FRD-GEO-02) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com" },
+        { "@type": "ListItem", "position": 2, "name": "Biography", "item": "https://layoungbandpage.com/#bio" }
+      ]
+    }
+    </script>
+
+    <!-- Block 9: MusicRecording — Music Page Track 1 (FRD-GEO-03) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MusicRecording",
+      "@id": "https://layoungbandpage.com/#track-no-one-can-love-you-more",
+      "name": "No One Can Love You More",
+      "byArtist": { "@id": "https://layoungbandpage.com/#artist" },
+      "description": "An original soul ballad by L.A. Young that reached #1 on UK FM Radio. Features rich contralto vocals over lush R&B production.",
+      "genre": ["Soul", "R&B"],
+      "url": "https://layoungbandpage.com/#music",
+      "recordingOf": {
+        "@type": "MusicComposition",
+        "name": "No One Can Love You More",
+        "composer": { "@id": "https://layoungbandpage.com/#la-young" }
+      },
+      "award": ["#1 UK FM Radio"]
+    }
+    </script>
+
+    <!-- Block 10: MusicRecording — Music Page Track 2 (FRD-GEO-03) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "MusicRecording",
+      "@id": "https://layoungbandpage.com/#track-the-woman-in-me",
+      "name": "The Woman in Me",
+      "byArtist": { "@id": "https://layoungbandpage.com/#artist" },
+      "description": "A signature soul track by L.A. Young showcasing her powerful vocal range and emotional depth. Part of the UK Top-5 catalog.",
+      "genre": ["Soul", "R&B"],
+      "url": "https://layoungbandpage.com/#music",
+      "recordingOf": {
+        "@type": "MusicComposition",
+        "name": "The Woman in Me",
+        "composer": { "@id": "https://layoungbandpage.com/#la-young" }
+      }
+    }
+    </script>
+
+    <!-- Block 11: ItemList — Music Release Catalog (FRD-GEO-03) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "@id": "https://layoungbandpage.com/#music-catalog",
+      "name": "L.A. Young — Music Catalog",
+      "description": "Official music catalog for L.A. Young featuring original soul, R&B, and jazz recordings.",
+      "url": "https://layoungbandpage.com/#music",
+      "numberOfItems": 2,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "item": { "@id": "https://layoungbandpage.com/#track-no-one-can-love-you-more" } },
+        { "@type": "ListItem", "position": 2, "item": { "@id": "https://layoungbandpage.com/#track-the-woman-in-me" } }
+      ]
+    }
+    </script>
+
+    <!-- Block 12: Music BreadcrumbList (FRD-GEO-03) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com" },
+        { "@type": "ListItem", "position": 2, "name": "Music", "item": "https://layoungbandpage.com/#music" }
+      ]
+    }
+    </script>
+
+    <!-- Block 13: VideoObject — Projects Page (FRD-GEO-04) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "@id": "https://layoungbandpage.com/#video-sentimental-mood",
+      "name": "L.A. Young — Sentimental Mood (Music Video)",
+      "description": "Official music video for L.A. Young performing 'In A Sentimental Mood' by Duke Ellington. Produced by Gold Bottom Entertainment LLC.",
+      "url": "https://layoungbandpage.com/#projects",
+      "author": { "@id": "https://layoungbandpage.com/#artist" },
+      "genre": ["Jazz", "Soul"],
+      "productionCompany": {
+        "@type": "Organization",
+        "name": "Gold Bottom Entertainment LLC",
+        "url": "https://GoldBottomEnt-LLC.com"
+      },
+      "about": {
+        "@type": "MusicComposition",
+        "name": "In A Sentimental Mood",
+        "composer": {
+          "@type": "Person",
+          "name": "Duke Ellington"
+        }
+      }
+    }
+    </script>
+
+    <!-- Block 14: ItemList — Projects Catalog (FRD-GEO-04) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "@id": "https://layoungbandpage.com/#projects-catalog",
+      "name": "L.A. Young — Video Projects",
+      "description": "Official video projects and productions by L.A. Young and Gold Bottom Entertainment LLC.",
+      "url": "https://layoungbandpage.com/#projects",
+      "numberOfItems": 1,
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "item": { "@id": "https://layoungbandpage.com/#video-sentimental-mood" } }
+      ]
+    }
+    </script>
+
+    <!-- Block 15: Projects BreadcrumbList (FRD-GEO-04) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com" },
+        { "@type": "ListItem", "position": 2, "name": "Projects", "item": "https://layoungbandpage.com/#projects" }
+      ]
+    }
+    </script>
+
+    <!-- Block 16: ImageGallery — Gallery Page (FRD-GEO-05) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ImageGallery",
+      "@id": "https://layoungbandpage.com/#image-gallery",
+      "name": "L.A. Young — Official Photo Gallery",
+      "description": "Official photo gallery featuring L.A. Young and Soul Society in live performances, studio sessions, and behind-the-scenes moments. Over 120 curated images from events across the Washington DC metropolitan area.",
+      "url": "https://layoungbandpage.com/#gallery",
+      "author": { "@id": "https://layoungbandpage.com/#artist" },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Gold Bottom Entertainment LLC",
+        "url": "https://GoldBottomEnt-LLC.com"
+      },
+      "about": { "@id": "https://layoungbandpage.com/#la-young" },
+      "genre": ["Music photography", "Live performance photography", "Artist portfolio"]
+    }
+    </script>
+
+    <!-- Block 17: Gallery BreadcrumbList (FRD-GEO-05) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com" },
+        { "@type": "ListItem", "position": 2, "name": "Gallery", "item": "https://layoungbandpage.com/#gallery" }
+      ]
+    }
+    </script>
+
   </head>
   <body>
     <!-- Mobile Menu Overlay -->
