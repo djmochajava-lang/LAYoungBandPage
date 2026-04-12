@@ -15,6 +15,7 @@ const Router = {
     merch: 'pages/merch.html',
     support: 'pages/support.html',
     contact: 'pages/contact.html',
+    book: 'pages/book.html',
     fanwall: 'pages/fanwall.html',
   },
   currentPage: null,
