@@ -247,10 +247,25 @@
 
       _publicDb = _adminDb;
 
-      _publicDb.collection('gallery_feed')
-        .orderBy('createdAt', 'desc')
-        .limit(100)
-        .get()
+      // READ-SOURCE shim (Supabase Week-2 cutover, D-20). gallery_feed reads
+      // route to Supabase (anon key) or Firestore per window.READ_SOURCE.
+      // The Firestore impl below is today's EXACT query, kept byte-for-byte
+      // intact and passed as the rollback path — flipping the flag back to
+      // 'firestore' (or git-reverting) restores it with no other change.
+      // The Supabase impl normalizes rows to the same {id, data()} doc shape,
+      // so the snapshot consumer below is identical for both sources.
+      var _galleryFirestoreImpl = function () {
+        return _publicDb.collection('gallery_feed')
+          .orderBy('createdAt', 'desc')
+          .limit(100)
+          .get();
+      };
+
+      var _galleryRead = (typeof GalleryData !== 'undefined')
+        ? GalleryData.getGalleryFeed(_galleryFirestoreImpl)
+        : _galleryFirestoreImpl();
+
+      _galleryRead
         .then(function (snapshot) {
           var feed = document.getElementById('mg-feed');
           if (!feed) { if (callback) callback(false); return; }
