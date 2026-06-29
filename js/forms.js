@@ -13,6 +13,10 @@ const Forms = {
    * Get Firestore instance (initialize Firebase if needed)
    */
   _getDb() {
+    // DARK: contact_submissions writes go to Supabase via the shared adapter.
+    if (window.LA_AUTH_SOURCE === 'supabase') {
+      return (window.LAAuth && window.LAAuth.available()) ? window.LAAuth.db() : null;
+    }
     if (typeof firebase === 'undefined') return null;
     try {
       if (!firebase.apps.length) {
@@ -24,6 +28,15 @@ const Forms = {
     } catch (e) {
       return null;
     }
+  },
+
+  // Provider-agnostic "now": Firestore sentinel on Firebase, ISO on Supabase.
+  _serverTs() {
+    if (window.LA_AUTH_SOURCE !== 'supabase' && typeof firebase !== 'undefined' &&
+        firebase.firestore && firebase.firestore.FieldValue) {
+      return firebase.firestore.FieldValue.serverTimestamp();
+    }
+    return new Date().toISOString();
   },
 
   /**
@@ -82,7 +95,7 @@ const Forms = {
           formType: 'email-signup',
           source: 'la-young',
           email: email,
-          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+          submittedAt: this._serverTs()
         });
 
         this.showMessage(
@@ -159,7 +172,7 @@ const Forms = {
           email: data.email.trim(),
           subject: (data.subject || '').trim(),
           message: data.message.trim(),
-          submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+          submittedAt: this._serverTs()
         });
 
         this.showMessage(

@@ -725,7 +725,8 @@
     // Preload Firebase now so it's ready synchronously when user triple-taps
     // (mobile browsers block popups if Firebase loads async inside the tap handler)
     loadFirebaseForAdmin(function () {
-      if (typeof firebase === 'undefined') return;
+      var _supabaseAuth = (window.LA_AUTH_SOURCE === 'supabase');
+      if (!_supabaseAuth && typeof firebase === 'undefined') return;
       ensureFirebase();
 
       // If returning from a mobile admin redirect, pick up the signed-in user
@@ -743,35 +744,42 @@
           if (_authResolved || !user) return false;
           _authResolved = true;
           _adminUser = user;
-          _adminDb = _adminDb || firebase.firestore();
+          if (!_adminDb) {
+            _adminDb = _supabaseAuth
+              ? (window.LAAuth && window.LAAuth.available() ? window.LAAuth.db() : null)
+              : firebase.firestore();
+          }
           fetchRole(user);
           return true;
         }
 
         // Strategy 1: FanPoints may have already resolved the user
-        // (shares the same Firebase instance, already has auth from fan join)
+        // (DARK: in the Supabase branch FanPoints._firebaseUser is the adapted
+        // Supabase user — same shape, so this works unchanged.)
         if (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser) {
           resolveAdminUser(FanPoints._firebaseUser);
         }
 
-        // Strategy 2: Firebase auth may already have currentUser
-        if (!_authResolved && firebase.auth().currentUser) {
-          resolveAdminUser(firebase.auth().currentUser);
+        if (!_supabaseAuth) {
+          // Strategy 2 (Firebase only): currentUser
+          if (!_authResolved && firebase.auth().currentUser) {
+            resolveAdminUser(firebase.auth().currentUser);
+          }
+          // Strategy 3 (Firebase only): onAuthStateChanged
+          if (!_authResolved) {
+            firebase.auth().onAuthStateChanged(function (user) {
+              resolveAdminUser(user);
+            });
+          }
         }
 
-        // Strategy 3: onAuthStateChanged — fires immediately with current state
-        if (!_authResolved) {
-          firebase.auth().onAuthStateChanged(function (user) {
-            resolveAdminUser(user);
-          });
-        }
-
-        // Strategy 4: Poll every 500ms — catches late auth resolution
+        // Strategy 4: Poll every 500ms — catches late auth resolution.
+        // (Supabase: poll FanPoints._firebaseUser only.)
         var _pollCount = 0;
         var _poll = setInterval(function () {
           _pollCount++;
           var u = (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser)
-                  || firebase.auth().currentUser;
+                  || (!_supabaseAuth && firebase.auth().currentUser);
           if (resolveAdminUser(u) || _pollCount >= 20) {
             clearInterval(_poll);
             if (!_authResolved) {
@@ -822,6 +830,11 @@
   }
 
   function ensureFirebase() {
+    // DARK: admin role/data reads go through the Supabase-backed adapter.
+    if (window.LA_AUTH_SOURCE === 'supabase') {
+      if (!_adminDb && window.LAAuth && window.LAAuth.available()) _adminDb = window.LAAuth.db();
+      return;
+    }
     if (!firebase.apps.length) {
       var config = window.SITE_CONFIG && window.SITE_CONFIG.firebase;
       if (config) firebase.initializeApp(config);
@@ -880,7 +893,11 @@
     console.log('🔑 Admin auth resolved:', user.email, '| UID:', user.uid);
     showAdminToast('Signed in: ' + (user.email || user.uid.slice(0, 8)));
 
-    if (!_adminDb) _adminDb = firebase.firestore();
+    if (!_adminDb) {
+      _adminDb = (window.LA_AUTH_SOURCE === 'supabase' && window.LAAuth && window.LAAuth.available())
+        ? window.LAAuth.db()
+        : firebase.firestore();
+    }
 
     setTimeout(function () {
       showAdminToast('Checking role…');

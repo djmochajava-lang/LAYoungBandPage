@@ -104,6 +104,14 @@ const MobileMenu = {
           setTimeout(function() {
             if (typeof FanPoints !== 'undefined') {
               FanPoints._loadFirebase(function() {
+                // DARK: Supabase auto-sign-in via the shared helper (PKCE redirect).
+                if (window.LA_AUTH_SOURCE === 'supabase') {
+                  if (FanPoints._firebaseUser) return; // already signed in
+                  if (window.LAAuth && window.LAAuth.available()) {
+                    window.LAAuth.signInWithOAuth('google').catch(function() {});
+                  }
+                  return;
+                }
                 if (firebase.auth().currentUser) return; // Already signed in
                 var provider = new firebase.auth.GoogleAuthProvider();
                 firebase.auth().signInWithRedirect(provider);
@@ -247,6 +255,20 @@ const MobileMenu = {
    */
   _checkBandRole(uid) {
     if (!uid) return;
+    // DARK: read the role from Supabase 'users' via the shared helper.
+    if (window.LA_AUTH_SOURCE === 'supabase') {
+      if (!window.LAAuth || !window.LAAuth.available()) return;
+      window.LAAuth.db().collection('users').doc(uid).get().then(function(doc) {
+        if (!doc.exists) return;
+        var role = (doc.data() && doc.data().role) || '';
+        var btn = document.getElementById('mm-band-portal-btn');
+        if (btn && (role === 'band_member' || role === 'artist' || role === 'band_manager' || role === 'admin')) {
+          btn.style.display = 'block';
+          console.log('🎸 Band Portal button shown for role:', role);
+        }
+      }).catch(function() {});
+      return;
+    }
     // Need Firestore — it's lazy-loaded by FanPoints, so wait for it
     var check = function() {
       if (typeof firebase === 'undefined' || !firebase.firestore) return;

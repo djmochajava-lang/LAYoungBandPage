@@ -431,6 +431,32 @@
 
   function initFirebase() {
     if (_fbApp) return;
+    // DARK: on the Supabase backend, the follow flow uses LAAuth (auth) +
+    // LAAuth.db() (followers reads/writes) directly — no Firebase app/auth/db.
+    // saveFollower / socialFollow branch on LA_AUTH_SOURCE below. Mark _fbApp so
+    // this init is a no-op and getRedirectResult (Firebase-only) is skipped.
+    if (window.LA_AUTH_SOURCE === 'supabase') {
+      _fbApp = 'supabase';
+      _fbDb = (window.LAAuth && window.LAAuth.available()) ? window.LAAuth.db() : null;
+      console.log('[Follow] Supabase backend (dark)');
+      // OAuth-return handler (replaces Firebase getRedirectResult): if we just
+      // returned from a follow sign-in, save the follower then sign out (the
+      // follow flow keeps no persistent session).
+      try {
+        var pendingProvider = sessionStorage.getItem('la-young-follow-provider');
+        if (pendingProvider && window.LAAuth && window.LAAuth.available()) {
+          window.LAAuth.getUser().then(function (user) {
+            if (user && user.email) {
+              saveFollower(user.email, null, user.displayName || null, pendingProvider).then(function () {
+                window.LAAuth.signOut();
+                try { sessionStorage.removeItem('la-young-follow-provider'); } catch(e) {}
+              });
+            }
+          });
+        }
+      } catch (e) {}
+      return;
+    }
     try {
       var cfg = window.SITE_CONFIG && window.SITE_CONFIG.firebase;
       if (!cfg || typeof firebase === 'undefined') {
@@ -581,7 +607,9 @@
           displayName: displayName || null,
           source: 'music-player',
           authProvider: provider,
-          followedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          followedAt: (window.LA_AUTH_SOURCE === 'supabase')
+            ? new Date().toISOString()
+            : firebase.firestore.FieldValue.serverTimestamp(),
           notifyNewSongs: true,
           notifyShows: true,
           notifyTickets: true
@@ -599,6 +627,23 @@
 
   // Social sign-in handler
   function socialFollow(providerKey) {
+    // DARK: Supabase OAuth (PKCE redirect). On return, the saved-follower step
+    // runs from initFirebase's dark return handler via LAAuth.getUser().
+    if (window.LA_AUTH_SOURCE === 'supabase') {
+      if (!window.LAAuth || !window.LAAuth.available()) {
+        showFollowMsg('Sign-in not available. Use email below.', 'error');
+        return;
+      }
+      clearFollowMsg();
+      showFollowMsg('Signing in...', 'info');
+      try { sessionStorage.setItem('la-young-follow-provider', providerKey); } catch(e) {}
+      window.LAAuth.signInWithOAuth(providerKey).catch(function (err) {
+        console.error('[Follow] Supabase sign-in error:', err && err.message);
+        showFollowMsg('Sign-in failed. Use the form below.', 'error');
+      });
+      return;
+    }
+
     if (!_fbAuth || !_fbProviders[providerKey]) {
       showFollowMsg('Sign-in not available. Use email below.', 'error');
       return;

@@ -294,6 +294,16 @@ const FanPoints = {
   _firebaseLoading: false,
   _firebaseCallbacks: [],
 
+  // Provider-agnostic "now": Firestore sentinel on Firebase, ISO string on
+  // Supabase (timestamptz accepts it). Used in place of inline serverTimestamp().
+  _serverTs: function() {
+    if (window.LA_AUTH_SOURCE !== 'supabase' && typeof firebase !== 'undefined' &&
+        firebase.firestore && firebase.firestore.FieldValue) {
+      return firebase.firestore.FieldValue.serverTimestamp();
+    }
+    return new Date().toISOString();
+  },
+
   _loadFirebase: function(callback) {
     if (this._firebaseLoaded && typeof firebase !== 'undefined') {
       callback();
@@ -308,6 +318,11 @@ const FanPoints = {
       'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js',
       'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js'
     ];
+    // DARK: on the Supabase backend, also load the supabase-js UMD so LAAuth can
+    // create its client. Default 'firebase' leaves the script list unchanged.
+    if (window.LA_AUTH_SOURCE === 'supabase') {
+      scripts.push('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js');
+    }
     var loaded = 0;
     var self = this;
 
@@ -345,6 +360,40 @@ const FanPoints = {
   },
 
   _connectFirebase: function() {
+    // DARK BRANCH: Supabase auth + Firestore-shaped db via the shared LAAuth
+    // helper. Reached only when LA_AUTH_SOURCE==='supabase'. Mirrors the Firebase
+    // listener semantics below (_firebaseUser, HAS_AUTH_KEY persistence, join-bar
+    // hide, sync, layoung:fan-signed-in event).
+    if (window.LA_AUTH_SOURCE === 'supabase') {
+      if (!window.LAAuth || !window.LAAuth.available()) return;
+      var sb_self = this;
+      this._db = window.LAAuth.db();
+      var sb_everResolved = false;
+      window.LAAuth.onAuthStateChange(function(user) {
+        sb_self._firebaseUser = user;
+        if (user) {
+          sb_everResolved = true;
+          sb_self._authPending = false;
+          try { localStorage.setItem(sb_self.HAS_AUTH_KEY, '1'); } catch(e) {}
+          sb_self._hideJoinBar();
+          sb_self._syncToFirestore();
+          window.dispatchEvent(new CustomEvent('layoung:fan-signed-in', {
+            detail: {
+              displayName: user.displayName || '',
+              photoURL:    user.photoURL    || '',
+              email:       user.email       || '',
+              uid:         user.uid,
+              points:      sb_self._points   || 0
+            }
+          }));
+        } else if (sb_everResolved) {
+          sb_self._authPending = false;
+          try { localStorage.removeItem(sb_self.HAS_AUTH_KEY); } catch(e) {}
+        }
+      });
+      return;
+    }
+
     if (typeof firebase === 'undefined') return;
 
     try {
@@ -483,7 +532,7 @@ const FanPoints = {
           earned: mergedEarned,
           monthKey: currentMonthKey,
           monthlyPoints: mergedMonthly,
-          lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+          lastActive: FanPoints._serverTs(),
           displayName: self._firebaseUser.displayName || ''
         });
       } else {
@@ -495,8 +544,8 @@ const FanPoints = {
           earned: self._earned,
           monthKey: currentMonthKey,
           monthlyPoints: self._monthlyPoints,
-          joinedAt: firebase.firestore.FieldValue.serverTimestamp(),
-          lastActive: firebase.firestore.FieldValue.serverTimestamp()
+          joinedAt: FanPoints._serverTs(),
+          lastActive: FanPoints._serverTs()
         });
       }
     }).catch(function(err) {
@@ -515,6 +564,22 @@ const FanPoints = {
     }
 
     this._loadFirebase(function() {
+      // DARK: Supabase already drives the session via onAuthStateChange; if we
+      // have a restored user, re-dispatch without an OAuth redirect, else sign in.
+      if (window.LA_AUTH_SOURCE === 'supabase') {
+        if (self._firebaseUser) {
+          var u = self._firebaseUser;
+          window.dispatchEvent(new CustomEvent('layoung:fan-signed-in', {
+            detail: {
+              displayName: u.displayName || '', photoURL: u.photoURL || '',
+              email: u.email || '', uid: u.uid, points: self._points || 0
+            }
+          }));
+          return;
+        }
+        self._doSignIn();
+        return;
+      }
       // After Firebase loads, check if session was already restored
       var currentUser = (typeof firebase !== 'undefined' && firebase.apps.length)
         ? firebase.auth().currentUser
@@ -540,6 +605,17 @@ const FanPoints = {
   },
 
   _doSignIn: function() {
+    // DARK: Supabase Google OAuth (PKCE redirect) via the shared helper.
+    if (window.LA_AUTH_SOURCE === 'supabase') {
+      if (!this._db) this._connectFirebase();
+      if (window.LAAuth && window.LAAuth.available()) {
+        window.LAAuth.signInWithOAuth('google').catch(function(err) {
+          console.warn('FanPoints (supabase) sign-in failed:', err && err.message);
+        });
+      }
+      return;
+    }
+
     if (typeof firebase === 'undefined') {
       console.warn('FanPoints: Firebase not loaded yet — cannot sign in');
       return;
@@ -791,7 +867,7 @@ const FanPoints = {
       displayName: this._firebaseUser.displayName || '',
       photoURL:    this._firebaseUser.photoURL    || '',
       comment:     trimmed,
-      commentedAt: firebase.firestore.FieldValue.serverTimestamp(),
+      commentedAt: FanPoints._serverTs(),
       visible:     !flagged
     }).then(function() {
       // Award points for posting (one-time only)
