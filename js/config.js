@@ -48,7 +48,7 @@ window.READ_SOURCE = {
 // net; flip-back is this one value. NOTE: the L.A. Young `followers` Supabase
 // table must exist+be imported BEFORE this flip (music-player-app follower
 // reads) — a pre-flip dependency, NOT a blocker for shipping this DARK.
-window.LA_AUTH_SOURCE = window.LA_AUTH_SOURCE || 'firebase';
+window.LA_AUTH_SOURCE = window.LA_AUTH_SOURCE || 'supabase';
 
 // ── Shared Supabase-auth helper (DARK) ─────────────────────────────────
 // Single home for the entire Supabase Auth + Firestore-shaped data surface so
