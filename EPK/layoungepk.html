@@ -9,9 +9,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Special+Elite&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/retro.css" />
-  <!-- Firebase SDK (shared project: goldbottoment) -->
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 
   <!-- JSON-LD Structured Data — GEO-08 (FRD-GEO-08) -->
 
@@ -662,6 +659,10 @@
         <option value="general">General</option>
       </select>
       <textarea rows="6" placeholder="Your Message" required></textarea>
+      <!-- Anti-spam honeypot: humans never see or fill this (clip/offscreen
+           hiding, not display:none, so naive bots still render+fill it) -->
+      <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true"
+             style="position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap;" />
       <button type="submit">Send Message</button>
     </form>
     <p style="font-size: 11px; margin-top: 18px; text-align: center; color: #888;">
@@ -849,41 +850,31 @@
     document.getElementById('bandModal').classList.add('active');
   };
 
-  /* --- Contact form (Firestore persistence) --- */
+  /* --- Contact form (Supabase staging persistence) ---
+     INSERT-only POST to the shared contact_submissions cache table via the
+     PostgREST endpoint. The anon key is a public-by-design client value:
+     RLS grants anonymous INSERT only (no SELECT/UPDATE/DELETE), no auth
+     session, no tokens minted. The HomeOffice SoR pull (supabase-pull ->
+     intake-normalizer) lands rows in booking_inbox as formType
+     'epk_contact' -> lane 'general', source 'epk_form'. */
+  var SUPABASE_URL = 'https://rklvvuzedmadydmohouu.supabase.co';
+  var SUPABASE_ANON_KEY = 'sb_publishable_oIOHXXN_pwkeoeAfcQkNbg_rJkDFNZK';
+  var pageRenderedAt = Date.now(); // anti-spam fillMs baseline
+
   window.submitContact = function(e) {
     e.preventDefault();
     var form = e.target;
-    var inputs = form.querySelectorAll('input, select, textarea');
+    // Exclude the honeypot so visible-field indexes stay stable
+    var inputs = form.querySelectorAll('input:not([name="website"]), select, textarea');
     var name = inputs[0].value.trim();
     var email = inputs[1].value.trim();
     var inquiryType = inputs[2].value;
     var message = inputs[3].value.trim();
+    var honeypotEl = form.querySelector('input[name="website"]');
+    var honeypot = honeypotEl ? honeypotEl.value : '';
 
     if (!name || !email || !inquiryType || !message) {
       alert('Please fill in all required fields.');
-      return;
-    }
-
-    // Initialize Firebase if needed
-    var db = null;
-    try {
-      if (typeof firebase !== 'undefined') {
-        if (!firebase.apps.length) {
-          firebase.initializeApp({
-            apiKey: 'AIzaSyBxdl4Rq11ogyXwhH-2QCKhxB_RnT_bSEk',
-            authDomain: 'goldbottoment.firebaseapp.com',
-            projectId: 'goldbottoment',
-            storageBucket: 'goldbottoment.firebasestorage.app',
-            messagingSenderId: '963268881384',
-            appId: '1:963268881384:web:2ca6af27366263f23dd25d'
-          });
-        }
-        db = firebase.firestore();
-      }
-    } catch(err) { db = null; }
-
-    if (!db) {
-      alert('Unable to send \u2014 please email us directly at booking@layoungbandpage.com');
       return;
     }
 
@@ -893,16 +884,47 @@
     btn.disabled = true;
     btn.textContent = 'Sending\u2026';
 
-    db.collection('contact_submissions').add({
-      formType: 'epk-contact',
+    var iso = new Date().toISOString();
+    var fillMs = Date.now() - pageRenderedAt;
+    // Full payload archived verbatim in raw_doc (camelCase wire keys the
+    // intake normalizer reads); known cache columns mirrored on the row.
+    var payload = {
+      formType: 'epk_contact',
       source: 'la-young-epk',
       name: name,
       email: email,
       inquiryType: inquiryType,
       message: message,
-      submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+      website: honeypot,
+      fillMs: fillMs,
+      submittedAt: iso
+    };
+    var row = {
+      id: 'cs_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10),
+      form_type: 'epk_contact',
+      source: 'la-young-epk',
+      name: name,
+      email: email,
+      inquiry_type: inquiryType,
+      message: message,
+      website: honeypot,
+      fillMs: fillMs,
+      submitted_at: iso,
+      raw_doc: payload
+    };
+
+    fetch(SUPABASE_URL + '/rest/v1/contact_submissions', {
+      method: 'POST',
+      headers: {
+        'apikey': SUPABASE_ANON_KEY,
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(row)
     })
-    .then(function() {
+    .then(function(res) {
+      if (!res.ok) throw new Error('Supabase returned ' + res.status);
       alert('Message sent! We\u2019ll get back to you within 24\u201348 hours.');
       closeModal('contactModal');
       form.reset();
