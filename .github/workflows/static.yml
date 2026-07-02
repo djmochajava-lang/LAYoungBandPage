@@ -41,3 +41,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          # Pages CDN propagation stalled >10min on 2026-07-02 (runs 28601835742,
+          # 28603669859 both aborted at the action's default 600000ms poll timeout
+          # while the deployment was still in_progress). Allow up to 30 minutes.
+          timeout: 1800000
