@@ -380,6 +380,7 @@ const MobileMenu = {
     console.log('📱 Opening mobile menu...');
     if (this.menu) {
       this.menu.classList.add('active');
+      this.menu.setAttribute('aria-hidden', 'false');
       document.body.classList.add('mobile-menu-open');
 
       // Animate hamburger to X
@@ -404,6 +405,7 @@ const MobileMenu = {
     console.log('📴 Closing mobile menu...');
     if (this.menu) {
       this.menu.classList.remove('active');
+      this.menu.setAttribute('aria-hidden', 'true');
       document.body.classList.remove('mobile-menu-open');
 
       // Animate X back to hamburger
