@@ -3,40 +3,55 @@
 /**
  * Forms Module
  * Handles email signup, contact forms, and validation
- * Persists submissions to Firestore (contact_submissions collection)
+ * Persists submissions to Supabase (contact_submissions cache table).
+ *
+ * fbexit S6 (2026-07-09): the Firestore write path is RETIRED. Firebase
+ * membership has ended (D-NO-FIREBASE) and Firestore returns 403; the prior
+ * DARK adapter path also required the supabase-js UMD to be loaded on the page
+ * (it is not, on the contact page) so BOTH forms were failing live. This module
+ * now writes directly to the Supabase REST endpoint — the same proven pattern
+ * as EPK/layoungepk.html and the GBE main-site forms.js strategy 2: INSERT-only,
+ * anon key (public by design, RLS-gated), no SDK/UMD, no auth, no read-back.
+ * Snake_case columns match the SoR pull (server supabase-pull.js) + intake
+ * normalizer; the full payload is archived in raw_doc. Lands end-to-end:
+ * Supabase contact_submissions -> supabase-pull -> firebase_inbox -> normalizer
+ * -> booking_inbox (System of Record).
  */
 
 const Forms = {
   FALLBACK_EMAIL: 'booking@layoungbandpage.com',
 
   /**
-   * Get Firestore instance (initialize Firebase if needed)
+   * Supabase config from SITE_CONFIG. The anon (publishable) key is client-safe
+   * by design — every table is RLS-gated and contact_submissions is INSERT-only
+   * for anonymous visitors. Returns null if config is absent.
    */
-  _getDb() {
-    // DARK: contact_submissions writes go to Supabase via the shared adapter.
-    if (window.LA_AUTH_SOURCE === 'supabase') {
-      return (window.LAAuth && window.LAAuth.available()) ? window.LAAuth.db() : null;
-    }
-    if (typeof firebase === 'undefined') return null;
-    try {
-      if (!firebase.apps.length) {
-        const config = (typeof window.SITE_CONFIG !== 'undefined') ? window.SITE_CONFIG.firebase : null;
-        if (!config) return null;
-        firebase.initializeApp(config);
-      }
-      return firebase.firestore();
-    } catch (e) {
-      return null;
-    }
+  _sbConfig() {
+    const c = (typeof window !== 'undefined' && window.SITE_CONFIG) ? window.SITE_CONFIG.supabase : null;
+    return (c && c.url && c.anonKey) ? c : null;
   },
 
-  // Provider-agnostic "now": Firestore sentinel on Firebase, ISO on Supabase.
-  _serverTs() {
-    if (window.LA_AUTH_SOURCE !== 'supabase' && typeof firebase !== 'undefined' &&
-        firebase.firestore && firebase.firestore.FieldValue) {
-      return firebase.firestore.FieldValue.serverTimestamp();
-    }
-    return new Date().toISOString();
+  /**
+   * INSERT a row into the Supabase contact_submissions cache via REST.
+   * Prefer: return=minimal — anon has INSERT-only (no SELECT), so no read-back.
+   * @returns {Promise<{ok:boolean}>}
+   */
+  _postContactSubmission(row) {
+    const cfg = this._sbConfig();
+    if (!cfg) return Promise.reject(new Error('Supabase config missing'));
+    return fetch(cfg.url + '/rest/v1/contact_submissions', {
+      method: 'POST',
+      headers: {
+        'apikey': cfg.anonKey,
+        'Authorization': 'Bearer ' + cfg.anonKey,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(row)
+    }).then(function (res) {
+      if (!res.ok) throw new Error('Supabase returned ' + res.status);
+      return { ok: true };
+    });
   },
 
   /**
@@ -73,9 +88,8 @@ const Forms = {
         return;
       }
 
-      // Firestore availability guard
-      const db = this._getDb();
-      if (!db) {
+      // Supabase config guard
+      if (!this._sbConfig()) {
         this.showMessage(
           signupForm,
           'Unable to subscribe \u2014 please try again later or email us at ' + this.FALLBACK_EMAIL,
@@ -90,12 +104,15 @@ const Forms = {
       submitBtn.textContent = 'Subscribing...';
 
       try {
-        // Persist to Firestore
-        await db.collection('contact_submissions').add({
-          formType: 'email-signup',
+        // Persist to Supabase contact_submissions (INSERT-only, snake_case cols)
+        const iso = new Date().toISOString();
+        await this._postContactSubmission({
+          id: 'cs_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10),
+          form_type: 'email-signup',
           source: 'la-young',
           email: email,
-          submittedAt: this._serverTs()
+          submitted_at: iso,
+          raw_doc: { formType: 'email-signup', source: 'la-young', email: email, submittedAt: iso }
         });
 
         this.showMessage(
@@ -147,9 +164,8 @@ const Forms = {
         return;
       }
 
-      // Firestore availability guard
-      const db = this._getDb();
-      if (!db) {
+      // Supabase config guard
+      if (!this._sbConfig()) {
         this.showMessage(
           contactForm,
           'Unable to send \u2014 please try again later or email us at ' + this.FALLBACK_EMAIL,
@@ -164,15 +180,22 @@ const Forms = {
       submitBtn.textContent = 'Sending...';
 
       try {
-        // Persist to Firestore
-        await db.collection('contact_submissions').add({
-          formType: 'contact',
+        // Persist to Supabase contact_submissions (INSERT-only, snake_case cols)
+        const iso = new Date().toISOString();
+        const name = data.name.trim();
+        const email = data.email.trim();
+        const subject = (data.subject || '').trim();
+        const message = data.message.trim();
+        await this._postContactSubmission({
+          id: 'cs_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10),
+          form_type: 'contact',
           source: 'la-young',
-          name: data.name.trim(),
-          email: data.email.trim(),
-          subject: (data.subject || '').trim(),
-          message: data.message.trim(),
-          submittedAt: this._serverTs()
+          name: name,
+          email: email,
+          subject: subject,
+          message: message,
+          submitted_at: iso,
+          raw_doc: { formType: 'contact', source: 'la-young', name: name, email: email, subject: subject, message: message, submittedAt: iso }
         });
 
         this.showMessage(
