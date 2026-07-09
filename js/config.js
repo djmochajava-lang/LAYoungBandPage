@@ -130,19 +130,38 @@ window.LAAuth = (function () {
       return sb.from(table).insert(obj)
         .then(function (res) { if (res && res.error) throw res.error; return res; });
     }
-    function makeQuery(filters) {
+    function makeQuery(filters, orders, lim) {
+      filters = filters || []; orders = orders || [];
       return {
         where: function (field, op, value) {
           var f = filters.slice(); f.push({ field: field, op: op, value: value });
-          return makeQuery(f);
+          return makeQuery(f, orders, lim);
         },
-        limit: function () { return makeQuery(filters); },
+        // Firestore .orderBy(field, dir) -> Supabase .order(). Call sites:
+        // fan-points leaderboard (.orderBy('monthlyPoints','desc')) + fan wall
+        // (.orderBy('commentedAt','desc')); mobile-gallery gallery_feed
+        // (.orderBy('createdAt','desc')). All chain .orderBy().limit().get()
+        // directly on the collection. Without this, .orderBy is undefined ->
+        // 'orderBy is not a function' and those panels never render. Field names
+        // pass verbatim (these tables share the Firestore doc field names), the
+        // same convention .where() already uses here -- no snake-casing.
+        orderBy: function (field, dir) {
+          var o = orders.slice(); o.push({ field: field, dir: dir });
+          return makeQuery(filters, o, lim);
+        },
+        // Was a no-op that dropped n (returned ALL rows). Now applies the cap so
+        // .limit(20)/.limit(100) actually bound the result set.
+        limit: function (n) { return makeQuery(filters, orders, n); },
         get: function () {
           var q = sb.from(table).select('*');
           filters.forEach(function (fl) {
             if (fl.op === '==') q = q.eq(fl.field, fl.value);
             else if (fl.op === 'in') q = q.in(fl.field, fl.value);
           });
+          orders.forEach(function (o) {
+            q = q.order(o.field, { ascending: (o.dir !== 'desc') });
+          });
+          if (lim) q = q.limit(lim);
           return q.then(function (res) {
             if (res && res.error) throw res.error;
             var rows = (res && res.data) || [];
@@ -160,7 +179,13 @@ window.LAAuth = (function () {
     return {
       doc: doc,
       add: add,
-      where: function (field, op, value) { return makeQuery([{ field: field, op: op, value: value }]); }
+      where: function (field, op, value) { return makeQuery([{ field: field, op: op, value: value }], [], null); },
+      // .collection(name).orderBy(...) / .limit(...) / .get() with no preceding
+      // .where() — the fan-points leaderboard, fan wall, and gallery_feed all
+      // start the chain with .orderBy() directly on the collection.
+      orderBy: function (field, dir) { return makeQuery([], [{ field: field, dir: dir }], null); },
+      limit: function (n) { return makeQuery([], [], n); },
+      get: function () { return makeQuery([], [], null).get(); }
     };
   }
 
