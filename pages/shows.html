@@ -1044,53 +1044,9 @@
    * EVENT LOADING (Firestore — works on GitHub Pages)
    * ═════════════════════════════════════════════════════════ */
 
-  /** Ensure Firebase + Firestore SDK is loaded before querying */
-  function ensureFirebase(cb) {
-    if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
-      cb(firebase.firestore());
-      return;
-    }
-    // Firebase not loaded yet — try loading via FanPoints helper or direct script injection
-    if (typeof FanPoints !== 'undefined' && typeof FanPoints._loadFirebase === 'function') {
-      FanPoints._loadFirebase(function () {
-        if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
-          cb(firebase.firestore());
-        } else {
-          cb(null);
-        }
-      });
-      return;
-    }
-    // Fallback: load Firebase SDKs directly
-    var scripts = [
-      'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js',
-      'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js'
-    ];
-    var loaded = 0;
-    function onLoad() {
-      loaded++;
-      if (loaded < scripts.length) return;
-      // Initialize if not already done
-      if (typeof firebase !== 'undefined' && !firebase.apps.length) {
-        var cfg = (typeof SiteConfig !== 'undefined' && SiteConfig.firebase)
-          ? SiteConfig.firebase
-          : { apiKey: 'AIzaSyBQkd-C5MYFGqEMLqLkmjfCr12SV-bCNis', authDomain: 'goldbottoment.firebaseapp.com', projectId: 'goldbottoment' };
-        firebase.initializeApp(cfg);
-      }
-      if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length) {
-        cb(firebase.firestore());
-      } else {
-        cb(null);
-      }
-    }
-    scripts.forEach(function (src) {
-      var s = document.createElement('script');
-      s.src = src;
-      s.onload = onLoad;
-      s.onerror = onLoad;
-      document.head.appendChild(s);
-    });
-  }
+  /** RETIRED (fbexit S6): Firebase/Firestore is dead (403, membership ended).
+   *  Kept as a no-op so no legacy caller can re-inject the Firebase SDK. */
+  function ensureFirebase(cb) { cb(null); }
 
   /** Compute tier status from quantity/sold counts */
   function deriveTierStatus(tier) {
@@ -1141,40 +1097,17 @@
   }
 
   function loadEvents() {
+    // fbexit S6 (2026-07-09): the Firestore ticket_events read is RETIRED.
+    // Firebase membership has ended (D-NO-FIREBASE) and Firestore returns 403,
+    // and the SoR has zero published events (band pre-debut), so this query
+    // always failed to the fallback while pointlessly loading the Firebase SDK.
+    // Show the "Tickets Coming Soon" fallback directly. When live ticketing
+    // returns it will be wired to the estate's Supabase/API source, not Firestore.
     showEl('ticket-loading');
     hideEl('ticket-events');
     hideEl('ticket-fallback');
-
-    ensureFirebase(function (db) {
-      if (!db) {
-        hideEl('ticket-loading');
-        showFallback();
-        return;
-      }
-
-      db.collection('ticket_events')
-        .where('status', '==', 'published')
-        .orderBy('eventDate', 'asc')
-        .get()
-        .then(function (snap) {
-          hideEl('ticket-loading');
-          if (snap.empty) {
-            showFallback();
-            return;
-          }
-          var events = [];
-          snap.forEach(function (doc) {
-            events.push(mapFirestoreEvent(doc));
-          });
-          _events = events;
-          renderEvents(events);
-        })
-        .catch(function (err) {
-          console.warn('[shows] Firestore event load failed:', err.message || err);
-          hideEl('ticket-loading');
-          showFallback();
-        });
-    });
+    hideEl('ticket-loading');
+    showFallback();
   }
 
   function showFallback() {
@@ -1821,24 +1754,39 @@
     if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
     hideNotifyMsg();
 
-    // Write to Firestore contact_submissions (same pattern as the main email signup)
-    var db = (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length)
-      ? firebase.firestore()
-      : null;
-
-    if (!db) {
+    // fbexit S6 (2026-07-09): write to Supabase contact_submissions via REST
+    // (was Firestore, now 403/dead). Anon key from SITE_CONFIG (public by design,
+    // RLS INSERT-only), snake_case columns matching the SoR pull + normalizer;
+    // full payload in raw_doc. Lands: Supabase -> supabase-pull -> firebase_inbox
+    // -> normalizer -> booking_inbox (SoR). Mirrors js/forms.js.
+    var sb = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.supabase) ? SITE_CONFIG.supabase : null;
+    if (!sb || !sb.url || !sb.anonKey) {
       showNotifyMsg('Unable to subscribe right now — please try again later.', 'error');
       if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Notify Me'; }
       return;
     }
 
-    db.collection('contact_submissions').add({
-      formType:    'shows-notification',
-      source:      'la-young',
-      email:       email,
-      optOut:      false,
-      submittedAt: firebase.firestore.FieldValue.serverTimestamp()
-    }).then(function () {
+    var iso = new Date().toISOString();
+    var row = {
+      id: 'cs_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10),
+      form_type: 'shows-notification',
+      source: 'la-young',
+      email: email,
+      submitted_at: iso,
+      raw_doc: { formType: 'shows-notification', source: 'la-young', email: email, optOut: false, submittedAt: iso }
+    };
+
+    fetch(sb.url + '/rest/v1/contact_submissions', {
+      method: 'POST',
+      headers: {
+        'apikey': sb.anonKey,
+        'Authorization': 'Bearer ' + sb.anonKey,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify(row)
+    }).then(function (res) {
+      if (!res.ok) throw new Error('Supabase returned ' + res.status);
       // Persist so returning visitors see confirmed state
       try { localStorage.setItem(NOTIFY_KEY, '1'); } catch (e) {}
       // Award fan points
