@@ -20,14 +20,15 @@ window.SITE_CONFIG = {
 };
 
 // ── Per-collection READ-SOURCE flag (Supabase Week-2 cutover) ──────────
-// Each collection reads from 'firestore' (default, live) or 'supabase'.
-// Flipping a value here is the entire cutover — and a one-value rollback.
-// gallery_feed is flipped FIRST as the harmless live proof (public, non-auth,
-// lowest blast radius). songs/playlists are HELD on Firestore: their flip is
-// the CEO's personal go/no-go (DECISIONS_LOG D-20 Condition 1) and is NEVER
-// flipped autonomously. The Supabase implementations for songs/playlists are
-// authored-and-ready behind this flag so the CEO's eventual approval is a
-// single one-value change.
+// Each collection reads from 'supabase' or 'firestore' (legacy). POST-FBEXIT
+// REALITY (S9): the Firestore backend is retired — the client SDK left in S7
+// and Firestore 403s — so a 'firestore' value no longer selects a working
+// read; it marks that collection's GalleryData read path DORMANT (zero
+// callers). songs/playlists stay 'firestore' as HELD placeholders: flipping
+// them to 'supabase' is the CEO's personal go/no-go (DECISIONS_LOG D-20
+// Condition 1) and is NEVER done autonomously. The Supabase implementations
+// are authored-and-ready behind this flag, so that approval remains a single
+// one-value change.
 window.READ_SOURCE = {
   gallery_feed: 'supabase',   // ← FLIPPED (Week-2 live proof)
   songs:        'firestore',  // HELD — CEO go/no-go (D-20)

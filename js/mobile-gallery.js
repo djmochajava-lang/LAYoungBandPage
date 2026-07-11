@@ -725,8 +725,6 @@
     // Preload Firebase now so it's ready synchronously when user triple-taps
     // (mobile browsers block popups if Firebase loads async inside the tap handler)
     loadFirebaseForAdmin(function () {
-      var _supabaseAuth = (window.LA_AUTH_SOURCE === 'supabase');
-      if (!_supabaseAuth && typeof firebase === 'undefined') return;
       ensureFirebase();
 
       // If returning from a mobile admin redirect, pick up the signed-in user
@@ -745,41 +743,28 @@
           _authResolved = true;
           _adminUser = user;
           if (!_adminDb) {
-            _adminDb = _supabaseAuth
-              ? (window.LAAuth && window.LAAuth.available() ? window.LAAuth.db() : null)
-              : firebase.firestore();
+            _adminDb = (window.LAAuth && window.LAAuth.available()) ? window.LAAuth.db() : null;
           }
           fetchRole(user);
           return true;
         }
 
         // Strategy 1: FanPoints may have already resolved the user
-        // (DARK: in the Supabase branch FanPoints._firebaseUser is the adapted
-        // Supabase user — same shape, so this works unchanged.)
+        // (FanPoints._firebaseUser is the adapted Supabase user — same shape
+        // the legacy code consumed, so downstream works unchanged.)
         if (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser) {
           resolveAdminUser(FanPoints._firebaseUser);
         }
 
-        if (!_supabaseAuth) {
-          // Strategy 2 (Firebase only): currentUser
-          if (!_authResolved && firebase.auth().currentUser) {
-            resolveAdminUser(firebase.auth().currentUser);
-          }
-          // Strategy 3 (Firebase only): onAuthStateChanged
-          if (!_authResolved) {
-            firebase.auth().onAuthStateChanged(function (user) {
-              resolveAdminUser(user);
-            });
-          }
-        }
+        // fbexit S9: legacy Firebase-only strategies (currentUser /
+        // onAuthStateChanged) stripped — dead since the SDK left in S7.
 
-        // Strategy 4: Poll every 500ms — catches late auth resolution.
-        // (Supabase: poll FanPoints._firebaseUser only.)
+        // Strategy 2: Poll every 500ms — catches late auth resolution
+        // (polls FanPoints._firebaseUser only).
         var _pollCount = 0;
         var _poll = setInterval(function () {
           _pollCount++;
-          var u = (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser)
-                  || (!_supabaseAuth && firebase.auth().currentUser);
+          var u = (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser);
           if (resolveAdminUser(u) || _pollCount >= 20) {
             clearInterval(_poll);
             if (!_authResolved) {
@@ -790,7 +775,7 @@
       }
     });
 
-    // Triple-tap handler — Firebase is already loaded by now
+    // Triple-tap handler — the auth loader has already run by now
     label.addEventListener('click', function () {
       _secretTaps++;
       clearTimeout(_secretTimer);
@@ -817,16 +802,13 @@
   }
 
   function ensureFirebase() {
-    // DARK: admin role/data reads go through the Supabase-backed adapter.
+    // Admin role/data reads go through the Supabase-backed LAAuth adapter.
     if (window.LA_AUTH_SOURCE === 'supabase') {
       if (!_adminDb && window.LAAuth && window.LAAuth.available()) _adminDb = window.LAAuth.db();
       return;
     }
-    if (!firebase.apps.length) {
-      var config = window.SITE_CONFIG && window.SITE_CONFIG.firebase;
-      if (config) firebase.initializeApp(config);
-    }
-    if (!_adminDb) _adminDb = firebase.firestore();
+    // RETIRED (fbexit S9): the legacy firebase.initializeApp/firestore() leg
+    // was stripped — on any non-supabase flag value this is now a no-op.
   }
 
   function triggerAdminLogin() {
@@ -839,17 +821,14 @@
       if (typeof FanPoints !== 'undefined' && FanPoints._firebaseUser) {
         return FanPoints._firebaseUser;
       }
-      if (typeof firebase !== 'undefined' && firebase.apps && firebase.apps.length
-          && firebase.auth && firebase.auth().currentUser) {
-        return firebase.auth().currentUser;
-      }
+      // fbexit S9: typeof-guarded firebase.auth().currentUser fallback stripped.
       return null;
     }
 
     var user = getSignedInUser();
 
     if (user) {
-      // Signed in — check their role in Firestore
+      // Signed in — check their role via the LAAuth adapter
       ensureFirebase();
       _adminUser = user;
       fetchRole(user);
@@ -857,7 +836,7 @@
     }
 
     // Not signed in — wait up to 6s for FanPoints to resolve auth state
-    // (FanPoints loads Firebase async on page load; may not be ready yet)
+    // (FanPoints initializes auth async on page load; may not be ready yet)
     showAdminToast('Waiting for sign-in…');
     var attempts = 0;
     var wait = setInterval(function () {
@@ -883,7 +862,7 @@
     if (!_adminDb) {
       _adminDb = (window.LA_AUTH_SOURCE === 'supabase' && window.LAAuth && window.LAAuth.available())
         ? window.LAAuth.db()
-        : firebase.firestore();
+        : null;
     }
 
     setTimeout(function () {
@@ -1151,14 +1130,10 @@
     if (!_adminDb || !_adminUser) return;
 
     var db = _adminDb;
-    // fbexit S7 addendum: client Firebase SDK retired — under the live supabase
-    // flag the LAAuth adapter expects a plain ISO timestamp string (same value
-    // music-player-app.js feeds the adapter for follower writes). Firebase
-    // sentinel survives only on the dead legacy path, inside a function body
-    // so it is never evaluated under supabase.
-    var serverTs = (window.LA_AUTH_SOURCE === 'supabase')
-      ? function () { return new Date().toISOString(); }
-      : function () { return firebase.firestore.FieldValue.serverTimestamp(); };
+    // fbexit S9: plain ISO timestamp string — the value the LAAuth adapter
+    // expects (timestamptz-correct). The dead Firebase-sentinel leg of the S7
+    // flag ternary was stripped with the SDK long gone.
+    var serverTs = function () { return new Date().toISOString(); };
 
     // Read the doc first so we can add createdAt if missing.
     // Firestore excludes docs without the orderBy field from results,
@@ -1192,9 +1167,7 @@
     _adminDb.collection('gallery_feed').doc(docId).set({
       deleted: true,
       deletedBy: _adminUser.uid,
-      deletedAt: (window.LA_AUTH_SOURCE === 'supabase')
-        ? new Date().toISOString()
-        : firebase.firestore.FieldValue.serverTimestamp()
+      deletedAt: new Date().toISOString()
     }, { merge: true }).then(function () {
       postEl.remove();
       showAdminToast('Post deleted — tap 🗑 Trash to restore');
@@ -1215,9 +1188,7 @@
       type: 'custom',
       deleted: false,
       createdBy: _adminUser.uid,
-      createdAt: (window.LA_AUTH_SOURCE === 'supabase')
-        ? new Date().toISOString()
-        : firebase.firestore.FieldValue.serverTimestamp()
+      createdAt: new Date().toISOString()
     }).then(function (docRef) {
       // Add to feed visually
       var feed = document.getElementById('mg-feed');
@@ -1354,9 +1325,7 @@
     db.collection('gallery_feed').doc(docId).update({
       deleted: false,
       restoredBy: _adminUser.uid,
-      restoredAt: (window.LA_AUTH_SOURCE === 'supabase')
-        ? new Date().toISOString()
-        : firebase.firestore.FieldValue.serverTimestamp()
+      restoredAt: new Date().toISOString()
     }).then(function () {
       showAdminToast('✓ Restored — reload page to see it in the feed');
       if (trashItemEl) trashItemEl.remove();

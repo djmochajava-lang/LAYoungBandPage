@@ -423,7 +423,7 @@
     audio.currentTime = pct * audio.duration;
   });
 
-  /* ---- Follow / Mailing List (Firebase) ---- */
+  /* ---- Follow / Mailing List (Supabase via LAAuth) ---- */
   var _fbApp = null;
   var _fbDb = null;
   var _fbAuth = null;
@@ -431,10 +431,9 @@
 
   function initFirebase() {
     if (_fbApp) return;
-    // DARK: on the Supabase backend, the follow flow uses LAAuth (auth) +
-    // LAAuth.db() (followers reads/writes) directly — no Firebase app/auth/db.
-    // saveFollower / socialFollow branch on LA_AUTH_SOURCE below. Mark _fbApp so
-    // this init is a no-op and getRedirectResult (Firebase-only) is skipped.
+    // LIVE (LA_AUTH_SOURCE='supabase'): the follow flow uses LAAuth (auth) +
+    // LAAuth.db() (followers reads/writes) directly. saveFollower / socialFollow
+    // branch on LA_AUTH_SOURCE below. _fbApp is marked so re-init is a no-op.
     if (window.LA_AUTH_SOURCE === 'supabase') {
       _fbApp = 'supabase';
       _fbDb = (window.LAAuth && window.LAAuth.available()) ? window.LAAuth.db() : null;
@@ -457,57 +456,11 @@
       } catch (e) {}
       return;
     }
-    try {
-      var cfg = window.SITE_CONFIG && window.SITE_CONFIG.firebase;
-      if (!cfg || typeof firebase === 'undefined') {
-        console.warn('[Follow] Firebase not available');
-        return;
-      }
-      _fbApp = firebase.initializeApp(cfg);
-      _fbDb = firebase.firestore();
-      _fbAuth = firebase.auth();
-
-      // Providers
-      var goog = new firebase.auth.GoogleAuthProvider();
-      goog.setCustomParameters({ prompt: 'select_account' });
-      _fbProviders.google = goog;
-
-      var apple = new firebase.auth.OAuthProvider('apple.com');
-      apple.addScope('email');
-      apple.addScope('name');
-      _fbProviders.apple = apple;
-
-      var ms = new firebase.auth.OAuthProvider('microsoft.com');
-      ms.setCustomParameters({ prompt: 'select_account' });
-      _fbProviders.microsoft = ms;
-
-      // Handle redirect result (mobile sign-in flow)
-      _fbAuth.getRedirectResult()
-        .then(function (result) {
-          if (result && result.user) {
-            var user = result.user;
-            var email = user.email;
-            var name = user.displayName || null;
-            var provider = 'google';
-            try { provider = sessionStorage.getItem('la-young-follow-provider') || 'google'; } catch(e) {}
-            if (email) {
-              saveFollower(email, null, name, provider).then(function () {
-                if (_fbAuth.currentUser) _fbAuth.signOut();
-                try { sessionStorage.removeItem('la-young-follow-provider'); } catch(e) {}
-              });
-            }
-          }
-        })
-        .catch(function (err) {
-          if (err.code !== 'auth/popup-closed-by-user') {
-            console.warn('[Follow] Redirect result error:', err.message);
-          }
-        });
-
-      console.log('[Follow] Firebase initialized');
-    } catch (err) {
-      console.error('[Follow] Firebase init error:', err);
-    }
+    // RETIRED (fbexit S9): the legacy Firebase follow leg (initializeApp,
+    // Firestore, auth providers, getRedirectResult) was stripped — the client
+    // SDK left in S7, so it only ever warned and returned. On any non-supabase
+    // flag value this init is now a no-op (_fbAuth/_fbDb stay null; socialFollow
+    // and saveFollower degrade to their "not available" messages).
   }
 
   // DOM refs
@@ -583,7 +536,7 @@
     });
   }
 
-  // Save follower to Firestore
+  // Save follower via the LAAuth adapter (followers table)
   function saveFollower(email, phone, displayName, provider) {
     if (!_fbDb) {
       showFollowMsg('Service unavailable. Please try again later.', 'error');
@@ -607,9 +560,7 @@
           displayName: displayName || null,
           source: 'music-player',
           authProvider: provider,
-          followedAt: (window.LA_AUTH_SOURCE === 'supabase')
-            ? new Date().toISOString()
-            : firebase.firestore.FieldValue.serverTimestamp(),
+          followedAt: new Date().toISOString(),
           notifyNewSongs: true,
           notifyShows: true,
           notifyTickets: true
@@ -819,7 +770,7 @@
     }
   };
 
-  // Auto-init Firebase on load if returning from a mobile redirect sign-in
+  // Auto-init the follow backend on load if returning from a redirect sign-in
   try {
     if (sessionStorage.getItem('la-young-follow-provider')) {
       initFirebase();

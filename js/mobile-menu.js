@@ -104,7 +104,7 @@ const MobileMenu = {
           setTimeout(function() {
             if (typeof FanPoints !== 'undefined') {
               FanPoints._loadFirebase(function() {
-                // DARK: Supabase auto-sign-in via the shared helper (PKCE redirect).
+                // Supabase auto-sign-in via the shared helper (PKCE redirect).
                 if (window.LA_AUTH_SOURCE === 'supabase') {
                   if (FanPoints._firebaseUser) return; // already signed in
                   if (window.LAAuth && window.LAAuth.available()) {
@@ -112,13 +112,8 @@ const MobileMenu = {
                   }
                   return;
                 }
-                // fbexit S7: client Firebase SDK removed — with the loader
-                // retired, firebase is always undefined here; the legacy leg
-                // below is guarded so it no-ops instead of throwing.
-                if (typeof firebase === 'undefined') return;
-                if (firebase.auth().currentUser) return; // Already signed in
-                var provider = new firebase.auth.GoogleAuthProvider();
-                firebase.auth().signInWithRedirect(provider);
+                // RETIRED (fbexit S9): the S7-guarded legacy firebase.auth()
+                // redirect leg was stripped — non-supabase = no-op.
               });
             }
           }, 500);
@@ -214,7 +209,7 @@ const MobileMenu = {
 
       renderProfile(profile);
 
-      // Check Firestore role — show Band Portal button for band members
+      // Check the user's role (Supabase users read) — show Band Portal button for band members
       self._checkBandRole(profile.uid);
 
       // Welcome notification
@@ -255,11 +250,11 @@ const MobileMenu = {
   },
 
   /**
-   * Check Firestore user doc for band_member/artist role → show Band Portal button
+   * Check the user's role (Supabase 'users' via LAAuth) → show Band Portal button
    */
   _checkBandRole(uid) {
     if (!uid) return;
-    // DARK: read the role from Supabase 'users' via the shared helper.
+    // Read the role from Supabase 'users' via the shared helper.
     if (window.LA_AUTH_SOURCE === 'supabase') {
       if (!window.LAAuth || !window.LAAuth.available()) return;
       window.LAAuth.db().collection('users').doc(uid).get().then(function(doc) {
@@ -273,24 +268,8 @@ const MobileMenu = {
       }).catch(function() {});
       return;
     }
-    // Need Firestore — it's lazy-loaded by FanPoints, so wait for it
-    var check = function() {
-      if (typeof firebase === 'undefined' || !firebase.firestore) return;
-      try {
-        firebase.firestore().collection('users').doc(uid).get().then(function(doc) {
-          if (!doc.exists) return;
-          var role = doc.data().role || '';
-          var btn = document.getElementById('mm-band-portal-btn');
-          if (btn && (role === 'band_member' || role === 'artist' || role === 'band_manager' || role === 'admin')) {
-            btn.style.display = 'block';
-            console.log('🎸 Band Portal button shown for role:', role);
-          }
-        }).catch(function() { /* silent — not critical */ });
-      } catch (e) { /* Firestore not ready */ }
-    };
-    // Try now, retry after a short delay (Firestore may still be loading)
-    check();
-    setTimeout(check, 2000);
+    // RETIRED (fbexit S9): the typeof-guarded legacy Firestore users read
+    // was stripped — dead since the SDK left in S7; non-supabase = no-op.
   },
 
   /**

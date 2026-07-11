@@ -318,11 +318,11 @@
   </div>
 
   <!-- Client Firebase SDK removed (fbexit S7): the Follow path runs on Supabase
-       via LAAuth (LA_AUTH_SOURCE='supabase'); music-player-app.js guards
-       typeof firebase === 'undefined' and falls back cleanly. -->
+       via LAAuth (LA_AUTH_SOURCE='supabase'). The legacy Firebase leg in
+       music-player-app.js was stripped in fbexit S9 (non-supabase = no-op). -->
 
   <!-- Site config (Supabase + feature flags) -->
-  <script src="js/config.js?v=2"></script>
+  <script src="js/config.js?v=3"></script>
 
   <script>
     // Register service worker for PWA standalone mode (chrome-less window)
@@ -525,7 +525,7 @@
 
         // Load player JS as external script (immune to dev-server injection)
         var playerScript = document.createElement('script');
-        playerScript.src = 'js/music-player-app.js?v=2';
+        playerScript.src = 'js/music-player-app.js?v=3';
         container.appendChild(playerScript);
 
         console.log('🎵 Standalone player loaded');

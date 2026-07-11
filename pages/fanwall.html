@@ -287,19 +287,9 @@
       }
     }, 500);
 
-    // Listen for Firebase auth changes — update UI + auto-post if pending
-    if (typeof firebase !== 'undefined' && firebase.auth) {
-      try {
-        firebase.auth().onAuthStateChanged(function(user) {
-          updateAuthUI();
-          renderComments();
-          // If the user just signed in and had a pending post, submit it now
-          if (user && pendingPost && msgInput.value.trim()) {
-            submitComment();
-          }
-        });
-      } catch(e) {}
-    }
+    // RETIRED (fbexit S9): the guarded legacy firebase.auth().onAuthStateChanged
+    // listener was stripped — dead since the SDK left in S7. Sign-in updates
+    // arrive via the fan sign-in event listener below + the FanPoints poll above.
 
     // ---- Listen for fan sign-in event (works even before Firebase SDK loads) ----
     window.addEventListener('layoung:fan-signed-in', function(e) {
