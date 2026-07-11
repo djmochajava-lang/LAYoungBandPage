@@ -1151,7 +1151,14 @@
     if (!_adminDb || !_adminUser) return;
 
     var db = _adminDb;
-    var serverTs = firebase.firestore.FieldValue.serverTimestamp;
+    // fbexit S7 addendum: client Firebase SDK retired — under the live supabase
+    // flag the LAAuth adapter expects a plain ISO timestamp string (same value
+    // music-player-app.js feeds the adapter for follower writes). Firebase
+    // sentinel survives only on the dead legacy path, inside a function body
+    // so it is never evaluated under supabase.
+    var serverTs = (window.LA_AUTH_SOURCE === 'supabase')
+      ? function () { return new Date().toISOString(); }
+      : function () { return firebase.firestore.FieldValue.serverTimestamp(); };
 
     // Read the doc first so we can add createdAt if missing.
     // Firestore excludes docs without the orderBy field from results,
@@ -1185,7 +1192,9 @@
     _adminDb.collection('gallery_feed').doc(docId).set({
       deleted: true,
       deletedBy: _adminUser.uid,
-      deletedAt: firebase.firestore.FieldValue.serverTimestamp()
+      deletedAt: (window.LA_AUTH_SOURCE === 'supabase')
+        ? new Date().toISOString()
+        : firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true }).then(function () {
       postEl.remove();
       showAdminToast('Post deleted — tap 🗑 Trash to restore');
@@ -1206,7 +1215,9 @@
       type: 'custom',
       deleted: false,
       createdBy: _adminUser.uid,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      createdAt: (window.LA_AUTH_SOURCE === 'supabase')
+        ? new Date().toISOString()
+        : firebase.firestore.FieldValue.serverTimestamp()
     }).then(function (docRef) {
       // Add to feed visually
       var feed = document.getElementById('mg-feed');
@@ -1343,7 +1354,9 @@
     db.collection('gallery_feed').doc(docId).update({
       deleted: false,
       restoredBy: _adminUser.uid,
-      restoredAt: firebase.firestore.FieldValue.serverTimestamp()
+      restoredAt: (window.LA_AUTH_SOURCE === 'supabase')
+        ? new Date().toISOString()
+        : firebase.firestore.FieldValue.serverTimestamp()
     }).then(function () {
       showAdminToast('✓ Restored — reload page to see it in the feed');
       if (trashItemEl) trashItemEl.remove();
