@@ -305,7 +305,12 @@ const FanPoints = {
   },
 
   _loadFirebase: function(callback) {
-    if (this._firebaseLoaded && typeof firebase !== 'undefined') {
+    // Client Firebase SDK retired (fbexit S7): no gstatic firebase-*-compat
+    // scripts are injected anymore. On the live Supabase backend this loader
+    // only pulls the supabase-js UMD for LAAuth; on the legacy path the list
+    // is empty, callbacks still fire, and every consumer resolves its
+    // no-firebase fallback behind its typeof-firebase guard.
+    if (this._firebaseLoaded) {
       callback();
       return;
     }
@@ -313,13 +318,7 @@ const FanPoints = {
     if (this._firebaseLoading) return;
     this._firebaseLoading = true;
 
-    var scripts = [
-      'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js',
-      'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js',
-      'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js'
-    ];
-    // DARK: on the Supabase backend, also load the supabase-js UMD so LAAuth can
-    // create its client. Default 'firebase' leaves the script list unchanged.
+    var scripts = [];
     if (window.LA_AUTH_SOURCE === 'supabase') {
       scripts.push('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js');
     }

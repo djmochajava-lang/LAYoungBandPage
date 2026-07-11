@@ -2,14 +2,10 @@
 window.SITE_CONFIG = {
   showPerformancesMenu: true,
 
-  firebase: {
-    apiKey: 'AIzaSyBxdl4Rq11ogyXwhH-2QCKhxB_RnT_bSEk',
-    authDomain: 'goldbottoment.firebaseapp.com',
-    projectId: 'goldbottoment',
-    storageBucket: 'goldbottoment.firebasestorage.app',
-    messagingSenderId: '963268881384',
-    appId: '1:963268881384:web:2ca6af27366263f23dd25d'
-  },
+  // Firebase config removed (fbexit S7): the client Firebase SDK no longer
+  // loads anywhere on this site — auth + data run on Supabase (see
+  // LA_AUTH_SOURCE below). Every SITE_CONFIG.firebase consumer guards
+  // undefined and resolves its no-firebase fallback path.
 
   // ── Supabase (PostgreSQL data layer) — Week 2 migration ──────────────
   // Public-read catalog data is being migrated Firestore → Supabase one
@@ -38,16 +34,13 @@ window.READ_SOURCE = {
   playlists:    'firestore'   // HELD — CEO go/no-go (D-20)
 };
 
-// ── DARK AUTH-SOURCE flag (Supabase Week-3 Auth cutover) ───────────────
-// Default 'firebase' => every auth + auth-coupled Firestore read/write in
-// fan-points.js / mobile-menu.js / music-player-app.js / mobile-gallery.js /
-// forms.js runs the EXISTING Firebase path, byte-identical to before. The
-// Supabase branches are present but UNREACHED until this is flipped to
-// 'supabase' in the SAME owner-present window as GBE (shared user pool, D-16),
-// then AC-1 device-tested. Firebase Auth stays LIVE underneath as the rollback
-// net; flip-back is this one value. NOTE: the L.A. Young `followers` Supabase
-// table must exist+be imported BEFORE this flip (music-player-app follower
-// reads) — a pre-flip dependency, NOT a blocker for shipping this DARK.
+// ── AUTH-SOURCE flag (LIVE on Supabase since the Week-3 cutover) ────────
+// 'supabase' => every auth + auth-coupled data read/write in fan-points.js /
+// mobile-menu.js / music-player-app.js / mobile-gallery.js / forms.js runs
+// the Supabase path (shared user pool with GBE, D-16). The legacy firebase
+// branches are dead code: the client Firebase SDK was removed (fbexit S7)
+// and no firebaseConfig ships, so those branches only no-op behind their
+// typeof-firebase guards.
 window.LA_AUTH_SOURCE = window.LA_AUTH_SOURCE || 'supabase';
 
 // ── Shared Supabase-auth helper (DARK) ─────────────────────────────────

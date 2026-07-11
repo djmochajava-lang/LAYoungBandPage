@@ -317,13 +317,12 @@
     <div class="phone-home-indicator"></div>
   </div>
 
-  <!-- Firebase SDK (needed for Follow button) -->
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <!-- Client Firebase SDK removed (fbexit S7): the Follow path runs on Supabase
+       via LAAuth (LA_AUTH_SOURCE='supabase'); music-player-app.js guards
+       typeof firebase === 'undefined' and falls back cleanly. -->
 
-  <!-- Site config (Firebase credentials) -->
-  <script src="js/config.js"></script>
+  <!-- Site config (Supabase + feature flags) -->
+  <script src="js/config.js?v=2"></script>
 
   <script>
     // Register service worker for PWA standalone mode (chrome-less window)

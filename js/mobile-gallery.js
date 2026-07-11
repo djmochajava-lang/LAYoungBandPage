@@ -803,30 +803,17 @@
   }
 
   function loadFirebaseForAdmin(callback) {
-    // Reuse FanPoints loader if available
+    // Reuse FanPoints loader if available (fbexit S7: it now only loads the
+    // supabase-js UMD — the client Firebase SDK is retired and no gstatic
+    // firebase scripts are injected anywhere on this site).
     if (typeof FanPoints !== 'undefined' && FanPoints._loadFirebase) {
       FanPoints._loadFirebase(callback);
       return;
     }
-    // Fallback: load directly
-    if (typeof firebase !== 'undefined' && firebase.apps) {
-      callback();
-      return;
-    }
-    var scripts = [
-      'https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js',
-      'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js',
-      'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js'
-    ];
-    var loaded = 0;
-    function loadNext() {
-      if (loaded >= scripts.length) { callback(); return; }
-      var s = document.createElement('script');
-      s.src = scripts[loaded];
-      s.onload = function () { loaded++; loadNext(); };
-      document.head.appendChild(s);
-    }
-    loadNext();
+    // No SDK to load — run the callback directly; downstream admin code
+    // resolves the LAAuth (Supabase) adapter path under
+    // LA_AUTH_SOURCE==='supabase' and guards typeof firebase elsewhere.
+    callback();
   }
 
   function ensureFirebase() {

@@ -112,6 +112,10 @@ const MobileMenu = {
                   }
                   return;
                 }
+                // fbexit S7: client Firebase SDK removed — with the loader
+                // retired, firebase is always undefined here; the legacy leg
+                // below is guarded so it no-ops instead of throwing.
+                if (typeof firebase === 'undefined') return;
                 if (firebase.auth().currentUser) return; // Already signed in
                 var provider = new firebase.auth.GoogleAuthProvider();
                 firebase.auth().signInWithRedirect(provider);
