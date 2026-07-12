@@ -320,7 +320,10 @@ const FanPoints = {
 
     var scripts = [];
     if (window.LA_AUTH_SOURCE === 'supabase') {
-      scripts.push('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js');
+      // Self-hosted, version-pinned supabase-js (story-supabase-js-sri-pin).
+      // Root-absolute: injected script URLs resolve against the DOCUMENT URL,
+      // and this loader runs on pages at multiple directory depths.
+      scripts.push('/js/vendor/supabase-js-2.110.2.umd.js');
     }
     var loaded = 0;
     var self = this;

@@ -5,7 +5,10 @@ _site
 .jekyll-metadata
 
 # Dependencies
-vendor
+# Root-only (anchored, Jekyll/bundler dir). js/vendor/ (self-hosted
+# version-pinned public SDKs, e.g. supabase-js — story-supabase-js-sri-pin)
+# IS tracked and deploys to Pages.
+/vendor/
 node_modules/
 
 # Environment & secrets (SEC-002)

@@ -32,8 +32,10 @@
 (function (global) {
   'use strict';
 
-  var SUPABASE_UMD =
-    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+  // Self-hosted, version-pinned supabase-js (story-supabase-js-sri-pin).
+  // Root-absolute: the lazy injector below resolves against the DOCUMENT URL
+  // and is callable from any page depth.
+  var SUPABASE_UMD = '/js/vendor/supabase-js-2.110.2.umd.js';
 
   var _client = null;       // Supabase client singleton
   var _loadingPromise = null;
