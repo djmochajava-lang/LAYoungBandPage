@@ -220,7 +220,7 @@ var MainMenuScene = new Phaser.Class({
     });
 
     // --- Footer ---
-    this.add.text(width / 2, height * 0.94, 'L.A. Young | Gold Bottom Entertainment LLC', {
+    this.add.text(width / 2, height * 0.94, 'L.A. Young | Gold Bottom Ent. LLC', {
       fontFamily: GBR.FONTS.body,
       fontSize: '11px',
       color: '#555555'
