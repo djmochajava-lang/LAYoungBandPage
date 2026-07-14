@@ -97,6 +97,14 @@
   border-color: var(--color-primary, #ffd700);
   transform: translateY(-2px);
 }
+.event-card-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(255,215,0,0.15);
+}
 .event-card-date {
   font-size: 0.8rem;
   color: var(--color-primary, #ffd700);
@@ -1217,6 +1225,7 @@
       }).join('');
 
       return '<div class="event-card scroll-reveal">' +
+        (ev.imageUrl ? '<img class="event-card-img" src="' + escHtml(ev.imageUrl) + '" alt="' + escHtml(ev.event_name) + '" loading="lazy">' : '') +
         '<div class="event-card-kicker">' + escHtml('L.A. Young & Soul Society present') + '</div>' +
         '<h3 class="event-card-name">' + escHtml(ev.event_name) + '</h3>' +
         '<div class="event-card-date">' + fmtDate(ev.event_date) + (ev.venue ? ' · ' + escHtml(ev.venue) : '') + '</div>' +
