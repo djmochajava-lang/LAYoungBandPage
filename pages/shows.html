@@ -746,7 +746,7 @@
           id="retrieve-code"
           class="retrieve-input"
           type="text"
-          placeholder="LAY-XXXX-XXXX"
+          placeholder="GBE-XXXXXXXX"
           autocomplete="off"
           inputmode="text"
           spellcheck="false"
@@ -1862,7 +1862,7 @@
           if (errEl) {
             // Friendly states only (design F5) — never a raw error string.
             errEl.textContent = (err && err.retrieveState === 'notfound')
-              ? 'We couldn’t find that code. Check the dashes — it looks like LAY-XXXX-XXXX — and try again.'
+              ? 'We couldn’t find that code. It looks like GBE-XXXXXXXX — check for typos and try again.'
               : COPY_OFFLINE_RETRIEVE;
             errEl.style.display = 'block';
           }
