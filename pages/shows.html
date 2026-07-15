@@ -92,6 +92,25 @@
   border-radius: 12px;
   padding: 1.5rem;
   transition: border-color 0.2s, transform 0.2s;
+  position: relative; /* anchors the TEST MODE corner ribbon */
+}
+/* TEST MODE corner ribbon (D-52 §iii F2, amended 07-15 for mock money):
+   honest label while the mock pay driver runs; vanishes at the real-money
+   config flip (TICKETING_TEST_MODE=false). */
+.event-card-ribbon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  background: rgba(255,165,0,0.16);
+  color: #ffa500;
+  border: 1px solid rgba(255,165,0,0.45);
+  border-radius: 20px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 .event-card:hover {
   border-color: var(--color-primary, #ffd700);
@@ -197,6 +216,20 @@
 .tier-btn:disabled { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.35); cursor: not-allowed; }
 .tier-btn-free { background: var(--color-accent, #e63946); color: #fff; }
 .tier-btn-coming-soon { background: transparent; border: 1px solid rgba(255,215,0,0.3); color: var(--color-primary,#ffd700); cursor: default; font-size: 0.75rem; }
+
+/* ── Industry guest-list banner (D-52 §iv — #shows?invite=CODE) ── */
+.invite-banner {
+  background: rgba(255,215,0,0.08);
+  border: 1px solid rgba(255,215,0,0.4);
+  border-radius: 12px;
+  padding: 0.9rem 1.25rem;
+  margin-bottom: 1.5rem;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  text-align: center;
+}
+.invite-banner strong { color: var(--color-primary, #ffd700); letter-spacing: 0.05em; }
 
 /* ── Show Notification Signup ────────────────────────────────── */
 /* The notify zone stands alone so it renders BENEATH the event cards when a
@@ -451,15 +484,50 @@
 .checkout-total-label { color: rgba(255,255,255,0.65); }
 .checkout-total-amount { font-weight: 700; color: var(--color-primary, #ffd700); font-size: 1.1rem; }
 
-/* Square card container */
-#square-card-container {
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.12);
+/* TEST MODE banner at the top of the checkout overlay (mock money — CEO 07-15).
+   No Square, no card fields: the honest label IS the payment step. */
+.checkout-testmode-banner {
+  background: rgba(255,165,0,0.1);
+  border: 1px solid rgba(255,165,0,0.45);
   border-radius: 8px;
-  padding: 0.85rem;
-  margin-bottom: 1rem;
-  min-height: 56px;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 1.1rem;
+  color: #ffa500;
+  font-size: 0.8rem;
+  line-height: 1.45;
 }
+.checkout-testmode-banner strong { text-transform: uppercase; letter-spacing: 0.06em; }
+
+/* "Your seats are held for 10 minutes." — shown once a hold exists (§iii F3) */
+.checkout-hold-note {
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.55);
+  margin: -0.7rem 0 1.2rem;
+  text-align: center;
+}
+
+/* Transient notice when the overlay closes with a live hold (no public
+   /release endpoint — holds expire server-side via the reaper) */
+.checkout-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  z-index: 1100;
+  max-width: min(92vw, 480px);
+  background: #1a1a1f;
+  border: 1px solid rgba(255,215,0,0.35);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.85rem;
+  line-height: 1.45;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.5);
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+.checkout-toast.visible { opacity: 1; }
 
 .checkout-submit-btn {
   width: 100%;
@@ -560,28 +628,9 @@
 .conf-btn-print { background: var(--color-primary, #ffd700); color: #000; }
 .conf-btn-close { background: rgba(255,255,255,0.1); color: #fff; }
 .conf-btn:hover { opacity: 0.8; }
-.wallet-btn-wrap { position: relative; display: inline-block; }
-.wallet-tooltip {
-  display: none;
-  position: absolute;
-  bottom: 120%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #222;
-  color: #fff;
-  font-size: 0.75rem;
-  padding: 0.3rem 0.6rem;
-  border-radius: 4px;
-  white-space: nowrap;
-  pointer-events: none;
-}
-.wallet-btn-wrap:hover .wallet-tooltip { display: block; }
-.conf-btn-wallet {
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.35);
-  border: 1px solid rgba(255,255,255,0.1);
-  cursor: default;
-}
+/* The disabled "Add to Wallet — Coming Soon" button is GONE (audit 2.4 /
+   design D4): same fake-affordance class as the coming-soon span. It returns
+   only when wallet passes actually exist. */
 
 /* ── Print Styles ─────────────────────────────────────────────── */
 @media print {
@@ -642,6 +691,11 @@
         <p>Loading upcoming shows&hellip;</p>
       </div>
 
+      <!-- Industry guest-list banner (D-52 §iv): renders when the page is
+           opened via #shows?invite=CODE and a show is on sale. The code is
+           pre-filled in the checkout promo field. -->
+      <div id="invite-banner" class="invite-banner" hidden></div>
+
       <!-- Events grid (shown when events exist) -->
       <div id="ticket-events" class="ticket-events-grid" hidden></div>
 
@@ -694,6 +748,7 @@
           type="text"
           placeholder="LAY-XXXX-XXXX"
           autocomplete="off"
+          inputmode="text"
           spellcheck="false"
           maxlength="32"
         >
@@ -901,6 +956,15 @@
     <!-- All scrollable content goes inside this wrapper -->
     <div class="checkout-panel-body">
 
+    <!-- TEST MODE banner (mock money — CEO 07-15). Honest labeling is a HARD
+         house rule: no real payment is processed while the server runs the
+         mock pay driver. Hidden automatically when TICKETING_TEST_MODE=false. -->
+    <div id="checkout-testmode" class="checkout-testmode-banner" hidden>
+      <strong>Test mode</strong> &mdash; this checkout is a live preview of our
+      ticketing. No real payment is processed and no card is required.
+      Test orders are not valid tickets.
+    </div>
+
     <!-- Step: Order Form -->
     <div id="step-form">
       <p id="checkout-event-title" class="checkout-event-title"></p>
@@ -909,6 +973,8 @@
         <span id="checkout-tier-name" class="checkout-tier-name"></span>
         <span id="checkout-tier-price" class="checkout-tier-price"></span>
       </div>
+      <!-- Shown once a hold exists (§iii F3) -->
+      <p id="checkout-hold-note" class="checkout-hold-note" hidden>Your seats are held for 10 minutes.</p>
 
       <form id="checkout-form" novalidate>
         <div class="checkout-form-group">
@@ -942,11 +1008,10 @@
           </div>
         </div>
 
-        <!-- Square card form (only shown for paid tiers) -->
-        <div id="square-card-wrap" hidden>
-          <label class="checkout-label" style="margin-bottom:0.5rem;display:block;">Card Details *</label>
-          <div id="square-card-container"></div>
-        </div>
+        <!-- NO card fields: mock money (CEO 07-15) — the server runs
+             TICKET_PAY_DRIVER=mock and confirms with nonce:'mock'. The Square
+             Web Payments SDK returns only at the owner-gated real-money
+             cutover (D-50 real-money-last). -->
 
         <!-- Order total -->
         <div class="checkout-total">
@@ -974,14 +1039,11 @@
         <h3>You&rsquo;re In!</h3>
         <p id="conf-event-name" style="color:rgba(255,255,255,0.7);margin-bottom:0.5rem;font-size:0.95rem;"></p>
         <div id="conf-code" class="checkout-confirmation-code"></div>
-        <p class="checkout-confirmation-meta">A confirmation email has been sent to <strong id="conf-email"></strong></p>
+        <p id="conf-email-line" class="checkout-confirmation-meta">Check your email &mdash; your tickets and QR codes are on their way to <strong id="conf-email"></strong>.</p>
+        <p id="conf-testmode-note" style="font-size:0.78rem;color:#ffa500;margin:-0.75rem 0 1.25rem;" hidden>Test order &mdash; no real payment was processed and this is not a valid ticket.</p>
         <div id="qr-grid" class="qr-grid"></div>
         <div class="conf-actions">
           <button id="conf-print-btn" class="conf-btn conf-btn-print">&#x1F5A8; Print Tickets</button>
-          <div class="wallet-btn-wrap">
-            <button class="conf-btn conf-btn-wallet" disabled>&#x1F4F1; Add to Wallet</button>
-            <span class="wallet-tooltip">Coming Soon</span>
-          </div>
           <button id="conf-close-btn" class="conf-btn conf-btn-close">Close</button>
         </div>
       </div>
@@ -997,33 +1059,36 @@
   'use strict';
 
   /* ───────────────────────────────────────────────────────────
-   * CONFIGURATION — edit these before going live
-   * GBE_API_BASE: base URL of the GBE server
-   *   Dev tunnel example: 'https://abc123.ngrok-free.app'
-   *   Leave '' to try same-origin (will gracefully fall back)
-   * SQUARE_ENVIRONMENT: 'sandbox' or 'production'
-   * SQUARE_APP_ID / SQUARE_LOCATION_ID: from Square Developer Dashboard
+   * CONFIGURATION (D-52 wave 2, amended by CEO rulings 07-15)
+   * GBE_API_BASE — the public ticket API: the `gbe-tickets` Cloudflare
+   *   Worker front on goldbottom.workers.dev (permanent; NO custom
+   *   subdomain, no DNS move ever). Strict path allowlist at the edge;
+   *   CORS allows this origin. Behind it: quick tunnel → HomeOffice :3000.
+   * TICKETING_TEST_MODE — MOCK MONEY: the server runs
+   *   TICKET_PAY_DRIVER=mock (no Square account yet). No card fields,
+   *   no Square SDK; pay confirms with nonce:'mock' and orders are born
+   *   is_test=1. Controls the TEST-MODE ribbon/banner. Flip to false ONLY
+   *   at the owner-gated real-money cutover (D-50 real-money-last).
    * ─────────────────────────────────────────────────────────── */
-  var GBE_API_BASE        = '';          // e.g. 'https://your-tunnel.ngrok-free.app'
-  var SQUARE_ENVIRONMENT  = 'sandbox';   // 'sandbox' or 'production'
-  var SQUARE_APP_ID       = '';          // e.g. 'sandbox-sq0idb-...'
-  var SQUARE_LOCATION_ID  = '';          // from Square Dashboard → Locations
+  var GBE_API_BASE        = 'https://gbe-tickets.goldbottom.workers.dev';
+  var TICKETING_TEST_MODE = true;
 
   /* ── Derived constants ──────────────────────────────────── */
-  var API          = (GBE_API_BASE || '') + '/api/v1/tickets';
-  var SQ_SCRIPT    = SQUARE_ENVIRONMENT === 'production'
-                       ? 'https://web.squarecdn.com/v1/square.js'
-                       : 'https://sandbox.web.squarecdn.com/v1/square.js';
-  var SQ_READY     = !!(SQUARE_APP_ID && SQUARE_LOCATION_ID);
+  var API = GBE_API_BASE + '/api/v1/tickets';
+
+  /* ── Honest offline/error copy (design §i / §iii F3) ────── */
+  var COPY_OFFLINE_CHECKOUT = 'Ticketing is taking a break right now — no payment was taken. ' +
+    'Please try again in a few minutes, or email booking@goldbottoment-llc.com and we’ll hold seats for you.';
+  var COPY_OFFLINE_RETRIEVE = 'Ticketing is taking a break right now — please try again in a few minutes, ' +
+    'or email booking@goldbottoment-llc.com.';
 
   /* ── State ──────────────────────────────────────────────── */
   var _events          = [];
   var _selectedEvent   = null;
   var _selectedTier    = null;
   var _orderId         = null;
-  var _squarePayments  = null;
-  var _squareCard      = null;
-  var _squareLoading   = false;
+  var _orderConfirmed  = false;
+  var _inviteCode      = null;   // from #shows?invite=CODE (D-52 §iv)
   var _qrCodeLib       = null;
 
   /* ── DOM helpers ────────────────────────────────────────── */
@@ -1055,6 +1120,70 @@
     return fetch(url, fetchOpts).finally(function () { clearTimeout(tid); });
   }
 
+  /* ── Safe JSON (design D3 fix) ──────────────────────────────
+   * A non-JSON body (edge 403 page, tunnel-down HTML) must NEVER surface a
+   * raw parser error to a fan. Returns {_nonJson:true} instead of throwing. */
+  function readJson(res) {
+    return res.text().then(function (txt) {
+      try { return txt ? JSON.parse(txt) : {}; }
+      catch (e) { return { _nonJson: true }; }
+    });
+  }
+
+  /* ── Error taxonomy → exact fan copy (design §iii F3) ───── */
+  function mapCheckoutError(status, body) {
+    var code = (body && body.error) || '';
+    if (code === 'capacity_exhausted') {
+      return 'That tier just sold out. Pick another tier or join the notify list.';
+    }
+    if (status === 410 || code === 'hold_expired') {
+      return 'Your 10-minute hold expired — no charge was made. Please start over.';
+    }
+    if (status === 402 || code === 'payment_failed') {
+      var declined = 'Your card was declined — no ticket was issued. Check the details and try again.';
+      return (body && body.message) ? declined + ' (' + body.message + ')' : declined;
+    }
+    // validatePromo errors arrive as human-readable strings ("Promo code has
+    // expired", "Invalid promo code", …). Max-uses gets the §iv.4 invite copy.
+    if (/promo/i.test(code)) {
+      if (/maximum uses/i.test(code)) {
+        return 'That invite code has reached its limit — email booking@goldbottoment-llc.com and we’ll take care of you.';
+      }
+      return code + '.';
+    }
+    return 'Something went wrong on our side — you have not been charged. Please try again.';
+  }
+
+  function mkHttpError(status, body) {
+    var e = new Error((body && (body.message || body.error)) || ('HTTP ' + status));
+    e.status   = status;
+    e.code     = (body && body.error) || '';
+    e.friendly = mapCheckoutError(status, body || {});
+    return e;
+  }
+
+  /** Network/timeout/parse failures get the honest offline copy; mapped HTTP
+   *  errors keep their taxonomy copy. Raw messages never reach a fan. */
+  function friendlyError(err) {
+    return (err && err.friendly) ? err.friendly : COPY_OFFLINE_CHECKOUT;
+  }
+
+  /* ── Transient toast (hold-expiry notice on overlay close) ─ */
+  var _toastTimer = null;
+  function showToast(msg) {
+    var el = document.getElementById('checkout-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = 'checkout-toast';
+      el.className = 'checkout-toast';
+      document.body.appendChild(el);
+    }
+    el.textContent = msg;
+    el.classList.add('visible');
+    if (_toastTimer) clearTimeout(_toastTimer);
+    _toastTimer = setTimeout(function () { el.classList.remove('visible'); }, 7000);
+  }
+
   /* ── Format currency ────────────────────────────────────── */
   function fmtPrice(cents) {
     if (!cents || cents === 0) return 'Free';
@@ -1067,8 +1196,10 @@
     try {
       // A show date is a CALENDAR date. Parse 'YYYY-MM-DD' (the readmodel
       // boundary shape) as a LOCAL date — new Date('2026-09-26') is UTC
-      // midnight and renders the PREVIOUS day in US timezones.
-      var m = String(str).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      // midnight and renders the PREVIOUS day in US timezones. The ticket
+      // API's confirm leg returns the same calendar date as a UTC-midnight
+      // ISO string ('…T00:00:00.000Z') — treat that identically.
+      var m = String(str).match(/^(\d{4})-(\d{2})-(\d{2})(?:T00:00:00(?:\.000)?Z)?$/);
       var d = m ? new Date(+m[1], +m[2] - 1, +m[3]) : new Date(str);
       return d.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
     } catch (e) { return str; }
@@ -1225,6 +1356,7 @@
       }).join('');
 
       return '<div class="event-card scroll-reveal">' +
+        (TICKETING_TEST_MODE ? '<span class="event-card-ribbon">Test Mode</span>' : '') +
         (ev.imageUrl ? '<img class="event-card-img" src="' + escHtml(ev.imageUrl) + '" alt="' + escHtml(ev.event_name) + '" loading="lazy">' : '') +
         '<div class="event-card-kicker">' + escHtml('L.A. Young & Soul Society present') + '</div>' +
         '<h3 class="event-card-name">' + escHtml(ev.event_name) + '</h3>' +
@@ -1236,24 +1368,53 @@
 
     showEl('ticket-events');
 
-    // Wire tier buttons — WAVE 1: checkout is deliberately not open yet, so an
-    // on-sale tap routes to the honest "checkout opens soon" notify state
-    // (never a dead end, never a fake cart). Wave 2 re-points these to
-    // openCheckout(ev, tier) — the built overlay below stays intact for it.
+    // Wire tier buttons — WAVE 2: checkout is live through the public bridge.
+    // A tap on an on-sale tier opens the built overlay for that event + tier.
     var btns = grid.querySelectorAll('.tier-btn[data-ev]');
     btns.forEach(function (btn) {
-      btn.addEventListener('click', checkoutOpensSoon);
+      btn.addEventListener('click', function () {
+        var evId   = btn.getAttribute('data-ev');
+        var tierId = btn.getAttribute('data-tier');
+        var ev = null, tier = null;
+        _events.forEach(function (e) { if (e.id === evId) ev = e; });
+        if (ev) (ev.tiers || []).forEach(function (t) { if (t.id === tierId) tier = t; });
+        if (ev && tier) openCheckout(ev, tier);
+      });
     });
+
+    updateInviteBanner(events);
   }
 
-  /** WAVE-1 honest CTA state: checkout isn't open; the notify list is the
-   *  real action (design §iii F1/F2 — the fallback keeps ONE honest CTA). */
-  function checkoutOpensSoon() {
-    var lede = $('notify-lede');
-    if (lede) lede.textContent = 'Checkout opens soon — join the notify list and we’ll tell you the moment tickets drop.';
-    showEl('notify-zone');
-    var zone = $('notify-zone');
-    if (zone && zone.scrollIntoView) zone.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  /* ── Industry guest-list banner (D-52 §iv) ──────────────────
+   * Deep link #shows?invite=CODE (hash-query parsed by the router): a
+   * discreet gold banner above the cards when a show is on sale; the code is
+   * pre-filled at checkout. The comp path is the SAME rail fans use — the
+   * server zeroes the total for a comp promo and issues QR + email alike. */
+  function readInviteCode() {
+    _inviteCode = null;
+    try {
+      // NOTE: Router is a top-level const (no window.Router property) — the
+      // typeof guard is the pattern every other module uses to reach it.
+      var q = (typeof Router !== 'undefined' && typeof Router.getRouteQuery === 'function')
+        ? Router.getRouteQuery() : {};
+      var code = (q && q.invite) ? String(q.invite).trim().toUpperCase() : '';
+      if (code && /^[A-Z0-9-]{1,64}$/.test(code)) _inviteCode = code;
+    } catch (e) { /* no query — normal fan path */ }
+  }
+
+  function updateInviteBanner(events) {
+    var el = $('invite-banner');
+    if (!el) return;
+    var onSale = (events || []).some(function (ev) {
+      return ev.status !== 'announced' && ev.status !== 'sold_out';
+    });
+    if (_inviteCode && onSale) {
+      el.innerHTML = 'You&rsquo;re on the guest list. Your complimentary industry pass is reserved &mdash; code <strong>' +
+        escHtml(_inviteCode) + '</strong> is applied at checkout.';
+      el.hidden = false;
+    } else {
+      el.hidden = true;
+    }
   }
 
   function escHtml(s) {
@@ -1269,23 +1430,14 @@
    * CHECKOUT
    * ═════════════════════════════════════════════════════════ */
 
-  /** Detect if the site is running on LAN (home server) vs GitHub Pages */
-  function isOnLAN() {
-    var h = window.location.hostname;
-    return h === 'localhost' || h === '127.0.0.1' || /^192\.168\./.test(h) || /^10\./.test(h) || /^172\.(1[6-9]|2\d|3[01])\./.test(h);
-  }
-
+  /* The old isOnLAN() gate is GONE (design §iii F3): with GBE_API_BASE set to
+   * the public Worker bridge, the overlay works for every fan on the open
+   * internet — no LAN redirect, no behavior may depend on where we run. */
   function openCheckout(ev, tier) {
-    // On GitHub Pages (not LAN), the Express checkout API is unavailable.
-    // Redirect the user to the GBE contact page to reserve tickets.
-    if (!isOnLAN()) {
-      var contactUrl = 'https://goldbottoment-llc.com/#ent-contact';
-      window.open(contactUrl, '_blank', 'noopener');
-      return;
-    }
-
-    _selectedEvent = ev;
-    _selectedTier  = tier;
+    _selectedEvent  = ev;
+    _selectedTier   = tier;
+    _orderId        = null;
+    _orderConfirmed = false;
 
     // Populate header
     var titleEl = $('checkout-event-title');
@@ -1310,23 +1462,25 @@
       }
     }
 
-    // Total
-    updateTotal();
-    qtySelect && qtySelect.addEventListener('change', updateTotal);
-
-    // Show/hide Square card form
-    var isFree = !tier.price_cents || tier.price_cents === 0;
-    var squareWrap = $('square-card-wrap');
-    if (isFree || !SQ_READY) {
-      if (squareWrap) squareWrap.hidden = true;
-    } else {
-      if (squareWrap) squareWrap.hidden = false;
-      loadSquareIfNeeded();
-    }
-
-    // Reset form/errors
+    // Reset form/errors BEFORE pre-filling (reset clears every field)
     var form = $('checkout-form');
     if (form) form.reset();
+
+    // Industry invite (§iv): pre-fill the promo code from the deep link
+    var promoEl = $('co-promo');
+    if (promoEl && _inviteCode) promoEl.value = _inviteCode;
+
+    // Total (re-renders on qty/promo edits; duplicate listeners are harmless —
+    // updateTotal is idempotent)
+    updateTotal();
+    qtySelect && qtySelect.addEventListener('change', updateTotal);
+    promoEl && promoEl.addEventListener('input', updateTotal);
+
+    // TEST-MODE banner (mock money) — unmistakable, vanishes at the config flip
+    var tm = $('checkout-testmode');
+    if (tm) tm.hidden = !TICKETING_TEST_MODE;
+
+    hideEl('checkout-hold-note');
     setError('');
     showEl('step-form');
     hideEl('step-processing');
@@ -1338,67 +1492,35 @@
   }
 
   function updateTotal() {
+    var el = $('checkout-total-amount');
+    if (!el) return;
+    // Comp lane display (§iv): when the invite code from the deep link is in
+    // the promo field, the night is on us. The server remains the enforcer —
+    // an exhausted code fails the hold with the friendly §iv.4 copy.
+    var promoVal = (($('co-promo') || {}).value || '').trim().toUpperCase();
+    if (_inviteCode && promoVal === _inviteCode) {
+      el.textContent = '$0.00 — Complimentary · Industry Guest';
+      return;
+    }
     var qtyEl  = $('co-qty');
     var qty    = qtyEl ? parseInt(qtyEl.value, 10) || 1 : 1;
     var cents  = (_selectedTier && _selectedTier.price_cents) || 0;
-    var total  = cents * qty;
-    var el     = $('checkout-total-amount');
-    if (el) el.textContent = fmtPrice(total);
+    el.textContent = fmtPrice(cents * qty);
   }
 
   function closeCheckout() {
     var overlay = $('checkout-overlay');
     if (overlay) overlay.hidden = true;
     document.body.style.overflow = '';
-    if (_squareCard) {
-      try { _squareCard.destroy(); } catch (e) {}
-      _squareCard = null;
+    // Design D2: there is NO public release endpoint — abandoned holds expire
+    // server-side (10-minute reaper). Tell the fan honestly instead.
+    if (_orderId && !_orderConfirmed) {
+      showToast('Checkout closed — your held seats will be released automatically within 10 minutes. No payment was taken.');
     }
-    _orderId = null;
-    _selectedEvent = null;
-    _selectedTier  = null;
-  }
-
-  /* ── Square SDK ─────────────────────────────────────────── */
-  function loadSquareIfNeeded() {
-    if (window.Square || _squareLoading) {
-      if (window.Square) initSquareCard();
-      return;
-    }
-    _squareLoading = true;
-    var s = document.createElement('script');
-    s.src = SQ_SCRIPT;
-    s.onload = function () {
-      _squareLoading = false;
-      initSquareCard();
-    };
-    s.onerror = function () {
-      _squareLoading = false;
-      setError('Payment form failed to load. Please refresh and try again.');
-    };
-    document.head.appendChild(s);
-  }
-
-  function initSquareCard() {
-    if (!window.Square || !SQ_READY) return;
-    if (_squareCard) { try { _squareCard.destroy(); } catch(e) {} _squareCard = null; }
-    window.Square.payments(SQUARE_APP_ID, SQUARE_LOCATION_ID).then(function (payments) {
-      _squarePayments = payments;
-      return payments.card({
-        style: {
-          '.input-container': { borderColor: 'rgba(255,255,255,0.15)', borderRadius: '6px' },
-          '.input-container.is-focus': { borderColor: '#ffd700' },
-          input: { color: '#ffffff', fontSize: '14px' },
-          'input::placeholder': { color: 'rgba(255,255,255,0.3)' }
-        }
-      });
-    }).then(function (card) {
-      _squareCard = card;
-      return card.attach('#square-card-container');
-    }).catch(function (err) {
-      console.error('[Square] init error:', err);
-      setError('Payment form could not be loaded. Please try again.');
-    });
+    _orderId        = null;
+    _orderConfirmed = false;
+    _selectedEvent  = null;
+    _selectedTier   = null;
   }
 
   /* ── Form submit ────────────────────────────────────────── */
@@ -1426,18 +1548,11 @@
       return;
     }
 
-    var isFree = !_selectedTier || !_selectedTier.price_cents || _selectedTier.price_cents === 0;
-
-    if (!isFree && SQ_READY && !_squareCard) {
-      setError('Payment form is still loading. Please wait a moment and try again.');
-      return;
-    }
-
     var submitBtn = $('checkout-submit-btn');
     if (submitBtn) submitBtn.disabled = true;
     setProcessing('Creating your reservation…');
 
-    // Step 1: Create hold
+    // Step 1: create the 10-minute hold (atomic capacity check server-side)
     fetchWithTimeout(API + '/orders/public', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1453,73 +1568,62 @@
       })
     }, 10000)
       .then(function (res) {
-        return res.json().then(function (body) {
-          if (!res.ok) throw new Error(body.message || body.error || 'Reservation failed.');
+        return readJson(res).then(function (body) {
+          if (!res.ok || body._nonJson) throw mkHttpError(res.status, body);
           return body;
         });
       })
       .then(function (hold) {
         _orderId = hold.orderId;
+        showEl('checkout-hold-note'); // a hold now exists (§iii F3)
 
-        if (hold.isFree) {
-          // Free ticket — skip Square, go straight to payment endpoint
-          setProcessing('Confirming your free ticket…');
-          return payOrder(hold.orderId, null);
-        }
-
-        if (!SQ_READY) {
-          // Square not configured — shouldn't normally reach here for paid tiers
-          throw new Error('Online payment is not yet configured for this event. Please contact the organizer.');
-        }
-
-        // Paid: tokenize card
-        setProcessing('Securing payment…');
-        return _squareCard.tokenize().then(function (result) {
-          if (result.status !== 'OK') {
-            var msg = result.errors && result.errors.length
-              ? result.errors[0].message
-              : 'Card verification failed. Please check your details.';
-            throw new Error(msg);
-          }
-          setProcessing('Processing payment…');
-          return payOrder(hold.orderId, result.token);
-        });
+        // Step 2: confirm. MOCK MONEY (CEO 07-15) — no card, no tokenize step;
+        // the server's mock driver accepts nonce:'mock'. Free/comp orders ride
+        // the same call (the server ignores the nonce when the total is $0).
+        setProcessing(hold.isFree
+          ? 'Confirming your complimentary ticket…'
+          : (TICKETING_TEST_MODE
+              ? 'Confirming your TEST order — no real payment is processed…'
+              : 'Processing payment…'));
+        return payOrder(hold.orderId, fanOptin);
       })
       .then(function (order) {
-        // Show confirmation
+        _orderConfirmed = true;
+        _orderId = null;
         return showConfirmation(order.confirmationCode, name, email);
       })
       .catch(function (err) {
-        // Roll back to form
+        // Roll back to the form with mapped, honest copy (§iii F3 taxonomy).
+        // NO client release call (design D2 — the endpoint doesn't exist):
+        // payment failure auto-releases server-side; abandonment is reaped
+        // after the 10-minute hold TTL.
         showEl('step-form');
         hideEl('step-processing');
-        setError(err.message || 'Something went wrong. Please try again.');
+        setError(friendlyError(err));
         if (submitBtn) submitBtn.disabled = false;
-        // Try to release hold if it was created
-        if (_orderId) {
-          releaseHold(_orderId);
+        if (err && (err.status === 410 || err.code === 'hold_expired' ||
+                    err.status === 402 || err.code === 'payment_failed')) {
+          // The server released this hold — nothing is being held anymore
           _orderId = null;
+          hideEl('checkout-hold-note');
         }
       });
   }
 
-  function payOrder(orderId, nonce) {
-    var body = nonce ? { nonce: nonce } : {};
-    return fetchWithTimeout(API + '/orders/' + orderId + '/pay', {
+  /** Confirm the held order (step 2 of checkout).
+   *  fanOptIn rides the PAY body — the server takes consent at confirm time
+   *  (design D1 fix: it was collected at hold time but never sent here). */
+  function payOrder(orderId, fanOptIn) {
+    return fetchWithTimeout(API + '/orders/' + encodeURIComponent(orderId) + '/pay', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+      body: JSON.stringify({ nonce: 'mock', fanOptIn: !!fanOptIn })
     }, 15000).then(function (res) {
-      return res.json().then(function (data) {
-        if (!res.ok) throw new Error(data.message || data.error || 'Payment failed.');
+      return readJson(res).then(function (data) {
+        if (!res.ok || data._nonJson) throw mkHttpError(res.status, data);
         return data;
       });
     });
-  }
-
-  function releaseHold(orderId) {
-    // Best-effort — fire and forget
-    fetch(API + '/orders/' + orderId + '/release', { method: 'POST' }).catch(function () {});
   }
 
   /* ══════════════════════════════════════════════════════════
@@ -1536,11 +1640,20 @@
     if (emailEl)  emailEl.textContent = buyerEmail || '';
     if (evNameEl) evNameEl.textContent = _selectedEvent ? _selectedEvent.event_name : '';
 
-    // Fetch tokens
-    return fetchWithTimeout(API + '/orders/confirm/' + confirmationCode + '/public', {}, 8000)
+    // "Check your email" line only when we actually have the buyer's email
+    // (the retrieve path doesn't); honest test-order note while in mock mode.
+    var emailLine = $('conf-email-line');
+    if (emailLine) emailLine.hidden = !buyerEmail;
+    var tmNote = $('conf-testmode-note');
+    if (tmNote) tmNote.hidden = !TICKETING_TEST_MODE;
+
+    // Fetch tokens (parse-guarded — design D3: no raw errors on this path)
+    return fetchWithTimeout(API + '/orders/confirm/' + encodeURIComponent(confirmationCode) + '/public', {}, 8000)
       .then(function (res) {
-        if (!res.ok) throw new Error('Could not load ticket details.');
-        return res.json();
+        return readJson(res).then(function (data) {
+          if (!res.ok || data._nonJson) throw new Error('Could not load ticket details.');
+          return data;
+        });
       })
       .then(function (data) {
         var tokens   = data.tokens || [];
@@ -1641,20 +1754,41 @@
       btn.disabled  = true;
       btn.textContent = '…';
 
+      // Parse-guarded with friendly states (design D3/F5): not-found, offline,
+      // confirmed. A raw JSON/parse error must never reach a fan.
       fetchWithTimeout(API + '/orders/confirm/' + encodeURIComponent(code) + '/public', {}, 8000)
         .then(function (res) {
-          return res.json().then(function (data) {
-            if (!res.ok) throw new Error(data.message || data.error || 'Not found.');
+          return readJson(res).then(function (data) {
+            if (res.status === 404) {
+              var nf = new Error('not found');
+              nf.retrieveState = 'notfound';
+              throw nf;
+            }
+            if (!res.ok || data._nonJson) {
+              var off = new Error('unavailable');
+              off.retrieveState = 'offline';
+              throw off;
+            }
             return data;
           });
         })
         .then(function (data) {
-          // Reconstruct state enough to show confirmation
-          _selectedEvent = data.event ? {
+          // Reconstruct state enough to show confirmation. The public confirm
+          // leg returns venueName/venueCity/venueState — compose the same
+          // honest venue line the cards use (NULL venue renders "Venue TBA").
+          var evData = data.event || null;
+          var locality = evData ? [evData.venueCity, evData.venueState].filter(Boolean).join(', ') : '';
+          var venue = '';
+          if (evData) {
+            venue = evData.venueName
+              ? (evData.venueName + (locality ? ' — ' + locality : ''))
+              : ('Venue TBA' + (locality ? ' — ' + locality : ''));
+          }
+          _selectedEvent = evData ? {
             id: null,
-            event_name: data.event.name,
-            event_date: data.event.date,
-            venue: data.event.venue
+            event_name: evData.name,
+            event_date: evData.date,
+            venue: venue
           } : null;
           _selectedTier = null;
 
@@ -1667,7 +1801,14 @@
 
           if (codeEl)   codeEl.textContent  = data.confirmationCode || code;
           if (emailEl)  emailEl.textContent = '';
-          if (evNameEl) evNameEl.textContent = data.event ? data.event.name : '';
+          if (evNameEl) evNameEl.textContent = evData ? evData.name : '';
+
+          // No buyer email on the retrieve path — hide the email line;
+          // keep the honest test-order note while in mock mode.
+          var emailLine = $('conf-email-line');
+          if (emailLine) emailLine.hidden = true;
+          var tmNote = $('conf-testmode-note');
+          if (tmNote) tmNote.hidden = !TICKETING_TEST_MODE;
 
           if (qrGrid) qrGrid.innerHTML = '';
           if (printDiv) printDiv.innerHTML = '';
@@ -1702,10 +1843,10 @@
                 ticket.className = 'print-ticket';
                 ticket.innerHTML =
                   '<div class="print-ticket-header">&#x1F3AB; L.A. Young</div>' +
-                  '<div class="print-ticket-event">' + escHtml(data.event ? data.event.name : 'Event') + '</div>' +
+                  '<div class="print-ticket-event">' + escHtml(evData ? evData.name : 'Event') + '</div>' +
                   '<div class="print-ticket-meta">' +
-                    (data.event && data.event.date ? fmtDate(data.event.date) : '') +
-                    (data.event && data.event.venue ? ' &bull; ' + escHtml(data.event.venue) : '') +
+                    (evData && evData.date ? fmtDate(evData.date) : '') +
+                    (venue ? ' &bull; ' + escHtml(venue) : '') +
                   '</div>' +
                   '<div class="print-ticket-meta">Ticket ' + (idx + 1) + ' of ' + tokens.length + ' &bull; ' + escHtml(data.buyerName || '') + '</div>' +
                   '<div class="print-ticket-qr" id="ret-qr-' + idx + '"></div>' +
@@ -1719,7 +1860,10 @@
         })
         .catch(function (err) {
           if (errEl) {
-            errEl.textContent = err.message || 'Ticket not found. Check your confirmation code and try again.';
+            // Friendly states only (design F5) — never a raw error string.
+            errEl.textContent = (err && err.retrieveState === 'notfound')
+              ? 'We couldn’t find that code. Check the dashes — it looks like LAY-XXXX-XXXX — and try again.'
+              : COPY_OFFLINE_RETRIEVE;
             errEl.style.display = 'block';
           }
         })
@@ -1904,6 +2048,7 @@
 
   /* ── Boot ───────────────────────────────────────────────── */
   function boot() {
+    readInviteCode(); // #shows?invite=CODE via the router's hash-query stash
     loadEvents();
     initRetrieve();
     wireOverlayControls();
