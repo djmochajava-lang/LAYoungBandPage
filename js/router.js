@@ -16,6 +16,7 @@ const Router = {
     support: 'pages/support.html',
     contact: 'pages/contact.html',
     fanwall: 'pages/fanwall.html',
+    scan: 'pages/scan.html', // door check-in (staff, QR deep-link) — D-52 §iii F6
   },
   currentPage: null,
   defaultPage: 'home',

@@ -1,0 +1,709 @@
+<!-- pages/scan.html — Door Check-In (D-52 showcase wave 3, design §iii F6) -->
+<!--
+  Staff-only door scanner for QR tickets. Not linked from fan navigation —
+  reached by deep link (#scan), or automatically when a phone camera scans
+  a ticket QR (which encodes https://layoungbandpage.com/#scan?token=<t>).
+
+  Camera path: native BarcodeDetector where available (Chrome/Android).
+  iOS Safari has no BarcodeDetector — there the phone's own camera app is
+  the scanner (QR deep-links straight here), and the always-visible manual
+  paste field is the in-page fallback. No external JS libraries (free-tier /
+  self-hosted rule; this site ships no bundler).
+-->
+
+<style>
+/* ── Door Check-In page (scoped .scan-) ─────────────────────── */
+.scan-page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 5.5rem 1rem 3rem;
+  min-height: 100vh;
+}
+.scan-head { text-align: center; margin-bottom: 1.25rem; }
+.scan-head h1 {
+  font-family: var(--font-primary);
+  color: var(--color-primary);
+  font-size: 1.75rem;
+  margin-bottom: 0.25rem;
+}
+.scan-sub { color: var(--color-text-secondary); font-size: 1rem; }
+
+.scan-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+.scan-card label {
+  display: block;
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+.scan-card .scan-note {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  margin: 0 0 0.6rem;
+}
+.scan-input {
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--color-text-primary);
+  font-size: 1rem;
+}
+.scan-input:focus { outline: 2px solid var(--color-primary); border-color: transparent; }
+
+.scan-btn {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: var(--color-bg-dark);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.scan-btn:disabled { opacity: 0.5; cursor: default; }
+.scan-btn-block { width: 100%; margin-top: 0.75rem; }
+
+.scan-queued {
+  margin-top: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.4);
+  color: var(--color-primary);
+  font-size: 0.85rem;
+}
+
+.scan-staff-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+.scan-staff-line strong { color: var(--color-text-secondary); }
+.scan-staff-change {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+/* Camera stage */
+.scan-stage {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid rgba(255, 215, 0, 0.25);
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.scan-stage video {
+  display: block;
+  width: 100%;
+  max-height: 55vh;
+  object-fit: cover;
+}
+.scan-reticle {
+  position: absolute;
+  inset: 12%;
+  border: 2px solid rgba(255, 215, 0, 0.65);
+  border-radius: 12px;
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.25);
+}
+.scan-stage-msg {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+  font-size: 0.95rem;
+  background: rgba(0, 0, 0, 0.72);
+}
+.scan-stage-msg[hidden] { display: none; }
+
+.scan-paste-row { display: flex; gap: 0.5rem; }
+.scan-paste-row .scan-input { flex: 1; min-width: 0; font-size: 0.85rem; }
+.scan-paste-hint { color: var(--color-text-faded); font-size: 0.75rem; margin-top: 0.5rem; }
+
+/* ── Full-screen result states (BIG, glanceable at a dark door) ── */
+.scan-result {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  color: #fff;
+}
+.scan-result[hidden] { display: none; }
+.scan-result.is-checking { background: #10131a; }
+.scan-result.is-admitted { background: #157f3d; }
+.scan-result.is-rejected { background: #b3202e; }
+.scan-result.is-offline  { background: #9a6a08; }
+
+.scan-result-icon { font-size: 5rem; line-height: 1; }
+.scan-result-title {
+  font-family: var(--font-primary);
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+.scan-result-detail { font-size: 1.1rem; opacity: 0.95; max-width: 34ch; }
+.scan-result-tail {
+  font-family: 'Courier New', monospace;
+  font-size: 0.95rem;
+  opacity: 0.85;
+  letter-spacing: 0.15em;
+}
+.scan-result-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.scan-result-btn {
+  padding: 0.9rem 1.75rem;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.25);
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.scan-spinner {
+  width: 42px; height: 42px;
+  border: 4px solid rgba(255, 255, 255, 0.25);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: scanSpin 0.8s linear infinite;
+}
+@keyframes scanSpin { to { transform: rotate(360deg); } }
+
+@media (min-width: 768px) {
+  .scan-page { padding-top: 7rem; }
+}
+</style>
+
+<section class="scan-page">
+  <div class="scan-head">
+    <h1>Door Check-In</h1>
+    <p class="scan-sub">L.A. Young &amp; Soul Society</p>
+  </div>
+
+  <!-- Staff name gate — required once per device (design F6) -->
+  <div id="scan-staff-gate" class="scan-card" hidden>
+    <label for="scan-staff-input">Your name (door staff)</label>
+    <p class="scan-note">Recorded with every scan from this device. Set it once &mdash; it&rsquo;s remembered.</p>
+    <input id="scan-staff-input" class="scan-input" type="text" autocomplete="name" maxlength="60" placeholder="e.g. Jordan @ front door">
+    <div id="scan-queued-note" class="scan-queued" hidden>A scanned ticket is waiting &mdash; it will check in as soon as you save your name.</div>
+    <button id="scan-staff-save" class="scan-btn scan-btn-block">Start Scanning</button>
+  </div>
+
+  <!-- Scanner UI -->
+  <div id="scan-main" hidden>
+    <div class="scan-staff-line">
+      <span>Scanning as <strong id="scan-staff-name"></strong></span>
+      <button id="scan-staff-change" class="scan-staff-change" type="button">change</button>
+    </div>
+
+    <div class="scan-stage" id="scan-stage">
+      <video id="scan-video" playsinline muted></video>
+      <div class="scan-reticle" id="scan-reticle" hidden></div>
+      <div class="scan-stage-msg" id="scan-stage-msg">
+        <span id="scan-stage-text">Checking camera&hellip;</span>
+        <button id="scan-camera-btn" class="scan-btn" hidden>Start Camera</button>
+      </div>
+    </div>
+
+    <div class="scan-card">
+      <label for="scan-token-input">No camera? Paste the ticket link or token</label>
+      <div class="scan-paste-row">
+        <input id="scan-token-input" class="scan-input" type="text" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="#scan?token=&hellip; or the token code">
+        <button id="scan-token-btn" class="scan-btn" type="button">Check</button>
+      </div>
+      <p class="scan-paste-hint">Works with the full QR link or just the token. Each ticket QR admits one person, once.</p>
+    </div>
+  </div>
+
+  <!-- Full-screen result card -->
+  <div id="scan-result" class="scan-result" hidden role="status" aria-live="assertive">
+    <div class="scan-spinner" id="scan-result-spinner" hidden></div>
+    <div class="scan-result-icon" id="scan-result-icon"></div>
+    <div class="scan-result-title" id="scan-result-title"></div>
+    <div class="scan-result-detail" id="scan-result-detail"></div>
+    <div class="scan-result-tail" id="scan-result-tail"></div>
+    <div class="scan-result-actions">
+      <button id="scan-result-retry" class="scan-result-btn" hidden>Retry</button>
+      <button id="scan-result-next" class="scan-result-btn" hidden>Scan Next</button>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ───────────────────────────────────────────────────────────
+   * CONFIGURATION (D-52 wave 3, CEO rulings 07-15)
+   * GBE_API_BASE — the public ticket API: the `gbe-tickets` Cloudflare
+   *   Worker front on goldbottom.workers.dev (permanent; NO custom
+   *   subdomain, no DNS move ever). POST /api/v1/tickets/scan is on the
+   *   worker's strict path allowlist; CORS allows this origin.
+   *   Rate limit: 30 scans/min/IP (server scanLimiter).
+   * ─────────────────────────────────────────────────────────── */
+  var GBE_API_BASE = 'https://gbe-tickets.goldbottom.workers.dev';
+  var SCAN_URL     = GBE_API_BASE + '/api/v1/tickets/scan';
+  var STAFF_KEY    = 'layoung-scan-staff';
+  var ADMIT_RESET_MS = 2500; // design F6: ADMITTED auto-resets to scanning
+  var DUP_IGNORE_MS  = 4000; // ignore the same QR sitting in the camera view
+
+  /* ── State ──────────────────────────────────────────────── */
+  var _stream       = null;   // MediaStream while camera is on
+  var _detector     = null;   // BarcodeDetector instance
+  var _detectTimer  = null;   // camera poll interval
+  var _resetTimer   = null;   // ADMITTED auto-reset timer
+  var _busy         = false;  // a scan POST is in flight / result showing
+  var _lastToken    = null;   // camera-duplicate debounce
+  var _lastTokenAt  = 0;
+  var _lastTried    = null;   // last submitted token (for Retry)
+  var _cameraOk     = false;  // BarcodeDetector supported + qr_code format
+
+  /* ── DOM helpers ────────────────────────────────────────── */
+  function $(id) { return document.getElementById(id); }
+  function show(id) { var el = $(id); if (el) el.hidden = false; }
+  function hide(id) { var el = $(id); if (el) el.hidden = true; }
+
+  /* ── Staff name (required once per device, design F6) ───── */
+  function getStaff() {
+    try { return (localStorage.getItem(STAFF_KEY) || '').trim(); } catch (e) { return ''; }
+  }
+  function setStaff(name) {
+    try { localStorage.setItem(STAFF_KEY, name); } catch (e) {}
+  }
+
+  /* ── Token extraction ───────────────────────────────────────
+   * A ticket QR encodes https://layoungbandpage.com/#scan?token=<hex32>
+   * (qr-ticket.js SCAN_BASE_URL). Accept the full link (scanned in-page or
+   * pasted) or a bare hex token. Anything else is not one of our tickets. */
+  function extractToken(raw) {
+    if (!raw) return null;
+    var s = String(raw).trim();
+    var m = s.match(/[?&#]token=([A-Fa-f0-9]{8,64})/);
+    if (m) return m[1].toLowerCase();
+    if (/^[A-Fa-f0-9]{16,64}$/.test(s)) return s.toLowerCase();
+    return null;
+  }
+
+  /* ── Fetch with timeout (same pattern as shows.html) ────── */
+  function fetchWithTimeout(url, opts, ms) {
+    ms = ms || 8000;
+    var ctrl = new AbortController();
+    var tid = setTimeout(function () { ctrl.abort(); }, ms);
+    var fetchOpts = Object.assign({}, opts || {}, { signal: ctrl.signal });
+    return fetch(url, fetchOpts).finally(function () { clearTimeout(tid); });
+  }
+
+  /* Safe JSON — a non-JSON body (edge error page) must never throw a raw
+   * parser error at door staff. */
+  function readJson(res) {
+    return res.text().then(function (txt) {
+      try { return txt ? JSON.parse(txt) : {}; }
+      catch (e) { return { _nonJson: true }; }
+    });
+  }
+
+  /* ── Result card ────────────────────────────────────────── */
+  function clearResetTimer() {
+    if (_resetTimer) { clearTimeout(_resetTimer); _resetTimer = null; }
+  }
+
+  function showResult(kind, icon, title, detail, tail, opts) {
+    opts = opts || {};
+    clearResetTimer();
+    var card = $('scan-result');
+    if (!card) return;
+    card.className = 'scan-result ' + kind;
+    $('scan-result-icon').textContent = icon || '';
+    $('scan-result-title').textContent = title || '';
+    $('scan-result-detail').textContent = detail || '';
+    $('scan-result-tail').textContent = tail || '';
+    if (opts.spinner) { show('scan-result-spinner'); } else { hide('scan-result-spinner'); }
+    if (opts.retry) { show('scan-result-retry'); } else { hide('scan-result-retry'); }
+    if (opts.next) { show('scan-result-next'); } else { hide('scan-result-next'); }
+    card.hidden = false;
+  }
+
+  function hideResult() {
+    clearResetTimer();
+    var card = $('scan-result');
+    if (card) card.hidden = true;
+    _busy = false;
+  }
+
+  function tailOf(token) {
+    return token ? '…' + String(token).slice(-6) : '';
+  }
+
+  /* used_at is stored as 'YYYY-MM-DD HH:MM:SS.sss' (UTC, no zone marker) —
+   * render it as local time for the door. */
+  function fmtUsedAt(usedAt) {
+    if (!usedAt) return '';
+    try {
+      var d = new Date(String(usedAt).replace(' ', 'T') + 'Z');
+      if (isNaN(d.getTime())) return String(usedAt);
+      var time = d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      var today = new Date();
+      var sameDay = d.getFullYear() === today.getFullYear() &&
+                    d.getMonth() === today.getMonth() &&
+                    d.getDate() === today.getDate();
+      return sameDay ? time : (d.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ' ' + time);
+    } catch (e) { return String(usedAt); }
+  }
+
+  function buzz(pattern) {
+    try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {}
+  }
+
+  /* ── Render the API's states (design F6, copy verbatim) ─── */
+  function renderScanOutcome(body, token) {
+    var record = body && body.token_record;
+    var tail = tailOf((record && record.token) || token);
+
+    if (body && body.admitted === true) {
+      buzz(80);
+      showResult('is-admitted', '✓', 'ADMITTED', 'Welcome in.', tail, { next: true });
+      _resetTimer = setTimeout(function () { hideResult(); }, ADMIT_RESET_MS);
+      return;
+    }
+
+    var reason = (body && body.reason) || '';
+    buzz([70, 60, 70]);
+    if (reason === 'already_used') {
+      var when = record && record.used_at ? fmtUsedAt(record.used_at) : '';
+      var by = record && record.scanned_by ? (' by ' + record.scanned_by) : '';
+      showResult('is-rejected', '✕', 'Already scanned',
+        (when ? ('First scanned at ' + when + by + '.') : 'This ticket was already used.'),
+        tail, { next: true });
+    } else if (reason === 'invalid_ticket') {
+      showResult('is-rejected', '✕', 'Not valid',
+        'Ticket was voided or reissued — check the door list.', tail, { next: true });
+    } else {
+      // unknown_token (and any unexpected reason) — same honest rejection
+      showResult('is-rejected', '✕', 'Not valid',
+        'Not a valid ticket for this event.', tail, { next: true });
+    }
+  }
+
+  /* ── Submit a token ─────────────────────────────────────── */
+  function submitToken(token, source) {
+    if (!token || _busy) return;
+    _busy = true;
+    _lastTried = token;
+    _lastToken = token;
+    _lastTokenAt = Date.now();
+
+    showResult('is-checking', '', 'Checking…', 'Hold on one second.', tailOf(token), { spinner: true });
+
+    fetchWithTimeout(SCAN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token, scannedBy: getStaff() || null })
+    }, 8000).then(function (res) {
+      return readJson(res).then(function (body) {
+        if (res.status === 429) {
+          showResult('is-offline', '⏳', 'Scanning too fast',
+            'Give it a few seconds, then retry.', tailOf(token), { retry: true, next: true });
+          return;
+        }
+        if (!res.ok && body && body._nonJson) {
+          // Edge/worker error page — treat as connection trouble, honestly.
+          showResult('is-offline', '⚠', 'Connection lost',
+            'Retry, or use the paper door list.', tailOf(token), { retry: true, next: true });
+          return;
+        }
+        if (!res.ok && typeof body.admitted === 'undefined') {
+          showResult('is-offline', '⚠', 'Something went wrong',
+            'Retry — if it keeps failing, use the paper door list.', tailOf(token), { retry: true, next: true });
+          return;
+        }
+        renderScanOutcome(body, token);
+      });
+    }).catch(function () {
+      // Timeout / offline / DNS — the design's OFFLINE state (amber)
+      showResult('is-offline', '⚠', 'Connection lost',
+        'Retry, or use the paper door list.', tailOf(token), { retry: true, next: true });
+    });
+
+    if (source === 'paste') {
+      var input = $('scan-token-input');
+      if (input) input.value = '';
+    }
+  }
+
+  /* Raw value from camera or paste → token or an honest local reject.
+   * (Random non-ticket QRs never spend the 30/min scan budget.) */
+  function handleRaw(raw, source) {
+    if (_busy) return;
+    var token = extractToken(raw);
+    if (!token) {
+      buzz([70, 60, 70]);
+      showResult('is-rejected', '✕', 'Not a ticket',
+        'That code isn’t one of our ticket QR links.', '', { next: true });
+      return;
+    }
+    if (source === 'camera' && token === _lastToken && (Date.now() - _lastTokenAt) < DUP_IGNORE_MS) {
+      return; // same QR still in view — already handled
+    }
+    submitToken(token, source);
+  }
+
+  /* ── Camera (BarcodeDetector where available) ───────────── */
+  function detectSupport(cb) {
+    if (!('BarcodeDetector' in window)) return cb(false);
+    try {
+      window.BarcodeDetector.getSupportedFormats().then(function (formats) {
+        cb(!!formats && formats.indexOf('qr_code') !== -1);
+      }).catch(function () { cb(false); });
+    } catch (e) { cb(false); }
+  }
+
+  function setStageMsg(text, withButton) {
+    var msg = $('scan-stage-msg');
+    var txt = $('scan-stage-text');
+    if (txt) txt.textContent = text || '';
+    if (withButton) { show('scan-camera-btn'); } else { hide('scan-camera-btn'); }
+    if (msg) msg.hidden = false;
+  }
+  function hideStageMsg() {
+    hide('scan-stage-msg');
+    show('scan-reticle');
+  }
+
+  function startCamera() {
+    if (!_cameraOk || _stream) return;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setStageMsg('Camera isn’t available in this browser — paste the ticket link below.', false);
+      return;
+    }
+    setStageMsg('Starting camera…', false);
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' },
+      audio: false
+    }).then(function (stream) {
+      _stream = stream;
+      var video = $('scan-video');
+      if (!video) { stopCamera(); return; }
+      video.srcObject = stream;
+      var p = video.play();
+      if (p && p.catch) p.catch(function () {});
+      try {
+        _detector = new window.BarcodeDetector({ formats: ['qr_code'] });
+      } catch (e) {
+        stopCamera();
+        setStageMsg('Camera scanning isn’t supported here — paste the ticket link below.', false);
+        return;
+      }
+      hideStageMsg();
+      _detectTimer = setInterval(function () {
+        if (_busy || !_detector || !video.videoWidth) return;
+        _detector.detect(video).then(function (codes) {
+          if (codes && codes.length && codes[0].rawValue) {
+            handleRaw(codes[0].rawValue, 'camera');
+          }
+        }).catch(function () { /* transient detect errors are fine */ });
+      }, 300);
+    }).catch(function () {
+      setStageMsg('Camera permission was denied — paste the ticket link below, or open the QR with the phone’s camera app.', true);
+    });
+  }
+
+  function stopCamera() {
+    if (_detectTimer) { clearInterval(_detectTimer); _detectTimer = null; }
+    _detector = null;
+    if (_stream) {
+      try { _stream.getTracks().forEach(function (t) { t.stop(); }); } catch (e) {}
+      _stream = null;
+    }
+    var video = $('scan-video');
+    if (video) { try { video.srcObject = null; } catch (e) {} }
+    hide('scan-reticle');
+  }
+
+  function initCameraStage() {
+    detectSupport(function (ok) {
+      _cameraOk = ok;
+      if (!ok) {
+        // iOS Safari path: the phone's camera app scans the QR and deep-links
+        // here; in-page camera needs BarcodeDetector, which Safari lacks.
+        setStageMsg('In-page camera scanning isn’t supported in this browser. Scan the QR with the phone’s camera app (it opens this page), or paste the ticket link below.', false);
+        return;
+      }
+      var btn = $('scan-camera-btn');
+      if (btn) btn.addEventListener('click', function () { startCamera(); });
+      startCamera(); // door device: go straight to scanning; denial shows the button path
+    });
+  }
+
+  /* ── Staff gate + main UI wiring ────────────────────────── */
+  var _queuedToken = null; // deep-link token waiting on the one-time name
+
+  function enterMain() {
+    var staffEl = $('scan-staff-name');
+    if (staffEl) staffEl.textContent = getStaff();
+    hide('scan-staff-gate');
+    show('scan-main');
+    initCameraStage();
+    if (_queuedToken) {
+      var t = _queuedToken;
+      _queuedToken = null;
+      submitToken(t, 'deeplink');
+    }
+  }
+
+  function enterGate() {
+    stopCamera();
+    var input = $('scan-staff-input');
+    if (input) input.value = getStaff();
+    if (_queuedToken) { show('scan-queued-note'); } else { hide('scan-queued-note'); }
+    hide('scan-main');
+    show('scan-staff-gate');
+    if (input) { try { input.focus(); } catch (e) {} }
+  }
+
+  function wireControls() {
+    var saveBtn = $('scan-staff-save');
+    if (saveBtn) {
+      saveBtn.addEventListener('click', function () {
+        var input = $('scan-staff-input');
+        var name = input ? input.value.trim() : '';
+        if (!name) {
+          if (input) { input.focus(); input.placeholder = 'Name is required — set it once'; }
+          return;
+        }
+        setStaff(name);
+        enterMain();
+      });
+    }
+    var staffInput = $('scan-staff-input');
+    if (staffInput) {
+      staffInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); if (saveBtn) saveBtn.click(); }
+      });
+    }
+
+    var changeBtn = $('scan-staff-change');
+    if (changeBtn) changeBtn.addEventListener('click', enterGate);
+
+    var pasteBtn = $('scan-token-btn');
+    var pasteInput = $('scan-token-input');
+    if (pasteBtn && pasteInput) {
+      pasteBtn.addEventListener('click', function () {
+        var v = pasteInput.value.trim();
+        if (v) handleRaw(v, 'paste');
+      });
+      pasteInput.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); pasteBtn.click(); }
+      });
+    }
+
+    var nextBtn = $('scan-result-next');
+    if (nextBtn) nextBtn.addEventListener('click', hideResult);
+
+    var retryBtn = $('scan-result-retry');
+    if (retryBtn) {
+      retryBtn.addEventListener('click', function () {
+        var t = _lastTried;
+        hideResult();
+        if (t) submitToken(t, 'retry');
+      });
+    }
+  }
+
+  /* ── Lifecycle: stop the camera when leaving the page ───── */
+  function cleanup() {
+    stopCamera();
+    clearResetTimer();
+    window.removeEventListener('pagehide', cleanup);
+    if (window.__layoungScanCleanup === cleanup) window.__layoungScanCleanup = null;
+  }
+
+  function wireLifecycle() {
+    // Inline scripts re-run on every SPA injection — retire any previous
+    // visit's camera/timers before this one takes over.
+    if (typeof window.__layoungScanCleanup === 'function') {
+      try { window.__layoungScanCleanup(); } catch (e) {}
+    }
+    window.__layoungScanCleanup = cleanup;
+    window.addEventListener('pagehide', cleanup);
+
+    document.addEventListener('layoung:page-loaded', function onPageNav(e) {
+      var p = e.detail && e.detail.page;
+      if (p !== 'scan') {
+        document.removeEventListener('layoung:page-loaded', onPageNav);
+        cleanup();
+      }
+      // p === 'scan' is this page's own load event — keep listening.
+    });
+  }
+
+  /* ── Boot ───────────────────────────────────────────────── */
+  function boot() {
+    wireLifecycle();
+    wireControls();
+
+    // Deep link: #scan?token=<t> (the QR encodes exactly this URL). The
+    // router stashes the hash query — read it and auto-submit (design F6).
+    var q = (typeof Router !== 'undefined' && typeof Router.getRouteQuery === 'function')
+      ? Router.getRouteQuery() : {};
+    var deepToken = extractToken(q.token || '');
+
+    if (getStaff()) {
+      if (deepToken) _queuedToken = deepToken;
+      enterMain();
+    } else {
+      _queuedToken = deepToken || null;
+      enterGate();
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
+
+})();
+</script>
