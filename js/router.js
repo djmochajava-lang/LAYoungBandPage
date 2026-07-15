@@ -21,6 +21,7 @@ const Router = {
   currentPage: null,
   defaultPage: 'home',
   playerWindow: null,
+  initialized: false,
 
   // ── Hash-query support (D-52 §iii F6 / D8 fix) ────────────────────────
   // Hash routes may carry query params — #shows?invite=CODE, #scan?token=T
@@ -62,6 +63,16 @@ const Router = {
   },
 
   init() {
+    // Double-init guard (P1 fix, story-lay-spa-double-execution): router.js
+    // self-inits on DOMContentLoaded AND main.js App.initModule('Router')
+    // calls init() again. Without this guard every init stacks another
+    // document click listener + popstate listener and schedules its own
+    // initial-route navigation — so EVERY SPA nav (deep-link, nav-click,
+    // back/forward) double-loads the page and double-executes its inline
+    // script (2× layoung:page-loaded, racing duplicate page instances).
+    // Same initialized-guard pattern as navigation.js / fan-points.js.
+    if (this.initialized) return;
+    this.initialized = true;
     this.setupNavigation();
     this.handleInitialRoute();
     this.handleBrowserNavigation();

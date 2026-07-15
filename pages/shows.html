@@ -1535,6 +1535,18 @@
   function handleCheckoutSubmit() {
     setError('');
 
+    // Defense-in-depth (story-lay-spa-double-execution): if a stale page
+    // instance ever owns this submit, its closure state is null — fail
+    // loud-and-friendly instead of stranding the fan on the spinner.
+    if (!_selectedEvent || !_selectedTier) {
+      showEl('step-form');
+      hideEl('step-processing');
+      setError('Something went wrong on our side — you have not been charged. Please try again.');
+      var staleBtn = $('checkout-submit-btn');
+      if (staleBtn) staleBtn.disabled = false;
+      return;
+    }
+
     var name    = ($('co-name') || {}).value.trim();
     var email   = ($('co-email') || {}).value.trim();
     var phone   = ($('co-phone') || {}).value.trim();
