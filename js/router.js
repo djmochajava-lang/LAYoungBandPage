@@ -16,7 +16,9 @@ const Router = {
     support: 'pages/support.html',
     contact: 'pages/contact.html',
     fanwall: 'pages/fanwall.html',
-    scan: 'pages/scan.html', // door check-in (staff, QR deep-link) — D-52 §iii F6
+    scan: 'pages/scan.html', // ticket-holder notice ONLY — door SCANNER relocated to the
+                             // role-gated GBE staff dashboard (story-ticket-scan-moves-to-gbe-dashboard).
+                             // Kept as a soft landing for QR deep-links; no fan-facing scanner here.
   },
   currentPage: null,
   defaultPage: 'home',
