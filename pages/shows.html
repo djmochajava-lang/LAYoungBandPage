@@ -200,10 +200,11 @@
 .tier-badge-sold-out    { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.1); }
 .tier-badge-announced   { background: rgba(255,215,0,0.1);  color: var(--color-primary,#ffd700); border: 1px solid rgba(255,215,0,0.2); }
 .tier-btn {
-  padding: 0.35rem 0.85rem;
+  padding: 0.35rem 1rem;
+  min-height: 44px;            /* ≥44px tap target (mobile-first AC) */
   font-size: 0.82rem;
   font-weight: 700;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   border: none;
   background: var(--color-primary, #ffd700);
@@ -352,6 +353,7 @@
 .retrieve-input:focus { border-color: var(--color-primary, #ffd700); }
 .retrieve-btn {
   padding: 0.55rem 1.1rem;
+  min-height: 44px;            /* ≥44px tap target (mobile-first AC) */
   background: var(--color-primary, #ffd700);
   color: #000;
   border: none;
@@ -405,12 +407,12 @@
   background: rgba(255,255,255,0.08);
   border: none;
   color: #fff;
-  width: 32px;
-  height: 32px;
+  width: 44px;                 /* ≥44px tap target (mobile-first AC) */
+  height: 44px;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 1rem;
-  line-height: 32px;
+  font-size: 1.15rem;
+  line-height: 44px;
   text-align: center;
   flex-shrink: 0;
 }
@@ -632,6 +634,91 @@
    design D4): same fake-affordance class as the coming-soon span. It returns
    only when wallet passes actually exist. */
 
+/* Guided-flow hint above the event cards (story-ticket-purchase-experience) */
+.ticket-browse-hint {
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.6);
+  margin: 0 auto 1.25rem;
+  max-width: 34rem;
+  line-height: 1.5;
+}
+.ticket-browse-hint strong { color: var(--color-primary, #ffd700); font-weight: 600; white-space: nowrap; }
+
+/* ── Checkout Step Indicator (story-ticket-purchase-experience) ─────────
+   The guided "you are here" signpost across the 3 checkout panels. */
+.checkout-steps {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  list-style: none;
+  margin: 0 0 1.3rem;
+  padding: 0;
+  counter-reset: none;
+}
+.checkout-step {
+  position: relative;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+  min-width: 0;
+}
+/* Connector line between steps (drawn from each step's dot to the next) */
+.checkout-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: 15px;               /* vertical center of the 30px dot */
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: rgba(255,255,255,0.12);
+  z-index: 0;
+}
+.checkout-step.is-done:not(:last-child)::after {
+  background: var(--color-primary, #ffd700);
+}
+.checkout-step-dot {
+  position: relative;
+  z-index: 1;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.5);
+  border: 2px solid rgba(255,255,255,0.14);
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.checkout-step-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.2;
+  transition: color 0.2s;
+}
+.checkout-step.is-active .checkout-step-dot {
+  background: var(--color-primary, #ffd700);
+  color: #000;
+  border-color: var(--color-primary, #ffd700);
+}
+.checkout-step.is-active .checkout-step-label {
+  color: var(--color-primary, #ffd700);
+  font-weight: 700;
+}
+.checkout-step.is-done .checkout-step-dot {
+  background: rgba(255,215,0,0.18);
+  color: var(--color-primary, #ffd700);
+  border-color: var(--color-primary, #ffd700);
+}
+.checkout-step.is-done .checkout-step-label { color: rgba(255,255,255,0.7); }
+
 /* ── Print Styles ─────────────────────────────────────────────── */
 @media print {
   body > * { display: none !important; }
@@ -695,6 +782,13 @@
            opened via #shows?invite=CODE and a show is on sale. The code is
            pre-filled in the checkout promo field. -->
       <div id="invite-banner" class="invite-banner" hidden></div>
+
+      <!-- Guided-flow hint (story-ticket-purchase-experience): signposts the
+           three-tap path before the fan starts. Shown only when a real show is
+           listed; hidden in the loading/fallback states. -->
+      <p id="ticket-browse-hint" class="ticket-browse-hint" hidden>
+        Pick your show &amp; ticket type below &mdash; then it&rsquo;s just <strong>Your Info &rarr; Payment &rarr; Ticket</strong>.
+      </p>
 
       <!-- Events grid (shown when events exist) -->
       <div id="ticket-events" class="ticket-events-grid" hidden></div>
@@ -960,6 +1054,27 @@
          (story-mock-payment-visible-screen a11y AC — WCAG 4.1.3). -->
     <div id="checkout-live" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"></div>
 
+    <!-- VISIBLE STEP INDICATOR (story-ticket-purchase-experience): the guided
+         "you are here" signpost the checkout was missing. Three signposted
+         steps — Your Info → Payment → Ticket — mirror the three overlay panels
+         (step-form → step-processing → step-confirmation). setStep(n) drives
+         the active/done classes; the retrieve path jumps straight to step 3.
+         Purely presentational (aria-hidden) — the polite live region above
+         narrates progress to assistive tech. -->
+    <ol id="checkout-steps" class="checkout-steps" aria-hidden="true">
+      <li class="checkout-step is-active" data-step="1">
+        <span class="checkout-step-dot">1</span>
+        <span class="checkout-step-label">Your Info</span>
+      </li>
+      <li class="checkout-step" data-step="2">
+        <span class="checkout-step-dot">2</span>
+        <span class="checkout-step-label">Payment</span>
+      </li>
+      <li class="checkout-step" data-step="3">
+        <span class="checkout-step-dot">3</span>
+        <span class="checkout-step-label">Ticket</span>
+      </li>
+    </ol>
 
     <!-- TEST MODE banner (mock money — CEO 07-15). Honest labeling is a HARD
          house rule: no real payment is processed while the server runs the
@@ -1125,9 +1240,24 @@
   function setProcessing(msg) {
     hideEl('step-form');
     showEl('step-processing');
+    setStep(2); // the reserve + pay leg is the "Payment" step
     var p = $('processing-msg');
     if (p) p.textContent = msg || 'Processing…';
     announce(msg || 'Processing your order.');
+  }
+
+  /* Drive the visible step indicator (story-ticket-purchase-experience):
+   * steps before n are "done", step n is "active", steps after are pending.
+   * 1 = Your Info (step-form), 2 = Payment (step-processing), 3 = Ticket
+   * (step-confirmation). Presentational only — no-op if the stepper is absent. */
+  function setStep(n) {
+    var steps = document.querySelectorAll('#checkout-steps .checkout-step');
+    steps.forEach(function (li) {
+      var s = parseInt(li.getAttribute('data-step'), 10) || 0;
+      li.classList.remove('is-active', 'is-done');
+      if (s < n)      li.classList.add('is-done');
+      else if (s === n) li.classList.add('is-active');
+    });
   }
 
   /* ── Fetch with timeout ─────────────────────────────────── */
@@ -1294,6 +1424,7 @@
   function loadEvents() {
     showEl('ticket-loading');
     hideEl('ticket-events');
+    hideEl('ticket-browse-hint');
     hideEl('ticket-fallback');
     hideEl('notify-zone');
 
@@ -1319,6 +1450,7 @@
         if (!events.length) { showFallback(); return; }
         _events = events;
         renderEvents(events);
+        showEl('ticket-browse-hint'); // guided-flow signpost above the cards
         showEl('notify-zone'); // the notify CTA beneath the cards (F2)
       })
       .catch(function (err) {
@@ -1504,6 +1636,7 @@
     showEl('step-form');
     hideEl('step-processing');
     hideEl('step-confirmation');
+    setStep(1); // reset the signpost to "Your Info" on every open
 
     var overlay = $('checkout-overlay');
     if (overlay) overlay.hidden = false;
@@ -1582,6 +1715,7 @@
     if (!_selectedEvent || !_selectedTier) {
       showEl('step-form');
       hideEl('step-processing');
+      setStep(1); // keep the signpost consistent with the visible panel
       setError('Something went wrong on our side — you have not been charged. Please try again.');
       var staleBtn = $('checkout-submit-btn');
       if (staleBtn) staleBtn.disabled = false;
@@ -1652,6 +1786,7 @@
         // after the 10-minute hold TTL.
         showEl('step-form');
         hideEl('step-processing');
+        setStep(1); // roll the signpost back to "Your Info" with the form
         setError(friendlyError(err));
         if (submitBtn) submitBtn.disabled = false;
         if (err && (err.status === 410 || err.code === 'hold_expired' ||
@@ -1685,6 +1820,7 @@
   function showConfirmation(confirmationCode, buyerName, buyerEmail) {
     hideEl('step-processing');
     showEl('step-confirmation');
+    setStep(3); // arrived at "Ticket"
 
     var codeEl  = $('conf-code');
     var emailEl = $('conf-email');
@@ -1878,6 +2014,7 @@
           hideEl('step-form');
           hideEl('step-processing');
           showEl('step-confirmation');
+          setStep(3); // retrieve jumps straight to the "Ticket" step
           document.body.style.overflow = 'hidden';
 
           if (tokens.length === 0) {
