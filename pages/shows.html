@@ -973,6 +973,14 @@
         <span id="checkout-tier-name" class="checkout-tier-name"></span>
         <span id="checkout-tier-price" class="checkout-tier-price"></span>
       </div>
+      <!-- SHARED mock-payment screen (story-mock-payment-visible-screen):
+           the itemized breakdown + the honest, card-less "Sample" card
+           mockup rendered by the ONE shared component (window.GBEMockPay),
+           the same component the booking deposit path embeds. It captures
+           NOTHING (no inputs) — it only SHOWS the fan what the payment moment
+           looks like. The existing TEST-MODE banner above + processing/
+           confirmation steps below own the labelling and the receipt. -->
+      <div id="checkout-mockpay" class="checkout-mockpay"></div>
       <!-- Shown once a hold exists (§iii F3) -->
       <p id="checkout-hold-note" class="checkout-hold-note" hidden>Your seats are held for 10 minutes.</p>
 
@@ -1493,19 +1501,41 @@
 
   function updateTotal() {
     var el = $('checkout-total-amount');
-    if (!el) return;
     // Comp lane display (§iv): when the invite code from the deep link is in
     // the promo field, the night is on us. The server remains the enforcer —
     // an exhausted code fails the hold with the friendly §iv.4 copy.
     var promoVal = (($('co-promo') || {}).value || '').trim().toUpperCase();
-    if (_inviteCode && promoVal === _inviteCode) {
-      el.textContent = '$0.00 — Complimentary · Industry Guest';
-      return;
-    }
+    var isComp = !!(_inviteCode && promoVal === _inviteCode);
     var qtyEl  = $('co-qty');
     var qty    = qtyEl ? parseInt(qtyEl.value, 10) || 1 : 1;
     var cents  = (_selectedTier && _selectedTier.price_cents) || 0;
-    el.textContent = fmtPrice(cents * qty);
+    if (el) {
+      el.textContent = isComp ? '$0.00 — Complimentary · Industry Guest' : fmtPrice(cents * qty);
+    }
+    renderMockScreen(qty, cents, isComp);
+  }
+
+  /* Render the SHARED mock-payment screen (itemized breakdown + honest
+   * card-less "Sample" card) into #checkout-mockpay. testMode:false here —
+   * the checkout overlay already owns the TEST-MODE banner + ribbon, so the
+   * shared screen only contributes the itemized lines + the card mockup and
+   * doesn't double the banner. Reflects the current quantity/comp state. */
+  function renderMockScreen(qty, cents, isComp) {
+    var host = $('checkout-mockpay');
+    if (!host || !window.GBEMockPay || !_selectedTier) return;
+    var lineLabel = _selectedTier.tier_name || 'Ticket';
+    var lineItems = isComp
+      ? [{ label: lineLabel + ' — Complimentary (Industry Guest)', qty: qty, amount: 0 }]
+      : [{ label: lineLabel, qty: qty, amount: cents }];
+    try {
+      window.GBEMockPay.renderScreen(host, {
+        testMode: false,          // overlay already shows the TEST-MODE banner
+        purpose: 'ticket',
+        currency: 'USD',
+        lineItems: lineItems,
+        hideTotal: true           // the overlay owns the authoritative total row
+      });
+    } catch (e) { /* non-fatal: the existing summary + total still render */ }
   }
 
   function closeCheckout() {
