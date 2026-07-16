@@ -86,6 +86,17 @@
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
+/* Single-event case (story-tickets-page-center-single-card): with one card the
+   auto-fill grid parks it in the first track and leaves it LEFT-aligned. When
+   exactly one event card is present, collapse to one centered, max-width column
+   so the lone show reads as intentional — not stretched full-bleed on desktop.
+   The :has(:only-child) guard matches ONLY at a single card, so the multi-card
+   grid above is untouched. At <=440px the column shrinks to fit (minmax min 0),
+   so the card fills the phone width and still reads centered. */
+.ticket-events-grid:has(.event-card:only-child) {
+  grid-template-columns: minmax(0, 440px);
+  justify-content: center;
+}
 .event-card {
   background: rgba(255,255,255,0.04);
   border: 1px solid rgba(255,215,0,0.18);
