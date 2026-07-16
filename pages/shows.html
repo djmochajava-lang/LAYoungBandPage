@@ -956,6 +956,11 @@
     <!-- All scrollable content goes inside this wrapper -->
     <div class="checkout-panel-body">
 
+    <!-- Polite live region: announces processing/success to assistive tech
+         (story-mock-payment-visible-screen a11y AC — WCAG 4.1.3). -->
+    <div id="checkout-live" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"></div>
+
+
     <!-- TEST MODE banner (mock money — CEO 07-15). Honest labeling is a HARD
          house rule: no real payment is processed while the server runs the
          mock pay driver. Hidden automatically when TICKETING_TEST_MODE=false. -->
@@ -1112,11 +1117,17 @@
     el.style.display = msg ? 'block' : 'none';
   }
 
+  function announce(msg) {
+    var live = $('checkout-live');
+    if (live) live.textContent = msg || '';
+  }
+
   function setProcessing(msg) {
     hideEl('step-form');
     showEl('step-processing');
     var p = $('processing-msg');
     if (p) p.textContent = msg || 'Processing…';
+    announce(msg || 'Processing your order.');
   }
 
   /* ── Fetch with timeout ─────────────────────────────────── */
@@ -1688,6 +1699,13 @@
     if (emailLine) emailLine.hidden = !buyerEmail;
     var tmNote = $('conf-testmode-note');
     if (tmNote) tmNote.hidden = !TICKETING_TEST_MODE;
+
+    // Announce the success/receipt moment to assistive tech (a11y AC).
+    announce((TICKETING_TEST_MODE
+      ? 'Test order complete. No real payment was processed. '
+      : 'Order complete. ') +
+      'Your confirmation code is ' + (confirmationCode || '') + '.' +
+      (buyerEmail ? ' Tickets are on their way to ' + buyerEmail + '.' : ''));
 
     // Fetch tokens (parse-guarded — design D3: no raw errors on this path)
     return fetchWithTimeout(API + '/orders/confirm/' + encodeURIComponent(confirmationCode) + '/public', {}, 8000)
