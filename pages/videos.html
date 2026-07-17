@@ -1,4 +1,93 @@
 <!-- pages/videos.html -->
+<!-- =========================================================
+     VIDEOS — route the real footage (story-sizzle-videos-page,
+     spec §2d · S4). Flagship: the City Winery tribute promo.
+     Video/LALive.mp4 was content-vetted 2026-07-17 and SKIPPED
+     (dark 360p audience phone video, clipped mono audio — hurts
+     the pitch; spec §2d allows the skip). Studio videos stay on
+     #projects; live-show emotion stays on #shows — cross-linked
+     below, not duplicated.
+     ========================================================= -->
+
+<style>
+/* ── Videos page (scoped) ─────────────────────────────────── */
+.videos-section .videos-intro {
+  max-width: 640px;
+  margin: 0 auto var(--spacing-lg);
+  text-align: center;
+  color: var(--color-text-muted, rgba(255, 255, 255, 0.75));
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+.videos-section .videos-intro em { color: #fff; font-style: italic; }
+
+/* Vertical (9:16) flagship — present like a phone reel, centered */
+.videos-section .video-item--portrait .video-frame {
+  max-width: 400px;
+  margin: 0 auto;
+}
+.videos-section .video-caption {
+  margin-top: 0.75rem;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Cross-link cards — more to watch & hear */
+.videos-section .videos-more {
+  margin-top: var(--spacing-xl, 3rem);
+}
+.videos-section .videos-more h3 {
+  color: var(--color-primary);
+  font-family: var(--font-primary);
+  text-align: center;
+  margin-bottom: var(--spacing-md, 1.5rem);
+}
+.videos-section .videos-more-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md, 1.5rem);
+  max-width: 900px;
+  margin: 0 auto;
+}
+.videos-section .videos-more-card {
+  display: block;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 12px;
+  padding: 1.25rem 1rem;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 0.25s ease, background 0.25s ease,
+    transform 0.25s ease;
+}
+.videos-section .videos-more-card:hover,
+.videos-section .videos-more-card:focus-visible {
+  border-color: var(--color-primary);
+  background: rgba(255, 215, 0, 0.08);
+  transform: translateY(-2px);
+}
+.videos-section .videos-more-card strong {
+  display: block;
+  color: var(--color-primary);
+  font-family: var(--font-primary);
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+}
+.videos-section .videos-more-card span {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .videos-section .videos-more-grid { grid-template-columns: 1fr; }
+  .videos-section .video-item--portrait .video-frame { max-width: 340px; }
+}
+</style>
 
 <section class="section videos-section" id="videos">
   <div class="container">
@@ -6,9 +95,61 @@
     <p class="section-subtitle">Experience the Live Performance</p>
 
     <div class="videos-content">
+      <p class="videos-intro">
+        No hype &mdash; just the room, the band, and the voice.
+        Press play and hear it for yourself.
+      </p>
+
       <!-- Video Grid (single column) -->
       <div class="video-grid">
-        <!-- Videos moved to Projects and Live pages -->
+
+        <!-- Flagship: City Winery tribute promo (Video/LAYoungWinery.mp4,
+             in-repo + already deployed; poster keeps load metadata-only) -->
+        <div class="video-item video-item--portrait scroll-reveal">
+          <h3>L.A. Young Live &mdash; City Winery</h3>
+          <p class="video-subtitle">
+            Her Phyllis Hyman tribute, on stage in Washington, DC
+          </p>
+          <div class="video-frame">
+            <video id="videos-page-winery"
+                   class="video-player"
+                   src="Video/LAYoungWinery.mp4"
+                   poster="images/video/LAYoungWinery-poster.jpg"
+                   preload="metadata"
+                   playsinline
+                   controls>
+            </video>
+          </div>
+          <p class="video-caption">
+            L.A. Young performing her Phyllis Hyman tribute at City Winery
+            DC &mdash; her last show there before the venue closed. Full
+            band, live vocals.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- More to watch & hear — cross-links, not duplicate embeds -->
+      <div class="videos-more">
+        <h3>More to Watch &amp; Hear</h3>
+        <div class="videos-more-grid">
+          <a class="videos-more-card" href="#shows">
+            <strong>The Phyllis Hyman Experience</strong>
+            <span>What the night feels like &mdash; live with
+              L.A. Young &amp; Soul Society. Performances &amp;
+              tickets &rarr;</span>
+          </a>
+          <a class="videos-more-card" href="#projects">
+            <strong>In the Studio</strong>
+            <span>Behind the scenes with producer Norman Connors &mdash;
+              three studio session videos &rarr;</span>
+          </a>
+          <a class="videos-more-card" href="EPK/index.html">
+            <strong>Press &amp; Business Partners</strong>
+            <span>The Electronic Press Kit &mdash; bio, credits, photos,
+              and booking &rarr;</span>
+          </a>
+        </div>
       </div>
 
       <!-- Social links removed — site-first strategy -->
@@ -25,3 +166,39 @@
     </footer>
   </div>
 </section>
+
+<!-- JSON-LD Structured Data — VideoObject (idiom: projects.html / GEO-04) -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "@id": "https://layoungbandpage.com/videos#city-winery-live",
+  "name": "L.A. Young Live at City Winery DC — Phyllis Hyman Tribute",
+  "description": "A sixty-second live performance video of L.A. Young performing her Phyllis Hyman tribute at City Winery in Washington, DC — her last show there before the venue closed. Full band, live vocals, filmed in the room.",
+  "url": "https://layoungbandpage.com/#videos",
+  "contentUrl": "https://layoungbandpage.com/Video/LAYoungWinery.mp4",
+  "thumbnailUrl": "https://layoungbandpage.com/images/video/LAYoungWinery-poster.jpg",
+  "uploadDate": "2026-02-22",
+  "duration": "PT1M",
+  "author": { "@type": "MusicGroup", "@id": "https://layoungbandpage.com/#artist", "name": "LA Young" },
+  "locationCreated": {
+    "@type": "Place",
+    "name": "City Winery",
+    "address": { "@type": "PostalAddress", "addressLocality": "Washington", "addressRegion": "DC" }
+  },
+  "genre": ["Soul", "Jazz", "R&B"],
+  "productionCompany": { "@type": "Organization", "name": "Gold Bottom Ent. LLC", "url": "https://GoldBottomEnt-LLC.com" }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://layoungbandpage.com/" },
+    { "@type": "ListItem", "position": 2, "name": "Videos", "item": "https://layoungbandpage.com/#videos" }
+  ]
+}
+</script>
