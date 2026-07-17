@@ -1636,7 +1636,8 @@
     }
     return '<div class="event-card scroll-reveal">' +
       (ev.imageUrl ? '<img class="event-card-img" src="' + escHtml(ev.imageUrl) + '" alt="' + escHtml(ev.event_name) + '" loading="lazy">' : '') +
-      '<div class="event-card-kicker">' + escHtml('L.A. Young & Soul Society present') + '</div>' +
+      (String(ev.event_name || '').indexOf('L.A. Young & Soul Society') === 0 ? '' :
+        '<div class="event-card-kicker">' + escHtml('L.A. Young & Soul Society present') + '</div>') +
       '<h3 class="event-card-name">' + escHtml(ev.event_name) + '</h3>' +
       '<div class="event-card-date">' + fmtDate(ev.event_date) + (ev.venue ? ' · ' + escHtml(ev.venue) : '') + '</div>' +
       timeLine +
@@ -1700,7 +1701,8 @@
       return '<div class="event-card scroll-reveal">' +
         (TICKETING_TEST_MODE ? '<span class="event-card-ribbon">Test Mode</span>' : '') +
         (ev.imageUrl ? '<img class="event-card-img" src="' + escHtml(ev.imageUrl) + '" alt="' + escHtml(ev.event_name) + '" loading="lazy">' : '') +
-        '<div class="event-card-kicker">' + escHtml('L.A. Young & Soul Society present') + '</div>' +
+        (String(ev.event_name || '').indexOf('L.A. Young & Soul Society') === 0 ? '' :
+        '<div class="event-card-kicker">' + escHtml('L.A. Young & Soul Society present') + '</div>') +
         '<h3 class="event-card-name">' + escHtml(ev.event_name) + '</h3>' +
         '<div class="event-card-date">' + fmtDate(ev.event_date) + (ev.venue ? ' · ' + escHtml(ev.venue) : '') + '</div>' +
         // Admission model stated on EVERY card (owner A2): ticketed shows say so.
