@@ -686,6 +686,7 @@ img {
 
 .media-actions {
   display: flex;
+  flex-wrap: wrap; /* 2026-07-17 truth pass: row overflowed the viewport at 390px (horizontal scroll) */
   gap: 1rem;
   margin-top: 1.5rem;
 }

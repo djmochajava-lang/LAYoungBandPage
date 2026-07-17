@@ -751,7 +751,8 @@ h2.section-title {
   object-fit: cover;
   border: 2px solid #999;
   filter: sepia(20%) contrast(1.02);
-  cursor: pointer;
+  /* cursor:pointer removed 2026-07-17 (truth pass): photos have no click
+     handler — a pointer cursor was a dead affordance. */
   transition: all 0.3s ease;
 }
 .photo-grid img:hover {
@@ -1131,6 +1132,7 @@ body.print-ready .folder-content {
   .watermark-layer { display: none !important; }
   .back-to-site { display: none !important; }
   .save-pdf-btn { display: none !important; }
+  .share-epk-btn { display: none !important; } /* 2026-07-17 truth pass: was printing into the PDF */
   .modal-overlay { display: none !important; }
 
   /* Hide folder chrome — cover, tab, aged-paper overlay */
