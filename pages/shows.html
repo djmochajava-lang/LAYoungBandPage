@@ -1549,7 +1549,9 @@
       event_date:  row.event_date || '',
       venue:       venue,
       description: desc,
-      imageUrl:    row.image_url || '',
+      // Owner 07-17: the GBE brand card is the standing DEFAULT for any show
+      // without its own image yet — replaced per-show from the card wizard.
+      imageUrl:    row.image_url || 'images/show-card-default.jpg',
       status:      evStatus,
       // Admission model (S2, owner A2): 1 = ticketed ("Tickets — $X"),
       // 0 = free ("Free — no ticket needed" announcement card, no checkout).
