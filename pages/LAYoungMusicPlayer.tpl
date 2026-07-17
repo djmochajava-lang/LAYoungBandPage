@@ -297,7 +297,7 @@
 
     <!-- ===== FOOTER (last visible element) ===== -->
     <footer class="sp-footer">
-      <p>&copy; 2026 <strong>Gold Bottom Entertainment LLC</strong> &bull; All rights reserved.</p>
+      <p>&copy; 2026 <strong>Gold Bottom Ent. LLC</strong> &bull; All rights reserved.</p>
     </footer>
 
   </div><!-- /.sp-body -->
