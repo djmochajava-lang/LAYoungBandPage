@@ -21,6 +21,21 @@
 }
 .videos-section .videos-intro em { color: #fff; font-style: italic; }
 
+/* EO N1 (S4 design-QA): tighten the pre-video stack on phones so the
+   player's control bar lands on the first screen (video top ≤ ~450px). */
+@media (max-width: 480px) {
+  .videos-section .videos-intro {
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+  .videos-section .section-title { margin-bottom: 0.25rem; }
+  .videos-section .section-subtitle { margin-bottom: 0.4rem; }
+  .videos-section .video-item--portrait h3 { margin-bottom: 0.2rem; }
+  .videos-section .video-subtitle { margin-bottom: 0.5rem; font-size: 0.85rem; }
+  .videos-section .video-item--portrait .video-frame { max-width: 320px; }
+}
+
 /* Vertical (9:16) flagship — present like a phone reel, centered */
 .videos-section .video-item--portrait .video-frame {
   max-width: 400px;
