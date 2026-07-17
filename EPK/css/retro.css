@@ -1133,7 +1133,15 @@ body.print-ready .folder-content {
   .back-to-site { display: none !important; }
   .save-pdf-btn { display: none !important; }
   .share-epk-btn { display: none !important; } /* 2026-07-17 truth pass: was printing into the PDF */
+  /* EO S7 note: the "Ready to Book?" card duplicates of the same controls —
+     javascript:void(0) anchors that printed as dead buttons on the last page. */
+  .cta-btn[onclick] { display: none !important; }
   .modal-overlay { display: none !important; }
+
+  /* EO S7 note: keep section headings attached to their content so page 1
+     doesn't orphan "BIOGRAPHY" above a page break. */
+  .section-title, .sec-label { break-after: avoid; page-break-after: avoid; }
+  .section-title + * { break-before: avoid; page-break-before: avoid; }
 
   /* Hide folder chrome — cover, tab, aged-paper overlay */
   .folder-cover { display: none !important; }
