@@ -125,6 +125,14 @@
          fold on phones. */
       padding-top: clamp(110px, 18vh, 260px);
     }
+    /* EO N1: use the quieter section scrollbar treatment on the hero column —
+       the 10px solid-gold global thumb reads as a stray bar over the video. */
+    .hero#home .hero-content::-webkit-scrollbar { width: 8px; }
+    .hero#home .hero-content::-webkit-scrollbar-track { background: rgba(0, 0, 0, 0.4); }
+    .hero#home .hero-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 215, 0, 0.45);
+      border-radius: 4px;
+    }
     /* The long band-name badge is wider than a 390px column; nowrap made it
        force a horizontal scrollbar once the content column began clipping.
        Let badge text wrap inside its pill on the home hero. */
