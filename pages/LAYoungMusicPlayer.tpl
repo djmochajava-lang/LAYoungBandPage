@@ -173,20 +173,24 @@
       <h2 class="sp-section-title">About</h2>
       <div class="sp-about-img-wrap">
         <img
-          src="images/artist/PhyllisHyman-Signing.jpg"
-          alt="L.A. Young performing"
+          src="images/artist/LAYoung-Live-CityWinery.jpg"
+          alt="L.A. Young live at City Winery DC"
           class="sp-about-img"
         />
       </div>
 
       <div class="sp-about-stats">
         <div class="sp-about-stat">
-          <span class="sp-about-stat-value">#1</span>
-          <span class="sp-about-stat-label">UK FM Radio</span>
+          <!-- "#1 UK FM Radio" / "Top-5 UK Hits" stats REMOVED 2026-07-16 per standing
+               credential-accuracy rule (feedback_credential_accuracy.md): small private
+               DJ chart, not BBC/Official UK Charts — never a headline credential.
+               Mirrors the sanitized LAYoungMusicPlayer.html. Do not restore. -->
+          <span class="sp-about-stat-value">100+</span>
+          <span class="sp-about-stat-label">Live Shows</span>
         </div>
         <div class="sp-about-stat">
-          <span class="sp-about-stat-value">5</span>
-          <span class="sp-about-stat-label">Top-5 UK Hits</span>
+          <span class="sp-about-stat-value">6</span>
+          <span class="sp-about-stat-label">Show Formats</span>
         </div>
         <div class="sp-about-stat">
           <span class="sp-about-stat-value">20+</span>
@@ -204,11 +208,13 @@
         silky emotional depth. A native of Ohio with deep roots in the steel mill communities
         of the 1980s, she became the first female crane operator in Ohio's steel industry at
         age 18 before answering her true calling to the stage. Her career spans landmark
-        stages and elite collaborations: from performing at President Clinton's Second
-        Inauguration to opening for Frederick Anthony Jackson, recording with jazz legends
-        Pieces of A Dream, and currently producing new material with iconic producer Norman
-        Connors. Her single "No One Can Love You More" reached #1 on UK FM Radio, with
-        multiple top-5 UK hits following. A Maryland Music Awards Artist of the Year and
+        stages and elite collaborations: opening for R&amp;B icon Freddie Jackson and
+        recording with the Grammy-nominated jazz ensemble Pieces of A Dream. She has
+        performed with jazz legend Norman Connors and is currently in the studio, with her
+        forthcoming music produced by Gold Bottom Productions in conjunction with Norman
+        Connors. Her recording of "No One Can Love You More" &mdash; her signature Phyllis
+        Hyman tribute &mdash; has earned devoted airplay on independent soul and jazz
+        radio. A Maryland Music Awards Artist of the Year and
         Woman's Basketball Hall of Fame Inductee, L.A. Young is known for electrifying live
         performances and her acclaimed Phyllis Hyman tribute show, which has drawn audiences
         from across the country.

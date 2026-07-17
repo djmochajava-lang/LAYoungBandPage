@@ -26,7 +26,7 @@ Official artist website for **L.A. Young** — a powerhouse soul, jazz, and blue
 
 - **Live URL**: [layoungbandpage.com](https://layoungbandpage.com)
 - **Genre**: Soul, Jazz, R&B, Blues
-- **Key Achievements**: 5 UK Top-5 Hits, #1 UK FM Radio, Maryland Artist of the Year, 100+ live performances
+- **Key Achievements**: Maryland Artist of the Year (2018), 100+ live performances, recordings with Pieces of A Dream, new material produced with Norman Connors / Gold Bottom Productions. (UK-chart claims removed 2026-07-16 per credential-accuracy rule — never use as credentials.)
 
 ## Tech Stack
 

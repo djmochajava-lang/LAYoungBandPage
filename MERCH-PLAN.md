@@ -26,7 +26,7 @@ This plan lays out a complete merch strategy for L.A. Young — from product des
 | **DC/DMV scene credibility** | Blues Alley, City Winery venue cred |
 | **"Soul Society" band** | Band-themed merch line |
 | **"Soul Fam" community** | Fan identity merch |
-| **UK chart success** | "#1 UK FM Radio" achievement merch |
+| **Maryland Artist of the Year** | Real-credential achievement merch (UK-chart concept removed 2026-07-16 — banned per credential-accuracy rule) |
 | **"I sing because I am human"** | Anti-algorithm anthem |
 
 ---
