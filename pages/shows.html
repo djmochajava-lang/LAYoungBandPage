@@ -229,6 +229,28 @@
 .tier-btn-free { background: var(--color-accent, #e63946); color: #fff; }
 .tier-btn-coming-soon { background: transparent; border: 1px solid rgba(255,215,0,0.3); color: var(--color-primary,#ffd700); cursor: default; font-size: 0.75rem; }
 
+/* ── EXTERNAL-ticketing card (story-external-ticketing-lay-mirror) ──
+   Venue runs its own ticketing: one honest CTA + "Tickets via {host}" cue,
+   internal tier/price/status/buy affordances suppressed. */
+.event-card-ext {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+.event-card-ext-cue {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-primary, #ffd700);
+}
+.event-card-ext-cta {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* ── Industry guest-list banner (D-52 §iv — #shows?invite=CODE) ── */
 .invite-banner {
   background: rgba(255,215,0,0.08);
@@ -1509,6 +1531,20 @@
    * Firestore read is gone for real.
    * ═════════════════════════════════════════════════════════ */
 
+  /* story-external-ticketing-lay-mirror: the readmodel's external_ticket_url
+   * (https, validated SERVER-SIDE at the GBE source — Joi uri scheme:https,
+   * ≤500) is the honest "Tickets via {host}" cue + the external CTA target.
+   * Independently implemented in LAY (NOT a copy-sync of the GBE renderer).
+   * hostOf strips scheme/www/path for the display cue; falls back gracefully
+   * so a malformed value never throws and never renders a bare URL. */
+  function hostOf(url) {
+    try { return new URL(String(url)).hostname.replace(/^www\./, ''); }
+    catch (e) {
+      var m = String(url || '').replace(/^https?:\/\//i, '').split(/[\/?#]/)[0];
+      return m.replace(/^www\./, '') || 'the venue';
+    }
+  }
+
   /** Map a readmodel row to the shape renderEvents expects.
    *  Tier status derives from the EVENT status (the design's F2 state
    *  machine): announced ⇒ every tier "Coming Soon"; otherwise a tier with
@@ -1557,6 +1593,11 @@
       // 0 = free ("Free — no ticket needed" announcement card, no checkout).
       // Missing (stale cache row) ⇒ 1, so a paywall is never hidden.
       ticket_required: (row.ticket_required === undefined || row.ticket_required === null) ? 1 : Number(row.ticket_required),
+      // story-external-ticketing-lay-mirror: a non-empty external_ticket_url
+      // OVERRIDES internal ticketing for this show — the card sends fans to the
+      // venue's own link (new tab) and ALL internal tier/price/status/checkout
+      // affordances are suppressed (no dead ticket-required-with-no-tiers card).
+      external_ticket_url: (row.external_ticket_url != null && String(row.external_ticket_url).trim() !== '') ? String(row.external_ticket_url).trim() : '',
       doors_open:  row.doors_open || '',
       show_time:   row.show_time || '',
       tiers:       tiers
@@ -1648,6 +1689,33 @@
     '</div>';
   }
 
+  /* ── EXTERNAL-ticketing card (story-external-ticketing-lay-mirror) ──
+   * When a show carries external_ticket_url, the venue runs its own ticketing:
+   * render ONE honest external CTA — a real anchor (accessible, works without
+   * JS) to the venue's link in a NEW TAB (rel="noopener") — with a "Tickets via
+   * {host}" cue, and SUPPRESS every internal tier/price/status/buy affordance.
+   * Mirrors the GBE show-card.js external branch's behavior + honesty, built
+   * natively in LAY's renderer (repos independent — no copy-sync). The URL is
+   * https-validated server-side at the GBE source; escHtml still escapes it
+   * here (defense-in-depth: &, <, >, " are neutralized inside the double-quoted
+   * href/attribute, so no breakout even on an unexpected value). */
+  function renderExternalCard(ev) {
+    var url  = ev.external_ticket_url;
+    var host = hostOf(url);
+    return '<div class="event-card scroll-reveal">' +
+      (ev.imageUrl ? '<img class="event-card-img" src="' + escHtml(ev.imageUrl) + '" alt="' + escHtml(ev.event_name) + '" loading="lazy">' : '') +
+      (String(ev.event_name || '').indexOf('L.A. Young & Soul Society') === 0 ? '' :
+        '<div class="event-card-kicker">' + escHtml('L.A. Young & Soul Society present') + '</div>') +
+      '<h3 class="event-card-name">' + escHtml(ev.event_name) + '</h3>' +
+      '<div class="event-card-date">' + fmtDate(ev.event_date) + (ev.venue ? ' · ' + escHtml(ev.venue) : '') + '</div>' +
+      (ev.description ? '<p class="event-card-desc">' + escHtml(ev.description) + '</p>' : '') +
+      '<div class="event-card-ext">' +
+        '<span class="event-card-ext-cue">Tickets via ' + escHtml(host) + '</span>' +
+        '<a class="tier-btn event-card-ext-cta" href="' + escHtml(url) + '" target="_blank" rel="noopener">Get Tickets</a>' +
+      '</div>' +
+    '</div>';
+  }
+
   /* ── "The Night" hero CTA — exactly one variant once the listing state is
    * known: events listed → Get Tickets (smooth-scroll to the cards);
    * none/cache unreachable → the honest booking path (§2g state handling). */
@@ -1662,6 +1730,11 @@
     var grid = $('ticket-events');
     if (!grid) return;
     grid.innerHTML = events.map(function (ev) {
+      // External ticketing OVERRIDES internal (checked FIRST): the venue sells
+      // this show on its own service, so there are no internal tiers to render.
+      // A published external show would otherwise be a ticket_required card with
+      // zero tiers = a silent dead-end. This closes it.
+      if (ev.external_ticket_url) return renderExternalCard(ev);
       // Free show (ticket_required=0) → announcement card, no checkout.
       if (Number(ev.ticket_required) === 0) return renderFreeCard(ev);
       var tiers = (ev.tiers || []).map(function (t) {
