@@ -1269,6 +1269,16 @@
           <label class="checkout-label" for="co-email">Email *</label>
           <input id="co-email" class="checkout-input" type="email" autocomplete="email" required placeholder="your@email.com">
         </div>
+        <!-- story-buyer-gate-s2: invited buyer email verification
+             (window.GBEBuyerGate), full-width on its own row directly below
+             #co-email. display:none until the component's reachability probe
+             confirms the endpoint is live — pre-golive it renders NOTHING.
+             #checkout-submit-btn is NEVER gated on this widget's state, and
+             the /orders/public POST body NEVER carries the pass in S2
+             (publicOrderSchema is Joi .unknown(false) — adding a key would
+             400 every live order; the pass stays held in the controller
+             until S4 extends the schema). -->
+        <div id="checkout-buyer-gate" data-testid="checkout-buyer-gate" style="display:none;"></div>
         <div class="checkout-form-group">
           <label class="checkout-label" for="co-phone">Phone (optional)</label>
           <input id="co-phone" class="checkout-input" type="tel" autocomplete="tel" placeholder="+1 (555) 000-0000">
@@ -1338,6 +1348,10 @@
 </div><!-- /checkout-overlay -->
 
 <!-- QRCode.js (loaded on demand via script injection) -->
+<!-- story-buyer-gate-s2: shared buyer-gate component, loaded at PAGE-FRAGMENT
+     level (never in the SPA index shell). The file itself is idempotent under
+     PageLoader's re-execution of fragment scripts on SPA navigation. -->
+<script src="js/gbe-buyer-gate.js?v=1"></script>
 <script>
 (function () {
   'use strict';
@@ -1887,6 +1901,10 @@
     var form = $('checkout-form');
     if (form) form.reset();
 
+    // story-buyer-gate-s2: the email field was just cleared — discard any
+    // held pass and hide the widget until a fresh email re-activates it.
+    if (_buyerGateCtrl) _buyerGateCtrl.reset();
+
     // Industry invite (§iv): pre-fill the promo code from the deep link
     var promoEl = $('co-promo');
     if (promoEl && _inviteCode) promoEl.value = _inviteCode;
@@ -1975,6 +1993,40 @@
       handleCheckoutSubmit();
     });
   }
+
+  /* ── Buyer-gate (story-buyer-gate-s2): invited email verification ──────
+   * Auto-activates on blur/change of #co-email once the value is email-
+   * shaped. HARD CONSTRAINT (EO critical): the pass is held in the
+   * controller ONLY — handleCheckoutSubmit never reads it and the
+   * /orders/public body stays byte-identical in shape to pre-S2
+   * (publicOrderSchema is .unknown(false); a new key would 400 every live
+   * order). S4 wires the pass through after the schema is extended.
+   * Mount is deferred to the first trigger because the external component
+   * script loads async under PageLoader. */
+  var _buyerGateCtrl = null;
+  function ensureBuyerGate() {
+    if (_buyerGateCtrl || typeof GBEBuyerGate === 'undefined') return;
+    var host = $('checkout-buyer-gate');
+    if (!host) return;
+    _buyerGateCtrl = GBEBuyerGate.mount(host, {
+      purpose: 'ticket',
+      emailEditable: true,
+      getEmail: function () {
+        var el = $('co-email');
+        return el ? String(el.value || '').trim() : '';
+      }
+    });
+  }
+  (function () {
+    var coEmail = $('co-email');
+    if (!coEmail) return;
+    ['blur', 'change'].forEach(function (evt) {
+      coEmail.addEventListener(evt, function () {
+        ensureBuyerGate();
+        if (_buyerGateCtrl) _buyerGateCtrl.emailChanged();
+      });
+    });
+  })();
 
   function handleCheckoutSubmit() {
     setError('');
