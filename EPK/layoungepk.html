@@ -47,7 +47,7 @@
     "contactPoint": {
       "@type": "ContactPoint",
       "contactType": "Booking",
-      "email": "booking@layoungbandpage.com",
+      "email": "booking.agent@goldbottoment-llc.com",
       "availableLanguage": "English",
       "areaServed": ["East Coast", "Nationwide", "International"]
     },
@@ -73,7 +73,7 @@
     "name": "LA Young — Professional Booking",
     "description": "LA Young is available for professional engagements including concerts, festivals, corporate events, galas, fundraisers, private events, and tribute show productions. Performances available in full band, solo with tracks, acoustic duo, and corporate configurations. Set lengths range from 45 minutes to 2 hours. Serving the East Coast, nationwide, and internationally upon request.",
     "url": "https://layoungbandpage.com/EPK/layoungepk.html",
-    "email": "booking@layoungbandpage.com",
+    "email": "booking.agent@goldbottoment-llc.com",
     "areaServed": [
       { "@type": "Place", "name": "Washington DC Metropolitan Area" },
       { "@type": "Place", "name": "East Coast, United States" },
@@ -316,7 +316,7 @@
                confirms live streaming URLs (OI-11). Never ship a styled non-link. -->
         </div>
       </div>
-      <p class="section-subtitle">Recordings and unreleased material available on request for press and media &mdash; <a href="mailto:booking@layoungbandpage.com" style="color: var(--gold-accent);">booking@layoungbandpage.com</a>.</p>
+      <p class="section-subtitle">Recordings and unreleased material available on request for press and media &mdash; <a data-gbe-email href="#" style="color: var(--gold-accent);"></a>.</p>
 
       <hr class="sec-divider" />
 
@@ -435,7 +435,7 @@
         <img src="../images/artist/headshot1.jpg" alt="L.A. Young — Headshot" loading="lazy" />
       </div>
       <p class="section-subtitle" style="text-align: center;">
-        <a href="mailto:booking@layoungbandpage.com?subject=Hi-Res Photo Request" style="color: var(--gold-accent);">Request Hi-Res Photos</a>
+        <a data-gbe-email data-email-href-only data-email-subject="Hi-Res Photo Request" href="#" style="color: var(--gold-accent);">Request Hi-Res Photos</a>
       </p>
 
       <hr class="sec-divider" />
@@ -444,7 +444,7 @@
            TECHNICAL RIDER
            ============================================================ -->
       <h2 class="section-title">Stage &amp; Technical Rider</h2>
-      <p class="section-subtitle">Summary of standard requirements. Full technical rider provided on request &mdash; <a href="mailto:booking@layoungbandpage.com" style="color: var(--gold-accent);">booking@layoungbandpage.com</a>.</p>
+      <p class="section-subtitle">Summary of standard requirements. Full technical rider provided on request &mdash; <a data-gbe-email href="#" style="color: var(--gold-accent);"></a>.</p>
       <div class="rider-grid">
         <div class="rider-card">
           <h4>&#x1F3A4; Sound</h4>
@@ -529,7 +529,7 @@
           </div>
           <div class="ci-item">
             <div class="ci-label">Booking Email</div>
-            <div class="ci-value"><a href="mailto:booking@layoungbandpage.com">booking@layoungbandpage.com</a></div>
+            <div class="ci-value"><a data-gbe-email href="#"></a></div>
           </div>
           <div class="ci-item">
             <div class="ci-label">Location</div>
@@ -620,7 +620,7 @@
       <button type="submit">Send Message</button>
     </form>
     <p style="font-size: 11px; margin-top: 18px; text-align: center; color: #888;">
-      Or email directly: <a href="mailto:booking@layoungbandpage.com" style="color: var(--gold-accent);">booking@layoungbandpage.com</a>
+      Or email directly: <a data-gbe-email href="#" style="color: var(--gold-accent);"></a>
     </p>
   </div>
 </div>
@@ -877,7 +877,7 @@
       form.reset();
     })
     .catch(function() {
-      alert('Unable to send \u2014 please email us directly at booking@layoungbandpage.com');
+      alert('Unable to send \u2014 please email us directly at ' + ((window.SITE_CONFIG&&window.SITE_CONFIG.contacts&&window.SITE_CONFIG.contacts.booking)||'booking.agent@goldbottoment-llc.com'));
     })
     .then(function() {
       btn.disabled = false;
@@ -918,5 +918,8 @@ document.addEventListener('click', function(e) {
 });
 </script>
 
+  <!-- Contact Registry (CEO rule 2026-07-22): single-source booking contact + hydration -->
+  <script src="../js/config.js"></script>
+  <script>window.hydrateContacts && window.hydrateContacts(document);</script>
 </body>
 </html>

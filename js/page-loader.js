@@ -50,6 +50,10 @@ const PageLoader = {
       // Insert new content
       this.container.innerHTML = content;
 
+      // Contact Registry hydration (CEO rule 2026-07-22) — fill [data-gbe-email]
+      // from SITE_CONFIG before inline scripts run, so scripts see final DOM.
+      if (typeof window.hydrateContacts === 'function') window.hydrateContacts(this.container);
+
       // Execute any inline scripts (innerHTML doesn't run them)
       this.executeInlineScripts();
 

@@ -72,7 +72,7 @@
 
         <div class="hero-meta">
           <strong>Management:</strong> Gold Bottom Ent. LLC<br />
-          <strong>Booking:</strong> <a href="mailto:booking@layoungbandpage.com">booking@layoungbandpage.com</a><br />
+          <strong>Booking:</strong> <a data-gbe-email href="#"></a><br />
           <strong>Region:</strong> Washington, DC Metro &middot; East Coast &middot; Nationwide
         </div>
 
@@ -230,7 +230,7 @@
              confirms live streaming URLs (OI-11). Never ship a styled non-link. -->
       </div>
     </div>
-    <p class="sec-subtitle" style="margin-top: 1rem;">Recordings and unreleased material available on request for press and media &mdash; <a href="mailto:booking@layoungbandpage.com">booking@layoungbandpage.com</a>.</p>
+    <p class="sec-subtitle" style="margin-top: 1rem;">Recordings and unreleased material available on request for press and media &mdash; <a data-gbe-email href="#"></a>.</p>
   </div>
 </section>
 
@@ -361,7 +361,7 @@
     <div class="media-actions">
       <a href="../index.html#gallery" class="btn btn-ghost btn-sm">View Full Gallery</a>
       <a href="../index.html#videos" class="btn btn-ghost btn-sm">Watch Videos</a>
-      <a href="mailto:booking@layoungbandpage.com?subject=Hi-Res Photo Request" class="btn btn-ghost btn-sm">Request Hi-Res Photos</a>
+      <a data-gbe-email data-email-href-only data-email-subject="Hi-Res Photo Request" href="#" class="btn btn-ghost btn-sm">Request Hi-Res Photos</a>
     </div>
   </div>
 </section>
@@ -373,7 +373,7 @@
   <div class="epk-wrap">
     <div class="sec-label">Technical Requirements</div>
     <h2 class="sec-title">Stage &amp; Technical Rider</h2>
-    <p class="sec-subtitle">Summary of standard requirements. Full technical rider provided on request &mdash; <a href="mailto:booking@layoungbandpage.com">booking@layoungbandpage.com</a>.</p>
+    <p class="sec-subtitle">Summary of standard requirements. Full technical rider provided on request &mdash; <a data-gbe-email href="#"></a>.</p>
     <div class="rider-grid">
       <div class="rider-card">
         <h4>&#x1F3A4; Sound</h4>
@@ -465,7 +465,7 @@
         </div>
         <div class="c-item">
           <div class="c-label">Booking Email</div>
-          <div class="c-value"><a href="mailto:booking@layoungbandpage.com">booking@layoungbandpage.com</a></div>
+          <div class="c-value"><a data-gbe-email href="#"></a></div>
         </div>
         <div class="c-item">
           <div class="c-label">Location</div>
@@ -554,5 +554,8 @@ document.addEventListener('click', function(e) {
 });
 </script>
 
+  <!-- Contact Registry (CEO rule 2026-07-22): single-source booking contact + hydration -->
+  <script src="../js/config.js"></script>
+  <script>window.hydrateContacts && window.hydrateContacts(document);</script>
 </body>
 </html>

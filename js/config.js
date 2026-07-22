@@ -2,6 +2,15 @@
 window.SITE_CONFIG = {
   showPerformancesMenu: true,
 
+  // ── Contact Registry (CEO rule 2026-07-22) ─────────────────────────────
+  // Single source for business contact addresses on this site. Booking is
+  // handled by the agency (Gold Bottom Ent.) — booking.agent@ is the canonical
+  // public booking contact (D-60). NEVER hardcode a business email in pages
+  // or scripts; hydrate [data-gbe-email] elements or read this object.
+  contacts: {
+    booking: 'booking.agent@goldbottoment-llc.com'
+  },
+
   // Firebase config removed (fbexit S7): the client Firebase SDK no longer
   // loads anywhere on this site — auth + data run on Supabase (see
   // LA_AUTH_SOURCE below). Every SITE_CONFIG.firebase consumer guards
@@ -240,3 +249,25 @@ window.LAAuth = (function () {
     currentUserSync: function () { return null; }
   };
 })();
+
+// ── Contact Registry hydration (CEO rule 2026-07-22) ─────────────────────
+// Fills every [data-gbe-email] element from SITE_CONFIG.contacts.booking —
+// <a data-gbe-email></a>                        → href=mailto:X, text=X
+// <a data-gbe-email data-email-href-only></a>   → href only (keeps custom label)
+// <a data-gbe-email data-email-subject="...">   → href=mailto:X?subject=...
+// Called by PageLoader after each fragment injection; standalone pages
+// (EPK) load config.js and call it inline. Safe to call repeatedly.
+window.hydrateContacts = function (root) {
+  var cfg = window.SITE_CONFIG;
+  if (!cfg || !cfg.contacts || !cfg.contacts.booking) return;
+  var email = cfg.contacts.booking;
+  var nodes = (root || document).querySelectorAll('[data-gbe-email]');
+  for (var i = 0; i < nodes.length; i++) {
+    var el = nodes[i];
+    if (el.tagName === 'A') {
+      var subj = el.getAttribute('data-email-subject');
+      el.setAttribute('href', 'mailto:' + email + (subj ? '?subject=' + encodeURIComponent(subj) : ''));
+    }
+    if (!el.hasAttribute('data-email-href-only')) el.textContent = email;
+  }
+};

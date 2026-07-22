@@ -19,7 +19,8 @@
  */
 
 const Forms = {
-  FALLBACK_EMAIL: 'booking@layoungbandpage.com',
+  // Contact Registry (CEO rule 2026-07-22): read the single source — never hardcode.
+  FALLBACK_EMAIL: (window.SITE_CONFIG && window.SITE_CONFIG.contacts && window.SITE_CONFIG.contacts.booking) || 'booking.agent@goldbottoment-llc.com',
 
   /**
    * Supabase config from SITE_CONFIG. The anon (publishable) key is client-safe
