@@ -167,7 +167,6 @@
   margin-bottom: 1rem;
   line-height: 1.5;
 }
-.event-tiers { display: flex; flex-direction: column; gap: 0.6rem; }
 .tier-row {
   display: flex;
   flex-wrap: wrap;            /* name/price own the first line; badge + button beneath */
@@ -228,28 +227,6 @@
 .tier-btn:disabled { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.35); cursor: not-allowed; }
 .tier-btn-free { background: var(--color-accent, #e63946); color: #fff; }
 .tier-btn-coming-soon { background: transparent; border: 1px solid rgba(255,215,0,0.3); color: var(--color-primary,#ffd700); cursor: default; font-size: 0.75rem; }
-
-/* ── EXTERNAL-ticketing card (story-external-ticketing-lay-mirror) ──
-   Venue runs its own ticketing: one honest CTA + "Tickets via {host}" cue,
-   internal tier/price/status/buy affordances suppressed. */
-.event-card-ext {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.6rem;
-}
-.event-card-ext-cue {
-  font-size: 0.85rem;
-  font-weight: 700;
-  color: var(--color-primary, #ffd700);
-}
-.event-card-ext-cta {
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
 
 /* ── Industry guest-list banner (D-52 §iv — #shows?invite=CODE) ── */
 .invite-banner {
@@ -340,13 +317,11 @@
    state is known (events → Get Tickets scroll; none/unreachable → booking). */
 .night-cta-row .btn { min-height: 44px; }
 
-/* ── Per-event Notify Me (story-lay-tour-notify, EO brief §2) ─────────
-   Retires the old page-level #notify-zone. Every TICKETED card carries a
-   compact summary row ABOVE its tier list: price range + status chip + an
-   always-visible, state-driven Notify button that NEVER disappears (only its
-   label/wants changes by ev.status). The per-tier tap-to-checkout buttons in
-   .event-tiers below are UNTOUCHED. Modeled on GBE's shipped ticketedFooter,
-   built natively in LAY's idiom (repos independent — no copy-sync). */
+/* ── Card summary row (owner 07-23) ──────────────────────────────────
+   Every card carries a compact summary row stating its admission MODEL
+   (owner A2) + status chip: ticketed → "Tickets — $X" / range + chip; free →
+   "Free — no ticket needed"; external → "Tickets via {host}". The two-button
+   footer (.event-card-actions: ticket + notify) sits below it. */
 .event-summary-row {
   display: flex;
   flex-wrap: wrap;
@@ -371,7 +346,7 @@
   color: var(--color-primary, #ffd700);
 }
 /* Notify button — OUTLINE gold so it reads as secondary to the solid-gold
-   per-tier "Get Tickets" buttons (clear hierarchy, no affordance collision). */
+   "Get Tickets" ticket button (clear hierarchy, no affordance collision). */
 .tier-btn-notify {
   background: transparent;
   border: 1px solid rgba(255,215,0,0.45);
@@ -379,6 +354,93 @@
   flex-shrink: 0;
 }
 .tier-btn-notify:hover { background: rgba(255,215,0,0.1); opacity: 1; }
+
+/* ── Two-button card footer (owner 07-23) ─────────────────────────────
+   Every card gets EXACTLY two controls: a state-driven Ticket button (solid
+   gold, the primary CTA) + a Notify Me button (outline gold, secondary). They
+   share one row and each take half the width; at very narrow widths they wrap
+   to full-width stacked so a long label ("Join Waitlist") never clips. */
+.event-card-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));  /* two equal cols; collapses to one when too narrow — never clips */
+  gap: 0.6rem;
+  align-items: stretch;
+}
+.event-card-actions > .tier-btn {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;   /* the external ticket control is an <a> */
+}
+/* The lone Ticket button keeps the solid-gold .tier-btn look for its LIVE
+   state; disabled states (Free / On sale soon / Sold Out) fall back to the
+   shared .tier-btn:disabled treatment. "Free" is accent-red to read as a
+   distinct, positive "no ticket needed" state rather than a dead control. */
+.lay-ticket-btn.lay-ticket-free:disabled {
+  background: rgba(230,57,70,0.16);
+  color: rgba(255,255,255,0.75);
+  border: 1px solid rgba(230,57,70,0.4);
+}
+.lay-ticket-btn.lay-ticket-soon:disabled {
+  background: transparent;
+  border: 1px solid rgba(255,215,0,0.3);
+  color: rgba(255,215,0,0.65);
+}
+/* Honest "Tickets via {host}" cue for external-ticketing shows — sits in the
+   summary-info row above the footer, never as a third button. */
+.event-summary-ext { color: var(--color-primary, #ffd700); font-weight: 700; }
+
+/* ── Checkout tier-picker step (owner 07-23) ──────────────────────────
+   NEW front step shown ONLY when a fan taps the single "Get Tickets" on a
+   MULTI-tier show: pick the ticket type first, then the existing Your Info →
+   Payment → Ticket flow runs unchanged. Single-tier shows skip this entirely. */
+.checkout-choose-prompt {
+  font-family: var(--font-primary, 'Playfair Display', serif);
+  font-size: 1.05rem;
+  color: #fff;
+  margin: 0.4rem 0 0.9rem;
+}
+.choose-tier-list { display: flex; flex-direction: column; gap: 0.7rem; }
+.choose-tier-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 56px;
+  padding: 0.7rem 1rem;
+  text-align: left;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,215,0,0.25);
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.choose-tier-row:hover:not(:disabled) {
+  border-color: var(--color-primary, #ffd700);
+  background: rgba(255,215,0,0.08);
+}
+.choose-tier-row:disabled { opacity: 0.5; cursor: not-allowed; }
+.choose-tier-name { font-size: 0.98rem; font-weight: 600; min-width: 0; }
+.choose-tier-meta { display: inline-flex; align-items: center; gap: 0.6rem; flex-shrink: 0; }
+.choose-tier-price { font-size: 0.95rem; font-weight: 700; color: var(--color-primary, #ffd700); }
+.choose-tier-row.is-sold-out .choose-tier-price { color: rgba(255,255,255,0.4); }
+.choose-tier-left {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #ffa500;
+}
+.choose-tier-flag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.45);
+}
 /* Confirmed pill (per event id) — swapped in after this card's opt-in. Other
    cards keep their live Notify button (per-event localStorage isolation). */
 .lay-notify-confirmed {
@@ -1045,7 +1107,7 @@
            three-tap path before the fan starts. Shown only when a real show is
            listed; hidden in the loading/fallback states. -->
       <p id="ticket-browse-hint" class="ticket-browse-hint" hidden>
-        Pick your show &amp; ticket type below &mdash; then it&rsquo;s just <strong>Your Info &rarr; Payment &rarr; Ticket</strong>.
+        Pick your show below &mdash; choose your ticket type next, then it&rsquo;s just <strong>Your Info &rarr; Payment &rarr; Ticket</strong>.
       </p>
 
       <!-- Events grid (shown when events exist) -->
@@ -1306,6 +1368,19 @@
       <strong>Test mode</strong> &mdash; this checkout is a live preview of our
       ticketing. No real payment is processed and no card is required.
       Test orders are not valid tickets.
+    </div>
+
+    <!-- Step: Choose your ticket (owner 07-23) — the NEW front step. Shown ONLY
+         when a fan taps the single "Get Tickets" on a MULTI-tier show; the fan
+         picks a tier here, then the EXISTING Your Info → Payment → Ticket flow
+         runs unchanged with that tier selected. Single-tier shows skip straight
+         past this. The 3-dot signpost above is hidden while this shows — it
+         signposts the purchase flow, not the pre-pick. -->
+    <div id="step-choose" hidden>
+      <p id="choose-event-title" class="checkout-event-title"></p>
+      <p id="choose-event-meta" class="checkout-event-meta"></p>
+      <p class="checkout-choose-prompt">Choose your ticket</p>
+      <div id="choose-tier-list" class="choose-tier-list"></div>
     </div>
 
     <!-- Step: Order Form -->
@@ -1752,53 +1827,98 @@
       : 'Tickets — ' + fmtPrice(lo) + '–' + fmtPrice(hi);
   }
 
-  /* ── Free-show ANNOUNCEMENT card (ticket_required=0): date/venue/time +
-   * "Free — no ticket needed" badge. NO checkout CTA, no price row — there is
-   * nothing to buy; the card is the announcement (S2 §2g + owner A2). ── */
-  function renderFreeCard(ev) {
-    var timeLine = '';
-    if (ev.doors_open || ev.show_time) {
-      var bits = [];
-      if (ev.doors_open) bits.push('Doors ' + escHtml(ev.doors_open));
-      if (ev.show_time) bits.push('Show ' + escHtml(ev.show_time));
-      timeLine = '<div class="event-card-venue">' + bits.join(' &middot; ') + '</div>';
+  /* ── Card TICKET control (owner 07-23) ────────────────────────────────
+   * Exactly ONE state-driven ticket button per card (collapses the old per-tier
+   * button list). One of five shapes:
+   *   external_ticket_url → venue's own live CTA: a real <a> to the venue link
+   *     in a NEW TAB (accessible, works without JS). https-validated at the GBE
+   *     source; escHtml is defense-in-depth on the href.
+   *   ticket_required=0   → DISABLED, captioned "Free" (accent styling) — the
+   *     show is free; there is nothing to buy, but the card still notifies.
+   *   sold_out            → DISABLED "Sold Out".
+   *   announced           → DISABLED "On sale soon".
+   *   on_sale/selling_fast/almost_sold_out → ENABLED "Get Tickets" (data-ev):
+   *     opens checkout; the fan picks the ticket type as the FIRST checkout step
+   *     (tier-picker) — or, for a single-tier show, straight into Your Info. */
+  function ticketControl(ev) {
+    if (ev.external_ticket_url) {
+      var host = hostOf(ev.external_ticket_url);
+      return '<a class="tier-btn lay-ticket-btn lay-ticket-ext" href="' + escHtml(ev.external_ticket_url) +
+        '" target="_blank" rel="noopener" aria-label="Get tickets via ' + escHtml(host) + ' (opens in a new tab)">Get Tickets</a>';
     }
-    return '<div class="event-card scroll-reveal">' +
-      (ev.imageUrl ? '<img class="event-card-img" src="' + escHtml(ev.imageUrl) + '" alt="' + escHtml(ev.event_name) + '" loading="lazy">' : '') +
-      (String(ev.event_name || '').indexOf('L.A. Young & Soul Society') === 0 ? '' :
-        '<div class="event-card-kicker">' + escHtml('L.A. Young & Soul Society present') + '</div>') +
-      '<h3 class="event-card-name">' + escHtml(ev.event_name) + '</h3>' +
-      '<div class="event-card-date">' + fmtDate(ev.event_date) + (ev.venue ? ' · ' + escHtml(ev.venue) : '') + '</div>' +
-      timeLine +
-      (ev.description ? '<p class="event-card-desc">' + escHtml(ev.description) + '</p>' : '') +
-      '<div class="tier-row"><span class="tier-badge tier-badge-available">Free &mdash; no ticket needed</span></div>' +
-    '</div>';
+    if (Number(ev.ticket_required) === 0) {
+      return '<button type="button" class="tier-btn lay-ticket-btn lay-ticket-free" disabled aria-disabled="true">Free</button>';
+    }
+    if (ev.status === 'sold_out') {
+      return '<button type="button" class="tier-btn lay-ticket-btn" disabled aria-disabled="true">Sold Out</button>';
+    }
+    if (ev.status === 'announced') {
+      return '<button type="button" class="tier-btn lay-ticket-btn lay-ticket-soon" disabled aria-disabled="true">On sale soon</button>';
+    }
+    // on_sale | selling_fast | almost_sold_out
+    return '<button type="button" class="tier-btn lay-ticket-btn" data-ev="' + escHtml(ev.id) + '">Get Tickets</button>';
   }
 
-  /* ── EXTERNAL-ticketing card (story-external-ticketing-lay-mirror) ──
-   * When a show carries external_ticket_url, the venue runs its own ticketing:
-   * render ONE honest external CTA — a real anchor (accessible, works without
-   * JS) to the venue's link in a NEW TAB (rel="noopener") — with a "Tickets via
-   * {host}" cue, and SUPPRESS every internal tier/price/status/buy affordance.
-   * Mirrors the GBE show-card.js external branch's behavior + honesty, built
-   * natively in LAY's renderer (repos independent — no copy-sync). The URL is
-   * https-validated server-side at the GBE source; escHtml still escapes it
-   * here (defense-in-depth: &, <, >, " are neutralized inside the double-quoted
-   * href/attribute, so no breakout even on an unexpected value). */
-  function renderExternalCard(ev) {
-    var url  = ev.external_ticket_url;
-    var host = hostOf(url);
+  /* ── Card NOTIFY control (owner 07-23) ─────────────────────────────────
+   * The second of the two buttons, on EVERY card (free + external included).
+   * State-aware label via notifyState(); reuses the existing LayNotify capture
+   * unchanged (same data-* payload the wire()/open() path already reads). */
+  function notifyControl(ev) {
+    var ns = notifyState(ev.status, Number(ev.ticket_required) === 0);
+    return '<button type="button" class="tier-btn tier-btn-notify lay-notify-btn"' +
+      ' data-notify-id="' + escHtml(ev.id) + '"' +
+      ' data-notify-name="' + escHtml(ev.event_name) + '"' +
+      ' data-notify-state="' + escHtml(ev.status) + '"' +
+      ' data-notify-wants="' + ns.wants + '">' + escHtml(ns.label) + '</button>';
+  }
+
+  /* ── Doors/Show time line (shared) ── */
+  function timeLineHtml(ev) {
+    if (!ev.doors_open && !ev.show_time) return '';
+    var bits = [];
+    if (ev.doors_open) bits.push('Doors ' + escHtml(ev.doors_open));
+    if (ev.show_time)  bits.push('Show ' + escHtml(ev.show_time));
+    return '<div class="event-card-venue">' + bits.join(' &middot; ') + '</div>';
+  }
+
+  /* ── Unified event card (owner 07-23) ──────────────────────────────────
+   * ONE renderer for every show — ticketed, free, and external — each ending in
+   * the SAME two-button footer (ticket + notify). Replaces the retired
+   * renderFreeCard / renderExternalCard single-treatment cards. The admission
+   * model line (owner A2) still states the model on every card:
+   *   ticketed → "Tickets — $X" / range + status chip (+ TEST-MODE ribbon)
+   *   free     → "Free — no ticket needed"
+   *   external → "Tickets via {host}" (the honest cue — text, never a 3rd button)
+   */
+  function renderCard(ev) {
+    var isFree     = Number(ev.ticket_required) === 0;
+    var isExternal = !!ev.external_ticket_url;
+
+    var infoLine;
+    if (isExternal) {
+      infoLine = '<span class="event-summary-price event-summary-ext">Tickets via ' + escHtml(hostOf(ev.external_ticket_url)) + '</span>';
+    } else if (isFree) {
+      infoLine = '<span class="event-summary-price">Free &mdash; no ticket needed</span>';
+    } else {
+      infoLine = '<span class="event-summary-price">' + escHtml(admissionLine(ev)) + '</span>' + buildBadge(ev.status);
+    }
+
+    // TEST-MODE ribbon only where the internal mock-payment checkout runs —
+    // never on free/external cards (no internal checkout ⇒ the label would lie).
+    var showRibbon = TICKETING_TEST_MODE && !isFree && !isExternal;
+
     return '<div class="event-card scroll-reveal">' +
+      (showRibbon ? '<span class="event-card-ribbon">Test Mode</span>' : '') +
       (ev.imageUrl ? '<img class="event-card-img" src="' + escHtml(ev.imageUrl) + '" alt="' + escHtml(ev.event_name) + '" loading="lazy">' : '') +
       (String(ev.event_name || '').indexOf('L.A. Young & Soul Society') === 0 ? '' :
         '<div class="event-card-kicker">' + escHtml('L.A. Young & Soul Society present') + '</div>') +
       '<h3 class="event-card-name">' + escHtml(ev.event_name) + '</h3>' +
       '<div class="event-card-date">' + fmtDate(ev.event_date) + (ev.venue ? ' · ' + escHtml(ev.venue) : '') + '</div>' +
+      timeLineHtml(ev) +
       (ev.description ? '<p class="event-card-desc">' + escHtml(ev.description) + '</p>' : '') +
-      '<div class="event-card-ext">' +
-        '<span class="event-card-ext-cue">Tickets via ' + escHtml(host) + '</span>' +
-        '<a class="tier-btn event-card-ext-cta" href="' + escHtml(url) + '" target="_blank" rel="noopener">Get Tickets</a>' +
-      '</div>' +
+      '<div class="event-summary-row"><div class="event-summary-info">' + infoLine + '</div></div>' +
+      // The two-button footer: ONE ticket control + ONE notify control, always.
+      '<div class="event-card-actions">' + ticketControl(ev) + notifyControl(ev) + '</div>' +
     '</div>';
   }
 
@@ -1836,92 +1956,23 @@
   function renderEvents(events) {
     var grid = $('ticket-events');
     if (!grid) return;
-    grid.innerHTML = events.map(function (ev) {
-      // External ticketing OVERRIDES internal (checked FIRST): the venue sells
-      // this show on its own service, so there are no internal tiers to render.
-      // A published external show would otherwise be a ticket_required card with
-      // zero tiers = a silent dead-end. This closes it.
-      if (ev.external_ticket_url) return renderExternalCard(ev);
-      // Free show (ticket_required=0) → announcement card, no checkout.
-      if (Number(ev.ticket_required) === 0) return renderFreeCard(ev);
-      var tiers = (ev.tiers || []).map(function (t) {
-        var isSoldOut   = t.status === 'sold_out';
-        var isAnnounced = t.status === 'announced';
-        var isFree      = !t.price_cents || t.price_cents === 0;
-        // announced = the honest pre-sale state: the button is DISABLED, not a
-        // tappable nothing (design F2 — zero dead-end taps).
-        var btnDisabled = (isSoldOut || isAnnounced) ? 'disabled' : '';
-        var btnClass    = isSoldOut   ? ''
-                        : isAnnounced ? 'tier-btn-coming-soon'
-                        : isFree      ? 'tier-btn-free'
-                        : '';
-        var btnLabel    = isSoldOut   ? 'Sold Out'
-                        : isAnnounced ? 'Coming Soon'
-                        : isFree      ? 'Free Ticket'
-                        : 'Get Tickets';
-        var btnOnClick  = (!isSoldOut && !isAnnounced)
-          ? 'data-ev="' + ev.id + '" data-tier="' + t.id + '"'
-          : '';
-        // Availability display rule (F2): show the exact count ONLY when it is
-        // real scarcity — 20 or fewer left. Otherwise no count.
-        var availHtml = (t.available != null && t.available > 0 && t.available <= 20)
-          ? '<div class="tier-avail">' + t.available + ' left</div>'
-          : '';
-        return '<div class="tier-row' + (isSoldOut ? ' tier-sold-out' : '') + '">' +
-          '<div class="tier-info-left">' +
-            '<div class="tier-name">' + escHtml(t.tier_name) + '</div>' +
-            '<div class="tier-price">' + fmtPrice(t.price_cents) + '</div>' +
-            availHtml +
-          '</div>' +
-          buildBadge(t.status) +
-          '<button class="tier-btn ' + btnClass + '" ' + btnDisabled + ' ' + btnOnClick + '>' +
-            btnLabel +
-          '</button>' +
-        '</div>';
-      }).join('');
-
-      // State-driven Notify button (never disappears): announced→Notify Me,
-      // on_sale/selling_fast/almost_sold_out→Remind Me, sold_out→Join Waitlist.
-      var ns = notifyState(ev.status);
-      return '<div class="event-card scroll-reveal">' +
-        (TICKETING_TEST_MODE ? '<span class="event-card-ribbon">Test Mode</span>' : '') +
-        (ev.imageUrl ? '<img class="event-card-img" src="' + escHtml(ev.imageUrl) + '" alt="' + escHtml(ev.event_name) + '" loading="lazy">' : '') +
-        (String(ev.event_name || '').indexOf('L.A. Young & Soul Society') === 0 ? '' :
-        '<div class="event-card-kicker">' + escHtml('L.A. Young & Soul Society present') + '</div>') +
-        '<h3 class="event-card-name">' + escHtml(ev.event_name) + '</h3>' +
-        '<div class="event-card-date">' + fmtDate(ev.event_date) + (ev.venue ? ' · ' + escHtml(ev.venue) : '') + '</div>' +
-        (ev.description ? '<p class="event-card-desc">' + escHtml(ev.description) + '</p>' : '') +
-        // Summary row (EO §2): admission model (owner A2) + status chip + the
-        // always-visible, state-driven Notify button — ABOVE the tier list. The
-        // per-tier tap-to-checkout buttons in .event-tiers below are UNTOUCHED.
-        '<div class="event-summary-row">' +
-          '<div class="event-summary-info">' +
-            '<span class="event-summary-price">' + escHtml(admissionLine(ev)) + '</span>' +
-            buildBadge(ev.status) +
-          '</div>' +
-          '<button type="button" class="tier-btn tier-btn-notify lay-notify-btn"' +
-            ' data-notify-id="' + escHtml(ev.id) + '"' +
-            ' data-notify-name="' + escHtml(ev.event_name) + '"' +
-            ' data-notify-state="' + escHtml(ev.status) + '"' +
-            ' data-notify-wants="' + ns.wants + '">' + escHtml(ns.label) + '</button>' +
-        '</div>' +
-        '<div class="event-tiers">' + tiers + '</div>' +
-      '</div>';
-    }).join('');
+    // ONE unified card per show (ticketed / free / external), each ending in the
+    // same two-button footer. The old external/free single-treatment branches
+    // are folded into renderCard (owner 07-23).
+    grid.innerHTML = events.map(renderCard).join('');
 
     showEl('ticket-events');
 
-    // Wire tier buttons — WAVE 2: checkout is live through the public bridge.
-    // A tap on an on-sale tier opens the built overlay for that event + tier.
-    var btns = grid.querySelectorAll('.tier-btn[data-ev]');
-    btns.forEach(function (btn) {
+    // Wire the single "Get Tickets" button (only the ENABLED on-sale variant
+    // carries data-ev; free/announced/sold-out are disabled and external is an
+    // <a>). A tap begins the ticket flow: the tier-picker for a multi-tier show,
+    // or straight into Your Info for a single-tier show.
+    grid.querySelectorAll('.lay-ticket-btn[data-ev]').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var evId   = btn.getAttribute('data-ev');
-        var tierId = btn.getAttribute('data-tier');
-        var ev = null, tier = null;
+        var evId = btn.getAttribute('data-ev');
+        var ev = null;
         _events.forEach(function (e) { if (e.id === evId) ev = e; });
-        if (ev) (ev.tiers || []).forEach(function (t) { if (t.id === tierId) tier = t; });
-        if (ev && tier) openCheckout(ev, tier);
+        if (ev) beginTicketFlow(ev);
       });
     });
 
@@ -1933,11 +1984,28 @@
     updateInviteBanner(events);
   }
 
-  /* Per-state Notify button matrix (EO §2 · mirrors GBE ticketedFooter):
+  /* ── Ticket-flow entry (owner 07-23) ──────────────────────────────────
+   * The single "Get Tickets" button routes here. A MULTI-tier show shows the
+   * "Choose your ticket" step FIRST; a single-tier show auto-selects and goes
+   * straight into the existing Your Info → Payment → Ticket flow. */
+  function beginTicketFlow(ev) {
+    var tiers = ev.tiers || [];
+    if (tiers.length > 1) {
+      openTierChooser(ev);
+    } else if (tiers.length === 1) {
+      openCheckout(ev, tiers[0]);
+    }
+    // 0 tiers can't reach here — the on-sale button only renders for a ticketed
+    // show, which always has ≥1 tier from the readmodel mapping.
+  }
+
+  /* Per-state Notify button matrix (EO §2 · owner 07-23):
+   *   free (ticket_required=0) → "Remind Me"   wants=reminder  (checked FIRST)
    *   announced (+ any unknown) → "Notify Me"   wants=onsale
    *   on_sale/selling_fast/almost_sold_out → "Remind Me"  wants=reminder
    *   sold_out → "Join Waitlist"  wants=waitlist                          */
-  function notifyState(status) {
+  function notifyState(status, isFree) {
+    if (isFree) return { label: 'Remind Me', wants: 'reminder' };
     if (status === 'sold_out') return { label: 'Join Waitlist', wants: 'waitlist' };
     if (status === 'on_sale' || status === 'selling_fast' || status === 'almost_sold_out') {
       return { label: 'Remind Me', wants: 'reminder' };
@@ -2046,10 +2114,73 @@
 
     hideEl('checkout-hold-note');
     setError('');
+    hideEl('step-choose');       // leaving the pre-pick behind (owner 07-23)
+    showEl('checkout-steps');    // the purchase-flow signpost belongs here
     showEl('step-form');
     hideEl('step-processing');
     hideEl('step-confirmation');
     setStep(1); // reset the signpost to "Your Info" on every open
+
+    var overlay = $('checkout-overlay');
+    if (overlay) overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  /* ── Tier-picker front step (owner 07-23) ─────────────────────────────
+   * Opened from the single "Get Tickets" on a MULTI-tier show. Lists each tier
+   * (name + price; sold-out tiers disabled) as a tappable row. Tapping a live
+   * row calls openCheckout(ev, tier) — dropping the fan into the EXISTING Your
+   * Info → Payment → Ticket flow with that tier selected. No checkout logic is
+   * duplicated here; this is purely the pick screen. The 3-dot purchase-flow
+   * signpost is hidden while this shows (it signposts the flow, not the pick). */
+  function openTierChooser(ev) {
+    _selectedEvent  = ev;
+    _selectedTier   = null;
+    _orderId        = null;
+    _orderConfirmed = false;
+
+    var titleEl = $('choose-event-title');
+    if (titleEl) titleEl.textContent = ev.event_name;
+    var metaEl = $('choose-event-meta');
+    if (metaEl) metaEl.textContent = (ev.event_date ? fmtDate(ev.event_date) : '') + (ev.venue ? ' · ' + ev.venue : '');
+
+    var list = $('choose-tier-list');
+    if (list) {
+      list.innerHTML = (ev.tiers || []).map(function (t) {
+        var sold = t.status === 'sold_out';
+        // Scarcity count only when it is real (≤20 left) and the tier is live.
+        var availHtml = (!sold && t.available != null && t.available > 0 && t.available <= 20)
+          ? '<span class="choose-tier-left">' + t.available + ' left</span>' : '';
+        return '<button type="button" class="choose-tier-row' + (sold ? ' is-sold-out' : '') + '"' +
+          ' data-tier="' + escHtml(t.id) + '"' + (sold ? ' disabled aria-disabled="true"' : '') + '>' +
+          '<span class="choose-tier-name">' + escHtml(t.tier_name) + '</span>' +
+          '<span class="choose-tier-meta">' +
+            '<span class="choose-tier-price">' + fmtPrice(t.price_cents) + '</span>' +
+            (sold ? '<span class="choose-tier-flag">Sold Out</span>' : availHtml) +
+          '</span>' +
+        '</button>';
+      }).join('');
+
+      list.querySelectorAll('.choose-tier-row[data-tier]:not(:disabled)').forEach(function (row) {
+        row.addEventListener('click', function () {
+          var tierId = row.getAttribute('data-tier');
+          var tier = null;
+          (ev.tiers || []).forEach(function (t) { if (t.id === tierId) tier = t; });
+          if (tier) openCheckout(ev, tier); // → existing Your Info flow, tier set
+        });
+      });
+    }
+
+    // TEST-MODE banner honest on the pre-pick too.
+    var tm = $('checkout-testmode');
+    if (tm) tm.hidden = !TICKETING_TEST_MODE;
+
+    setError('');
+    hideEl('checkout-steps');     // no purchase-flow signpost on the pre-pick
+    hideEl('step-form');
+    hideEl('step-processing');
+    hideEl('step-confirmation');
+    showEl('step-choose');
 
     var overlay = $('checkout-overlay');
     if (overlay) overlay.hidden = false;
@@ -2108,6 +2239,9 @@
     _orderConfirmed = false;
     _selectedEvent  = null;
     _selectedTier   = null;
+    // Reset the pre-pick step + restore the flow signpost for the next open.
+    hideEl('step-choose');
+    showEl('checkout-steps');
   }
 
   /* ── Form submit ────────────────────────────────────────── */
