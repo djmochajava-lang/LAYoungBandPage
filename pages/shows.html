@@ -1122,7 +1122,9 @@
       <!-- Events grid (shown when events exist) -->
       <div id="ticket-events" class="ticket-events-grid" hidden></div>
 
-      <!-- Fallback: no events in the cache or cache unreachable -->
+      <!-- Fallback: genuine true-zero — the readmodel fetch SUCCEEDED and there
+           are 0 real shows. This "no shows on sale" copy is correct ONLY here,
+           never for a transient fetch failure (that is #ticket-error below). -->
       <div id="ticket-fallback" class="upcoming-announcement scroll-reveal" hidden>
         <h3>Check Back for Upcoming Shows</h3>
         <p>
@@ -1132,6 +1134,22 @@
         <!-- The fake "Tickets Coming Soon" span is GONE (audit 2.1 / design D4):
              a real listing renders above when a show exists; the one honest CTA
              here is the notify zone below. -->
+      </div>
+
+      <!-- Transient trouble state (2026-07-23 stale-while-revalidate fix): the
+           listing fetch FAILED and there is NO cached show to fall back on. The
+           shows almost certainly still exist, so we NEVER show the misleading
+           "no shows on sale" copy here — just an honest "having trouble" note
+           and a real Retry that re-invokes loadEvents(). When a cached show is
+           already on screen, a re-visit fetch failure keeps the cards silently
+           and this state never appears. -->
+      <div id="ticket-error" class="upcoming-announcement scroll-reveal" hidden>
+        <h3>Having Trouble Loading Shows</h3>
+        <p>
+          We couldn&rsquo;t reach the show listing just now &mdash; this is
+          usually a brief network hiccup, and the shows are still there.
+        </p>
+        <button type="button" id="ticket-retry" class="btn btn-primary btn-large">Retry</button>
       </div>
 
       <!-- The old page-level #notify-zone is RETIRED (EO brief §3): replaced by
@@ -1772,53 +1790,133 @@
     };
   }
 
+  /* ── Last-good listing cache (stale-while-revalidate, 2026-07-23) ───────
+   * The re-visit "no shows on sale" bug: on an SPA re-visit the readmodel
+   * re-fetch can transiently fail (mobile flakiness / AbortController timeout /
+   * rapid re-nav), and the old loadEvents() answered ANY failure with the
+   * "no shows on sale" empty state — telling the fan the shows are gone when
+   * they exist. Fix: cache the last-good raw rows in sessionStorage (per-tab,
+   * per-session so it can't go stale across sessions) and render them instantly
+   * on re-visit, THEN refresh from the network. A failed refresh keeps the
+   * cached cards silently; the "no shows" copy is reserved for a genuine
+   * true-zero SUCCESS. */
+  var SHOWS_CACHE_KEY = 'layoung-shows-rows';
+
+  function readCachedRows() {
+    try {
+      var raw = sessionStorage.getItem(SHOWS_CACHE_KEY);
+      if (!raw) return null;
+      var rows = JSON.parse(raw);
+      return Array.isArray(rows) ? rows : null;
+    } catch (e) { return null; }
+  }
+  function writeCachedRows(rows) {
+    try { sessionStorage.setItem(SHOWS_CACHE_KEY, JSON.stringify(rows || [])); }
+    catch (e) { /* private-mode / quota — cache is best-effort, never fatal */ }
+  }
+
+  /* Shared render path for BOTH the cached (instant) render and the fresh
+   * network render: the SAME demo filter + map + renderEvents used before.
+   * Sets _events and returns the count of REAL shows (0 = genuinely empty
+   * after the demo filter — the only state the "no shows" fallback is for). */
+  function renderFromRows(rows) {
+    // Never render demo/test-recording fixtures on the fan page. These are the
+    // "(DEMO …)" rows left live in the readmodel by the 07-19 recording session
+    // (source rows to be unpublished from the SoR via the BM dashboard separately).
+    var events = (rows || [])
+      .filter(function (row) { return !/\(DEMO\b/i.test(row.event_name || ''); })
+      .map(mapReadmodelEvent);
+    _events = events;
+    if (!events.length) return 0;
+    renderEvents(events);
+    updateNightCTA(true);         // "The Night" hero → Get Tickets variant
+    showEl('ticket-browse-hint'); // guided-flow signpost above the cards
+    return events.length;
+  }
+
   function loadEvents() {
-    showEl('ticket-loading');
-    hideEl('ticket-events');
-    hideEl('ticket-browse-hint');
     hideEl('ticket-fallback');
+    hideEl('ticket-error');
+
+    // (1)/(2) Stale-while-revalidate: paint last-good rows instantly so an SPA
+    // re-visit never flashes an empty state during the network round-trip.
+    var cachedRows = readCachedRows();
+    var cardsShown = (cachedRows && cachedRows.length) ? (renderFromRows(cachedRows) > 0) : false;
+
+    if (cardsShown) {
+      hideEl('ticket-loading');          // real shows already on screen
+    } else {
+      showEl('ticket-loading');
+      hideEl('ticket-events');
+      hideEl('ticket-browse-hint');
+    }
 
     var sb = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.supabase) ? SITE_CONFIG.supabase : null;
     if (!sb || !sb.url || !sb.anonKey) {
       hideEl('ticket-loading');
-      showFallback();
+      if (!cardsShown) showFallback();   // no config + no cache ⇒ prior behavior
       return;
     }
 
-    fetchWithTimeout(
-      sb.url + '/rest/v1/ticket_event_readmodel?select=*&order=event_date.asc',
-      { headers: { 'apikey': sb.anonKey, 'Authorization': 'Bearer ' + sb.anonKey } },
-      8000
-    )
-      .then(function (res) {
-        if (!res.ok) throw new Error('readmodel returned ' + res.status);
-        return res.json();
-      })
-      .then(function (rows) {
-        hideEl('ticket-loading');
-        // Never render demo/test-recording fixtures on the fan page. These are the
-        // "(DEMO …)" rows left live in the readmodel by the 07-19 recording session
-        // (source rows to be unpublished from the SoR via the BM dashboard separately).
-        var events = (rows || [])
-          .filter(function (row) { return !/\(DEMO\b/i.test(row.event_name || ''); })
-          .map(mapReadmodelEvent);
-        if (!events.length) { showFallback(); return; }
-        _events = events;
-        renderEvents(events);
-        updateNightCTA(true); // "The Night" hero → Get Tickets variant
-        showEl('ticket-browse-hint'); // guided-flow signpost above the cards
-      })
-      .catch(function (err) {
-        // Cache unreachable — honest fallback, never a dead end (warn, not error).
-        console.warn('[shows] listing unavailable, showing fallback:', err && err.message);
-        hideEl('ticket-loading');
-        showFallback();
-      });
+    var url = sb.url + '/rest/v1/ticket_event_readmodel?select=*&order=event_date.asc';
+    var opts = { headers: { 'apikey': sb.anonKey, 'Authorization': 'Bearer ' + sb.anonKey } };
+
+    // (6) One silent retry (~1.2s) before deciding, to smooth a transient blip.
+    // Timeout bumped 8000 → 10000 for slow mobile networks.
+    function attempt(retriesLeft) {
+      return fetchWithTimeout(url, opts, 10000)
+        .then(function (res) {
+          if (!res.ok) throw new Error('readmodel returned ' + res.status);
+          return res.json();
+        })
+        .then(function (rows) {
+          hideEl('ticket-loading');
+          hideEl('ticket-error');
+          // (3)/(5) Cache the fresh rows — INCLUDING a genuine true-zero as []
+          // so a real "sold out / all removed" state isn't masked by stale cache.
+          writeCachedRows(rows || []);
+          var n = renderFromRows(rows || []);
+          if (n === 0) {
+            // (5) Genuine empty: fetch SUCCEEDED, 0 real shows. The "no shows on
+            // sale / be the first to know" copy is correct ONLY here.
+            var grid = $('ticket-events');
+            if (grid) grid.innerHTML = '';
+            hideEl('ticket-events');
+            hideEl('ticket-browse-hint');
+            showFallback();
+          }
+        })
+        .catch(function (err) {
+          if (retriesLeft > 0) {
+            return new Promise(function (resolve) { setTimeout(resolve, 1200); })
+              .then(function () { return attempt(retriesLeft - 1); });
+          }
+          // (4) Fetch failed. Cards already on screen from cache ⇒ KEEP them
+          // silently (a re-visit blip must never wipe real shows). Only with NO
+          // cache to fall back on do we show the honest "having trouble" retry
+          // state — never the misleading "no shows on sale" fallback.
+          console.warn('[shows] listing unavailable:', err && err.message);
+          hideEl('ticket-loading');
+          if (!cardsShown) showError();
+        });
+    }
+
+    attempt(1);
   }
 
+  /* Genuine true-zero empty state (fetch succeeded, 0 shows). */
   function showFallback() {
     showEl('ticket-fallback');
     updateNightCTA(false); // "The Night" hero → fan "be the first to know" capture (§1)
+  }
+
+  /* Honest transient-trouble state (fetch failed, no cached shows). Never the
+   * "no shows on sale" copy — the shows almost certainly still exist. Leaves the
+   * hero CTA untouched (no misleading "no shows on sale yet" button). */
+  function showError() {
+    hideEl('ticket-events');
+    hideEl('ticket-browse-hint');
+    showEl('ticket-error');
   }
 
   /* ── Admission-model line (S2, owner A2): every card states its model ──
@@ -3010,10 +3108,24 @@
   /* ── Boot ───────────────────────────────────────────────── */
   function boot() {
     readInviteCode(); // #shows?invite=CODE via the router's hash-query stash
+    initRetry();      // wire the transient-trouble Retry control (once)
     loadEvents();
     initRetrieve();
     wireOverlayControls();
     initNightHero();
+  }
+
+  /* Retry control on the honest "having trouble" state: a real re-invoke of the
+   * listing load (step 4). Wired once at boot; the static button persists. */
+  function initRetry() {
+    var btn = $('ticket-retry');
+    if (btn && !btn._wired) {
+      btn._wired = true;
+      btn.addEventListener('click', function () {
+        hideEl('ticket-error');
+        loadEvents();
+      });
+    }
   }
 
   // Wait for DOM ready (page is injected into SPA, DOM is ready by the time scripts run)
