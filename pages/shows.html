@@ -225,7 +225,9 @@
 }
 .tier-btn:hover { opacity: 0.85; }
 .tier-btn:disabled { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.35); cursor: not-allowed; }
-.tier-btn-free { background: var(--color-accent, #e63946); color: #fff; }
+/* Free = translucent GREEN "go/available" semantic (owner 07-23: no red buttons
+   on the ticket page). Harmonizes with .tier-badge-available. */
+.tier-btn-free { background: rgba(0,200,100,0.16); color: #00c864; border: 1px solid rgba(0,200,100,0.4); }
 .tier-btn-coming-soon { background: transparent; border: 1px solid rgba(255,215,0,0.3); color: var(--color-primary,#ffd700); cursor: default; font-size: 0.75rem; }
 
 /* ── Industry guest-list banner (D-52 §iv — #shows?invite=CODE) ── */
@@ -316,6 +318,11 @@
 /* Both CTA variants start hidden; JS reveals exactly one once the listing
    state is known (events → Get Tickets scroll; none/unreachable → booking). */
 .night-cta-row .btn { min-height: 44px; }
+/* Owner 07-23: no red buttons on the ticket page — the hero CTAs (Get Tickets /
+   empty-state notify) use the same gold as the card ticket buttons, NOT the
+   global red .btn-primary. Scoped to this page's hero row only. */
+.night-cta-row .btn-primary { background: var(--color-primary, #ffd700); color: #000; border: none; }
+.night-cta-row .btn-primary:hover { opacity: 0.9; }
 
 /* ── Card summary row (owner 07-23) ──────────────────────────────────
    Every card carries a compact summary row stating its admission MODEL
@@ -375,12 +382,14 @@
 }
 /* The lone Ticket button keeps the solid-gold .tier-btn look for its LIVE
    state; disabled states (Free / On sale soon / Sold Out) fall back to the
-   shared .tier-btn:disabled treatment. "Free" is accent-red to read as a
-   distinct, positive "no ticket needed" state rather than a dead control. */
+   shared .tier-btn:disabled treatment. "Free" is a TRANSLUCENT GREEN (owner
+   07-23: no red buttons on the ticket page) — a "go / available / no ticket
+   needed" semantic harmonizing with the green .tier-badge-available color,
+   read as a positive state rather than a dead control. */
 .lay-ticket-btn.lay-ticket-free:disabled {
-  background: rgba(230,57,70,0.16);
-  color: rgba(255,255,255,0.75);
-  border: 1px solid rgba(230,57,70,0.4);
+  background: rgba(0,200,100,0.16);
+  color: #00c864;
+  border: 1px solid rgba(0,200,100,0.4);
 }
 .lay-ticket-btn.lay-ticket-soon:disabled {
   background: transparent;
@@ -1962,6 +1971,20 @@
     grid.innerHTML = events.map(renderCard).join('');
 
     showEl('ticket-events');
+
+    // iPhone-bug fix (2026-07-23): reveal the freshly-injected cards directly.
+    // These `.event-card scroll-reveal` cards are injected ASYNCHRONOUSLY — only
+    // once the readmodel fetch resolves — which is AFTER ScrollEffects' one-shot
+    // IntersectionObserver already initialized at page-load (it only observes the
+    // .scroll-reveal nodes that existed when the page was injected). A later
+    // injection is never observed, so the cards stay stuck at opacity:0 /
+    // translateY(30px) → they render in the DOM but are INVISIBLE. This is the
+    // "cards don't all load" defect when the page is reached via the mobile
+    // hamburger menu (a race the fast-path desktop/direct nav sometimes wins).
+    // Adding `.revealed` here makes visibility independent of that observer.
+    grid.querySelectorAll('.scroll-reveal').forEach(function (el) {
+      el.classList.add('revealed');
+    });
 
     // Wire the single "Get Tickets" button (only the ENABLED on-sale variant
     // carries data-ev; free/announced/sold-out are disabled and external is an
