@@ -340,84 +340,169 @@
    state is known (events → Get Tickets scroll; none/unreachable → booking). */
 .night-cta-row .btn { min-height: 44px; }
 
-/* ── Show Notification Signup ────────────────────────────────── */
-/* The notify zone stands alone so it renders BENEATH the event cards when a
-   show is listed (design F2: announced state = disabled Coming Soon buttons +
-   the notify CTA beneath) AND inside the no-events fallback state. */
-.notify-zone {
-  background: rgba(255,215,0,0.04);
-  border: 1px solid rgba(255,215,0,0.15);
-  border-radius: 12px;
-  padding: 1.25rem 1.5rem;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-.notify-zone-lede {
-  color: rgba(255,255,255,0.75);
-  font-size: 0.92rem;
-  margin: 0 0 0.9rem;
-}
-.notify-confirmed {
-  margin-top: 1rem;
-  color: var(--color-primary, #ffd700);
-  font-size: 0.95rem;
-  text-align: center;
-}
-.notify-form {
-  margin-top: 1.25rem;
+/* ── Per-event Notify Me (story-lay-tour-notify, EO brief §2) ─────────
+   Retires the old page-level #notify-zone. Every TICKETED card carries a
+   compact summary row ABOVE its tier list: price range + status chip + an
+   always-visible, state-driven Notify button that NEVER disappears (only its
+   label/wants changes by ev.status). The per-tier tap-to-checkout buttons in
+   .event-tiers below are UNTOUCHED. Modeled on GBE's shipped ticketedFooter,
+   built natively in LAY's idiom (repos independent — no copy-sync). */
+.event-summary-row {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: 0.6rem;
+  padding: 0.65rem 0;
+  margin: 0 0 0.9rem;
+  border-top: 1px solid rgba(255,215,0,0.12);
+  border-bottom: 1px solid rgba(255,215,0,0.12);
 }
-.notify-form-label {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.75);
-  margin: 0;
-  text-align: center;
-}
-.notify-form-row {
+.event-summary-info {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 0.5rem;
-  width: 100%;
-  max-width: 420px;
+  min-width: 0;
 }
-.notify-email-input {
-  flex: 1;
-  padding: 0.6rem 0.9rem;
+.event-summary-price {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-primary, #ffd700);
+}
+/* Notify button — OUTLINE gold so it reads as secondary to the solid-gold
+   per-tier "Get Tickets" buttons (clear hierarchy, no affordance collision). */
+.tier-btn-notify {
+  background: transparent;
+  border: 1px solid rgba(255,215,0,0.45);
+  color: var(--color-primary, #ffd700);
+  flex-shrink: 0;
+}
+.tier-btn-notify:hover { background: rgba(255,215,0,0.1); opacity: 1; }
+/* Confirmed pill (per event id) — swapped in after this card's opt-in. Other
+   cards keep their live Notify button (per-event localStorage isolation). */
+.lay-notify-confirmed {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 700;
   border-radius: 8px;
-  border: 1px solid rgba(255,215,0,0.3);
-  background: rgba(255,255,255,0.06);
+  background: rgba(255,215,0,0.12);
+  border: 1px solid rgba(255,215,0,0.35);
+  color: var(--color-primary, #ffd700);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+/* Hero empty-state capture button (§1) confirmed state */
+.night-cta-row .lay-notify-confirmed { min-height: 44px; padding: 0.6rem 1.2rem; }
+
+/* ── Notify capture bottom-sheet (mobile-first, 390×844) ───────────────
+   Lightweight sheet — email + consent + honeypot + optional Turnstile.
+   Never reflows the sibling cards (fixed overlay). EMAIL-ONLY, no OTP
+   (verification is checkout-only, house rule). */
+.lay-notify-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0,0,0,0.7);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  animation: layNotifyFade 0.18s ease;
+}
+@keyframes layNotifyFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes layNotifyUp { from { transform: translateY(28px); } to { transform: translateY(0); } }
+.lay-notify-sheet {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  background: #0f0f12;
+  border: 1px solid rgba(255,215,0,0.25);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  padding: 1.4rem 1.15rem calc(1.15rem + env(safe-area-inset-bottom));
   color: #fff;
-  font-size: 0.95rem;
+  box-shadow: 0 -12px 40px rgba(0,0,0,0.55);
+  animation: layNotifyUp 0.2s ease;
+}
+@media (min-width: 600px) {
+  .lay-notify-backdrop { align-items: center; }
+  .lay-notify-sheet { border-radius: 16px; border-bottom: 1px solid rgba(255,215,0,0.25); }
+}
+.lay-notify-x {
+  position: absolute;
+  top: 8px; right: 8px;
+  width: 40px; height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: rgba(255,255,255,0.55);
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.lay-notify-x:hover { color: #fff; }
+.lay-notify-eyebrow {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-primary, #ffd700);
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  padding-right: 2.4rem;
+  overflow-wrap: anywhere;
+}
+.lay-notify-sheet h3 {
+  font-family: var(--font-primary, 'Playfair Display', serif);
+  margin: 0 0 0.4rem;
+  font-size: 1.2rem;
+  color: #fff;
+  padding-right: 2.4rem;
+}
+.lay-notify-body {
+  margin: 0 0 0.9rem;
+  color: rgba(255,255,255,0.7);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+.lay-notify-email {
+  width: 100%;
+  min-height: 46px;
+  padding: 0.6rem 0.85rem;
+  font-size: 16px;           /* ≥16px: no iOS focus-zoom */
+  box-sizing: border-box;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,215,0,0.3);
+  border-radius: 8px;
+  color: #fff;
+  font-family: inherit;
   outline: none;
 }
-.notify-email-input:focus {
-  border-color: var(--color-primary, #ffd700);
+.lay-notify-email:focus { border-color: var(--color-primary, #ffd700); }
+/* Honeypot: off-screen, never focusable, never announced. */
+.lay-notify-hp { position: absolute; left: -9999px; top: auto; width: 1px; height: 1px; overflow: hidden; }
+.lay-notify-turnstile { margin: 0.75rem 0 0.25rem; min-height: 0; }
+.lay-notify-consent {
+  margin: 0.65rem 0 0;
+  color: rgba(255,255,255,0.45);
+  font-size: 0.75rem;
+  line-height: 1.45;
 }
-.notify-submit-btn {
-  white-space: nowrap;
-  padding: 0.6rem 1.2rem;
-  font-size: 0.9rem;
+.lay-notify-status {
+  margin: 0.65rem 0 0;
+  min-height: 1.1em;
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.7);
 }
-.notify-opt-out {
-  font-size: 0.78rem;
-  color: rgba(255,255,255,0.4);
-  margin: 0;
-  text-align: center;
-  max-width: 380px;
-}
-.notify-form-msg {
-  font-size: 0.88rem;
-  margin: 0;
-  text-align: center;
-}
-.notify-form-msg.success { color: #4caf82; }
-.notify-form-msg.error   { color: #e63946; }
-@media (max-width: 480px) {
-  .notify-form-row { flex-direction: column; }
-  .notify-submit-btn { width: 100%; }
-}
+.lay-notify-status.err { color: #e63946; }
+.lay-notify-status.ok  { color: #4caf82; }
+.lay-notify-submit { width: 100%; margin-top: 0.9rem; min-height: 48px; }
+.lay-notify-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 
 /* ── Retrieve Ticket ─────────────────────────────────────────── */
 .retrieve-zone {
@@ -929,13 +1014,14 @@
 
       <!-- ONE CTA — variant chosen by the listing state (render-every-state):
            shows listed → smooth-scroll to the ticket cards below;
-           none/unreachable → honest booking path (the show is bookable). -->
+           none/unreachable → FAN capture (§1): "be the first to know" opens the
+           same notify sheet the cards use, but generic (wants:'future-show',
+           no eventId). The old venue "Bring this show to your city" booking CTA
+           is retired here — this is a FAN page; the small footer crosslink below
+           stays for the promoter who scrolls all the way down. -->
       <div class="night-cta-row">
         <button id="night-cta-tickets" class="btn btn-primary btn-large" hidden>Get Tickets</button>
-        <a id="night-cta-booking" class="btn btn-primary btn-large" hidden
-           href="https://goldbottoment-llc.com/#ent-quote" target="_blank" rel="noopener">
-          Bring this show to your city &mdash; Request info &rarr;
-        </a>
+        <button id="night-cta-notify" class="btn btn-primary btn-large" hidden>No shows on sale yet &mdash; be the first to know</button>
       </div>
     </div>
 
@@ -977,29 +1063,9 @@
              here is the notify zone below. -->
       </div>
 
-      <!-- Notify CTA — real (writes Supabase contact_submissions, form_type
-           'shows-notification'). Shown BENEATH the event cards when a show is
-           listed AND with the fallback when none is. -->
-      <div id="notify-zone" class="notify-zone scroll-reveal" hidden>
-        <p class="notify-zone-lede" id="notify-lede">&#x1F514; Be first to know when tickets go on sale.</p>
-        <div class="upcoming-actions" id="notify-actions">
-          <button id="notify-open-btn" class="btn btn-secondary btn-large upcoming-notify-btn">&#x1F514; Get Notified</button>
-        </div>
-
-        <!-- Confirmed state (shown once already subscribed) -->
-        <p id="notify-confirmed" class="notify-confirmed" hidden>&#x2714;&#xFE0F; You&rsquo;ll be notified when tickets go on sale!</p>
-
-        <!-- Inline notify form (shown after clicking Get Notified) -->
-        <form id="notify-form" class="notify-form" hidden novalidate>
-          <p class="notify-form-label">Enter your email and we&rsquo;ll let you know when tickets drop.</p>
-          <div class="notify-form-row">
-            <input id="notify-email" class="notify-email-input" type="email" placeholder="your@email.com" autocomplete="email" required>
-            <button type="submit" class="btn btn-secondary notify-submit-btn">Notify Me</button>
-          </div>
-          <p class="notify-opt-out">We&rsquo;ll only email you about upcoming shows. Unsubscribe at any time by replying &ldquo;stop&rdquo; to any email.</p>
-          <p id="notify-form-msg" class="notify-form-msg" hidden></p>
-        </form>
-      </div>
+      <!-- The old page-level #notify-zone is RETIRED (EO brief §3): replaced by
+           the always-visible per-event Notify buttons on every ticketed card
+           (§2) and the hero empty-state capture (§1). -->
 
     </div><!-- /ticket-zone -->
 
@@ -1600,9 +1666,12 @@
       event_date:  row.event_date || '',
       venue:       venue,
       description: desc,
-      // Owner 07-17: the GBE brand card is the standing DEFAULT for any show
-      // without its own image yet — replaced per-show from the card wizard.
-      imageUrl:    row.image_url || 'images/show-card-default.jpg',
+      // EO brief §4: the DEFAULT for any show without its own image is the B&W+
+      // gold City Winery cover (a real L.A. Young performance shot) — NOT the
+      // old images/show-card-default.jpg, which is the GBE "Management Services"
+      // business card graphic (wrong on a fan page). Replaced per-show from the
+      // card wizard when a show gets its own art.
+      imageUrl:    row.image_url || 'images/artist/LAYoung-CityWinery-cover.jpg',
       status:      evStatus,
       // Admission model (S2, owner A2): 1 = ticketed ("Tickets — $X"),
       // 0 = free ("Free — no ticket needed" announcement card, no checkout).
@@ -1624,7 +1693,6 @@
     hideEl('ticket-events');
     hideEl('ticket-browse-hint');
     hideEl('ticket-fallback');
-    hideEl('notify-zone');
 
     var sb = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.supabase) ? SITE_CONFIG.supabase : null;
     if (!sb || !sb.url || !sb.anonKey) {
@@ -1644,13 +1712,17 @@
       })
       .then(function (rows) {
         hideEl('ticket-loading');
-        var events = (rows || []).map(mapReadmodelEvent);
+        // Never render demo/test-recording fixtures on the fan page. These are the
+        // "(DEMO …)" rows left live in the readmodel by the 07-19 recording session
+        // (source rows to be unpublished from the SoR via the BM dashboard separately).
+        var events = (rows || [])
+          .filter(function (row) { return !/\(DEMO\b/i.test(row.event_name || ''); })
+          .map(mapReadmodelEvent);
         if (!events.length) { showFallback(); return; }
         _events = events;
         renderEvents(events);
         updateNightCTA(true); // "The Night" hero → Get Tickets variant
         showEl('ticket-browse-hint'); // guided-flow signpost above the cards
-        showEl('notify-zone'); // the notify CTA beneath the cards (F2)
       })
       .catch(function (err) {
         // Cache unreachable — honest fallback, never a dead end (warn, not error).
@@ -1662,8 +1734,7 @@
 
   function showFallback() {
     showEl('ticket-fallback');
-    showEl('notify-zone');
-    updateNightCTA(false); // "The Night" hero → bring-this-show booking variant
+    updateNightCTA(false); // "The Night" hero → fan "be the first to know" capture (§1)
   }
 
   /* ── Admission-model line (S2, owner A2): every card states its model ──
@@ -1733,12 +1804,33 @@
 
   /* ── "The Night" hero CTA — exactly one variant once the listing state is
    * known: events listed → Get Tickets (smooth-scroll to the cards);
-   * none/cache unreachable → the honest booking path (§2g state handling). */
+   * none/cache unreachable → FAN capture "be the first to know" (§1), which
+   * opens the generic (wants:'future-show', no eventId) notify sheet. */
   function updateNightCTA(hasEvents) {
     var tix = $('night-cta-tickets');
-    var book = $('night-cta-booking');
+    var notify = $('night-cta-notify');
     if (tix) tix.hidden = !hasEvents;
-    if (book) book.hidden = !!hasEvents;
+    if (notify) {
+      // Already-subscribed fans see the confirmed pill instead of the button.
+      if (!hasEvents && LayNotify.isConfirmed('future-show')) {
+        notify.hidden = true;
+        showHeroNotifyConfirmed();
+      } else {
+        notify.hidden = !!hasEvents;
+      }
+    }
+  }
+
+  /* Swap the hero empty-state button for the confirmed pill (idempotent). */
+  function showHeroNotifyConfirmed() {
+    var btn = $('night-cta-notify');
+    if (btn) btn.hidden = true;
+    var row = document.querySelector('.night-cta-row');
+    if (!row || row.querySelector('.lay-notify-confirmed')) return;
+    var pill = document.createElement('span');
+    pill.className = 'lay-notify-confirmed';
+    pill.innerHTML = '&#x2714;&#xFE0F; You&rsquo;ll be notified';
+    row.appendChild(pill);
   }
 
   function renderEvents(events) {
@@ -1788,6 +1880,9 @@
         '</div>';
       }).join('');
 
+      // State-driven Notify button (never disappears): announced→Notify Me,
+      // on_sale/selling_fast/almost_sold_out→Remind Me, sold_out→Join Waitlist.
+      var ns = notifyState(ev.status);
       return '<div class="event-card scroll-reveal">' +
         (TICKETING_TEST_MODE ? '<span class="event-card-ribbon">Test Mode</span>' : '') +
         (ev.imageUrl ? '<img class="event-card-img" src="' + escHtml(ev.imageUrl) + '" alt="' + escHtml(ev.event_name) + '" loading="lazy">' : '') +
@@ -1795,9 +1890,21 @@
         '<div class="event-card-kicker">' + escHtml('L.A. Young & Soul Society present') + '</div>') +
         '<h3 class="event-card-name">' + escHtml(ev.event_name) + '</h3>' +
         '<div class="event-card-date">' + fmtDate(ev.event_date) + (ev.venue ? ' · ' + escHtml(ev.venue) : '') + '</div>' +
-        // Admission model stated on EVERY card (owner A2): ticketed shows say so.
-        '<div class="event-card-venue">' + escHtml(admissionLine(ev)) + '</div>' +
         (ev.description ? '<p class="event-card-desc">' + escHtml(ev.description) + '</p>' : '') +
+        // Summary row (EO §2): admission model (owner A2) + status chip + the
+        // always-visible, state-driven Notify button — ABOVE the tier list. The
+        // per-tier tap-to-checkout buttons in .event-tiers below are UNTOUCHED.
+        '<div class="event-summary-row">' +
+          '<div class="event-summary-info">' +
+            '<span class="event-summary-price">' + escHtml(admissionLine(ev)) + '</span>' +
+            buildBadge(ev.status) +
+          '</div>' +
+          '<button type="button" class="tier-btn tier-btn-notify lay-notify-btn"' +
+            ' data-notify-id="' + escHtml(ev.id) + '"' +
+            ' data-notify-name="' + escHtml(ev.event_name) + '"' +
+            ' data-notify-state="' + escHtml(ev.status) + '"' +
+            ' data-notify-wants="' + ns.wants + '">' + escHtml(ns.label) + '</button>' +
+        '</div>' +
         '<div class="event-tiers">' + tiers + '</div>' +
       '</div>';
     }).join('');
@@ -1818,7 +1925,24 @@
       });
     });
 
+    // Wire per-event Notify buttons + restore any confirmed pills (EO §2/§3).
+    // Scoped to the grid so a signup on Show A leaves Show B's button ACTIVE.
+    LayNotify.wire(grid);
+    LayNotify.applyConfirmed(grid);
+
     updateInviteBanner(events);
+  }
+
+  /* Per-state Notify button matrix (EO §2 · mirrors GBE ticketedFooter):
+   *   announced (+ any unknown) → "Notify Me"   wants=onsale
+   *   on_sale/selling_fast/almost_sold_out → "Remind Me"  wants=reminder
+   *   sold_out → "Join Waitlist"  wants=waitlist                          */
+  function notifyState(status) {
+    if (status === 'sold_out') return { label: 'Join Waitlist', wants: 'waitlist' };
+    if (status === 'on_sale' || status === 'selling_fast' || status === 'almost_sold_out') {
+      return { label: 'Remind Me', wants: 'reminder' };
+    }
+    return { label: 'Notify Me', wants: 'onsale' };
   }
 
   /* ── Industry guest-list banner (D-52 §iv) ──────────────────
@@ -2449,131 +2573,281 @@
     });
   }
 
-  /* ── Show Notification Signup ───────────────────────────── */
-  var NOTIFY_KEY = 'layoung-shows-notified';
-
-  function initNotify() {
-    var openBtn    = $('notify-open-btn');
-    var form       = $('notify-form');
-    var confirmed  = $('notify-confirmed');
-    var emailInput = $('notify-email');
-    var msgEl      = $('notify-form-msg');
-
-    if (!openBtn) return;
-
-    // Restore confirmed state from a previous visit
-    try {
-      if (localStorage.getItem(NOTIFY_KEY)) {
-        showNotifyConfirmed();
-        return;
-      }
-    } catch (e) {}
-
-    // Open inline form on button click
-    openBtn.addEventListener('click', function () {
-      hideEl('notify-actions');
-      if (form) form.hidden = false;
-      if (emailInput) emailInput.focus();
-    });
-
-    // Handle form submission
-    if (form) {
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        var email = emailInput ? emailInput.value.trim() : '';
-        var re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-        if (!email || !re.test(email)) {
-          showNotifyMsg('Please enter a valid email address.', 'error');
-          return;
-        }
-
-        submitNotify(email);
-      });
-    }
-  }
-
-  function submitNotify(email) {
-    var msgEl      = $('notify-form-msg');
-    var submitBtn  = document.querySelector('.notify-submit-btn');
-
-    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
-    hideNotifyMsg();
-
-    // fbexit S6 (2026-07-09): write to Supabase contact_submissions via REST
-    // (was Firestore, now 403/dead). Anon key from SITE_CONFIG (public by design,
-    // RLS INSERT-only), snake_case columns matching the SoR pull + normalizer;
-    // full payload in raw_doc. Lands: Supabase -> supabase-pull -> firebase_inbox
-    // -> normalizer -> booking_inbox (SoR). Mirrors js/forms.js.
-    var sb = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.supabase) ? SITE_CONFIG.supabase : null;
-    if (!sb || !sb.url || !sb.anonKey) {
-      showNotifyMsg('Unable to subscribe right now — please try again later.', 'error');
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Notify Me'; }
-      return;
-    }
-
-    var iso = new Date().toISOString();
-    var row = {
-      id: 'cs_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10),
-      form_type: 'shows-notification',
-      source: 'la-young',
-      email: email,
-      submitted_at: iso,
-      raw_doc: { formType: 'shows-notification', source: 'la-young', email: email, optOut: false, submittedAt: iso }
+  /* ══════════════════════════════════════════════════════════
+   * PER-EVENT NOTIFY CAPTURE  (story-lay-tour-notify · EO brief §2/§3)
+   * Retires the old page-level #notify-zone. A lightweight bottom-sheet —
+   * email + consent + honeypot + optional Cloudflare Turnstile — writes the
+   * SAME anon Supabase contact_submissions row LAY already uses, with
+   * form_type 'ticket-notify' and per-show raw_doc. Confirmed state is stored
+   * PER EVENT ID in localStorage ('layoung-notify-<id>'), so a signup on Show
+   * A leaves Show B's button ACTIVE. Modeled on GBE's shipped tickets.html
+   * Notify module; built natively in LAY (repos independent — no copy-sync).
+   *
+   * HONESTY/PRIVACY: EMAIL-ONLY, no OTP (verification is checkout-only). The
+   * Turnstile token is a client-side submit gate ONLY — single-use, ~5-min
+   * TTL — and is DELIBERATELY NOT persisted (never lands in raw_doc).
+   * ═════════════════════════════════════════════════════════ */
+  var LayNotify = (function () {
+    var KEY_PREFIX = 'layoung-notify-';
+    var TURNSTILE_SITEKEY   = '1x00000000000000000000AA';   // Cloudflare always-pass TEST key (real key = golive-ops)
+    var TURNSTILE_SRC       = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    var TURNSTILE_SCRIPT_ID = 'lay-turnstile-api';
+    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    var CONSENT  = "We'll only email you about L.A. Young shows. Unsubscribe anytime.";
+    var COPY = {
+      onsale:        { title: 'Get on-sale alerts', body: 'Get notified the moment tickets for this show go on sale.',              cta: 'Notify me' },
+      reminder:      { title: 'Set a reminder',     body: 'Remind me before this show — and alert me if tickets start running low.', cta: 'Remind me' },
+      waitlist:      { title: 'Join the waitlist',  body: "Join the waitlist — we'll email you if tickets open up for this show.",   cta: 'Join waitlist' },
+      'future-show': { title: 'Be first to know',   body: "We'll email you the moment L.A. Young announces new shows and tickets go on sale.", cta: 'Notify me' }
     };
 
-    fetch(sb.url + '/rest/v1/contact_submissions', {
-      method: 'POST',
-      headers: {
-        'apikey': sb.anonKey,
-        'Authorization': 'Bearer ' + sb.anonKey,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify(row)
-    }).then(function (res) {
-      if (!res.ok) throw new Error('Supabase returned ' + res.status);
-      // Persist so returning visitors see confirmed state
-      try { localStorage.setItem(NOTIFY_KEY, '1'); } catch (e) {}
-      // Award fan points
-      if (typeof FanPoints !== 'undefined') {
-        FanPoints.award('activity:email-signup', 20, 'Joined the Fam');
+    var sheet = null, tsWidgetId = null, tsPromise = null;
+
+    function lsKey(id)        { return KEY_PREFIX + String(id); }
+    function isConfirmed(id)  { try { return !!localStorage.getItem(lsKey(id)); } catch (e) { return false; } }
+    function markConfirmed(id){ try { localStorage.setItem(lsKey(id), '1'); } catch (e) {} }
+    function cssEsc(v)        { return (window.CSS && CSS.escape) ? CSS.escape(String(v)) : String(v); }
+
+    function supa() {
+      var sb = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.supabase) ? SITE_CONFIG.supabase : null;
+      return (sb && sb.url && sb.anonKey) ? sb : null;
+    }
+
+    // Lazy, idempotent Turnstile loader (mirrors js/gbe-buyer-gate.js §3).
+    function ensureTurnstile() {
+      if (window.turnstile) return Promise.resolve(window.turnstile);
+      if (tsPromise) return tsPromise;
+      tsPromise = new Promise(function (resolve, reject) {
+        var script = document.getElementById(TURNSTILE_SCRIPT_ID);
+        if (!script) {
+          script = document.createElement('script');
+          script.id = TURNSTILE_SCRIPT_ID; script.src = TURNSTILE_SRC;
+          script.async = true; script.defer = true;
+          document.head.appendChild(script);
+        }
+        var settled = false, tries = 0;
+        (function poll() {
+          if (settled) return;
+          if (window.turnstile) { settled = true; resolve(window.turnstile); return; }
+          if (++tries > 100) { settled = true; tsPromise = null; reject(new Error('turnstile unavailable')); return; }
+          setTimeout(poll, 100);
+        })();
+        script.addEventListener('error', function () { if (!settled) { settled = true; tsPromise = null; reject(new Error('turnstile load failed')); } });
+      });
+      return tsPromise;
+    }
+
+    function teardownTurnstile() {
+      if (tsWidgetId !== null && window.turnstile && typeof window.turnstile.remove === 'function') {
+        try { window.turnstile.remove(tsWidgetId); } catch (e) {}
       }
-      showNotifyConfirmed();
-    }).catch(function (err) {
-      console.error('Notify signup error:', err);
-      showNotifyMsg('Something went wrong — please try again.', 'error');
-      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Notify Me'; }
-    });
-  }
+      tsWidgetId = null;
+    }
 
-  function showNotifyConfirmed() {
-    hideEl('notify-actions');
-    hideEl('notify-form');
-    showEl('notify-confirmed');
-  }
+    function onKeydown(e) { if (e.key === 'Escape') close(); }
 
-  function showNotifyMsg(text, type) {
-    var el = $('notify-form-msg');
-    if (!el) return;
-    el.textContent = text;
-    el.className = 'notify-form-msg ' + (type || '');
-    el.hidden = false;
-  }
+    function close() {
+      teardownTurnstile();
+      if (sheet && sheet.parentNode) sheet.parentNode.removeChild(sheet);
+      sheet = null;
+      document.removeEventListener('keydown', onKeydown);
+    }
 
-  function hideNotifyMsg() {
-    var el = $('notify-form-msg');
-    if (el) { el.hidden = true; el.textContent = ''; }
-  }
+    function setStatus(el, msg, cls) { if (el) { el.textContent = msg || ''; el.className = 'lay-notify-status' + (cls ? ' ' + cls : ''); } }
 
-  /* ── "The Night" hero CTA wiring (S2 §2g) ─────────────────── */
+    // Replace the Notify button(s) for ONE event id with the confirmed pill,
+    // leaving every OTHER card's button (and that card's tier buttons) intact.
+    function swapToConfirmed(id) {
+      var btns = document.querySelectorAll('.lay-notify-btn[data-notify-id="' + cssEsc(id) + '"]');
+      btns.forEach(function (btn) {
+        var pill = document.createElement('span');
+        pill.className = 'lay-notify-confirmed';
+        pill.setAttribute('data-notify-id', String(id));
+        pill.innerHTML = '&#x2714;&#xFE0F; You&rsquo;ll be notified';
+        if (btn.parentNode) btn.parentNode.replaceChild(pill, btn);
+      });
+    }
+
+    function open(ds) {
+      if (!ds) return;
+      var scopeKey = ds.notifyId || 'future-show';   // generic (§1) has no event id
+      if (isConfirmed(scopeKey)) return;              // already signed up for THIS scope
+      if (sheet) close();                             // one sheet at a time
+      var wants = ds.notifyWants || 'onsale';
+      var copy  = COPY[wants] || COPY.onsale;
+      var titleId = 'lay-notify-title';
+
+      sheet = document.createElement('div');
+      sheet.className = 'lay-notify-backdrop';
+      sheet.innerHTML =
+        '<div class="lay-notify-sheet" role="dialog" aria-modal="true" aria-labelledby="' + titleId + '">' +
+          '<button type="button" class="lay-notify-x" data-notify-close aria-label="Close">&times;</button>' +
+          (ds.notifyName ? '<div class="lay-notify-eyebrow">' + escHtml(ds.notifyName) + '</div>' : '') +
+          '<h3 id="' + titleId + '">' + escHtml(copy.title) + '</h3>' +
+          '<p class="lay-notify-body">' + escHtml(copy.body) + '</p>' +
+          '<form class="lay-notify-form" novalidate>' +
+            '<label class="lay-notify-sr" for="lay-notify-email">Email address</label>' +
+            '<input class="lay-notify-email" id="lay-notify-email" type="email" inputmode="email" ' +
+              'autocomplete="email" placeholder="you@email.com" required>' +
+            '<div class="lay-notify-hp" aria-hidden="true">' +
+              '<label>Company (leave blank)<input type="text" name="company" tabindex="-1" autocomplete="off"></label>' +
+            '</div>' +
+            '<div class="lay-notify-turnstile"></div>' +
+            '<p class="lay-notify-consent">' + escHtml(CONSENT) + '</p>' +
+            '<p class="lay-notify-status" role="status" aria-live="polite"></p>' +
+            '<button type="submit" class="btn btn-primary lay-notify-submit">' + escHtml(copy.cta) + '</button>' +
+          '</form>' +
+        '</div>';
+      document.body.appendChild(sheet);
+      document.addEventListener('keydown', onKeydown);
+
+      var form       = sheet.querySelector('.lay-notify-form');
+      var emailInput = sheet.querySelector('.lay-notify-email');
+      var hp         = sheet.querySelector('input[name="company"]');
+      var tsHost     = sheet.querySelector('.lay-notify-turnstile');
+      var statusEl   = sheet.querySelector('.lay-notify-status');
+
+      // Backdrop tap closes; sheet tap does not.
+      sheet.addEventListener('click', function (e) { if (e.target === sheet) close(); });
+      sheet.querySelector('[data-notify-close]').addEventListener('click', close);
+
+      // EXPLICIT Turnstile render (token freshest at submit). Graceful: if the
+      // library is unreachable it simply never renders — the honeypot still
+      // guards and a fan is never stranded on a challenge that can't load.
+      ensureTurnstile().then(function (ts) {
+        if (!sheet || !tsHost.isConnected) return;
+        try {
+          tsWidgetId = ts.render(tsHost, {
+            sitekey: TURNSTILE_SITEKEY,
+            size: 'flexible',
+            'error-callback':   function () { setStatus(statusEl, 'Having trouble with the human-check — please try again.', 'err'); },
+            'expired-callback': function () { if (window.turnstile) { try { window.turnstile.reset(tsWidgetId); } catch (e) {} } }
+          });
+        } catch (e) { /* render failed ⇒ submit proceeds on honeypot alone */ }
+      }).catch(function () { /* library unreachable ⇒ same posture */ });
+
+      setTimeout(function () { if (emailInput) emailInput.focus(); }, 50);
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var email = String(emailInput.value || '').trim();
+        if (!EMAIL_RE.test(email)) { setStatus(statusEl, 'Please enter a valid email address.', 'err'); emailInput.focus(); return; }
+        // Honeypot tripped ⇒ silent no-op success (no POST, no localStorage).
+        if (hp && hp.value) { setStatus(statusEl, "You're on the list.", 'ok'); setTimeout(close, 900); return; }
+
+        // Turnstile: require a token ONLY when the widget actually rendered.
+        var token = '';
+        try { if (tsWidgetId !== null && window.turnstile) token = window.turnstile.getResponse(tsWidgetId) || ''; } catch (e) { token = ''; }
+        if (tsWidgetId !== null && !token) { setStatus(statusEl, 'Please complete the human-check above, then tap again.', 'err'); return; }
+
+        var sb = supa();
+        if (!sb) { setStatus(statusEl, 'Unable to sign you up right now — please try again later.', 'err'); return; }
+
+        var submitBtn = form.querySelector('.lay-notify-submit');
+        if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Signing you up…'; }
+        setStatus(statusEl, '', '');
+
+        var iso = new Date().toISOString();
+        var row = {
+          id: 'cs_' + Date.now() + '_' + Math.random().toString(36).slice(2, 10),
+          form_type: 'ticket-notify',
+          source: 'la-young',
+          email: email,
+          submitted_at: iso,
+          raw_doc: {
+            formType:  'ticket-notify',
+            source:    'la-young',
+            eventId:   ds.notifyId || '',
+            eventName: ds.notifyName || '',
+            email:     email,
+            cardState: ds.notifyState || '',
+            wants:     wants,
+            // Turnstile token intentionally NOT persisted (single-use gate only).
+            optOut:    false,
+            submittedAt: iso
+          }
+        };
+
+        fetch(sb.url + '/rest/v1/contact_submissions', {
+          method: 'POST',
+          headers: {
+            'apikey': sb.anonKey,
+            'Authorization': 'Bearer ' + sb.anonKey,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify(row)
+        }).then(function (res) {
+          if (!res.ok) throw new Error('Supabase returned ' + res.status);
+          markConfirmed(scopeKey);
+          swapToConfirmed(scopeKey);            // per-card pill (no-op for generic scope)
+          if (typeof ds.onConfirmed === 'function') { try { ds.onConfirmed(); } catch (e) {} }
+          if (typeof FanPoints !== 'undefined') {
+            try { FanPoints.award('activity:email-signup', 20, 'Joined the Fam'); } catch (e) {}
+          }
+          setStatus(statusEl, "You're all set — we'll email you.", 'ok');
+          setTimeout(close, 1100);
+        }).catch(function (err) {
+          console.warn('[LayNotify] signup failed:', err && err.message);
+          setStatus(statusEl, 'Something went wrong — please try again.', 'err');
+          if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = copy.cta; }
+          if (window.turnstile && tsWidgetId !== null) { try { window.turnstile.reset(tsWidgetId); } catch (e) {} }
+        });
+      });
+    }
+
+    return {
+      isConfirmed: isConfirmed,
+      open: open,
+      // Restore confirmed pills for cards the fan already signed up for (per id).
+      applyConfirmed: function (container) {
+        (container || document).querySelectorAll('.lay-notify-btn').forEach(function (btn) {
+          var id = btn.getAttribute('data-notify-id');
+          if (id && isConfirmed(id)) swapToConfirmed(id);
+        });
+      },
+      // Attach per-button click handling, scoped to the listing container.
+      wire: function (container) {
+        (container || document).querySelectorAll('.lay-notify-btn').forEach(function (btn) {
+          btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();   // never bubble into a card handler
+            open({
+              notifyId:    btn.getAttribute('data-notify-id') || '',
+              notifyName:  btn.getAttribute('data-notify-name') || '',
+              notifyState: btn.getAttribute('data-notify-state') || '',
+              notifyWants: btn.getAttribute('data-notify-wants') || 'onsale'
+            });
+          });
+        });
+      }
+    };
+  })();
+
+  /* ── "The Night" hero CTA wiring (S2 §2g + EO §1) ─────────────
+   * Get Tickets → smooth-scroll to the cards; the empty-state fan button →
+   * the generic (wants:'future-show') notify sheet, and on confirm the hero
+   * button swaps to the confirmed pill. */
   function initNightHero() {
     var tix = $('night-cta-tickets');
-    if (!tix) return;
-    tix.addEventListener('click', function () {
-      var zone = $('ticket-zone');
-      if (zone) zone.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+    if (tix) {
+      tix.addEventListener('click', function () {
+        var zone = $('ticket-zone');
+        if (zone) zone.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+    var notify = $('night-cta-notify');
+    if (notify) {
+      notify.addEventListener('click', function () {
+        LayNotify.open({
+          notifyId: '',            // generic — no event to scope to
+          notifyName: '',
+          notifyState: '',
+          notifyWants: 'future-show',
+          onConfirmed: showHeroNotifyConfirmed
+        });
+      });
+    }
   }
 
   /* ── Boot ───────────────────────────────────────────────── */
@@ -2582,7 +2856,6 @@
     loadEvents();
     initRetrieve();
     wireOverlayControls();
-    initNotify();
     initNightHero();
   }
 
