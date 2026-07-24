@@ -1454,10 +1454,56 @@
       <div id="choose-tier-list" class="choose-tier-list"></div>
     </div>
 
+    <!-- Step 1 (VERIFIED CHECKOUT — story-ticket-buyer-flow-hardening, owner D-A
+         EMAIL-LINK). Shown ONLY in the verified-checkout flow (VCHECKOUT_MODE=on
+         OR a #shows?vco=<UNLOCK> session). Your info + human-check → "Verify
+         email" → a single-use LINK is emailed; the fan clicks it and lands on
+         Step 2 (Payment) via #shows?resume=<TOKEN>. NO quantity, NO tier toggle,
+         NO payment card here (owner-locked). The Turnstile + "Verify email"
+         button + "check your email" terminal state are rendered by the shared
+         gbe-buyer-gate.js magic-link issuer mounted into #vco-buyer-gate. -->
+    <div id="step-verify" hidden>
+      <p id="verify-event-title" class="checkout-event-title"></p>
+      <p id="verify-event-meta" class="checkout-event-meta"></p>
+      <p style="color:rgba(255,255,255,0.72);font-size:0.9rem;margin:0.25rem 0 1rem;">
+        Enter your info and verify your email — we’ll send a secure link to finish your purchase.
+      </p>
+      <form id="verify-form" novalidate>
+        <div class="checkout-form-group">
+          <label class="checkout-label" for="vco-name">Full Name *</label>
+          <input id="vco-name" class="checkout-input" type="text" autocomplete="name" required placeholder="Your name">
+        </div>
+        <div class="checkout-form-group">
+          <label class="checkout-label" for="vco-email">Email *</label>
+          <input id="vco-email" class="checkout-input" type="email" autocomplete="email" required placeholder="your@email.com">
+        </div>
+        <div class="checkout-form-group">
+          <label class="checkout-label" for="vco-phone">Phone (optional)</label>
+          <input id="vco-phone" class="checkout-input" type="tel" autocomplete="tel" placeholder="+1 (555) 000-0000">
+        </div>
+        <div class="checkout-form-group">
+          <div class="checkout-checkbox-row">
+            <input id="vco-fanoptin" class="checkout-checkbox" type="checkbox">
+            <label for="vco-fanoptin" class="checkout-checkbox-label">
+              Keep me updated on future L.A. Young shows, releases, and news from Gold Bottom Entertainment.
+            </label>
+          </div>
+        </div>
+        <!-- Magic-link issuer (window.GBEBuyerGate, flow:'magic-link'): Turnstile
+             + "Verify email" button (disabled until info + human-check) + the
+             terminal "Check your email" state with Resend. -->
+        <div id="vco-buyer-gate" data-testid="vco-buyer-gate"></div>
+        <div id="verify-error" class="checkout-error"></div>
+      </form>
+    </div>
+
     <!-- Step: Order Form -->
     <div id="step-form">
       <p id="checkout-event-title" class="checkout-event-title"></p>
       <p id="checkout-event-meta" class="checkout-event-meta"></p>
+      <!-- Resume/Payment mode only (verified checkout): shows who the emailed
+           link verified this session for; hidden in the legacy flow. -->
+      <p id="vco-buyer-line" style="color:#7ee2a0;font-size:0.85rem;font-weight:600;margin:0 0 0.75rem;" hidden></p>
       <div id="checkout-tier-summary" class="checkout-tier-summary">
         <span id="checkout-tier-name" class="checkout-tier-name"></span>
         <span id="checkout-tier-price" class="checkout-tier-price"></span>
@@ -1564,6 +1610,19 @@
       </div>
     </div><!-- /step-confirmation -->
 
+    <!-- Resume link expired/used (verified checkout): the emailed link is
+         single-use + ~30-min TTL; a spent or stale link lands here. -->
+    <div id="step-resume-error" hidden>
+      <div class="checkout-confirmation">
+        <div class="checkout-confirmation-icon">&#x23F3;</div>
+        <h3>Link expired</h3>
+        <p id="resume-error-msg" style="color:rgba(255,255,255,0.7);margin-bottom:1.25rem;font-size:0.95rem;">This checkout link has expired or was already used. Please start again.</p>
+        <div class="conf-actions">
+          <button id="resume-restart-btn" class="conf-btn conf-btn-close">Start again</button>
+        </div>
+      </div>
+    </div><!-- /step-resume-error -->
+
     </div><!-- /checkout-panel-body -->
   </div><!-- /checkout-panel -->
 </div><!-- /checkout-overlay -->
@@ -1572,7 +1631,7 @@
 <!-- story-buyer-gate-s2: shared buyer-gate component, loaded at PAGE-FRAGMENT
      level (never in the SPA index shell). The file itself is idempotent under
      PageLoader's re-execution of fragment scripts on SPA navigation. -->
-<script src="js/gbe-buyer-gate.js?v=1"></script>
+<script src="js/gbe-buyer-gate.js?v=2"></script>
 <script>
 (function () {
   'use strict';
@@ -1591,6 +1650,21 @@
    * ─────────────────────────────────────────────────────────── */
   var GBE_API_BASE        = 'https://gbe-tickets.goldbottom.workers.dev';
   var TICKETING_TEST_MODE = true;
+
+  /* VERIFIED-CHECKOUT FLAG (story-ticket-buyer-flow-hardening — owner D-A email
+   * link + SHIP-BEHIND-A-FLAG). Default 'off' → EVERY fan runs today's legacy
+   * checkout unchanged (zero fan-facing change; this is what makes shipping
+   * safe). Two ways to promote a session to the NEW two-step verified flow:
+   *   • VCHECKOUT_MODE = 'on'  → everyone gets it (the owner flip, AFTER the
+   *     server flag is already 'on' — client-off-first on revert kills it),
+   *   • #shows?vco=<VCHECKOUT_UNLOCK> → promotes THAT session only (owner tests
+   *     the live flow on prod while the flag stays off for everyone else).
+   * The vco unlock is a NON-SECRET routing token (fans never have it, so they
+   * never touch the new endpoints → no dead-button window is possible). The
+   * unlock is remembered for the browser session so the emailed resume link
+   * (which carries no ?vco) still runs the new flow in the same tab. */
+  var VCHECKOUT_MODE   = 'off';
+  var VCHECKOUT_UNLOCK = 'gbe-vco-2026';
 
   /* ── Derived constants ──────────────────────────────────── */
   var API = GBE_API_BASE + '/api/v1/tickets';
@@ -1623,6 +1697,31 @@
   var _orderConfirmed  = false;
   var _inviteCode      = null;   // from #shows?invite=CODE (D-52 §iv)
   var _qrCodeLib       = null;
+
+  /* Verified-checkout (Wave 2) session state. _vcoFlow gates the submit path:
+   * true ⇒ the new atomic /orders/purchase (pass-required); false ⇒ the legacy
+   * hold+pay. _buyerPass is the single-charge Buyer-Pass returned by
+   * /checkout/resume; _vcoBuyer holds the identity the emailed link verified. */
+  var _vcoFlow         = false;
+  var _buyerPass       = null;
+  var _vcoBuyer        = null;   // { name, email, phone, fanOptIn }
+
+  /* Is THIS session promoted to the verified-checkout flow? Flag on, OR the
+   * #shows?vco=<UNLOCK> token is present (remembered for the session so the
+   * emailed resume link — which carries no ?vco — still runs the new flow). */
+  function vcoUnlocked() {
+    if (VCHECKOUT_MODE === 'on') return true;
+    try {
+      var q = (typeof Router !== 'undefined' && typeof Router.getRouteQuery === 'function')
+        ? Router.getRouteQuery() : {};
+      if (q && q.vco && String(q.vco) === VCHECKOUT_UNLOCK) {
+        try { sessionStorage.setItem('gbe-vco', '1'); } catch (e) {}
+        return true;
+      }
+    } catch (e) {}
+    try { if (sessionStorage.getItem('gbe-vco') === '1') return true; } catch (e) {}
+    return false;
+  }
 
   /* ── DOM helpers ────────────────────────────────────────── */
   function $(id) { return document.getElementById(id); }
@@ -2176,6 +2275,12 @@
    * "Choose your ticket" step FIRST; a single-tier show auto-selects and goes
    * straight into the existing Your Info → Payment → Ticket flow. */
   function beginTicketFlow(ev) {
+    // Verified-checkout sessions (flag on / vco unlock): tapping "Get Tickets"
+    // opens Step 1 "Your info" (info + human-check + verify-email) — NO tier
+    // pick, NO quantity, NO payment here. The tier + quantity + charge live on
+    // Step 2, reachable ONLY via the emailed single-use link.
+    if (vcoUnlocked()) { openVerifyStep(ev); return; }
+
     var tiers = ev.tiers || [];
     if (tiers.length > 1) {
       openTierChooser(ev);
@@ -2253,6 +2358,17 @@
     _selectedTier   = tier;
     _orderId        = null;
     _orderConfirmed = false;
+
+    // Legacy flow: ensure the verified-checkout layout/state is cleared (the
+    // info inputs shown, no held pass, the legacy button label restored).
+    _vcoFlow   = false;
+    _buyerPass = null;
+    _vcoBuyer  = null;
+    setCheckoutInfoMode('legacy');
+    var vcoLine = $('vco-buyer-line');
+    if (vcoLine) vcoLine.hidden = true;
+    var legacyBtn = $('checkout-submit-btn');
+    if (legacyBtn) legacyBtn.textContent = 'Get Tickets';
 
     // Populate header
     var titleEl = $('checkout-event-title');
@@ -2507,9 +2623,21 @@
     _orderConfirmed = false;
     _selectedEvent  = null;
     _selectedTier   = null;
+    // Verified-checkout session state (safe no-op in the legacy flow).
+    _vcoFlow        = false;
+    _buyerPass      = null;
+    _vcoBuyer       = null;
     // Reset the pre-pick step + restore the flow signpost for the next open.
     hideEl('step-choose');
+    hideEl('step-verify');
+    hideEl('step-resume-error');
     showEl('checkout-steps');
+    // Restore the legacy info layout + button label for the next legacy open.
+    setCheckoutInfoMode('legacy');
+    var vcoLine = $('vco-buyer-line');
+    if (vcoLine) vcoLine.hidden = true;
+    var submitBtn = $('checkout-submit-btn');
+    if (submitBtn) submitBtn.textContent = 'Get Tickets';
   }
 
   /* ── Form submit ────────────────────────────────────────── */
@@ -2517,6 +2645,9 @@
   if ($form) {
     $form.addEventListener('submit', function (e) {
       e.preventDefault();
+      // Verified-checkout resume session (a Buyer-Pass is held) → the atomic
+      // purchase; otherwise the legacy hold+pay path, byte-for-byte unchanged.
+      if (_vcoFlow && _buyerPass) { handlePurchase(); return; }
       handleCheckoutSubmit();
     });
   }
@@ -2661,6 +2792,364 @@
         return data;
       });
     });
+  }
+
+  /* ══════════════════════════════════════════════════════════
+   * VERIFIED CHECKOUT (Wave 2 — owner D-A email-link, ship-behind-a-flag)
+   * Two entry modes on this page, gated by vcoUnlocked():
+   *   fresh #shows  → Step 1 "Your info" (openVerifyStep): info + human-check →
+   *                   POST /checkout/verify-link → "check your email" (a single-
+   *                   use LINK is emailed; there is NO in-tab step transition —
+   *                   Step 2 is reachable ONLY via the emailed link).
+   *   #shows?resume=<TOKEN> → Step 2 "Payment" (resumeCheckout → openPaymentStep):
+   *                   POST /checkout/resume rehydrates event/tiers/buyer + a
+   *                   single-charge Buyer-Pass → tier toggle + quantity + charge
+   *                   → POST /orders/purchase (atomic capacity commit; NO hold).
+   * ═════════════════════════════════════════════════════════ */
+
+  function eventMetaLine(ev) {
+    if (!ev) return '';
+    return (ev.event_date ? fmtDate(ev.event_date) : '') + (ev.venue ? ' · ' + ev.venue : '');
+  }
+
+  /* Toggle #step-form between the legacy 'info' layout (name/email/phone/promo +
+   * buyer-gate all visible) and the verified-checkout 'payment' layout (those
+   * hidden — the identity is already known from the emailed link; only tier +
+   * quantity + fan opt-in + charge remain). style.display beats any stylesheet
+   * display rule, so the toggle is reliable. */
+  function setCheckoutInfoMode(mode) {
+    var isPay = (mode === 'payment');
+    ['co-name', 'co-email', 'co-phone', 'co-promo'].forEach(function (id) {
+      var el = $(id);
+      var grp = (el && el.closest) ? el.closest('.checkout-form-group') : null;
+      if (grp) grp.style.display = isPay ? 'none' : '';
+    });
+    // The legacy buyer-gate never belongs in the payment step (the emailed link
+    // already proved the inbox). Force it hidden in payment mode; in legacy mode
+    // leave it to its own widget (which self-hides when not mounted).
+    var gate = $('checkout-buyer-gate');
+    if (gate && isPay) gate.style.display = 'none';
+  }
+
+  /* ── Step 1: "Your info" (verify-email issuer) ─────────────────────────── */
+  var _verifyGateCtrl = null;
+  function ensureVerifyGate() {
+    if (_verifyGateCtrl || typeof GBEBuyerGate === 'undefined') return;
+    var host = $('vco-buyer-gate');
+    if (!host) return;
+    _verifyGateCtrl = GBEBuyerGate.mount(host, {
+      flow:      'magic-link',
+      purpose:   'ticket',
+      verifyUrl: API + '/checkout/verify-link',
+      getEmail:  function () { var e = $('vco-email'); return e ? String(e.value || '').trim() : ''; },
+      getContext: function () {
+        return {
+          eventId:    _selectedEvent ? _selectedEvent.id : null,
+          buyerName:  (($('vco-name')  || {}).value || '').trim(),
+          buyerPhone: ((($('vco-phone') || {}).value || '').trim()) || undefined,
+          fanOptIn:   !!(($('vco-fanoptin') || {}).checked)
+        };
+      },
+      // Lock the identity fields once the link is sent so the address the fan
+      // sees matches the one the link went to.
+      onStateChange: function (s) {
+        var lock = (s === 'sent');
+        ['vco-name', 'vco-email', 'vco-phone', 'vco-fanoptin'].forEach(function (id) {
+          var el = $(id); if (el) el.disabled = lock;
+        });
+      }
+    });
+    // Re-evaluate the "Verify email" button as the fan fills the info fields.
+    ['vco-name', 'vco-email', 'vco-phone'].forEach(function (id) {
+      var el = $(id); if (!el) return;
+      ['input', 'blur', 'change'].forEach(function (evt) {
+        el.addEventListener(evt, function () { if (_verifyGateCtrl) _verifyGateCtrl.refresh(); });
+      });
+    });
+  }
+
+  function openVerifyStep(ev) {
+    _vcoFlow        = true;
+    _buyerPass      = null;
+    _vcoBuyer       = null;
+    _selectedEvent  = ev;
+    _selectedTier   = null;
+    _orderId        = null;
+    _orderConfirmed = false;
+
+    var titleEl = $('verify-event-title');
+    if (titleEl) titleEl.textContent = ev.event_name;
+    var metaEl = $('verify-event-meta');
+    if (metaEl) metaEl.textContent = eventMetaLine(ev);
+
+    var form = $('verify-form');
+    if (form) form.reset();
+    ['vco-name', 'vco-email', 'vco-phone', 'vco-fanoptin'].forEach(function (id) {
+      var el = $(id); if (el) el.disabled = false;   // clear any prior sent-lock
+    });
+    var vErr = $('verify-error');
+    if (vErr) { vErr.textContent = ''; vErr.style.display = 'none'; }
+
+    var tm = $('checkout-testmode');
+    if (tm) tm.hidden = !TICKETING_TEST_MODE;
+
+    hideEl('step-choose');
+    hideEl('step-form');
+    hideEl('step-processing');
+    hideEl('step-confirmation');
+    hideEl('step-resume-error');
+    showEl('checkout-steps');
+    setStep(1);
+    showEl('step-verify');
+
+    ensureVerifyGate();
+    if (_verifyGateCtrl) _verifyGateCtrl.reset();   // fresh human-check on each open
+
+    var overlay = $('checkout-overlay');
+    if (overlay) overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  /* ── Step 2: "Payment" (resume via emailed link) ───────────────────────── */
+  /* Map the /checkout/resume event payload to the internal listing shape the
+   * checkout helpers (renderCheckoutTierPills/fillQtyOptions/updateTotal) use.
+   * price is accepted as either `price_cents` or `price` (treated as cents — the
+   * whole ticket system is cents-based). */
+  function mapResumeEvent(ev) {
+    if (!ev) return null;
+    var locality = [ev.venueCity, ev.venueState].filter(Boolean).join(', ');
+    var venue = ev.venueName
+      ? (ev.venueName + (locality ? ' — ' + locality : ''))
+      : ('Venue TBA' + (locality ? ' — ' + locality : ''));
+    var tiers = (ev.tiers || []).map(function (t) {
+      var avail = (t.available != null) ? Number(t.available) : null;
+      var cents = (typeof t.price_cents === 'number') ? t.price_cents
+                : (typeof t.price === 'number') ? t.price : 0;
+      return {
+        id:          t.id,
+        tier_name:   t.name || t.tier_name || 'General',
+        price_cents: cents,
+        available:   avail,
+        status:      (avail != null && avail <= 0) ? 'sold_out' : 'on_sale',
+        description: t.description || ''
+      };
+    });
+    return {
+      id:         ev.id,
+      event_name: ev.name || ev.event_name || 'Event',
+      event_date: ev.date || ev.event_date || '',
+      venue:      venue,
+      status:     'on_sale',
+      tiers:      tiers
+    };
+  }
+
+  function resumeCheckout(token) {
+    // Open the overlay in a loading state while we consume the link server-side.
+    var overlay = $('checkout-overlay');
+    if (overlay) overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+    hideEl('step-choose');
+    hideEl('step-verify');
+    hideEl('step-form');
+    hideEl('step-confirmation');
+    hideEl('step-resume-error');
+    showEl('checkout-steps');
+    setStep(2);
+    showEl('step-processing');
+    var p = $('processing-msg');
+    if (p) p.textContent = 'Loading your checkout…';
+    announce('Loading your checkout.');
+
+    fetchWithTimeout(API + '/checkout/resume', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token: token })
+    }, 12000)
+      .then(function (res) {
+        return readJson(res).then(function (body) {
+          return { status: res.status, ok: res.ok, body: body };
+        });
+      })
+      .then(function (r) {
+        if (r.ok && r.body && r.body.ok === true && r.body._nonJson !== true) {
+          var ev = mapResumeEvent(r.body.event);
+          if (!ev || !ev.tiers.length) { showResumeExpired(); return; }
+          openPaymentStep(ev, r.body);
+        } else {
+          // Neutral fail (expired/used/unknown) — the server never distinguishes.
+          showResumeExpired();
+        }
+      })
+      .catch(function () { showResumeExpired(); });
+  }
+
+  function openPaymentStep(ev, data) {
+    _vcoFlow        = true;
+    _buyerPass      = data.pass || null;
+    _vcoBuyer       = {
+      name:     data.buyerName  || '',
+      email:    data.buyerEmail || '',
+      phone:    data.buyerPhone || '',
+      fanOptIn: !!data.fanOptIn
+    };
+    _selectedEvent  = ev;
+    _orderId        = null;
+    _orderConfirmed = false;
+
+    // Default to the first still-available tier (fan can switch via the pills).
+    var firstLive = null;
+    (ev.tiers || []).forEach(function (t) { if (!firstLive && t.status !== 'sold_out') firstLive = t; });
+    _selectedTier = firstLive || (ev.tiers[0] || null);
+
+    var titleEl = $('checkout-event-title');
+    if (titleEl) titleEl.textContent = ev.event_name;
+    var metaEl = $('checkout-event-meta');
+    if (metaEl) metaEl.textContent = eventMetaLine(ev);
+    if (_selectedTier) {
+      var nameEl = $('checkout-tier-name');
+      if (nameEl) nameEl.textContent = _selectedTier.tier_name;
+      var priceEl = $('checkout-tier-price');
+      if (priceEl) priceEl.textContent = fmtPrice(_selectedTier.price_cents);
+    }
+
+    // Reset the shared form, THEN switch it into payment layout (hides the
+    // now-known identity inputs; the pills/qty/opt-in/charge remain).
+    var form = $('checkout-form');
+    if (form) form.reset();
+    setCheckoutInfoMode('payment');
+
+    var line = $('vco-buyer-line');
+    if (line) {
+      line.textContent = 'Verified — buying as ' + _vcoBuyer.name +
+        (_vcoBuyer.email ? ' · ' + _vcoBuyer.email : '');
+      line.hidden = false;
+    }
+    var fo = $('co-fanoptin');
+    if (fo) fo.checked = _vcoBuyer.fanOptIn;
+
+    renderCheckoutTierPills(ev);
+    fillQtyOptions(_selectedTier, 1);
+    updateTotal();
+    var qtySelect = $('co-qty');
+    qtySelect && qtySelect.addEventListener('change', updateTotal);
+
+    var tm = $('checkout-testmode');
+    if (tm) tm.hidden = !TICKETING_TEST_MODE;
+
+    hideEl('checkout-hold-note');   // there is NO hold in the verified flow
+    setError('');
+    var submitBtn = $('checkout-submit-btn');
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Complete Purchase'; }
+
+    hideEl('step-choose');
+    hideEl('step-verify');
+    hideEl('step-processing');
+    hideEl('step-confirmation');
+    hideEl('step-resume-error');
+    showEl('checkout-steps');
+    setStep(2);
+    showEl('step-form');
+
+    var overlay = $('checkout-overlay');
+    if (overlay) overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function showResumeExpired(msg) {
+    var m = $('resume-error-msg');
+    if (m) m.textContent = msg || 'This checkout link has expired or was already used. Please start again.';
+    hideEl('step-choose');
+    hideEl('step-verify');
+    hideEl('step-form');
+    hideEl('step-processing');
+    hideEl('step-confirmation');
+    hideEl('checkout-steps');
+    showEl('step-resume-error');
+    var overlay = $('checkout-overlay');
+    if (overlay) overlay.hidden = false;
+    document.body.style.overflow = 'hidden';
+    announce('This checkout link has expired or was already used. Please start again.');
+  }
+
+  /* ── Purchase (atomic charge — the ONLY inventory commit; NO hold) ─────── */
+  function mapPurchaseError(status, body) {
+    var code = (body && body.error) || '';
+    if (status === 403 || code === 'verification_required') {
+      return 'Your verification link has expired or was already used — please start again from the show page.';
+    }
+    if (status === 409 || code === 'sold_out') {
+      return 'This show is no longer available — no charge was made.';
+    }
+    if (status === 402 || code === 'payment_failed') {
+      var declined = 'Your card was declined — no ticket was issued. Check the details and try again.';
+      return (body && body.message) ? declined + ' (' + body.message + ')' : declined;
+    }
+    return 'Something went wrong on our side — you have not been charged. Please try again.';
+  }
+  function mkPurchaseError(status, body) {
+    var e = new Error((body && (body.message || body.error)) || ('HTTP ' + status));
+    e.status = status;
+    e.code = (body && body.error) || '';
+    e.friendly = mapPurchaseError(status, body || {});
+    return e;
+  }
+
+  function handlePurchase() {
+    setError('');
+    if (!_selectedEvent || !_selectedTier || !_buyerPass || !_vcoBuyer) {
+      // Missing pass/identity ⇒ the verified session is gone — send them back.
+      showResumeExpired('Your checkout session has expired. Please start again from the show page.');
+      return;
+    }
+
+    var qty      = parseInt(($('co-qty') || {}).value, 10) || 1;
+    var fanOptin = !!(($('co-fanoptin') || {}).checked);
+
+    var submitBtn = $('checkout-submit-btn');
+    if (submitBtn) submitBtn.disabled = true;
+    setProcessing(TICKETING_TEST_MODE
+      ? 'Completing your TEST purchase — no real payment is processed…'
+      : 'Completing your purchase…');
+
+    fetchWithTimeout(API + '/orders/purchase', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        eventId:    _selectedEvent.id,
+        tierId:     _selectedTier.id,
+        quantity:   qty,
+        buyerName:  _vcoBuyer.name,
+        buyerEmail: _vcoBuyer.email,
+        buyerPhone: _vcoBuyer.phone || undefined,
+        fanOptIn:   fanOptin,
+        buyerPass:  _buyerPass,
+        nonce:      'mock'
+      })
+    }, 15000)
+      .then(function (res) {
+        return readJson(res).then(function (body) {
+          if (!res.ok || body._nonJson) throw mkPurchaseError(res.status, body);
+          return body;
+        });
+      })
+      .then(function (order) {
+        _orderConfirmed = true;
+        _buyerPass = null;   // the pass authorized exactly this one charge
+        return showConfirmation(order.confirmationCode, _vcoBuyer.name, _vcoBuyer.email);
+      })
+      .catch(function (err) {
+        hideEl('step-processing');
+        showEl('step-form');
+        setStep(2);
+        setError((err && err.friendly) ? err.friendly : copyOfflineCheckout());
+        if (submitBtn) submitBtn.disabled = false;
+        // A burned/expired pass can't retry — verification_required is terminal.
+        if (err && (err.status === 403 || err.code === 'verification_required')) {
+          _buyerPass = null;
+          showResumeExpired('Your verification link has expired or was already used. Please start again from the show page.');
+        }
+      });
   }
 
   /* ══════════════════════════════════════════════════════════
@@ -3002,6 +3491,16 @@
     var confClose = $('conf-close-btn');
     if (confClose) confClose.addEventListener('click', closeCheckout);
 
+    // Verified-checkout: "Start again" from the expired-link state closes the
+    // overlay and strips the spent ?resume token so a reload can't re-hit it.
+    var restartBtn = $('resume-restart-btn');
+    if (restartBtn) {
+      restartBtn.addEventListener('click', function () {
+        closeCheckout();
+        try { history.replaceState(null, '', '#shows'); } catch (e) {}
+      });
+    }
+
     var printBtn = $('conf-print-btn');
     if (printBtn) {
       printBtn.addEventListener('click', function () {
@@ -3324,6 +3823,16 @@
     initRetrieve();
     wireOverlayControls();
     initNightHero();
+
+    // Verified checkout (Wave 2): persist the ?vco session unlock (if present),
+    // then, if the fan arrived on an emailed single-use link
+    // (#shows?resume=<TOKEN>), boot straight to Step 2 by consuming it. Both are
+    // read from the SAME router hash-query stash as ?invite (fragment-based).
+    vcoUnlocked(); // caches the ?vco unlock into sessionStorage for this session
+    var q = (typeof Router !== 'undefined' && typeof Router.getRouteQuery === 'function')
+      ? Router.getRouteQuery() : {};
+    var resumeToken = (q && q.resume) ? String(q.resume).trim() : '';
+    if (resumeToken) resumeCheckout(resumeToken);
   }
 
   /* Retry control on the honest "having trouble" state: a real re-invoke of the
