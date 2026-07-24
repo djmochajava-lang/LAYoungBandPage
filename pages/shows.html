@@ -705,6 +705,48 @@
 .checkout-tier-name { font-size: 0.9rem; color: #fff; font-weight: 600; }
 .checkout-tier-price { font-size: 0.9rem; color: var(--color-primary, #ffd700); font-weight: 700; }
 
+/* Inline tier toggle inside the checkout (owner 07-23) — the fan can switch
+   ticket + price any time before payment. */
+.checkout-tier-switch { margin-bottom: 1.2rem; }
+.checkout-tier-switch-label {
+  display: block;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 0.45rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.checkout-tier-pills { display: flex; flex-direction: column; gap: 0.5rem; }
+.ctier-pill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ctier-pill:hover:not(.is-active):not(:disabled) { border-color: rgba(255,215,0,0.4); }
+.ctier-pill .ctier-pill-price { color: var(--color-primary, #ffd700); font-weight: 700; }
+.ctier-pill.is-active {
+  background: rgba(255,215,0,0.12);
+  border-color: var(--color-primary, #ffd700);
+  box-shadow: inset 0 0 0 1px var(--color-primary, #ffd700);
+}
+.ctier-pill.is-active .ctier-pill-name::before {
+  content: '\2713\00a0'; /* check + nbsp — marks the current choice */
+  color: var(--color-primary, #ffd700);
+  font-weight: 700;
+}
+.ctier-pill:disabled { opacity: 0.5; cursor: not-allowed; }
+.ctier-pill .ctier-pill-soldout { font-size: 0.75rem; color: rgba(255,255,255,0.4); }
+
 .checkout-form-group { margin-bottom: 0.9rem; }
 .checkout-label {
   display: block;
@@ -1419,6 +1461,14 @@
       <div id="checkout-tier-summary" class="checkout-tier-summary">
         <span id="checkout-tier-name" class="checkout-tier-name"></span>
         <span id="checkout-tier-price" class="checkout-tier-price"></span>
+      </div>
+      <!-- Multi-tier shows: an inline ticket toggle so the fan can change which
+           ticket (and price) they're buying right up until they process payment,
+           WITHOUT losing anything they've typed (owner 07-23). Single-tier shows
+           keep the static summary above and never see this. -->
+      <div id="checkout-tier-switch" class="checkout-tier-switch" hidden>
+        <span class="checkout-tier-switch-label">Your ticket &mdash; tap to change</span>
+        <div id="checkout-tier-pills" class="checkout-tier-pills"></div>
       </div>
       <!-- SHARED mock-payment screen (story-mock-payment-visible-screen):
            the itemized breakdown + the honest, card-less "Sample" card
@@ -2200,18 +2250,12 @@
     var priceEl = $('checkout-tier-price');
     if (priceEl) priceEl.textContent = fmtPrice(tier.price_cents);
 
-    // Quantity select: 1 to min(10, available)
-    var qtySelect = $('co-qty');
-    if (qtySelect) {
-      qtySelect.innerHTML = '';
-      var max = Math.min(10, tier.available || 10);
-      for (var i = 1; i <= max; i++) {
-        var opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = i;
-        qtySelect.appendChild(opt);
-      }
-    }
+    // Inline ticket toggle for multi-tier shows (owner 07-23) — lets the fan
+    // change ticket + price any time before payment without losing form input.
+    renderCheckoutTierPills(ev);
+
+    // Quantity select: 1 to min(10, available). Fresh open → default qty 1.
+    fillQtyOptions(tier, 1);
 
     // Reset form/errors BEFORE pre-filling (reset clears every field)
     var form = $('checkout-form');
@@ -2226,8 +2270,10 @@
     if (promoEl && _inviteCode) promoEl.value = _inviteCode;
 
     // Total (re-renders on qty/promo edits; duplicate listeners are harmless —
-    // updateTotal is idempotent)
+    // updateTotal is idempotent). The qty <select> is (re)built by
+    // fillQtyOptions above; grab it fresh here for the change listener.
     updateTotal();
+    var qtySelect = $('co-qty');
     qtySelect && qtySelect.addEventListener('change', updateTotal);
     promoEl && promoEl.addEventListener('input', updateTotal);
 
@@ -2247,6 +2293,91 @@
     var overlay = $('checkout-overlay');
     if (overlay) overlay.hidden = false;
     document.body.style.overflow = 'hidden';
+  }
+
+  /* Build the quantity <select> (1…min(10, available)) for a tier, preserving
+   * the fan's current pick when it still fits under the new tier's ceiling.
+   * Shared by openCheckout (fresh open, preferred=1) and switchTier (keep). */
+  function fillQtyOptions(tier, preferredQty) {
+    var qtySelect = $('co-qty');
+    if (!qtySelect) return;
+    var max  = Math.min(10, (tier && tier.available) || 10);
+    var want = preferredQty || parseInt(qtySelect.value, 10) || 1;
+    if (want > max) want = max;
+    if (want < 1)   want = 1;
+    qtySelect.innerHTML = '';
+    for (var i = 1; i <= max; i++) {
+      var opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = i;
+      if (i === want) opt.selected = true;
+      qtySelect.appendChild(opt);
+    }
+  }
+
+  /* Inline tier toggle inside the checkout (owner 07-23): for a MULTI-tier show
+   * the fan sees every tier as a pill and can switch which one they're buying —
+   * and the price — at any time before they hit "process payment", without
+   * losing anything they've typed. Single-tier shows hide this and keep the
+   * static summary line above it. */
+  function renderCheckoutTierPills(ev) {
+    var wrap    = $('checkout-tier-switch');
+    var summary = $('checkout-tier-summary');
+    var pills   = $('checkout-tier-pills');
+    var tiers   = ev.tiers || [];
+    if (!wrap || !pills) return;
+    if (tiers.length <= 1) {                 // single-tier → static summary only
+      wrap.hidden = true;
+      if (summary) summary.hidden = false;
+      return;
+    }
+    if (summary) summary.hidden = true;      // the pills ARE the summary now
+    wrap.hidden = false;
+    pills.innerHTML = tiers.map(function (t) {
+      var sold   = t.status === 'sold_out';
+      var active = _selectedTier && t.id === _selectedTier.id;
+      return '<button type="button" class="ctier-pill' + (active ? ' is-active' : '') + '"' +
+        ' data-tier="' + escHtml(t.id) + '"' +
+        (sold ? ' disabled aria-disabled="true"' : '') +
+        ' aria-pressed="' + (active ? 'true' : 'false') + '">' +
+        '<span class="ctier-pill-name">' + escHtml(t.tier_name) + '</span>' +
+        (sold
+          ? '<span class="ctier-pill-soldout">Sold Out</span>'
+          : '<span class="ctier-pill-price">' + fmtPrice(t.price_cents) + '</span>') +
+        '</button>';
+    }).join('');
+    pills.querySelectorAll('.ctier-pill[data-tier]:not(:disabled)').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id = btn.getAttribute('data-tier');
+        if (_selectedTier && id === _selectedTier.id) return; // already selected
+        var next = null;
+        tiers.forEach(function (t) { if (t.id === id) next = t; });
+        if (next) switchTier(ev, next);
+      });
+    });
+  }
+
+  /* Swap the selected tier WITHOUT tearing down the form (owner 07-23): update
+   * the in-memory selection, the summary spans, the quantity ceiling (keeping
+   * the fan's chosen qty when it still fits) and the running total + mock
+   * screen. No hold exists yet here (holds are created only at submit), so this
+   * is always safe right up until payment. */
+  function switchTier(ev, tier) {
+    _selectedTier = tier;
+    var nameEl = $('checkout-tier-name');
+    if (nameEl) nameEl.textContent = tier.tier_name;
+    var priceEl = $('checkout-tier-price');
+    if (priceEl) priceEl.textContent = fmtPrice(tier.price_cents);
+    fillQtyOptions(tier); // keep current qty if it still fits under the new tier
+    var pills = $('checkout-tier-pills');
+    if (pills) {
+      pills.querySelectorAll('.ctier-pill').forEach(function (btn) {
+        var on = btn.getAttribute('data-tier') === tier.id;
+        btn.classList.toggle('is-active', on);
+        btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    }
+    updateTotal(); // re-renders the running total + shared mock-payment screen
   }
 
   /* ── Tier-picker front step (owner 07-23) ─────────────────────────────
