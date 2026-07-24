@@ -1595,11 +1595,25 @@
   /* ── Derived constants ──────────────────────────────────── */
   var API = GBE_API_BASE + '/api/v1/tickets';
 
-  /* ── Honest offline/error copy (design §i / §iii F3) ────── */
-  var COPY_OFFLINE_CHECKOUT = 'Ticketing is taking a break right now — no payment was taken. ' +
-    'Please try again in a few minutes, or email booking@goldbottoment-llc.com and we’ll hold seats for you.';
-  var COPY_OFFLINE_RETRIEVE = 'Ticketing is taking a break right now — please try again in a few minutes, ' +
-    'or email booking@goldbottoment-llc.com.';
+  /* ── Honest offline/error copy (design §i / §iii F3) ──────
+   * The support address is a single source of truth (config-var rule): read
+   * SITE_CONFIG.contacts.booking, never a hardcoded literal. The old inline
+   * booking@ literal was a DEAD mailbox that bounced buyer replies
+   * (owner 07-23). Functions (not constants) so the value resolves at call time,
+   * after config.js has loaded. Fallback is the correct LIVE address, not a dead one. */
+  function bookingEmail() {
+    return (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.contacts && SITE_CONFIG.contacts.booking)
+      ? SITE_CONFIG.contacts.booking
+      : 'booking.agent@goldbottoment-llc.com';
+  }
+  function copyOfflineCheckout() {
+    return 'Ticketing is taking a break right now — no payment was taken. ' +
+      'Please try again in a few minutes, or email ' + bookingEmail() + ' and we’ll hold seats for you.';
+  }
+  function copyOfflineRetrieve() {
+    return 'Ticketing is taking a break right now — please try again in a few minutes, ' +
+      'or email ' + bookingEmail() + '.';
+  }
 
   /* ── State ──────────────────────────────────────────────── */
   var _events          = [];
@@ -1687,7 +1701,7 @@
     // expired", "Invalid promo code", …). Max-uses gets the §iv.4 invite copy.
     if (/promo/i.test(code)) {
       if (/maximum uses/i.test(code)) {
-        return 'That invite code has reached its limit — email booking@goldbottoment-llc.com and we’ll take care of you.';
+        return 'That invite code has reached its limit — email ' + bookingEmail() + ' and we’ll take care of you.';
       }
       return code + '.';
     }
@@ -1705,7 +1719,7 @@
   /** Network/timeout/parse failures get the honest offline copy; mapped HTTP
    *  errors keep their taxonomy copy. Raw messages never reach a fan. */
   function friendlyError(err) {
-    return (err && err.friendly) ? err.friendly : COPY_OFFLINE_CHECKOUT;
+    return (err && err.friendly) ? err.friendly : copyOfflineCheckout();
   }
 
   /* ── Transient toast (hold-expiry notice on overlay close) ─ */
@@ -2747,16 +2761,41 @@
     if (_qrCodeLib) { cb(); return; }
     if (window.QRCode) { _qrCodeLib = window.QRCode; cb(); return; }
     var s = document.createElement('script');
-    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';
+    // SELF-HOSTED (owner 07-23): the ticket QR must never depend on a third-party
+    // CDN reaching a fan's phone — the old cdnjs load failed on the live site,
+    // leaving a text-only ticket. On failure cb() still runs and buildQR renders
+    // the human-readable token fallback, so a ticket is NEVER a blank box.
+    s.src = 'js/vendor/qrcode.min.js?v=1';
     s.onload  = function () { _qrCodeLib = window.QRCode; cb(); };
-    s.onerror = function () { cb(); }; // silent; QR just won't render
+    s.onerror = function () { cb(); };
     document.head.appendChild(s);
   }
 
+  /* Render the human-readable token when a QR image can't be produced — a
+   * blank box is never acceptable on a paid ticket (EO AC-8). */
+  function renderQRTextFallback(container, text) {
+    if (!container) return;
+    container.innerHTML =
+      '<div class="qr-text-fallback" style="font-family:monospace;font-size:0.72rem;' +
+      'word-break:break-all;color:#111;background:#fff;padding:8px;border-radius:6px;' +
+      'text-align:center;max-width:180px;margin:0 auto;">' + escHtml(text) + '</div>';
+  }
+
+  /* buildQR renders the token as a QR and — critically — as a rasterized <img>
+   * (via canvas.toDataURL), NOT a live <canvas>. iOS Safari "Save to Photos"/PDF
+   * captures an <img> deterministically but often saves a live canvas blank —
+   * which is exactly why the owner's saved ticket had no code. Falls back to the
+   * readable token text if the lib is missing or rendering throws. */
   function buildQR(container, text) {
-    if (!container || !window.QRCode) return;
+    if (!container) return;
+    container.innerHTML = '';
+    if (!window.QRCode) { renderQRTextFallback(container, text); return; }
     try {
-      new window.QRCode(container, {
+      // qrcodejs draws its canvas synchronously in the constructor, so we can
+      // rasterize it immediately into a clean <img> (no reliance on the lib's
+      // async makeImage timing).
+      var tmp = document.createElement('div');
+      new window.QRCode(tmp, {
         text: text,
         width: 180,
         height: 180,
@@ -2764,8 +2803,23 @@
         colorLight: '#ffffff',
         correctLevel: window.QRCode.CorrectLevel.M
       });
+      var canvas = tmp.querySelector('canvas');
+      if (canvas && canvas.toDataURL) {
+        var img = document.createElement('img');
+        img.src = canvas.toDataURL('image/png');
+        img.setAttribute('width', '180');
+        img.setAttribute('height', '180');
+        img.alt = 'Ticket QR code';
+        img.style.display = 'block';
+        img.style.margin = '0 auto';
+        container.appendChild(img);
+      } else if (tmp.firstChild) {
+        container.appendChild(tmp.firstChild); // table fallback (no-canvas browsers)
+      } else {
+        renderQRTextFallback(container, text);
+      }
     } catch (e) {
-      container.textContent = text;
+      renderQRTextFallback(container, text);
     }
   }
 
@@ -2778,10 +2832,27 @@
     var errEl = $('retrieve-error');
     if (!btn || !input) return;
 
+    function isPlausibleCode(c) {
+      // Fresh codes are GBE-XXXXXXXX; reissued codes are bare 16-hex (no prefix).
+      return /^GBE-[A-Z0-9]{6,16}$/.test(c) || /^[A-F0-9]{12,32}$/.test(c);
+    }
+    function showRetrieveNotFound() {
+      if (errEl) {
+        errEl.textContent = 'We couldn’t find that code. It looks like GBE-XXXXXXXX — check for typos and try again.';
+        errEl.style.display = 'block';
+      }
+    }
+
     function doRetrieve() {
-      var code = input.value.trim().toUpperCase();
+      // Normalize hard (owner 07-23): strip ALL whitespace (incl. an internal
+      // space from a paste) then uppercase — a spaced/garbled code must never
+      // reach the network as a malformed request (which the edge 403s → the old
+      // code mis-read as "offline"). Shape-check locally first; a bad shape is a
+      // not-found, not an outage, and costs zero round-trips.
+      var code = input.value.replace(/\s+/g, '').toUpperCase();
       if (!code) return;
       if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
+      if (!isPlausibleCode(code)) { showRetrieveNotFound(); return; }
       btn.disabled  = true;
       btn.textContent = '…';
 
@@ -2790,7 +2861,14 @@
       fetchWithTimeout(API + '/orders/confirm/' + encodeURIComponent(code) + '/public', {}, 8000)
         .then(function (res) {
           return readJson(res).then(function (data) {
-            if (res.status === 404) {
+            // Error taxonomy (owner 07-23): ANY client-error status (4xx — a 404
+            // unknown code, or a 400/403 the edge returns for a code it won't
+            // route) means "bad/unknown code" → NOT-FOUND, not an outage. Only a
+            // genuine transport failure — 5xx, network/timeout, or a non-JSON
+            // body on an otherwise-OK response — is truly OFFLINE. (The old code
+            // bucketed every non-404 as offline, so a stray-space code read as
+            // "ticketing is taking a break" instead of "check your code.")
+            if (res.status >= 400 && res.status < 500) {
               var nf = new Error('not found');
               nf.retrieveState = 'notfound';
               throw nf;
@@ -2895,7 +2973,7 @@
             // Friendly states only (design F5) — never a raw error string.
             errEl.textContent = (err && err.retrieveState === 'notfound')
               ? 'We couldn’t find that code. It looks like GBE-XXXXXXXX — check for typos and try again.'
-              : COPY_OFFLINE_RETRIEVE;
+              : copyOfflineRetrieve();
             errEl.style.display = 'block';
           }
         })
