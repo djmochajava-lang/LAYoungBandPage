@@ -1205,7 +1205,7 @@
     <!-- Retrieve Ticket -->
     <div class="retrieve-zone scroll-reveal">
       <h3>Already Have a Ticket?</h3>
-      <p>Enter your confirmation code to view your ticket and QR code.</p>
+      <p id="retrieve-copy">Enter your confirmation code to view your ticket and QR code.</p>
       <div class="retrieve-form">
         <input
           id="retrieve-code"
@@ -1216,6 +1216,21 @@
           inputmode="text"
           spellcheck="false"
           maxlength="32"
+        >
+        <!-- Email is required ONLY on the verified-checkout (Supabase) path,
+             where retrieve is self-authenticating (confirmation code + the email
+             the order was placed under). Hidden on the legacy path (code alone,
+             unchanged); initRetrieve() reveals it when the session is
+             vco-unlocked AND Supabase config is present. -->
+        <input
+          id="retrieve-email"
+          class="retrieve-input"
+          type="email"
+          placeholder="Email on your order"
+          autocomplete="email"
+          inputmode="email"
+          spellcheck="false"
+          style="display:none;"
         >
         <button id="retrieve-btn" class="retrieve-btn">Retrieve</button>
       </div>
@@ -1745,6 +1760,12 @@
     try { if (sessionStorage.getItem('gbe-vco') === '1') return true; } catch (e) {}
     return false;
   }
+
+  /* Retrieve-my-ticket routes to hosted Supabase (self-authenticating
+   * retrieve_order RPC) on exactly the same gate the other 3 ON-path call sites
+   * use: the session is vco-unlocked AND SITE_CONFIG.supabase is present. When
+   * false, retrieve stays on the legacy home-confirm endpoint (code-only). */
+  function retrieveUsesSupabase() { return vcoUnlocked() && !!supaCfg(); }
 
   /* ── DOM helpers ────────────────────────────────────────── */
   function $(id) { return document.getElementById(id); }
@@ -3174,7 +3195,8 @@
         if (r.ok && b._nonJson !== true && b.ok === true && b.confirmationCode) {
           _orderConfirmed = true;
           _buyerPass = null;   // the pass authorized exactly this one charge
-          return showConfirmation(b.confirmationCode, _vcoBuyer.name, _vcoBuyer.email);
+          // Pass the inline tokens so the QR renders immediately on Step 3.
+          return showConfirmation(b.confirmationCode, _vcoBuyer.name, _vcoBuyer.email, b.tokens);
         }
         // Business error arrives as {error:'…'} at HTTP 200; a non-2xx or
         // non-JSON body is a genuine transport failure → offline copy.
@@ -3198,7 +3220,7 @@
   /* ══════════════════════════════════════════════════════════
    * CONFIRMATION + QR DISPLAY
    * ═════════════════════════════════════════════════════════ */
-  function showConfirmation(confirmationCode, buyerName, buyerEmail) {
+  function showConfirmation(confirmationCode, buyerName, buyerEmail, tokens) {
     hideEl('step-processing');
     showEl('step-confirmation');
     setStep(3); // arrived at "Ticket"
@@ -3224,7 +3246,24 @@
       'Your confirmation code is ' + (confirmationCode || '') + '.' +
       (buyerEmail ? ' Tickets are on their way to ' + buyerEmail + '.' : ''));
 
-    // Fetch tokens (parse-guarded — design D3: no raw errors on this path)
+    // ON-PATH (verified checkout / Supabase): purchase_ticket already returned
+    // the issued tokens inline, so render the scannable QR IMMEDIATELY — no home
+    // /orders/confirm fetch (that Supabase order isn't in the home SoR until the
+    // next pull-sync). The "also emailed at go-live" copy above stays. Each QR
+    // encodes the token value purchase_ticket returned (token.token).
+    if (tokens && tokens.length) {
+      renderTicketQRs(tokens, function (t) { return t.token; }, {
+        buyerName: buyerName || '',
+        confCode:  confirmationCode,
+        eventName: _selectedEvent ? _selectedEvent.event_name : 'Event',
+        eventDate: _selectedEvent ? _selectedEvent.event_date : '',
+        venue:     _selectedEvent ? _selectedEvent.venue : ''
+      });
+      return Promise.resolve();
+    }
+
+    // LEGACY OFF-PATH (no inline tokens): fetch tokens from the home confirm
+    // endpoint (parse-guarded — design D3: no raw errors on this path).
     return fetchWithTimeout(API + '/orders/confirm/' + encodeURIComponent(confirmationCode) + '/public', {}, 8000)
       .then(function (res) {
         return readJson(res).then(function (data) {
@@ -3355,14 +3394,84 @@
     }
   }
 
+  /* Shared QR + print-ticket renderer for the verified-checkout ON-path — used
+   * by BOTH the inline confirmation (tokens straight from purchase_ticket) and
+   * retrieve (tokens from retrieve_order). Each screen QR is a rasterized <img>
+   * (buildQR — iOS-save-safe); a matching print ticket is added to
+   * #print-tickets. getPayload(token) returns the string encoded into the QR:
+   *   • confirmation → token.token     (the value purchase_ticket returns)
+   *   • retrieve     → token.token_id  (the value retrieve_order returns)
+   * The door-scanner/validation slice will define the final scan contract; this
+   * function only DISPLAYS an opaque per-ticket identifier. */
+  function renderTicketQRs(tokens, getPayload, meta) {
+    var qrGrid   = $('qr-grid');
+    var printDiv = $('print-tickets');
+    if (!qrGrid) return;
+    qrGrid.innerHTML = '';
+    if (printDiv) printDiv.innerHTML = '';
+    meta = meta || {};
+    if (!tokens || !tokens.length) {
+      qrGrid.innerHTML = '<p style="color:rgba(255,255,255,0.45);font-size:0.85rem;">No issued tickets found for this order.</p>';
+      return;
+    }
+    loadQRLib(function () {
+      tokens.forEach(function (t, idx) {
+        var payload = String(getPayload(t) || '');
+        // Screen QR (rasterized <img>)
+        var wrapper = document.createElement('div');
+        wrapper.className = 'qr-item';
+        var canvas = document.createElement('div');
+        wrapper.appendChild(canvas);
+        var label = document.createElement('div');
+        label.className = 'qr-item-label';
+        label.textContent = 'Ticket ' + (idx + 1) + ' of ' + tokens.length;
+        wrapper.appendChild(label);
+        qrGrid.appendChild(wrapper);
+        buildQR(canvas, payload);
+
+        // Print ticket
+        if (printDiv) {
+          var ticket = document.createElement('div');
+          ticket.className = 'print-ticket';
+          ticket.innerHTML =
+            '<div class="print-ticket-header">&#x1F3AB; L.A. Young</div>' +
+            '<div class="print-ticket-event">' + escHtml(meta.eventName || 'Event') + '</div>' +
+            '<div class="print-ticket-meta">' +
+              (meta.eventDate ? fmtDate(meta.eventDate) : '') +
+              (meta.venue ? ' &bull; ' + escHtml(meta.venue) : '') +
+            '</div>' +
+            '<div class="print-ticket-meta">Ticket ' + (idx + 1) + ' of ' + tokens.length + ' &bull; ' + escHtml(meta.buyerName || '') + '</div>' +
+            '<div class="print-ticket-qr" id="vco-qr-' + idx + '"></div>' +
+            '<div class="print-ticket-code">' + escHtml(payload) + '</div>' +
+            '<div class="print-ticket-code" style="margin-top:4px;font-size:0.7rem;">Conf: ' + escHtml(meta.confCode || '') + '</div>';
+          printDiv.appendChild(ticket);
+          buildQR(ticket.querySelector('#vco-qr-' + idx), payload);
+        }
+      });
+    });
+  }
+
   /* ══════════════════════════════════════════════════════════
    * RETRIEVE TICKET
    * ═════════════════════════════════════════════════════════ */
   function initRetrieve() {
-    var btn   = $('retrieve-btn');
-    var input = $('retrieve-code');
-    var errEl = $('retrieve-error');
+    var btn        = $('retrieve-btn');
+    var input      = $('retrieve-code');
+    var emailInput = $('retrieve-email');
+    var copyEl     = $('retrieve-copy');
+    var errEl      = $('retrieve-error');
     if (!btn || !input) return;
+
+    var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // On the verified-checkout (Supabase) path retrieve is self-authenticating —
+    // reveal the email field + update the copy so the fan knows it's required.
+    function revealEmailField() {
+      if (emailInput) emailInput.style.display = '';
+      if (copyEl) copyEl.textContent =
+        'Enter your confirmation code and the email on your order to view your ticket and QR code.';
+    }
+    if (retrieveUsesSupabase()) revealEmailField();
 
     function isPlausibleCode(c) {
       // Fresh codes are GBE-XXXXXXXX; reissued codes are bare 16-hex (no prefix).
@@ -3373,6 +3482,9 @@
         errEl.textContent = 'We couldn’t find that code. It looks like GBE-XXXXXXXX — check for typos and try again.';
         errEl.style.display = 'block';
       }
+    }
+    function showRetrieveError(msg) {
+      if (errEl) { errEl.textContent = msg; errEl.style.display = 'block'; }
     }
 
     function doRetrieve() {
@@ -3385,6 +3497,21 @@
       if (!code) return;
       if (errEl) { errEl.style.display = 'none'; errEl.textContent = ''; }
       if (!isPlausibleCode(code)) { showRetrieveNotFound(); return; }
+
+      // ── Verified-checkout ON-path: self-authenticating Supabase retrieve
+      //    (confirmation code + the buyer email). Same supaCfg()/vco gate as the
+      //    other 3 ON-path call sites; QR renders from each returned token_id. ──
+      if (retrieveUsesSupabase()) {
+        revealEmailField();  // robust if vco was detected only at click time
+        var email = (emailInput ? emailInput.value : '').replace(/\s+/g, '').toLowerCase();
+        if (!EMAIL_RE.test(email)) {
+          showRetrieveError('Enter the email on your order to view your ticket.');
+          return;
+        }
+        retrieveViaSupabase(code, email);
+        return;
+      }
+
       btn.disabled  = true;
       btn.textContent = '…';
 
@@ -3515,10 +3642,95 @@
         });
     }
 
+    /* Verified-checkout ON-path retrieve: RPC retrieve_order({p_code,p_email}) on
+     * Supabase (Content-Profile: ticketing, anon key). Returns HTTP 200 with
+     * {ok:true, …display fields…, tokens:[{token_id,status}]} on a verified
+     * match, OR 200 {ok:false} (neutral not-found — the server never distinguishes
+     * "unknown code" from "wrong email", so there is no enumeration oracle). Only
+     * a non-2xx / non-JSON body is a genuine transport failure → offline copy. */
+    function retrieveViaSupabase(code, email) {
+      var sb = supaCfg();
+      if (!sb) { showRetrieveError(copyOfflineRetrieve()); return; }
+      btn.disabled = true;
+      btn.textContent = '…';
+      fetchWithTimeout(sb.url + '/rest/v1/rpc/retrieve_order', {
+        method: 'POST',
+        headers: supaRpcHeaders(),
+        body: JSON.stringify({ p_code: code, p_email: email })
+      }, 12000)
+        .then(function (res) {
+          return readJson(res).then(function (body) {
+            return { status: res.status, ok: res.ok, body: body };
+          });
+        })
+        .then(function (r) {
+          var b = r.body || {};
+          if (!r.ok || b._nonJson === true) {
+            var off = new Error('unavailable'); off.retrieveState = 'offline'; throw off;
+          }
+          if (b.ok !== true) { showRetrieveNotFound(); return; }  // neutral not-found
+          renderRetrievedTicket(code, b);
+        })
+        .catch(function (err) {
+          showRetrieveError((err && err.retrieveState === 'notfound')
+            ? 'We couldn’t find that code. It looks like GBE-XXXXXXXX — check for typos and try again.'
+            : copyOfflineRetrieve());
+        })
+        .finally(function () {
+          btn.disabled = false;
+          btn.textContent = 'Retrieve';
+        });
+    }
+
+    /* Render the retrieved order into the confirmation overlay (Step 3) — QR from
+     * each token_id via the shared renderTicketQRs. No buyer email on this path
+     * (self-auth already proved it) → hide the "check your email" line. */
+    function renderRetrievedTicket(code, data) {
+      _selectedEvent = {
+        id: null,
+        event_name: data.event_name || 'Event',
+        event_date: data.event_date || '',
+        venue: data.venue || ''
+      };
+      _selectedTier = null;
+
+      var confCode = data.confirmation_code || code;
+      var codeEl   = $('conf-code');
+      var emailEl  = $('conf-email');
+      var evNameEl = $('conf-event-name');
+      if (codeEl)   codeEl.textContent  = confCode;
+      if (emailEl)  emailEl.textContent = '';
+      if (evNameEl) evNameEl.textContent = data.event_name || '';
+
+      var emailLine = $('conf-email-line');
+      if (emailLine) emailLine.hidden = true;
+      var tmNote = $('conf-testmode-note');
+      if (tmNote) tmNote.hidden = !TICKETING_TEST_MODE;
+
+      // Show overlay in confirmation state
+      showEl('checkout-overlay');
+      hideEl('step-form');
+      hideEl('step-processing');
+      hideEl('step-resume-error');
+      showEl('step-confirmation');
+      setStep(3); // retrieve jumps straight to the "Ticket" step
+      document.body.style.overflow = 'hidden';
+
+      announce('Ticket found. Your confirmation code is ' + confCode + '.');
+
+      renderTicketQRs(data.tokens || [], function (t) { return t.token_id; }, {
+        buyerName: '',
+        confCode:  confCode,
+        eventName: data.event_name || 'Event',
+        eventDate: data.event_date || '',
+        venue:     data.venue || ''
+      });
+    }
+
     btn.addEventListener('click', doRetrieve);
-    input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') { e.preventDefault(); doRetrieve(); }
-    });
+    function onEnter(e) { if (e.key === 'Enter') { e.preventDefault(); doRetrieve(); } }
+    input.addEventListener('keydown', onEnter);
+    if (emailInput) emailInput.addEventListener('keydown', onEnter);
   }
 
   /* ── Overlay close / keyboard ───────────────────────────── */
