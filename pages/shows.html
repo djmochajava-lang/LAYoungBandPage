@@ -1492,10 +1492,10 @@
           <label class="checkout-label" for="vco-email">Email *</label>
           <input id="vco-email" class="checkout-input" type="email" autocomplete="email" required placeholder="your@email.com">
         </div>
-        <div class="checkout-form-group">
-          <label class="checkout-label" for="vco-phone">Phone (optional)</label>
-          <input id="vco-phone" class="checkout-input" type="tel" autocomplete="tel" placeholder="+1 (555) 000-0000">
-        </div>
+        <!-- Phone field removed 2026-07-25 (EO design-QA): hosted PII = name +
+             email ONLY (CTO 07-24) and feedback_ticket_buyer_verification is
+             EMAIL-ONLY (no SMS). The verify payload already dropped phone; the
+             stray input was collected + silently discarded. -->
         <div class="checkout-form-group">
           <div class="checkout-checkbox-row">
             <input id="vco-fanoptin" class="checkout-checkbox" type="checkbox">
@@ -2640,9 +2640,14 @@
     var host = $('checkout-mockpay');
     if (!host || !window.GBEMockPay || !_selectedTier) return;
     var lineLabel = _selectedTier.tier_name || 'Ticket';
+    // The shared mock-pay component renders the line VALUE verbatim (fmtMoney of
+    // `amount`) and only appends "×qty" to the LABEL — it does NOT multiply. So we
+    // hand it the EXTENDED line total (unit × qty) here, keeping the line value in
+    // lockstep with the authoritative #checkout-total (both = cents × qty). Comp
+    // stays $0.00. (EO design-QA fix 2026-07-25 — frozen unit price on qty change.)
     var lineItems = isComp
       ? [{ label: lineLabel + ' — Complimentary (Industry Guest)', qty: qty, amount: 0 }]
-      : [{ label: lineLabel, qty: qty, amount: cents }];
+      : [{ label: lineLabel, qty: qty, amount: cents * qty }];
     try {
       window.GBEMockPay.renderScreen(host, {
         testMode: false,          // overlay already shows the TEST-MODE banner
@@ -2904,13 +2909,13 @@
       // sees matches the one the link went to.
       onStateChange: function (s) {
         var lock = (s === 'sent');
-        ['vco-name', 'vco-email', 'vco-phone', 'vco-fanoptin'].forEach(function (id) {
+        ['vco-name', 'vco-email', 'vco-fanoptin'].forEach(function (id) {
           var el = $(id); if (el) el.disabled = lock;
         });
       }
     });
     // Re-evaluate the "Verify email" button as the fan fills the info fields.
-    ['vco-name', 'vco-email', 'vco-phone'].forEach(function (id) {
+    ['vco-name', 'vco-email'].forEach(function (id) {
       var el = $(id); if (!el) return;
       ['input', 'blur', 'change'].forEach(function (evt) {
         el.addEventListener(evt, function () { if (_verifyGateCtrl) _verifyGateCtrl.refresh(); });
@@ -2934,7 +2939,7 @@
 
     var form = $('verify-form');
     if (form) form.reset();
-    ['vco-name', 'vco-email', 'vco-phone', 'vco-fanoptin'].forEach(function (id) {
+    ['vco-name', 'vco-email', 'vco-fanoptin'].forEach(function (id) {
       var el = $(id); if (el) el.disabled = false;   // clear any prior sent-lock
     });
     var vErr = $('verify-error');
@@ -3108,6 +3113,14 @@
     var overlay = $('checkout-overlay');
     if (overlay) overlay.hidden = false;
     document.body.style.overflow = 'hidden';
+
+    // The single-use resume token has now been CONSUMED (resume_checkout minted
+    // the Buyer-Pass) and Step 2 is showing — strip the spent &resume=<TOKEN>
+    // from location.hash so a post-purchase browser refresh can't re-read the
+    // burned token and land on the "expired/used" screen. replaceState fires no
+    // hashchange/popstate, so the SPA router is untouched (route stays #shows).
+    // (EO+InfoSec design-QA fix 2026-07-25.)
+    try { history.replaceState(null, '', '#shows'); } catch (e) {}
   }
 
   function showResumeExpired(msg) {
