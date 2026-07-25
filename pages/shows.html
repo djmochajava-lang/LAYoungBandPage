@@ -4100,7 +4100,30 @@
     var q = (typeof Router !== 'undefined' && typeof Router.getRouteQuery === 'function')
       ? Router.getRouteQuery() : {};
     var resumeToken = (q && q.resume) ? String(q.resume).trim() : '';
-    if (resumeToken) resumeCheckout(resumeToken);
+    if (resumeToken) {
+      // Consume the single-use resume token OUT of the URL — and out of the SPA
+      // router's stored route-query — the instant we've captured it (like an
+      // OAuth code). The token is already held in `resumeToken`, so the in-flight
+      // resume still works; this only cleans the address bar so a post-purchase
+      // refresh can't re-hit the spent token and land on the "expired" screen.
+      //
+      // Clearing Router.routeQuery/routeQueryString is the ESSENTIAL part, not
+      // just cosmetics: Router.navigateTo() calls updateURL() AFTER this inline
+      // boot() runs (it awaits loadPage, which includes a 300ms fade), and
+      // updateURL re-serializes routeQueryString — still holding resume= — back
+      // into the hash via pushState. On a fast resume RPC, openPaymentStep's own
+      // replaceState('#shows') fires DURING that fade and is then clobbered by
+      // updateURL re-adding the token (the live-path bug the earlier
+      // openPaymentStep-only fix lost the race to). Emptying the router's query
+      // here makes updateURL write a clean '#shows'; the replaceState below
+      // cleans the visible hash immediately. vco is already cached in
+      // sessionStorage by vcoUnlocked(), so dropping it from the URL is safe.
+      try {
+        if (typeof Router !== 'undefined') { Router.routeQuery = {}; Router.routeQueryString = ''; }
+      } catch (e) {}
+      try { history.replaceState(null, '', '#shows'); } catch (e) {}
+      resumeCheckout(resumeToken);
+    }
   }
 
   /* Retry control on the honest "having trouble" state: a real re-invoke of the
