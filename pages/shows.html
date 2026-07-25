@@ -1631,7 +1631,7 @@
 <!-- story-buyer-gate-s2: shared buyer-gate component, loaded at PAGE-FRAGMENT
      level (never in the SPA index shell). The file itself is idempotent under
      PageLoader's re-execution of fragment scripts on SPA navigation. -->
-<script src="js/gbe-buyer-gate.js?v=2"></script>
+<script src="js/gbe-buyer-gate.js?v=3"></script>
 <script>
 (function () {
   'use strict';
@@ -1687,6 +1687,29 @@
   function copyOfflineRetrieve() {
     return 'Ticketing is taking a break right now — please try again in a few minutes, ' +
       'or email ' + bookingEmail() + '.';
+  }
+
+  /* ── Hosted transaction layer (blueprint 2026-07-24) ──────────────────────
+   * When VCHECKOUT is ON, the verified 2-step flow talks to Supabase DIRECTLY
+   * (no home tunnel/Worker) using the SAME anon client already loaded for the
+   * public read-cache (SITE_CONFIG.supabase — url + client-safe anon key; RLS
+   * deny-by-default guards the sensitive tables). The transaction FUNCTIONS live
+   * in the `ticketing` Postgres schema, so the RPC calls carry a
+   * Content-Profile: ticketing header (PostgREST schema routing). ONLY the
+   * anon/publishable key is ever used — never the service_role key. */
+  function supaCfg() {
+    var sb = (typeof SITE_CONFIG !== 'undefined' && SITE_CONFIG.supabase) ? SITE_CONFIG.supabase : null;
+    return (sb && sb.url && sb.anonKey) ? sb : null;
+  }
+  function supaRpcHeaders() {
+    var sb = supaCfg();
+    return sb ? {
+      'Content-Type':   'application/json',
+      'apikey':         sb.anonKey,
+      'Authorization':  'Bearer ' + sb.anonKey,
+      'Content-Profile': 'ticketing',   // functions live in the ticketing schema
+      'Accept-Profile':  'ticketing'
+    } : { 'Content-Type': 'application/json' };
   }
 
   /* ── State ──────────────────────────────────────────────── */
@@ -2837,17 +2860,23 @@
     if (_verifyGateCtrl || typeof GBEBuyerGate === 'undefined') return;
     var host = $('vco-buyer-gate');
     if (!host) return;
+    // Supabase Edge Function `verify-link` (Turnstile siteverify + magic-link
+    // email). Body = {email, eventId, buyerName, fanOptIn, turnstileToken} — the
+    // widget adds email + turnstileToken; getContext() supplies the rest. PHONE
+    // IS DROPPED (CTO 07-24: hosted PII = name + email only).
+    var _sb = supaCfg();
     _verifyGateCtrl = GBEBuyerGate.mount(host, {
       flow:      'magic-link',
       purpose:   'ticket',
-      verifyUrl: API + '/checkout/verify-link',
+      verifyUrl: _sb ? (_sb.url + '/functions/v1/verify-link') : (API + '/checkout/verify-link'),
+      verifyHeaders: _sb ? { apikey: _sb.anonKey, Authorization: 'Bearer ' + _sb.anonKey } : null,
       getEmail:  function () { var e = $('vco-email'); return e ? String(e.value || '').trim() : ''; },
       getContext: function () {
         return {
           eventId:    _selectedEvent ? _selectedEvent.id : null,
           buyerName:  (($('vco-name')  || {}).value || '').trim(),
-          buyerPhone: ((($('vco-phone') || {}).value || '').trim()) || undefined,
           fanOptIn:   !!(($('vco-fanoptin') || {}).checked)
+          // buyerPhone intentionally NOT sent (hosted PII = name + email only).
         };
       },
       // Lock the identity fields once the link is sent so the address the fan
@@ -2961,10 +2990,13 @@
     if (p) p.textContent = 'Loading your checkout…';
     announce('Loading your checkout.');
 
-    fetchWithTimeout(API + '/checkout/resume', {
+    // Supabase RPC resume_checkout({p_token}) — atomically consumes the single-
+    // use link + mints an event-bound Buyer-Pass. Returns 200 {ok:true, pass,
+    // email, buyerName, fanOptIn, event:{…tiers[]}} or 200 {ok:false} (neutral).
+    fetchWithTimeout((supaCfg() ? supaCfg().url : GBE_API_BASE) + '/rest/v1/rpc/resume_checkout', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: token })
+      headers: supaRpcHeaders(),
+      body: JSON.stringify({ p_token: token })
     }, 12000)
       .then(function (res) {
         return readJson(res).then(function (body) {
@@ -2987,10 +3019,11 @@
   function openPaymentStep(ev, data) {
     _vcoFlow        = true;
     _buyerPass      = data.pass || null;
+    // resume_checkout returns `email` (not buyerEmail) and NO phone (hosted PII
+    // = name + email only, CTO 07-24).
     _vcoBuyer       = {
-      name:     data.buyerName  || '',
-      email:    data.buyerEmail || '',
-      phone:    data.buyerPhone || '',
+      name:     data.buyerName || '',
+      email:    data.email || data.buyerEmail || '',
       fanOptIn: !!data.fanOptIn
     };
     _selectedEvent  = ev;
@@ -3112,31 +3145,41 @@
       ? 'Completing your TEST purchase — no real payment is processed…'
       : 'Completing your purchase…');
 
-    fetchWithTimeout(API + '/orders/purchase', {
+    // Supabase RPC purchase_ticket — the atomic charge (pass-consume → capacity
+    // CAS → charge → token issue, all in ONE Postgres transaction). The SERVER
+    // computes the price (no price sent) and no phone is sent. The RPC returns
+    // HTTP 200 with EITHER {ok:true,…} OR {error:'…'} — branch on the BODY, not
+    // the HTTP status (a non-2xx / non-JSON body is a transport failure).
+    fetchWithTimeout((supaCfg() ? supaCfg().url : GBE_API_BASE) + '/rest/v1/rpc/purchase_ticket', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: supaRpcHeaders(),
       body: JSON.stringify({
-        eventId:    _selectedEvent.id,
-        tierId:     _selectedTier.id,
-        quantity:   qty,
-        buyerName:  _vcoBuyer.name,
-        buyerEmail: _vcoBuyer.email,
-        buyerPhone: _vcoBuyer.phone || undefined,
-        fanOptIn:   fanOptin,
-        buyerPass:  _buyerPass,
-        nonce:      'mock'
+        p_event_id:    _selectedEvent.id,
+        p_tier_id:     _selectedTier.id,
+        p_quantity:    qty,
+        p_buyer_email: _vcoBuyer.email,
+        p_buyer_pass:  _buyerPass,
+        p_buyer_name:  _vcoBuyer.name,
+        p_fan_opt_in:  fanOptin,
+        p_nonce:       'mock'
       })
     }, 15000)
       .then(function (res) {
         return readJson(res).then(function (body) {
-          if (!res.ok || body._nonJson) throw mkPurchaseError(res.status, body);
-          return body;
+          return { status: res.status, ok: res.ok, body: body };
         });
       })
-      .then(function (order) {
-        _orderConfirmed = true;
-        _buyerPass = null;   // the pass authorized exactly this one charge
-        return showConfirmation(order.confirmationCode, _vcoBuyer.name, _vcoBuyer.email);
+      .then(function (r) {
+        var b = r.body || {};
+        if (r.ok && b._nonJson !== true && b.ok === true && b.confirmationCode) {
+          _orderConfirmed = true;
+          _buyerPass = null;   // the pass authorized exactly this one charge
+          return showConfirmation(b.confirmationCode, _vcoBuyer.name, _vcoBuyer.email);
+        }
+        // Business error arrives as {error:'…'} at HTTP 200; a non-2xx or
+        // non-JSON body is a genuine transport failure → offline copy.
+        if (r.ok && b._nonJson !== true && b.error) throw mkPurchaseError(200, b);
+        throw mkPurchaseError(r.status, b._nonJson ? {} : b);
       })
       .catch(function (err) {
         hideEl('step-processing');
