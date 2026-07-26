@@ -374,16 +374,30 @@
 
   /* A show date is a CALENDAR date (same rule as shows.html): parse
    * 'YYYY-MM-DD' as LOCAL midnight — new Date('2026-09-26') is UTC and
-   * renders the previous day in US timezones. */
+   * renders the previous day in US timezones.
+   *
+   * story-date-tbd-convention: the publisher emits ISO-8601 REDUCED PRECISION
+   * 'YYYY-MM' for a show whose MONTH is booked but whose DAY is not (the date
+   * sibling of NULL venue_name → "Venue TBA"). Anchor those to the 1st of the
+   * month so the upcoming-show filter still keeps them — WITHOUT that, a
+   * TBD-dated show would fail this parse and silently vanish from the banner. */
   function localDate(str) {
-    var m = String(str || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
-    return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null;
+    var m = String(str || '').match(/^(\d{4})-(\d{2})(?:-(\d{2}))?/);
+    return m ? new Date(+m[1], +m[2] - 1, m[3] ? +m[3] : 1) : null;
+  }
+
+  function isMonthOnly(str) {
+    return /^\d{4}-\d{2}$/.test(String(str || ''));
   }
 
   function fmtDate(str) {
     var d = localDate(str);
     if (!d) return '';
     try {
+      // Month precision ⇒ the day is genuinely unknown: say so, never invent one.
+      if (isMonthOnly(str)) {
+        return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) + ' · Date TBD';
+      }
       return d.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
     } catch (e) { return str; }
   }

@@ -1904,9 +1904,29 @@
   }
 
   /* ── Format date ────────────────────────────────────────── */
+  /* THE "DAY IS TBD" RENDER RULE (story-date-tbd-convention, owner 2026-07-26).
+   * The band is PRE-DEBUT, so most show dates are placeholders: the MONTH is
+   * booked, the DAY is not. The SoR carries a date_tbd flag and the publisher
+   * turns it into an ISO-8601 REDUCED-PRECISION date — 'YYYY-MM' — in every
+   * public payload (the ticket_event_readmodel listing AND the hosted ticketing
+   * rows behind checkout Step 2 / retrieve / the printed ticket). So this ONE
+   * formatter covers every buyer-facing surface on the page.
+   *
+   * This is the date sibling of the venue convention: a NULL venue_name renders
+   * "Venue TBA" because the field carries its own missing-ness. A month-only
+   * date says "December 2026, day unknown" the standard ISO way, so we print
+   * "Dec 2026 · Date TBD" and NEVER invent a weekday the band hasn't booked. */
   function fmtDate(str) {
     if (!str) return '';
     try {
+      // Month precision ⇒ the day is genuinely unknown. Build the date from
+      // parts (never new Date('2026-12'), which is UTC midnight and renders the
+      // previous MONTH's last day in US timezones).
+      var mo = String(str).match(/^(\d{4})-(\d{2})$/);
+      if (mo) {
+        var md = new Date(+mo[1], +mo[2] - 1, 1);
+        return md.toLocaleDateString('en-US', { year: 'numeric', month: 'short' }) + ' · Date TBD';
+      }
       // A show date is a CALENDAR date. Parse 'YYYY-MM-DD' (the readmodel
       // boundary shape) as a LOCAL date — new Date('2026-09-26') is UTC
       // midnight and renders the PREVIOUS day in US timezones. The ticket
