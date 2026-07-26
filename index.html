@@ -888,6 +888,48 @@
       </div>
     </div>
 
+    <!-- ══════════════════════════════════════════════════════════════════
+         SHARE THE BAND — global QR (floating FAB + full-screen overlay)
+         Lives in the SPA shell (outside #app-container), so it is on EVERY
+         view without scrolling. Primary use: the venue hand-to-hand moment —
+         1 tap opens a big, high-contrast QR of the evergreen homepage that
+         anyone can scan. Self-hosted QR (js/vendor/qrcode.min.js) — renders
+         with NO network/CDN dependency, so it never fails at a venue.
+         The #share deep link (bookmarkable) also opens this overlay.
+         Behaviour: js/share-qr.js  ·  Styles: css/components.css
+         ══════════════════════════════════════════════════════════════════ -->
+    <button id="share-qr-fab" class="share-qr-fab" type="button"
+            aria-label="Share the band — show a scannable QR code"
+            title="Share the band">
+      <svg class="share-qr-fab-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M3 3h8v8H3V3zm2 2v4h4V5H5z"/>
+        <rect x="6" y="6" width="2" height="2" fill="currentColor"/>
+        <path fill="currentColor" d="M13 3h8v8h-8V3zm2 2v4h4V5h-4z"/>
+        <rect x="16" y="6" width="2" height="2" fill="currentColor"/>
+        <path fill="currentColor" d="M3 13h8v8H3v-8zm2 2v4h4v-4H5z"/>
+        <rect x="6" y="16" width="2" height="2" fill="currentColor"/>
+        <rect x="13" y="13" width="3" height="3" fill="currentColor"/>
+        <rect x="18" y="13" width="3" height="3" fill="currentColor"/>
+        <rect x="13" y="18" width="3" height="3" fill="currentColor"/>
+        <rect x="18" y="18" width="3" height="3" fill="currentColor"/>
+      </svg>
+      <span class="share-qr-fab-label">Share</span>
+    </button>
+
+    <div id="share-qr-overlay" class="share-qr-overlay" role="dialog" aria-modal="true"
+         aria-labelledby="share-qr-title" aria-hidden="true">
+      <div class="share-qr-panel" role="document">
+        <button id="share-qr-close" class="share-qr-close" type="button" aria-label="Close">&times;</button>
+        <p class="share-qr-eyebrow">L.A. Young &amp; Soul Society</p>
+        <h2 id="share-qr-title" class="share-qr-title">Scan to open the band page</h2>
+        <div id="share-qr-holder" class="share-qr-holder" aria-live="polite">
+          <div class="share-qr-loading">Loading QR&hellip;</div>
+        </div>
+        <p class="share-qr-url">layoungbandpage.com</p>
+        <p class="share-qr-hint">Point any phone camera at the code</p>
+      </div>
+    </div>
+
     <!-- Client Firebase SDK removed (fbexit S7). fan-points.js loads only the
          supabase-js UMD on demand (not on page load). -->
 
@@ -916,6 +958,7 @@
     <script src="js/fan-points.js?v=4"></script>
     <script src="js/mini-player.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/share-qr.js?v=1"></script>
 
   </body>
 </html>

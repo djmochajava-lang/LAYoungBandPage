@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Share — L.A. Young &amp; Soul Society</title>
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="canonical" href="https://layoungbandpage.com/share.html" />
+    <link rel="icon" href="images/artist/LAYoungPink.JPG" type="image/jpeg" />
+    <link rel="apple-touch-icon" href="images/artist/LAYoung-Live-CityWinery.jpg" />
+
+    <!-- Self-hosted fonts (no CDN) -->
+    <link rel="stylesheet" href="css/fonts.css" />
+
+    <!--
+      Standalone "Share the Band" page — the robust, bookmarkable one-tap QR.
+      Save it to a phone home screen and a single tap shows a big, scannable QR
+      of the evergreen homepage. Fully self-contained: no SPA, no router, no
+      module bundle — just this page + the self-hosted QR lib, so it loads fast
+      and never depends on external services at a venue.
+    -->
+    <style>
+      :root {
+        --gold: #ffd700;
+        --bg: #0a0a0a;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        min-height: 100dvh;
+        background:
+          radial-gradient(1200px 600px at 50% -10%, rgba(255, 215, 0, 0.08), transparent 60%),
+          linear-gradient(180deg, #141414 0%, #0a0a0a 100%);
+        color: #fff;
+        font-family: 'Georgia', 'Times New Roman', serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 28px 22px calc(28px + env(safe-area-inset-bottom, 0px));
+        -webkit-font-smoothing: antialiased;
+      }
+      .share-card {
+        width: 100%;
+        max-width: 420px;
+        text-align: center;
+      }
+      .share-eyebrow {
+        font-family: 'Playfair Display', 'Didot', serif;
+        font-size: 0.74rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin: 0 0 0.35rem;
+      }
+      .share-title {
+        font-family: 'Playfair Display', 'Didot', serif;
+        font-size: clamp(1.5rem, 6vw, 2rem);
+        line-height: 1.2;
+        margin: 0 0 1.4rem;
+        color: #fff;
+      }
+      .share-qr-box {
+        background: #fff;
+        border-radius: 18px;
+        padding: 18px;                 /* quiet-zone margin */
+        width: min(82vw, 320px);
+        height: min(82vw, 320px);
+        margin: 0 auto 1.3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.18), 0 16px 44px rgba(0, 0, 0, 0.55);
+      }
+      .share-qr-box img { display: block; width: 100%; height: 100%; }
+      .share-qr-fallback {
+        font-family: monospace;
+        font-size: 1rem;
+        color: #0a0a0a;
+        word-break: break-all;
+        text-align: center;
+      }
+      .share-caption {
+        font-family: 'Playfair Display', 'Didot', serif;
+        font-size: 1.05rem;
+        color: rgba(255, 255, 255, 0.85);
+        margin: 0 0 0.35rem;
+      }
+      .share-url {
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+        color: var(--gold);
+        margin: 0 0 1.6rem;
+      }
+      .share-open {
+        display: inline-block;
+        padding: 0.85rem 2rem;
+        border-radius: 999px;
+        background: var(--gold);
+        color: var(--bg);
+        font-family: 'Playfair Display', 'Didot', serif;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-decoration: none;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+      }
+      .share-open:active { transform: translateY(1px); }
+      .share-foot {
+        margin-top: 1.6rem;
+        font-size: 0.72rem;
+        letter-spacing: 0.03em;
+        color: rgba(255, 255, 255, 0.4);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="share-card">
+      <p class="share-eyebrow">L.A. Young &amp; Soul Society</p>
+      <h1 class="share-title">Scan to open the band page</h1>
+
+      <div class="share-qr-box" id="share-qr-box" aria-label="QR code to open layoungbandpage.com">
+        <span class="share-qr-fallback">layoungbandpage.com</span>
+      </div>
+
+      <p class="share-caption">Point any phone camera at the code</p>
+      <p class="share-url">layoungbandpage.com</p>
+
+      <a class="share-open" href="https://layoungbandpage.com">Open the band page</a>
+
+      <p class="share-foot">Soul &middot; Jazz &middot; Blues &middot; R&amp;B &nbsp;|&nbsp; Powered by Gold Bottom Ent. LLC</p>
+    </main>
+
+    <!-- Self-hosted QR lib — no external service. -->
+    <script src="js/vendor/qrcode.min.js?v=1"></script>
+    <script>
+      (function () {
+        'use strict';
+        var SHARE_URL = 'https://layoungbandpage.com';
+        var box = document.getElementById('share-qr-box');
+        if (!box || !window.QRCode) return; // readable URL fallback stays in the DOM
+        try {
+          var tmp = document.createElement('div');
+          new window.QRCode(tmp, {
+            text: SHARE_URL,
+            width: 720,
+            height: 720,
+            colorDark: '#000000',
+            colorLight: '#ffffff',
+            correctLevel: window.QRCode.CorrectLevel.H
+          });
+          var canvas = tmp.querySelector('canvas');
+          if (canvas && canvas.toDataURL) {
+            var img = document.createElement('img');
+            img.src = canvas.toDataURL('image/png');
+            img.alt = 'QR code — scan to open layoungbandpage.com';
+            box.innerHTML = '';
+            box.appendChild(img);
+          } else if (tmp.firstChild) {
+            box.innerHTML = '';
+            box.appendChild(tmp.firstChild);
+          }
+        } catch (e) { /* leave the readable URL fallback in place */ }
+      })();
+    </script>
+  </body>
+</html>

@@ -237,6 +237,56 @@
       .show-banner { padding: 0.75rem 1.1rem; }
       .show-banner-title { font-size: 0.95rem; }
     }
+
+    /* ── Footer "Share this page" QR (R2, passive path) ─────────────
+       A small, on-brand QR of the evergreen homepage, at the bottom of
+       the home view. Same self-hosted lib + same destination as the
+       floating Share button. Sits inside the scrollable .hero-content
+       column so it is reachable on phones (body is overflow:hidden). */
+    .home-share-qr {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 2.25rem auto 0.5rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid rgba(255, 215, 0, 0.18);
+      max-width: 320px;
+    }
+    .home-share-qr-code {
+      box-sizing: border-box;
+      width: 150px;
+      height: 150px;
+      padding: 10px;             /* quiet-zone margin */
+      background: #fff;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.2), 0 6px 18px rgba(0, 0, 0, 0.45);
+    }
+    .home-share-qr-img { display: block; width: 100%; height: 100%; }
+    .home-share-qr-fallback {
+      font-family: monospace;
+      font-size: 0.72rem;
+      color: #0a0a0a;
+      word-break: break-all;
+      text-align: center;
+    }
+    .home-share-qr-caption {
+      font-family: var(--font-primary, 'Playfair Display', serif);
+      font-size: 0.95rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-primary, #ffd700);
+      margin: 0.25rem 0 0;
+    }
+    .home-share-qr-url {
+      font-size: 0.78rem;
+      letter-spacing: 0.04em;
+      color: rgba(255, 255, 255, 0.55);
+      margin: 0 0 0.25rem;
+    }
   </style>
   <div class="hero-overlay"></div>
 
@@ -283,6 +333,16 @@
       <span class="hero-credential-badge">MD Artist of the Year</span>
       <span class="hero-credential-badge">Rare Contralto Voice</span>
       <span class="hero-credential-badge">L.A. Young &amp; Soul Society — World-Class Live Band</span>
+    </div>
+
+    <!-- Footer "Share this page" QR (R2, passive path). Same self-hosted
+         QR lib + same evergreen destination as the floating Share button. -->
+    <div class="home-share-qr">
+      <div class="home-share-qr-code" id="home-share-qr-code" aria-label="QR code to open layoungbandpage.com">
+        <span class="home-share-qr-fallback">layoungbandpage.com</span>
+      </div>
+      <p class="home-share-qr-caption">Share this page</p>
+      <p class="home-share-qr-url">layoungbandpage.com</p>
     </div>
   </div>
 </section>
@@ -402,5 +462,56 @@
       console.warn('[home] show banner skipped:', err && err.message);
     })
     .finally(function () { clearTimeout(tid); });
+})();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════
+ * Footer "Share this page" QR (R2, passive path).
+ * Renders the evergreen homepage URL as a self-hosted QR — same lib
+ * (js/vendor/qrcode.min.js) and same destination as the global floating
+ * Share button (js/share-qr.js). Rasterised to an <img> (iOS-save-safe);
+ * on any failure the readable URL text stays in place (never a blank box).
+ * Runs on every SPA injection via PageLoader.executeInlineScripts().
+ * ═════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+  var SHARE_URL = 'https://layoungbandpage.com';
+  var holder = document.getElementById('home-share-qr-code');
+  if (!holder) return;
+
+  function build() {
+    if (!window.QRCode) return; // keep the readable URL fallback already in the DOM
+    try {
+      var tmp = document.createElement('div');
+      new window.QRCode(tmp, {
+        text: SHARE_URL,
+        width: 360,
+        height: 360,
+        colorDark: '#000000',
+        colorLight: '#ffffff',
+        correctLevel: window.QRCode.CorrectLevel.H
+      });
+      var canvas = tmp.querySelector('canvas');
+      if (canvas && canvas.toDataURL) {
+        var img = document.createElement('img');
+        img.src = canvas.toDataURL('image/png');
+        img.alt = 'QR code — scan to open layoungbandpage.com';
+        img.className = 'home-share-qr-img';
+        holder.innerHTML = '';
+        holder.appendChild(img);
+      } else if (tmp.firstChild) {
+        holder.innerHTML = '';
+        holder.appendChild(tmp.firstChild);
+      }
+    } catch (e) { /* leave the readable URL fallback in place */ }
+  }
+
+  if (window.QRCode) { build(); return; }
+  var s = document.createElement('script');
+  s.src = 'js/vendor/qrcode.min.js?v=1';
+  s.onload = build;
+  s.onerror = function () { /* keep the readable URL fallback */ };
+  document.head.appendChild(s);
 })();
 </script>

@@ -490,3 +490,154 @@ ys.music-toggle-btn.enabled {
     padding: 5px 7px;
   }
 }
+
+/* ===================================================
+   Share the Band — global QR (floating FAB + full-screen overlay)
+   Lives in the SPA shell (index.html), so it is present on EVERY view
+   without scrolling — the venue hand-to-hand moment: 1 tap to a big,
+   scannable QR of the evergreen homepage. Self-hosted QR lib, no CDN.
+   FAB sits at bottom:88px so it clears the full-width .mini-player bar
+   (z950) and stacks above the .fp-counter pill (bottom:20px, z1000).
+   =================================================== */
+.share-qr-fab {
+  position: fixed;
+  right: 18px;
+  bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+  z-index: 1001;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px 12px 15px;
+  border: none;
+  border-radius: 999px;
+  background: var(--color-primary, #ffd700);
+  color: var(--color-bg-dark, #0a0a0a);
+  font-family: var(--font-primary, 'Playfair Display', serif);
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.15);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.share-qr-fab:hover,
+.share-qr-fab:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(0, 0, 0, 0.15);
+  outline: none;
+}
+.share-qr-fab:active { transform: translateY(0); }
+.share-qr-fab-icon { display: block; width: 22px; height: 22px; flex-shrink: 0; }
+.share-qr-fab-label { line-height: 1; }
+/* Hide the FAB while the overlay is up so it never shows through the scrim. */
+body.share-qr-open .share-qr-fab { opacity: 0; pointer-events: none; }
+@media (max-width: 380px) {
+  .share-qr-fab { padding: 12px 15px; }
+}
+
+.share-qr-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(5, 5, 5, 0.94);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.share-qr-overlay.is-open { display: flex; animation: shareQrFade 0.18s ease; }
+@keyframes shareQrFade { from { opacity: 0; } to { opacity: 1; } }
+.share-qr-panel {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  background: linear-gradient(160deg, #141414 0%, #0a0a0a 100%);
+  border: 1px solid rgba(255, 215, 0, 0.35);
+  border-radius: 20px;
+  padding: 30px 24px 26px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  animation: shareQrRise 0.22s ease;
+}
+@keyframes shareQrRise {
+  from { transform: translateY(14px); opacity: 0.4; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.share-qr-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.75);
+  border-radius: 50%;
+  font-size: 1.7rem;
+  line-height: 44px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.share-qr-close:hover,
+.share-qr-close:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  outline: none;
+}
+.share-qr-eyebrow {
+  font-family: var(--font-primary, 'Playfair Display', serif);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-primary, #ffd700);
+  margin: 0 0 0.4rem;
+}
+.share-qr-title {
+  font-family: var(--font-primary, 'Playfair Display', serif);
+  font-size: 1.35rem;
+  color: #fff;
+  margin: 0 0 1.1rem;
+  line-height: 1.25;
+}
+.share-qr-holder {
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;                 /* quiet-zone margin around the code */
+  width: min(78vw, 300px);
+  height: min(78vw, 300px);
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.15), 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+.share-qr-img { display: block; width: 100%; height: 100%; }
+.share-qr-loading {
+  color: #666;
+  font-size: 0.85rem;
+  font-family: var(--font-secondary, 'Georgia', serif);
+}
+.share-qr-fallback {
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: #0a0a0a;
+  word-break: break-all;
+  text-align: center;
+}
+.share-qr-url {
+  font-family: var(--font-primary, 'Playfair Display', serif);
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  color: var(--color-primary, #ffd700);
+  margin: 0 0 0.3rem;
+}
+.share-qr-hint {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
