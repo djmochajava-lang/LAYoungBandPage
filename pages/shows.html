@@ -806,6 +806,22 @@
 }
 .checkout-testmode-banner strong { text-transform: uppercase; letter-spacing: 0.06em; }
 
+/* Free ticket ($0 tier): the honest "no payment needed" note that REPLACES the
+   sample card mockup at Step 2 — a free, capacity-limited reservation is not a
+   payment, so we never show a credit-card graphic. Translucent green = the same
+   "go / no charge" semantic the free-ticket card button uses. */
+.checkout-freepay-note {
+  background: rgba(0,200,100,0.08);
+  border: 1px solid rgba(0,200,100,0.35);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1.1rem;
+  color: #7ee2a0;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.checkout-freepay-note strong { color: #00c864; }
+
 /* "Your seats are held for 10 minutes." — shown once a hold exists (§iii F3) */
 .checkout-hold-note {
   font-size: 0.8rem;
@@ -2143,6 +2159,24 @@
       : 'Tickets — ' + fmtPrice(lo) + '–' + fmtPrice(hi);
   }
 
+  /* ── Free-but-ticketed detector (free-show-ticketing, 2026-07-26) ──────
+   * A show that REQUIRES a ticket (ticket_required=1, internal — no external
+   * URL) where every priced tier is $0: a real, capacity-limited QR ticket is
+   * issued but nothing is charged ("even the free show requires tickets —
+   * limited space"). Distinct from a truly-free / no-ticket show
+   * (ticket_required=0), which keeps the "Free — no ticket needed" announcement
+   * treatment + disabled button. Returns false unless there is ≥1 priced tier
+   * and the DEAREST tier is $0 (a $0+$25 mixed show is NOT "free"). */
+  function isFreeTicketed(ev) {
+    if (!ev || Number(ev.ticket_required) === 0) return false;
+    if (ev.external_ticket_url) return false;
+    var cents = (ev.tiers || [])
+      .map(function (t) { return t.price_cents; })
+      .filter(function (c) { return typeof c === 'number'; });
+    if (!cents.length) return false;
+    return Math.max.apply(null, cents) === 0;
+  }
+
   /* ── Card TICKET control (owner 07-23) ────────────────────────────────
    * Exactly ONE state-driven ticket button per card (collapses the old per-tier
    * button list). One of five shapes:
@@ -2162,6 +2196,9 @@
       return '<a class="tier-btn lay-ticket-btn lay-ticket-ext" href="' + escHtml(ev.external_ticket_url) +
         '" target="_blank" rel="noopener" aria-label="Get tickets via ' + escHtml(host) + ' (opens in a new tab)">Get Tickets</a>';
     }
+    // ticket_required=0 → truly free, NO ticket: disabled "Free" (unchanged).
+    // A free-but-ticketed show (ticket_required=1, $0 tier) is NOT this branch —
+    // it falls through to the enabled on-sale button below with a free label.
     if (Number(ev.ticket_required) === 0) {
       return '<button type="button" class="tier-btn lay-ticket-btn lay-ticket-free" disabled aria-disabled="true">Free</button>';
     }
@@ -2171,8 +2208,11 @@
     if (ev.status === 'announced') {
       return '<button type="button" class="tier-btn lay-ticket-btn lay-ticket-soon" disabled aria-disabled="true">On sale soon</button>';
     }
-    // on_sale | selling_fast | almost_sold_out
-    return '<button type="button" class="tier-btn lay-ticket-btn" data-ev="' + escHtml(ev.id) + '">Get Tickets</button>';
+    // on_sale | selling_fast | almost_sold_out → ENABLED ticket button. A
+    // free-but-ticketed show gets a free-appropriate label but the SAME real
+    // checkout (verified → $0 → QR); a paid show keeps "Get Tickets".
+    var ticketLabel = isFreeTicketed(ev) ? 'Get Free Ticket' : 'Get Tickets';
+    return '<button type="button" class="tier-btn lay-ticket-btn" data-ev="' + escHtml(ev.id) + '">' + ticketLabel + '</button>';
   }
 
   /* ── Card NOTIFY control (owner 07-23) ─────────────────────────────────
@@ -2214,13 +2254,19 @@
     if (isExternal) {
       infoLine = '<span class="event-summary-price event-summary-ext">Tickets via ' + escHtml(hostOf(ev.external_ticket_url)) + '</span>';
     } else if (isFree) {
+      // ticket_required=0 → truly free, nothing to reserve.
       infoLine = '<span class="event-summary-price">Free &mdash; no ticket needed</span>';
+    } else if (isFreeTicketed(ev)) {
+      // Free but capacity-limited: a real (free) ticket IS required.
+      infoLine = '<span class="event-summary-price">Free &mdash; ticket required</span>' + buildBadge(ev.status);
     } else {
       infoLine = '<span class="event-summary-price">' + escHtml(admissionLine(ev)) + '</span>' + buildBadge(ev.status);
     }
 
     // TEST-MODE ribbon only where the internal mock-payment checkout runs —
-    // never on free/external cards (no internal checkout ⇒ the label would lie).
+    // never on truly-free (no-ticket) / external cards (no internal checkout ⇒
+    // the label would lie). A free-but-ticketed show DOES run the internal
+    // (mock) checkout, so the ribbon is honest there (isFree is false for it).
     var showRibbon = TICKETING_TEST_MODE && !isFree && !isExternal;
 
     return '<div class="event-card scroll-reveal">' +
@@ -2638,7 +2684,19 @@
    * doesn't double the banner. Reflects the current quantity/comp state. */
   function renderMockScreen(qty, cents, isComp) {
     var host = $('checkout-mockpay');
-    if (!host || !window.GBEMockPay || !_selectedTier) return;
+    if (!host) return;
+    // Free ticket ($0 unit price, not a comp): a capacity-limited reservation is
+    // NOT a payment — never show the sample credit-card mockup. Replace it with
+    // an honest "no payment needed" note (matches the $0/"Free" total row + the
+    // free-ticket button). Comp/paid tiers fall through to the mock screen below.
+    if (!isComp && Number(cents) === 0) {
+      host.innerHTML = '<div class="checkout-freepay-note">' +
+        '<strong>No payment needed.</strong> This is a free, capacity-limited ticket &mdash; ' +
+        'no card required. We&rsquo;ll issue your ticket and QR code instantly.' +
+        '</div>';
+      return;
+    }
+    if (!window.GBEMockPay || !_selectedTier) return;
     var lineLabel = _selectedTier.tier_name || 'Ticket';
     // The shared mock-pay component renders the line VALUE verbatim (fmtMoney of
     // `amount`) and only appends "×qty" to the LABEL — it does NOT multiply. So we
@@ -3099,7 +3157,12 @@
     hideEl('checkout-hold-note');   // there is NO hold in the verified flow
     setError('');
     var submitBtn = $('checkout-submit-btn');
-    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = 'Complete Purchase'; }
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      // Free ($0) tier → free-appropriate CTA; paid → "Complete Purchase".
+      submitBtn.textContent = (_selectedTier && Number(_selectedTier.price_cents) === 0)
+        ? 'Get My Free Ticket' : 'Complete Purchase';
+    }
 
     hideEl('step-choose');
     hideEl('step-verify');
@@ -3175,9 +3238,12 @@
 
     var submitBtn = $('checkout-submit-btn');
     if (submitBtn) submitBtn.disabled = true;
-    setProcessing(TICKETING_TEST_MODE
-      ? 'Completing your TEST purchase — no real payment is processed…'
-      : 'Completing your purchase…');
+    var isFreeBuy = !!(_selectedTier && Number(_selectedTier.price_cents) === 0);
+    setProcessing(isFreeBuy
+      ? 'Reserving your free ticket…'
+      : (TICKETING_TEST_MODE
+          ? 'Completing your TEST purchase — no real payment is processed…'
+          : 'Completing your purchase…'));
 
     // Supabase RPC purchase_ticket — the atomic charge (pass-consume → capacity
     // CAS → charge → token issue, all in ONE Postgres transaction). The SERVER
