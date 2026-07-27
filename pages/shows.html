@@ -692,6 +692,18 @@
   color: rgba(255,255,255,0.5);
   margin-bottom: 1.2rem;
 }
+/* Names the current step so a fan who tapped "Get Tickets" understands why the
+   first screen is not selling them one yet (owner 2026-07-27). Deliberately
+   lighter than .checkout-event-title — the SHOW is the headline here, the step
+   is the subhead; reversing that makes the checkout feel like paperwork. */
+.checkout-step-heading {
+  font-family: var(--font-primary, 'Playfair Display', serif);
+  font-size: 1.02rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0.35rem 0 0.15rem;
+  line-height: 1.3;
+}
 .checkout-tier-summary {
   background: rgba(255,215,0,0.07);
   border: 1px solid rgba(255,215,0,0.15);
@@ -1487,8 +1499,14 @@
     <div id="step-verify" hidden>
       <p id="verify-event-title" class="checkout-event-title"></p>
       <p id="verify-event-meta" class="checkout-event-meta"></p>
+      <!-- Owner 2026-07-27: name the step explicitly. A fan taps "Get Tickets"
+           and lands on a form that does NOT sell them a ticket — without a
+           heading that says so, that reads as a broken or bait-and-switch flow.
+           Buying language ("Get Tickets") stays on Step 2, where it is true. -->
+      <h3 class="checkout-step-heading">First, let’s verify your email</h3>
       <p style="color:rgba(255,255,255,0.72);font-size:0.9rem;margin:0.25rem 0 1rem;">
-        Enter your info and verify your email — we’ll send a secure link to finish your purchase.
+        We’ll send a secure link to this address. Tap it and you’ll land right back
+        here on the payment step to choose your tickets.
       </p>
       <form id="verify-form" novalidate>
         <div class="checkout-form-group">
