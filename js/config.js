@@ -7,8 +7,13 @@ window.SITE_CONFIG = {
   // handled by the agency (Gold Bottom Ent.) — booking.agent@ is the canonical
   // public booking contact (D-60). NEVER hardcode a business email in pages
   // or scripts; hydrate [data-gbe-email] elements or read this object.
+  // `tickets` is the FAN-facing ticket-support address (owner ruling 2026-07-26:
+  // "this is not booking, this is tickets"). It is the same identity the checkout
+  // verification email sends FROM, and it is what the buyer-gate escape hatch
+  // offers when the human-check library cannot be reached.
   contacts: {
-    booking: 'booking.agent@goldbottoment-llc.com'
+    booking: 'booking.agent@goldbottoment-llc.com',
+    tickets: 'tickets@layoungbandpage.com'
   },
 
   // Firebase config removed (fbexit S7): the client Firebase SDK no longer
