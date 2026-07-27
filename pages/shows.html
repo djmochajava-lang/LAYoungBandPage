@@ -1463,15 +1463,6 @@
       </li>
     </ol>
 
-    <!-- TEST MODE banner (mock money — CEO 07-15). Honest labeling is a HARD
-         house rule: no real payment is processed while the server runs the
-         mock pay driver. Hidden automatically when TICKETING_TEST_MODE=false. -->
-    <div id="checkout-testmode" class="checkout-testmode-banner" hidden>
-      <strong>Test mode</strong> &mdash; this checkout is a live preview of our
-      ticketing. No real payment is processed and no card is required.
-      Test orders are not valid tickets.
-    </div>
-
     <!-- Step: Choose your ticket (owner 07-23) — the NEW front step. Shown ONLY
          when a fan taps the single "Get Tickets" on a MULTI-tier show; the fan
          picks a tier here, then the EXISTING Your Info → Payment → Ticket flow
@@ -1530,6 +1521,18 @@
 
     <!-- Step: Order Form -->
     <div id="step-form">
+      <!-- Per-show NOTE (owner 2026-07-27). Lives on the PAYMENT step only —
+           the shows are real, so Step 1 must carry no testing language or it
+           reads to a fan as though the show itself is fake. Test mode actually
+           begins here, at payment, which is where this belongs. Copy is set
+           per show by noteForEvent(); the same words go in the verification
+           email body so the fan sees one consistent message. Still states
+           plainly that no payment is taken and this is not a valid ticket —
+           truthful labeling is a hard house rule, the notification promise is
+           added to it, not swapped for it. -->
+      <div id="checkout-testmode" class="checkout-testmode-banner" hidden>
+        <strong>Note:</strong> <span id="checkout-note-text"></span>
+      </div>
       <p id="checkout-event-title" class="checkout-event-title"></p>
       <p id="checkout-event-meta" class="checkout-event-meta"></p>
       <!-- Resume/Payment mode only (verified checkout): shows who the emailed
@@ -1696,6 +1699,49 @@
    * (which carries no ?vco) still runs the new flow in the same tab. */
   var VCHECKOUT_MODE   = 'on';
   var VCHECKOUT_UNLOCK = 'gbe-vco-2026';
+
+  /* PER-SHOW CHECKOUT NOTE (owner 2026-07-27) ─────────────────────────────
+   * Shown on the PAYMENT step only, never on Step 1: the shows are real, and
+   * testing language next to a fan's name and email reads as "this show isn't
+   * real". Test mode genuinely starts at payment, so the note starts there.
+   *
+   * Each note still says plainly that no payment is taken and this is not a
+   * valid ticket (truthful-labeling is a hard rule — the notification promise
+   * is ADDED to that, never swapped for it), then tells the fan what actually
+   * happens next, in the words that fit that specific show.
+   *
+   * The verification email carries the SAME sentence (verify-link/index.ts),
+   * so the fan is told one story on screen and in their inbox. Keep the two in
+   * step when editing. Durable home for this is a per-event field the BM can
+   * edit without a deploy; keyed by event id here until that exists. */
+  var SHOW_NOTE_DEFAULT =
+    'This checkout is a live preview while we finish building our ticketing. ' +
+    'No payment is taken and this is not a valid ticket — you’ll be notified ' +
+    'when tickets become available.';
+  var SHOW_NOTES = {
+    // The Phyllis Hyman Experience — paid show, on sale later.
+    'tevt_1784010408139_5a93ef9e':
+      'This checkout is a live preview while we finish building our ticketing. ' +
+      'No payment is taken and this is not a valid ticket — you’ll be notified ' +
+      'when tickets officially go on sale.',
+    // L.A. Young & Soul Society — Live — the free, capacity-limited show.
+    'tevt_1784260043987_16e66eca':
+      'This checkout is a live preview while we finish building our ticketing. ' +
+      'No payment is taken and this is not a valid ticket — you’ll be notified ' +
+      'when tickets for this free show become available.'
+  };
+  function noteForEvent(ev) {
+    var id = ev && ev.id;
+    return (id && SHOW_NOTES[id]) || SHOW_NOTE_DEFAULT;
+  }
+  /* Populate + reveal the note. Called on the payment step only. */
+  function applyCheckoutNote(ev) {
+    var box = $('checkout-testmode');
+    if (!box) return;
+    var txt = $('checkout-note-text');
+    if (txt) txt.textContent = noteForEvent(ev);
+    box.hidden = !TICKETING_TEST_MODE;
+  }
 
   /* ── Derived constants ──────────────────────────────────── */
   var API = GBE_API_BASE + '/api/v1/tickets';
@@ -2283,11 +2329,13 @@
       infoLine = '<span class="event-summary-price">' + escHtml(admissionLine(ev)) + '</span>' + buildBadge(ev.status);
     }
 
-    // TEST-MODE ribbon only where the internal mock-payment checkout runs —
-    // never on truly-free (no-ticket) / external cards (no internal checkout ⇒
-    // the label would lie). A free-but-ticketed show DOES run the internal
-    // (mock) checkout, so the ribbon is honest there (isFree is false for it).
-    var showRibbon = TICKETING_TEST_MODE && !isFree && !isExternal;
+    // No TEST-MODE ribbon on the show cards (owner 2026-07-27). The shows are
+    // REAL — stamping "Test Mode" across a real show's card tells a fan the
+    // show is fake, which is the opposite of the truth and costs us the ticket.
+    // Test mode genuinely begins at payment, so the disclosure lives there: the
+    // per-show NOTE on the payment step, repeated in the verification email.
+    // Nothing before payment carries testing language.
+    var showRibbon = false;
 
     return '<div class="event-card scroll-reveal">' +
       (showRibbon ? '<span class="event-card-ribbon">Test Mode</span>' : '') +
@@ -2517,9 +2565,8 @@
     qtySelect && qtySelect.addEventListener('change', updateTotal);
     promoEl && promoEl.addEventListener('input', updateTotal);
 
-    // TEST-MODE banner (mock money) — unmistakable, vanishes at the config flip
-    var tm = $('checkout-testmode');
-    if (tm) tm.hidden = !TICKETING_TEST_MODE;
+    // Per-show NOTE — payment step, so it belongs here.
+    applyCheckoutNote(ev);
 
     hideEl('checkout-hold-note');
     setError('');
@@ -2665,9 +2712,10 @@
       });
     }
 
-    // TEST-MODE banner honest on the pre-pick too.
+    // No note on the pre-pick: the shows are real and the fan is only choosing
+    // a ticket type. The note belongs on the payment step (owner 2026-07-27).
     var tm = $('checkout-testmode');
-    if (tm) tm.hidden = !TICKETING_TEST_MODE;
+    if (tm) tm.hidden = true;
 
     setError('');
     hideEl('checkout-steps');     // no purchase-flow signpost on the pre-pick
@@ -3023,8 +3071,11 @@
     var vErr = $('verify-error');
     if (vErr) { vErr.textContent = ''; vErr.style.display = 'none'; }
 
+    // Step 1 carries NO testing language (owner 2026-07-27). The shows are
+    // real; a fan entering their name and email must not be told they are in a
+    // test. The note appears when they reach payment, where test mode starts.
     var tm = $('checkout-testmode');
-    if (tm) tm.hidden = !TICKETING_TEST_MODE;
+    if (tm) tm.hidden = true;
 
     hideEl('step-choose');
     hideEl('step-form');
@@ -3171,8 +3222,8 @@
     var qtySelect = $('co-qty');
     qtySelect && qtySelect.addEventListener('change', updateTotal);
 
-    var tm = $('checkout-testmode');
-    if (tm) tm.hidden = !TICKETING_TEST_MODE;
+    // Per-show NOTE — this IS the payment step (resumed from the emailed link).
+    applyCheckoutNote(ev);
 
     hideEl('checkout-hold-note');   // there is NO hold in the verified flow
     setError('');
