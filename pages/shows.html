@@ -1503,11 +1503,10 @@
            and lands on a form that does NOT sell them a ticket — without a
            heading that says so, that reads as a broken or bait-and-switch flow.
            Buying language ("Get Tickets") stays on Step 2, where it is true. -->
+      <!-- No explainer paragraph here: the verify box below already says we'll
+           email a secure link and where it lands the fan. Saying it twice on one
+           short screen reads as filler and pushes the form further down. -->
       <h3 class="checkout-step-heading">First, let’s verify your email</h3>
-      <p style="color:rgba(255,255,255,0.72);font-size:0.9rem;margin:0.25rem 0 1rem;">
-        We’ll send a secure link to this address. Tap it and you’ll land right back
-        here on the payment step to choose your tickets.
-      </p>
       <form id="verify-form" novalidate>
         <div class="checkout-form-group">
           <label class="checkout-label" for="vco-name">Full Name *</label>
@@ -1683,7 +1682,7 @@
 <!-- story-buyer-gate-s2: shared buyer-gate component, loaded at PAGE-FRAGMENT
      level (never in the SPA index shell). The file itself is idempotent under
      PageLoader's re-execution of fragment scripts on SPA navigation. -->
-<script src="js/gbe-buyer-gate.js?v=5"></script>
+<script src="js/gbe-buyer-gate.js?v=6"></script>
 <script>
 (function () {
   'use strict';
