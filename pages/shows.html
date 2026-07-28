@@ -793,6 +793,11 @@
 }
 .checkout-checkbox { margin-top: 2px; accent-color: var(--color-primary, #ffd700); }
 .checkout-checkbox-label { font-size: 0.82rem; color: rgba(255,255,255,0.55); line-height: 1.4; }
+/* Quiet helper line under a field (EO 07-27): byte-matches the site's two
+   existing secondary-text instances (.checkout-checkbox-label above and the
+   buyer-gate widget's .gbebg-hint) — sentence case, never uppercase, so it
+   reads as prose, not a second label. */
+.checkout-field-hint { font-size: 0.82rem; color: rgba(255,255,255,0.55); line-height: 1.4; margin: 0.35rem 0 0; }
 .checkout-total {
   display: flex;
   justify-content: space-between;
@@ -1598,10 +1603,6 @@
              until S4 extends the schema). -->
         <div id="checkout-buyer-gate" data-testid="checkout-buyer-gate" style="display:none;"></div>
         <div class="checkout-form-group">
-          <label class="checkout-label" for="co-phone">Phone (optional)</label>
-          <input id="co-phone" class="checkout-input" type="tel" autocomplete="tel" placeholder="+1 (555) 000-0000">
-        </div>
-        <div class="checkout-form-group">
           <label class="checkout-label" for="co-qty">Quantity *</label>
           <select id="co-qty" class="checkout-select"></select>
         </div>
@@ -1618,6 +1619,21 @@
               Keep me updated on future L.A. Young shows, releases, and news from Gold Bottom Entertainment.
             </label>
           </div>
+        </div>
+
+        <!-- Buyer phone (D-61): OPTIONAL contact data for THIS order only —
+             never a verification factor, no format validation, no required
+             attr (their absence IS the optionality mechanism — EO 07-27).
+             Placed last before Total (after qty + fan opt-in) so Quantity/
+             price stay the visual lead of the payment step (EO placement
+             ruling). Wired to purchase_ticket in this SAME commit — the
+             field must never render un-wired (07-25 collect-and-discard
+             defect; CTO 07-27). Copy is channel-agnostic per D-61: it must
+             not imply texting. -->
+        <div class="checkout-form-group">
+          <label class="checkout-label" for="co-phone">Phone (optional)</label>
+          <input id="co-phone" class="checkout-input" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 (555) 000-0000" aria-describedby="co-phone-hint">
+          <p id="co-phone-hint" class="checkout-field-hint">We&rsquo;ll only use this if we need to reach you about this order.</p>
         </div>
 
         <!-- NO card fields: mock money (CEO 07-15) — the server runs
@@ -3004,14 +3020,18 @@
     return (ev.event_date ? fmtDate(ev.event_date) : '') + (ev.venue ? ' · ' + ev.venue : '');
   }
 
-  /* Toggle #step-form between the legacy 'info' layout (name/email/phone/promo +
+  /* Toggle #step-form between the legacy 'info' layout (name/email/promo +
    * buyer-gate all visible) and the verified-checkout 'payment' layout (those
-   * hidden — the identity is already known from the emailed link; only tier +
-   * quantity + fan opt-in + charge remain). style.display beats any stylesheet
-   * display rule, so the toggle is reliable. */
+   * hidden — the identity is already known from the emailed link; tier +
+   * quantity + fan opt-in + OPTIONAL phone + charge remain). #co-phone is
+   * deliberately NOT in the hide-list: D-61 collects it on the payment step,
+   * and it is wired into purchase_ticket in the same commit that unhid it
+   * (07-25 collect-and-discard defect must be impossible — CTO 07-27).
+   * style.display beats any stylesheet display rule, so the toggle is
+   * reliable. */
   function setCheckoutInfoMode(mode) {
     var isPay = (mode === 'payment');
-    ['co-name', 'co-email', 'co-phone', 'co-promo'].forEach(function (id) {
+    ['co-name', 'co-email', 'co-promo'].forEach(function (id) {
       var el = $(id);
       var grp = (el && el.closest) ? el.closest('.checkout-form-group') : null;
       if (grp) grp.style.display = isPay ? 'none' : '';
@@ -3323,6 +3343,13 @@
 
     var qty      = parseInt(($('co-qty') || {}).value, 10) || 1;
     var fanOptin = !!(($('co-fanoptin') || {}).checked);
+    // D-61 buyer phone: OPTIONAL contact data. Trimmed, hard-capped at 32
+    // chars, NO format validation of any kind (CTO 07-27: a validation
+    // failure must never block a charge). Included in the RPC body ONLY when
+    // the fan entered one — an empty field keeps the proven 8-named-arg body
+    // shape (p_buyer_phone defaults NULL server-side). Never logged, never
+    // put in analytics, never echoed on Step 3.
+    var phone    = ((($('co-phone') || {}).value) || '').trim().slice(0, 32);
 
     var submitBtn = $('checkout-submit-btn');
     if (submitBtn) submitBtn.disabled = true;
@@ -3335,22 +3362,25 @@
 
     // Supabase RPC purchase_ticket — the atomic charge (pass-consume → capacity
     // CAS → charge → token issue, all in ONE Postgres transaction). The SERVER
-    // computes the price (no price sent) and no phone is sent. The RPC returns
+    // computes the price (no price sent). p_buyer_phone (D-61, optional) rides
+    // ONLY this atomic call and only when the fan entered one. The RPC returns
     // HTTP 200 with EITHER {ok:true,…} OR {error:'…'} — branch on the BODY, not
     // the HTTP status (a non-2xx / non-JSON body is a transport failure).
+    var purchaseBody = {
+      p_event_id:    _selectedEvent.id,
+      p_tier_id:     _selectedTier.id,
+      p_quantity:    qty,
+      p_buyer_email: _vcoBuyer.email,
+      p_buyer_pass:  _buyerPass,
+      p_buyer_name:  _vcoBuyer.name,
+      p_fan_opt_in:  fanOptin,
+      p_nonce:       'mock'
+    };
+    if (phone) purchaseBody.p_buyer_phone = phone; // never an empty string
     fetchWithTimeout((supaCfg() ? supaCfg().url : GBE_API_BASE) + '/rest/v1/rpc/purchase_ticket', {
       method: 'POST',
       headers: supaRpcHeaders(),
-      body: JSON.stringify({
-        p_event_id:    _selectedEvent.id,
-        p_tier_id:     _selectedTier.id,
-        p_quantity:    qty,
-        p_buyer_email: _vcoBuyer.email,
-        p_buyer_pass:  _buyerPass,
-        p_buyer_name:  _vcoBuyer.name,
-        p_fan_opt_in:  fanOptin,
-        p_nonce:       'mock'
-      })
+      body: JSON.stringify(purchaseBody)
     }, 15000)
       .then(function (res) {
         return readJson(res).then(function (body) {
