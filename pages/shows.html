@@ -1521,10 +1521,6 @@
           <label class="checkout-label" for="vco-email">Email *</label>
           <input id="vco-email" class="checkout-input" type="email" autocomplete="email" required placeholder="your@email.com">
         </div>
-        <!-- Phone field removed 2026-07-25 (EO design-QA): hosted PII = name +
-             email ONLY (CTO 07-24) and feedback_ticket_buyer_verification is
-             EMAIL-ONLY (no SMS). The verify payload already dropped phone; the
-             stray input was collected + silently discarded. -->
         <div class="checkout-form-group">
           <div class="checkout-checkbox-row">
             <input id="vco-fanoptin" class="checkout-checkbox" type="checkbox">
@@ -1532,6 +1528,23 @@
               Keep me updated on future L.A. Young shows, releases, and news from Gold Bottom Entertainment.
             </label>
           </div>
+        </div>
+        <!-- Buyer phone at Step 1 (D-61; CTO t1 ruling 2026-07-31,
+             story-buyer-phone-step1-build — supersedes the 07-24 "hosted PII =
+             name + email only" rule and the 07-25 field removal: phone now
+             transits the hosted layer durably and is redacted after SoR
+             receipt, so it is no longer collect-and-discard). OPTIONAL contact
+             data, never a verification factor: no required attr, no pattern,
+             and hostReady() in gbe-buyer-gate.js stays a name+email allowlist
+             (EO AC-3). Rides the verify-link body as getContext().buyerPhone
+             ONLY when the fan entered one. Deliberately its own group,
+             unbundled from the fan opt-in (D-61), placed after the opt-in and
+             before the gate mount (EO AC-1). Hint = InfoSec condition vi
+             point-of-capture notice; EO gate-2 owns final wording. -->
+        <div class="checkout-form-group">
+          <label class="checkout-label" for="vco-phone">Phone (optional)</label>
+          <input id="vco-phone" class="checkout-input" type="tel" inputmode="tel" autocomplete="tel" placeholder="+1 (555) 000-0000" aria-describedby="vco-phone-hint">
+          <p id="vco-phone-hint" class="checkout-field-hint">Optional &mdash; used only to reach you about your ticket or show changes. Never for texts or marketing. Kept no longer than 24 months.</p>
         </div>
         <!-- Magic-link issuer (window.GBEBuyerGate, flow:'magic-link'): Turnstile
              + "Verify email" button (disabled until info + human-check) + the
@@ -3038,6 +3051,33 @@
       var grp = (el && el.closest) ? el.closest('.checkout-form-group') : null;
       if (grp) grp.style.display = isPay ? 'none' : '';
     });
+    // Step-2 phone disposition (CTO §5, 2026-07-31): when Step 1 supplied a
+    // phone it arrives verified via resume_checkout → read-only prefill with a
+    // "from your verified info" hint (handlePurchase sources _vcoBuyer.phone,
+    // authoritative over this display). When Step 1 skipped it, the field
+    // stays the ordinary editable optional input — a buyer who skipped still
+    // needs a way to give one; never re-required, never re-asked louder.
+    // openPaymentStep calls this AFTER form.reset(), so the prefill survives;
+    // the data-vco-prefill marker lets legacy/skipped opens clear a stale
+    // prefilled value without touching a fan-typed one.
+    var phoneEl   = $('co-phone');
+    var phoneHint = $('co-phone-hint');
+    var vPhone    = (isPay && _vcoBuyer && _vcoBuyer.phone) ? _vcoBuyer.phone : '';
+    if (phoneEl) {
+      if (vPhone) {
+        phoneEl.value    = vPhone;
+        phoneEl.readOnly = true;
+        phoneEl.setAttribute('data-vco-prefill', '1');
+        if (phoneHint) phoneHint.textContent = 'From your verified info.';
+      } else {
+        if (phoneEl.getAttribute('data-vco-prefill')) {
+          phoneEl.value = '';
+          phoneEl.removeAttribute('data-vco-prefill');
+        }
+        phoneEl.readOnly = false;
+        if (phoneHint) phoneHint.innerHTML = 'We&rsquo;ll only use this if we need to reach you about this order.';
+      }
+    }
     // The legacy buyer-gate never belongs in the payment step (the emailed link
     // already proved the inbox). Force it hidden in payment mode; in legacy mode
     // leave it to its own widget (which self-hides when not mounted).
@@ -3052,9 +3092,12 @@
     var host = $('vco-buyer-gate');
     if (!host) return;
     // Supabase Edge Function `verify-link` (Turnstile siteverify + magic-link
-    // email). Body = {email, eventId, buyerName, fanOptIn, turnstileToken} — the
-    // widget adds email + turnstileToken; getContext() supplies the rest. PHONE
-    // IS DROPPED (CTO 07-24: hosted PII = name + email only).
+    // email). Body = {email, eventId, buyerName, fanOptIn, buyerPhone?,
+    // turnstileToken} — the widget adds email + turnstileToken; getContext()
+    // supplies the rest. buyerPhone (D-61; CTO t1 2026-07-31 supersedes the
+    // 07-24 name+email-only rule): OPTIONAL, trimmed, hard-capped at 32 chars,
+    // OMITTED (key absent, not empty string) when blank. Non-gating passenger
+    // key — hostReady() never reads it (EO AC-3).
     var _sb = supaCfg();
     _verifyGateCtrl = GBEBuyerGate.mount(host, {
       flow:      'magic-link',
@@ -3063,18 +3106,24 @@
       verifyHeaders: _sb ? { apikey: _sb.anonKey, Authorization: 'Bearer ' + _sb.anonKey } : null,
       getEmail:  function () { var e = $('vco-email'); return e ? String(e.value || '').trim() : ''; },
       getContext: function () {
-        return {
+        var ctx = {
           eventId:    _selectedEvent ? _selectedEvent.id : null,
           buyerName:  (($('vco-name')  || {}).value || '').trim(),
           fanOptIn:   !!(($('vco-fanoptin') || {}).checked)
-          // buyerPhone intentionally NOT sent (hosted PII = name + email only).
         };
+        // D-61 buyer phone: include ONLY when the fan entered one — a blank
+        // field leaves the key out entirely (undefined, never '').
+        var phone = (($('vco-phone') || {}).value || '').trim().slice(0, 32);
+        if (phone) ctx.buyerPhone = phone;
+        return ctx;
       },
       // Lock the identity fields once the link is sent so the address the fan
-      // sees matches the one the link went to.
+      // sees matches the one the link went to. #vco-phone locks too: the phone
+      // rode the just-sent payload, so a post-send edit here would be silently
+      // discarded (the 07-25 defect class).
       onStateChange: function (s) {
         var lock = (s === 'sent');
-        ['vco-name', 'vco-email', 'vco-fanoptin'].forEach(function (id) {
+        ['vco-name', 'vco-email', 'vco-fanoptin', 'vco-phone'].forEach(function (id) {
           var el = $(id); if (el) el.disabled = lock;
         });
       }
@@ -3104,7 +3153,7 @@
 
     var form = $('verify-form');
     if (form) form.reset();
-    ['vco-name', 'vco-email', 'vco-fanoptin'].forEach(function (id) {
+    ['vco-name', 'vco-email', 'vco-fanoptin', 'vco-phone'].forEach(function (id) {
       var el = $(id); if (el) el.disabled = false;   // clear any prior sent-lock
     });
     var vErr = $('verify-error');
@@ -3213,12 +3262,16 @@
   function openPaymentStep(ev, data) {
     _vcoFlow        = true;
     _buyerPass      = data.pass || null;
-    // resume_checkout returns `email` (not buyerEmail) and NO phone (hosted PII
-    // = name + email only, CTO 07-24).
+    // resume_checkout returns `email` (not buyerEmail) and — since CTO t1
+    // 2026-07-31, story-buyer-phone-step1-build — `buyerPhone`: the Step-1
+    // phone, or null/absent when the fan skipped it. It is returned only to
+    // the holder of the single-use token; never logged, never echoed on
+    // Step 3. Defensive trim+cap mirrors the send side.
     _vcoBuyer       = {
       name:     data.buyerName || '',
       email:    data.email || data.buyerEmail || '',
-      fanOptIn: !!data.fanOptIn
+      fanOptIn: !!data.fanOptIn,
+      phone:    String(data.buyerPhone || '').trim().slice(0, 32)
     };
     _selectedEvent  = ev;
     _orderId        = null;
@@ -3348,10 +3401,15 @@
     // D-61 buyer phone: OPTIONAL contact data. Trimmed, hard-capped at 32
     // chars, NO format validation of any kind (CTO 07-27: a validation
     // failure must never block a charge). Included in the RPC body ONLY when
-    // the fan entered one — an empty field keeps the proven 8-named-arg body
-    // shape (p_buyer_phone defaults NULL server-side). Never logged, never
-    // put in analytics, never echoed on Step 3.
-    var phone    = ((($('co-phone') || {}).value) || '').trim().slice(0, 32);
+    // one exists — an empty value keeps the proven 8-named-arg body shape
+    // (p_buyer_phone defaults NULL server-side). Never logged, never put in
+    // analytics, never echoed on Step 3. Sourcing (CTO §5, 2026-07-31): when
+    // Step 1 supplied a phone, _vcoBuyer.phone — the verified value carried
+    // by resume_checkout — is authoritative and the read-only #co-phone is
+    // display only; otherwise read the editable optional input as before.
+    var phone    = (_vcoBuyer && _vcoBuyer.phone)
+      ? String(_vcoBuyer.phone).trim().slice(0, 32)
+      : ((($('co-phone') || {}).value) || '').trim().slice(0, 32);
 
     var submitBtn = $('checkout-submit-btn');
     if (submitBtn) submitBtn.disabled = true;
