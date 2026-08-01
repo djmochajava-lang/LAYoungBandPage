@@ -960,14 +960,40 @@
 .qr-item {
   background: #fff;
   border-radius: 8px;
-  padding: 0.75rem;
+  border-top: 4px solid #d4a017;
+  padding: 0.85rem 0.75rem 0.7rem;
   text-align: center;
+  max-width: 15rem;
+}
+.qr-item-admit {
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+  color: #8a6d1e;
+  margin-bottom: 0.3rem;
+}
+.qr-item-event {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  line-height: 1.25;
+}
+.qr-item-when {
+  font-size: 0.7rem;
+  color: #555;
+  margin: 0.15rem 0 0.6rem;
+  line-height: 1.3;
 }
 .qr-item-label {
-  font-size: 0.7rem;
-  color: #333;
-  margin-top: 0.4rem;
-  font-family: monospace;
+  font-size: 0.65rem;
+  color: #555;
+  margin-top: 0.45rem;
+}
+.qr-grid-lead {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.6);
+  margin: 0 0 0.9rem;
+  line-height: 1.4;
 }
 .conf-actions {
   display: flex;
@@ -3703,18 +3729,54 @@
       qrGrid.innerHTML = '<p style="color:rgba(255,255,255,0.45);font-size:0.85rem;">No issued tickets found for this order.</p>';
       return;
     }
+    // renderTicketQRs runs again on retrieve, so clear any lead line from the
+    // previous render before adding one — otherwise they stack.
+    var oldLead = qrGrid.parentNode.querySelector('.qr-grid-lead');
+    if (oldLead) oldLead.parentNode.removeChild(oldLead);
+    if (tokens.length > 1) {
+      var lead = document.createElement('p');
+      lead.className = 'qr-grid-lead';
+      lead.textContent = 'Your ' + tokens.length + ' tickets — one code each, so you can send one to whoever is coming with you.';
+      qrGrid.parentNode.insertBefore(lead, qrGrid);
+    }
     loadQRLib(function () {
       tokens.forEach(function (t, idx) {
         var payload = String(getPayload(t) || '');
-        // Screen QR (rasterized <img>)
+        /* A WHOLE TICKET PER CODE — not a row of bare barcodes.
+           Two tickets used to render as two naked QR tiles under one heading,
+           which reads as a single ticket that has two codes on it. Each tile is
+           now a self-contained ticket stub (admit one, event, when, its own
+           code), so two people arriving separately can each hold a real ticket
+           and one can be forwarded on its own. Mirrors the print ticket and the
+           confirmation email. (CEO 2026-08-01.) */
         var wrapper = document.createElement('div');
         wrapper.className = 'qr-item';
+
+        var admit = document.createElement('div');
+        admit.className = 'qr-item-admit';
+        admit.textContent = 'ADMIT ONE · TICKET ' + (idx + 1) + ' OF ' + tokens.length;
+        wrapper.appendChild(admit);
+
+        var evName = document.createElement('div');
+        evName.className = 'qr-item-event';
+        evName.textContent = meta.eventName || 'Event';
+        wrapper.appendChild(evName);
+
+        if (meta.eventDate) {
+          var when = document.createElement('div');
+          when.className = 'qr-item-when';
+          when.textContent = fmtDate(meta.eventDate) + (meta.venue ? ' · ' + meta.venue : '');
+          wrapper.appendChild(when);
+        }
+
         var canvas = document.createElement('div');
         wrapper.appendChild(canvas);
+
         var label = document.createElement('div');
         label.className = 'qr-item-label';
-        label.textContent = 'Ticket ' + (idx + 1) + ' of ' + tokens.length;
+        label.textContent = 'Single use · scan at the entrance';
         wrapper.appendChild(label);
+
         qrGrid.appendChild(wrapper);
         buildQR(canvas, payload);
 
