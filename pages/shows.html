@@ -823,6 +823,24 @@
 }
 .checkout-testmode-banner strong { text-transform: uppercase; letter-spacing: 0.06em; }
 
+/* Ticket-policy line at the payment step (D-69 d). Deliberately quiet: it
+   matches .checkout-field-hint exactly, so it reads as prose next to the
+   "Before you pay:" banner rather than as a second warning. D-69 forbids a
+   banner, an "are you sure", or any interstitial in front of the card — this
+   is a sentence with a link, nothing more. Never hidden with the test-mode
+   banner above it: the terms must stay published once test mode is off. */
+.checkout-policy-note {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.4;
+  margin: 0 0 1.1rem;
+}
+.checkout-policy-note a {
+  color: var(--color-primary, #ffd700);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 /* Free ticket ($0 tier): the honest "no payment needed" note that REPLACES the
    sample card mockup at Step 2 — a free, capacity-limited reservation is not a
    payment, so we never show a credit-card graphic. Translucent green = the same
@@ -1570,6 +1588,19 @@
       <div id="checkout-testmode" class="checkout-testmode-banner" hidden>
         <strong>Before you pay:</strong> <span id="checkout-note-text"></span>
       </div>
+      <!-- Ticket terms, published (D-69 c + d): eligibility has to be readable
+           BEFORE a refund is ever requested, and the link belongs inline in
+           Step 2 copy. It sits directly under "Before you pay:" so it is on
+           screen at 390x844 without scrolling, and it is a plain sibling of
+           that banner — NOT inside it — because the banner is test-mode-only
+           and hides when the flag flips, while these terms must not. Points at
+           the ONE GBE legal page (no second LAY policy, CEO ruling); ?tab=
+           opens the Ticket Policy tab directly. -->
+      <p class="checkout-policy-note">
+        Your purchase is subject to our
+        <a href="https://goldbottoment-llc.com/#legal?tab=tickets" target="_blank" rel="noopener">Ticket Policy</a>
+        &mdash; refunds, transfers, and scanned tickets.
+      </p>
       <p id="checkout-event-title" class="checkout-event-title"></p>
       <p id="checkout-event-meta" class="checkout-event-meta"></p>
       <!-- Resume/Payment mode only (verified checkout): shows who the emailed
