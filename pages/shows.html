@@ -3657,7 +3657,8 @@
    * (buildQR — iOS-save-safe); a matching print ticket is added to
    * #print-tickets. getPayload(token) returns the string encoded into the QR:
    *   • confirmation → token.token     (the value purchase_ticket returns)
-   *   • retrieve     → token.token_id  (the value retrieve_order returns)
+   *   • retrieve     → token.token      (011: the BEARER, same as confirmation —
+   *                                     one QR meaning; token_id is fallback only)
    * The door-scanner/validation slice will define the final scan contract; this
    * function only DISPLAYS an opaque per-ticket identifier. */
   function renderTicketQRs(tokens, getPayload, meta) {
@@ -3975,7 +3976,13 @@
 
       announce('Ticket found. Your confirmation code is ' + confCode + '.');
 
-      renderTicketQRs(data.tokens || [], function (t) { return t.token_id; }, {
+      // 011: encode the BEARER (t.token) — the same value the confirmation QR
+      // carries and the only value the door scanner matches. Previously this
+      // encoded t.token_id (the row id), so a retrieved ticket's QR could not be
+      // scanned at all, and that row id was 48-bit with sibling-predictable
+      // suffixes (find_ms9cx3r0_e9sa). Falls back to token_id only if a stale
+      // pre-011 backend is answering, so the page degrades instead of breaking.
+      renderTicketQRs(data.tokens || [], function (t) { return t.token || t.token_id; }, {
         buyerName: '',
         confCode:  confCode,
         eventName: data.event_name || 'Event',
