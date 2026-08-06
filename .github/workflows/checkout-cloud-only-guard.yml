@@ -1,0 +1,28 @@
+# .github/workflows/checkout-cloud-only-guard.yml
+# story-offline-checkout-cloud-cutover — band-site enforcement guard.
+#
+# The ticket transaction must complete with the home-office Mac fully OFFLINE.
+# pages/shows.html runs the checkout entirely against Supabase with NO tunnel/Mac
+# fallback. This workflow fails CI if the retired Mac-routing fallback reappears.
+# It is intentionally separate from the deploy workflow (static.yml) so a guard
+# failure blocks nothing's publish path except by failing the run.
+name: Checkout cloud-only guard
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Assert checkout is cloud-only (no home-office/tunnel fallback)
+        run: node tools/check-checkout-cloud-only.js
