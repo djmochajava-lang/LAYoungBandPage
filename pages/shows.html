@@ -86,7 +86,7 @@
   gap: 1.5rem;
   margin-bottom: 2rem;
 }
-/* Single-event case (story-tickets-page-center-single-card): with one card the
+/* Single-event case (internal-ref): with one card the
    auto-fill grid parks it in the first track and leaves it LEFT-aligned. When
    exactly one event card is present, collapse to one centered, max-width column
    so the lone show reads as intentional — not stretched full-bleed on desktop.
@@ -105,7 +105,7 @@
   transition: border-color 0.2s, transform 0.2s;
   position: relative; /* anchors the TEST MODE corner ribbon */
 }
-/* TEST MODE corner ribbon (D-52 §iii F2, amended 07-15 for mock money):
+/* TEST MODE corner ribbon (an owner decision §iii F2, amended 07-15 for mock money):
    honest label while the mock pay driver runs; vanishes at the real-money
    config flip (TICKETING_TEST_MODE=false). */
 .event-card-ribbon {
@@ -230,7 +230,7 @@
 .tier-btn-free { background: rgba(0,200,100,0.16); color: #00c864; border: 1px solid rgba(0,200,100,0.4); }
 .tier-btn-coming-soon { background: transparent; border: 1px solid rgba(255,215,0,0.3); color: var(--color-primary,#ffd700); cursor: default; font-size: 0.75rem; }
 
-/* ── Industry guest-list banner (D-52 §iv — #shows?invite=CODE) ── */
+/* ── Industry guest-list banner (an owner decision §iv — #shows?invite=CODE) ── */
 .invite-banner {
   background: rgba(255,215,0,0.08);
   border: 1px solid rgba(255,215,0,0.4);
@@ -823,9 +823,9 @@
 }
 .checkout-testmode-banner strong { text-transform: uppercase; letter-spacing: 0.06em; }
 
-/* Ticket-policy line at the payment step (D-69 d). Deliberately quiet: it
+/* Ticket-policy line at the payment step (an owner decision d). Deliberately quiet: it
    matches .checkout-field-hint exactly, so it reads as prose next to the
-   "Before you pay:" banner rather than as a second warning. D-69 forbids a
+   "Before you pay:" banner rather than as a second warning. an owner decision forbids a
    banner, an "are you sure", or any interstitial in front of the card — this
    is a sentence with a link, nothing more. Never hidden with the test-mode
    banner above it: the terms must stay published once test mode is off. */
@@ -1017,7 +1017,7 @@
    design D4): same fake-affordance class as the coming-soon span. It returns
    only when wallet passes actually exist. */
 
-/* Guided-flow hint above the event cards (story-ticket-purchase-experience) */
+/* Guided-flow hint above the event cards (internal-ref) */
 .ticket-browse-hint {
   text-align: center;
   font-size: 0.9rem;
@@ -1028,7 +1028,7 @@
 }
 .ticket-browse-hint strong { color: var(--color-primary, #ffd700); font-weight: 600; white-space: nowrap; }
 
-/* ── Checkout Step Indicator (story-ticket-purchase-experience) ─────────
+/* ── Checkout Step Indicator (internal-ref) ─────────
    The guided "you are here" signpost across the 3 checkout panels. */
 .checkout-steps {
   display: flex;
@@ -1152,7 +1152,7 @@
 
     <!-- =========================================================
          "THE NIGHT" — sell the night before selling the ticket
-         (story-sizzle-shows-sell-the-night · spec §2g · S2)
+         (internal-ref · spec §2g · S2)
          Emotion first, tickets second. The dynamic event cards below
          remain the transactional truth; this block sells the show.
          ========================================================= -->
@@ -1228,12 +1228,12 @@
         <p>Loading upcoming shows&hellip;</p>
       </div>
 
-      <!-- Industry guest-list banner (D-52 §iv): renders when the page is
+      <!-- Industry guest-list banner (an owner decision §iv): renders when the page is
            opened via #shows?invite=CODE and a show is on sale. The code is
            pre-filled in the checkout promo field. -->
       <div id="invite-banner" class="invite-banner" hidden></div>
 
-      <!-- Guided-flow hint (story-ticket-purchase-experience): signposts the
+      <!-- Guided-flow hint (internal-ref): signposts the
            three-tap path before the fan starts. Shown only when a real show is
            listed; hidden in the loading/fallback states. -->
       <p id="ticket-browse-hint" class="ticket-browse-hint" hidden>
@@ -1499,10 +1499,10 @@
     <div class="checkout-panel-body">
 
     <!-- Polite live region: announces processing/success to assistive tech
-         (story-mock-payment-visible-screen a11y AC — WCAG 4.1.3). -->
+         (internal-ref a11y AC — WCAG 4.1.3). -->
     <div id="checkout-live" role="status" aria-live="polite" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;"></div>
 
-    <!-- VISIBLE STEP INDICATOR (story-ticket-purchase-experience): the guided
+    <!-- VISIBLE STEP INDICATOR (internal-ref): the guided
          "you are here" signpost the checkout was missing. Three signposted
          steps — Your Info → Payment → Ticket — mirror the three overlay panels
          (step-form → step-processing → step-confirmation). setStep(n) drives
@@ -1537,7 +1537,7 @@
       <div id="choose-tier-list" class="choose-tier-list"></div>
     </div>
 
-    <!-- Step 1 (VERIFIED CHECKOUT — story-ticket-buyer-flow-hardening, owner D-A
+    <!-- Step 1 (VERIFIED CHECKOUT — internal-ref, owner D-A
          EMAIL-LINK). Shown ONLY in the verified-checkout flow (VCHECKOUT_MODE=on
          OR a #shows?vco=<UNLOCK> session). Your info + human-check → "Verify
          email" → a single-use LINK is emailed; the fan clicks it and lands on
@@ -1573,8 +1573,8 @@
             </label>
           </div>
         </div>
-        <!-- Buyer phone at Step 1 (D-61; CTO t1 ruling 2026-07-31,
-             story-buyer-phone-step1-build — supersedes the 07-24 "hosted PII =
+        <!-- Buyer phone at Step 1 (an owner decision; CTO t1 ruling 2026-07-31,
+             internal-ref — supersedes the 07-24 "hosted PII =
              name + email only" rule and the 07-25 field removal: phone now
              transits the hosted layer durably and is redacted after SoR
              receipt, so it is no longer collect-and-discard). OPTIONAL contact
@@ -1582,7 +1582,7 @@
              and hostReady() in gbe-buyer-gate.js stays a name+email allowlist
              (EO AC-3). Rides the verify-link body as getContext().buyerPhone
              ONLY when the fan entered one. Deliberately its own group,
-             unbundled from the fan opt-in (D-61), placed after the opt-in and
+             unbundled from the fan opt-in (an owner decision), placed after the opt-in and
              before the gate mount (EO AC-1). Hint = InfoSec condition vi
              point-of-capture notice; EO gate-2 owns final wording. -->
         <div class="checkout-form-group">
@@ -1614,7 +1614,7 @@
       <div id="checkout-testmode" class="checkout-testmode-banner" hidden>
         <strong>Before you pay:</strong> <span id="checkout-note-text"></span>
       </div>
-      <!-- Ticket terms, published (D-69 c + d): eligibility has to be readable
+      <!-- Ticket terms, published (an owner decision c + d): eligibility has to be readable
            BEFORE a refund is ever requested, and the link belongs inline in
            Step 2 copy. It sits directly under "Before you pay:" so it is on
            screen at 390x844 without scrolling, and it is a plain sibling of
@@ -1644,7 +1644,7 @@
         <span class="checkout-tier-switch-label">Your ticket &mdash; tap to change</span>
         <div id="checkout-tier-pills" class="checkout-tier-pills"></div>
       </div>
-      <!-- SHARED mock-payment screen (story-mock-payment-visible-screen):
+      <!-- SHARED mock-payment screen (internal-ref):
            the itemized breakdown + the honest, card-less "Sample" card
            mockup rendered by the ONE shared component (window.GBEMockPay),
            the same component the booking deposit path embeds. It captures
@@ -1664,7 +1664,7 @@
           <label class="checkout-label" for="co-email">Email *</label>
           <input id="co-email" class="checkout-input" type="email" autocomplete="email" required placeholder="your@email.com">
         </div>
-        <!-- story-buyer-gate-s2: invited buyer email verification
+        <!-- internal-ref: invited buyer email verification
              (window.GBEBuyerGate), full-width on its own row directly below
              #co-email. display:none until the component's reachability probe
              confirms the endpoint is live — pre-golive it renders NOTHING.
@@ -1693,14 +1693,14 @@
           </div>
         </div>
 
-        <!-- Buyer phone (D-61): OPTIONAL contact data for THIS order only —
+        <!-- Buyer phone (an owner decision): OPTIONAL contact data for THIS order only —
              never a verification factor, no format validation, no required
              attr (their absence IS the optionality mechanism — EO 07-27).
              Placed last before Total (after qty + fan opt-in) so Quantity/
              price stay the visual lead of the payment step (EO placement
              ruling). Wired to purchase_ticket in this SAME commit — the
              field must never render un-wired (07-25 collect-and-discard
-             defect; CTO 07-27). Copy is channel-agnostic per D-61: it must
+             defect; CTO 07-27). Copy is channel-agnostic per an owner decision: it must
              not imply texting. -->
         <div class="checkout-form-group">
           <label class="checkout-label" for="co-phone">Phone (optional)</label>
@@ -1711,7 +1711,7 @@
         <!-- NO card fields: mock money (CEO 07-15) — the server runs
              TICKET_PAY_DRIVER=mock and confirms with nonce:'mock'. The Square
              Web Payments SDK returns only at the owner-gated real-money
-             cutover (D-50 real-money-last). -->
+             cutover (an owner decision real-money-last). -->
 
         <!-- Order total -->
         <div class="checkout-total">
@@ -1767,7 +1767,7 @@
 </div><!-- /checkout-overlay -->
 
 <!-- QRCode.js (loaded on demand via script injection) -->
-<!-- story-buyer-gate-s2: shared buyer-gate component, loaded at PAGE-FRAGMENT
+<!-- internal-ref: shared buyer-gate component, loaded at PAGE-FRAGMENT
      level (never in the SPA index shell). The file itself is idempotent under
      PageLoader's re-execution of fragment scripts on SPA navigation. -->
 <script src="js/gbe-buyer-gate.js?v=7"></script>
@@ -1776,8 +1776,8 @@
   'use strict';
 
   /* ───────────────────────────────────────────────────────────
-   * CONFIGURATION (D-52 wave 2, amended by CEO rulings 07-15)
-   * retired story-offline-checkout-cloud-cutover — checkout is cloud-only
+   * CONFIGURATION (an owner decision wave 2, amended by CEO rulings 07-15)
+   * retired internal-ref — checkout is cloud-only
    *   (Supabase); do not re-add (offline-rule). The old GBE_API_BASE / API
    *   constants pointed the checkout at the `gbe-tickets` Cloudflare Worker →
    *   quick tunnel → HomeOffice :3000 (the home Mac). The standing rule is that
@@ -1791,11 +1791,11 @@
    *   Square account yet). No card fields, no Square SDK; the Supabase RPC
    *   confirms with p_nonce:'mock' and orders are born is_test=1. Controls the
    *   TEST-MODE ribbon/banner. Flip to false ONLY at the owner-gated real-money
-   *   cutover (D-50 real-money-last).
+   *   cutover (an owner decision real-money-last).
    * ─────────────────────────────────────────────────────────── */
   var TICKETING_TEST_MODE = true;
 
-  /* VERIFIED-CHECKOUT FLAG (story-ticket-buyer-flow-hardening — owner D-A email
+  /* VERIFIED-CHECKOUT FLAG (internal-ref — owner D-A email
    * link + SHIP-BEHIND-A-FLAG). Default 'off' → EVERY fan runs today's legacy
    * checkout unchanged (zero fan-facing change; this is what makes shipping
    * safe). Two ways to promote a session to the NEW two-step verified flow:
@@ -1854,7 +1854,7 @@
   }
 
   /* ── Buyer-facing copy when the cloud checkout can't run ──
-   * retired story-offline-checkout-cloud-cutover — checkout is cloud-only
+   * retired internal-ref — checkout is cloud-only
    * (Supabase); do not re-add a home-office/tunnel fallback (offline-rule).
    * When supaCfg() is null we fail CLOSED with this line rather than route a
    * purchase through the home Mac. */
@@ -1909,7 +1909,7 @@
   var _selectedTier    = null;
   var _orderId         = null;
   var _orderConfirmed  = false;
-  var _inviteCode      = null;   // from #shows?invite=CODE (D-52 §iv)
+  var _inviteCode      = null;   // from #shows?invite=CODE (an owner decision §iv)
   var _qrCodeLib       = null;
 
   /* Verified-checkout (Wave 2) session state. _vcoFlow gates the submit path:
@@ -1970,7 +1970,7 @@
     announce(msg || 'Processing your order.');
   }
 
-  /* Drive the visible step indicator (story-ticket-purchase-experience):
+  /* Drive the visible step indicator (internal-ref):
    * steps before n are "done", step n is "active", steps after are pending.
    * 1 = Your Info (step-form), 2 = Payment (step-processing), 3 = Ticket
    * (step-confirmation). Presentational only — no-op if the stepper is absent. */
@@ -2064,7 +2064,7 @@
   }
 
   /* ── Format date ────────────────────────────────────────── */
-  /* THE "DAY IS TBD" RENDER RULE (story-date-tbd-convention, owner 2026-07-26).
+  /* THE "DAY IS TBD" RENDER RULE (internal-ref, owner 2026-07-26).
    * The band is PRE-DEBUT, so most show dates are placeholders: the MONTH is
    * booked, the DAY is not. The SoR carries a date_tbd flag and the publisher
    * turns it into an ISO-8601 REDUCED-PRECISION date — 'YYYY-MM' — in every
@@ -2112,14 +2112,14 @@
   }
 
   /* ══════════════════════════════════════════════════════════
-   * EVENT LOADING — Supabase ticket_event_readmodel (D-52 §ii.3)
+   * EVENT LOADING — Supabase ticket_event_readmodel (an owner decision §ii.3)
    * The always-on public cache the SoR publisher owns: listing stays live
    * even when HomeOffice sleeps. Anon key from SITE_CONFIG (client-safe by
    * design; RLS = SELECT-only). This is the S6-noted rewire: the retired
    * Firestore read is gone for real.
    * ═════════════════════════════════════════════════════════ */
 
-  /* story-external-ticketing-lay-mirror: the readmodel's external_ticket_url
+  /* internal-ref: the readmodel's external_ticket_url
    * (https, validated SERVER-SIDE at the GBE source — Joi uri scheme:https,
    * ≤500) is the honest "Tickets via {host}" cue + the external CTA target.
    * Independently implemented in LAY (NOT a copy-sync of the GBE renderer).
@@ -2184,7 +2184,7 @@
       // 0 = free ("Free — no ticket needed" announcement card, no checkout).
       // Missing (stale cache row) ⇒ 1, so a paywall is never hidden.
       ticket_required: (row.ticket_required === undefined || row.ticket_required === null) ? 1 : Number(row.ticket_required),
-      // story-external-ticketing-lay-mirror: a non-empty external_ticket_url
+      // internal-ref: a non-empty external_ticket_url
       // OVERRIDES internal ticketing for this show — the card sends fans to the
       // venue's own link (new tab) and ALL internal tier/price/status/checkout
       // affordances are suppressed (no dead ticket-required-with-no-tiers card).
@@ -2547,7 +2547,7 @@
    * "Choose your ticket" step FIRST; a single-tier show auto-selects and goes
    * straight into the existing Your Info → Payment → Ticket flow. */
   function beginTicketFlow(ev) {
-    // retired story-offline-checkout-cloud-cutover — checkout is cloud-only
+    // retired internal-ref — checkout is cloud-only
     // (Supabase); do not re-add (offline-rule). The verified-checkout flow is
     // the ONLY checkout: tapping "Get Tickets" opens Step 1 "Your info" (info +
     // human-check + verify-email) — NO tier pick, NO quantity, NO payment here.
@@ -2577,7 +2577,7 @@
     return { label: 'Notify Me', wants: 'onsale' };
   }
 
-  /* ── Industry guest-list banner (D-52 §iv) ──────────────────
+  /* ── Industry guest-list banner (an owner decision §iv) ──────────────────
    * Deep link #shows?invite=CODE (hash-query parsed by the router): a
    * discreet gold banner above the cards when a show is on sale; the code is
    * pre-filled at checkout. The comp path is the SAME rail fans use — the
@@ -2622,7 +2622,7 @@
    * CHECKOUT
    * ═════════════════════════════════════════════════════════ */
 
-  /* retired story-offline-checkout-cloud-cutover — checkout is cloud-only
+  /* retired internal-ref — checkout is cloud-only
    * (Supabase); do not re-add (offline-rule). openCheckout()/openTierChooser()
    * are the LEGACY VCHECKOUT-off hold+pay layout that submitted to the home Mac
    * via the tunnel. They are no longer reachable — beginTicketFlow() routes every
@@ -2667,7 +2667,7 @@
     var form = $('checkout-form');
     if (form) form.reset();
 
-    // story-buyer-gate-s2: the email field was just cleared — discard any
+    // internal-ref: the email field was just cleared — discard any
     // held pass and hide the widget until a fresh email re-activates it.
     if (_buyerGateCtrl) _buyerGateCtrl.reset();
 
@@ -2945,7 +2945,7 @@
     });
   }
 
-  /* ── Buyer-gate (story-buyer-gate-s2): invited email verification ──────
+  /* ── Buyer-gate (internal-ref): invited email verification ──────
    * Auto-activates on blur/change of #co-email once the value is email-
    * shaped. HARD CONSTRAINT (EO critical): the pass is held in the
    * controller ONLY — handleCheckoutSubmit never reads it and the
@@ -2979,7 +2979,7 @@
     });
   })();
 
-  /* retired story-offline-checkout-cloud-cutover — checkout is cloud-only
+  /* retired internal-ref — checkout is cloud-only
    * (Supabase); do not re-add (offline-rule). This was the LEGACY hold+pay
    * checkout that POSTed to the home Mac through the tunnel
    * (`API + '/orders/public'` then `API + '/orders/:id/pay'`). Routing a purchase
@@ -3021,7 +3021,7 @@
    * buyer-gate all visible) and the verified-checkout 'payment' layout (those
    * hidden — the identity is already known from the emailed link; tier +
    * quantity + fan opt-in + OPTIONAL phone + charge remain). #co-phone is
-   * deliberately NOT in the hide-list: D-61 collects it on the payment step,
+   * deliberately NOT in the hide-list: an owner decision collects it on the payment step,
    * and it is wired into purchase_ticket in the same commit that unhid it
    * (07-25 collect-and-discard defect must be impossible — CTO 07-27).
    * style.display beats any stylesheet display rule, so the toggle is
@@ -3076,11 +3076,11 @@
     // Supabase Edge Function `verify-link` (Turnstile siteverify + magic-link
     // email). Body = {email, eventId, buyerName, fanOptIn, buyerPhone?,
     // turnstileToken} — the widget adds email + turnstileToken; getContext()
-    // supplies the rest. buyerPhone (D-61; CTO t1 2026-07-31 supersedes the
+    // supplies the rest. buyerPhone (an owner decision; CTO t1 2026-07-31 supersedes the
     // 07-24 name+email-only rule): OPTIONAL, trimmed, hard-capped at 32 chars,
     // OMITTED (key absent, not empty string) when blank. Non-gating passenger
     // key — hostReady() never reads it (EO AC-3).
-    // retired story-offline-checkout-cloud-cutover — checkout is cloud-only
+    // retired internal-ref — checkout is cloud-only
     // (Supabase); do not re-add (offline-rule). verify-link is the Supabase Edge
     // Function ONLY; there is no `API + '/checkout/verify-link'` tunnel/Mac
     // fallback. If the Supabase config is missing we do not mount the gate at all
@@ -3099,7 +3099,7 @@
           buyerName:  (($('vco-name')  || {}).value || '').trim(),
           fanOptIn:   !!(($('vco-fanoptin') || {}).checked)
         };
-        // D-61 buyer phone: include ONLY when the fan entered one — a blank
+        // an owner decision buyer phone: include ONLY when the fan entered one — a blank
         // field leaves the key out entirely (undefined, never '').
         var phone = (($('vco-phone') || {}).value || '').trim().slice(0, 32);
         if (phone) ctx.buyerPhone = phone;
@@ -3205,7 +3205,7 @@
   }
 
   function resumeCheckout(token) {
-    // retired story-offline-checkout-cloud-cutover — checkout is cloud-only
+    // retired internal-ref — checkout is cloud-only
     // (Supabase); do not re-add (offline-rule). resume_checkout is a Supabase RPC
     // ONLY; there is no GBE_API_BASE/tunnel/Mac fallback. Fail CLOSED if the cloud
     // config is missing — the transaction must complete with the Mac offline, so
@@ -3257,7 +3257,7 @@
     _vcoFlow        = true;
     _buyerPass      = data.pass || null;
     // resume_checkout returns `email` (not buyerEmail) and — since CTO t1
-    // 2026-07-31, story-buyer-phone-step1-build — `buyerPhone`: the Step-1
+    // 2026-07-31, internal-ref — `buyerPhone`: the Step-1
     // phone, or null/absent when the fan skipped it. It is returned only to
     // the holder of the single-use token; never logged, never echoed on
     // Step 3. Defensive trim+cap mirrors the send side.
@@ -3384,7 +3384,7 @@
 
   function handlePurchase() {
     setError('');
-    // retired story-offline-checkout-cloud-cutover — checkout is cloud-only
+    // retired internal-ref — checkout is cloud-only
     // (Supabase); do not re-add (offline-rule). purchase_ticket is a Supabase RPC
     // ONLY; there is no GBE_API_BASE/tunnel/Mac fallback below. Fail CLOSED if the
     // cloud config is missing — the atomic charge must complete with the Mac fully
@@ -3398,7 +3398,7 @@
 
     var qty      = parseInt(($('co-qty') || {}).value, 10) || 1;
     var fanOptin = !!(($('co-fanoptin') || {}).checked);
-    // D-61 buyer phone: OPTIONAL contact data. Trimmed, hard-capped at 32
+    // an owner decision buyer phone: OPTIONAL contact data. Trimmed, hard-capped at 32
     // chars, NO format validation of any kind (CTO 07-27: a validation
     // failure must never block a charge). Included in the RPC body ONLY when
     // one exists — an empty value keeps the proven 8-named-arg body shape
@@ -3422,7 +3422,7 @@
 
     // Supabase RPC purchase_ticket — the atomic charge (pass-consume → capacity
     // CAS → charge → token issue, all in ONE Postgres transaction). The SERVER
-    // computes the price (no price sent). p_buyer_phone (D-61, optional) rides
+    // computes the price (no price sent). p_buyer_phone (an owner decision, optional) rides
     // ONLY this atomic call and only when the fan entered one. The RPC returns
     // HTTP 200 with EITHER {ok:true,…} OR {error:'…'} — branch on the BODY, not
     // the HTTP status (a non-2xx / non-JSON body is a transport failure).
@@ -3519,7 +3519,7 @@
       return Promise.resolve();
     }
 
-    // retired story-offline-checkout-cloud-cutover — checkout is cloud-only
+    // retired internal-ref — checkout is cloud-only
     // (Supabase); do not re-add (offline-rule). This used to be the LEGACY
     // OFF-PATH that fetched tokens from the home Mac confirm endpoint
     // (`API + '/orders/confirm/:code/public'`) when no inline tokens were present.
@@ -3756,7 +3756,7 @@
         return;
       }
 
-      // retired story-offline-checkout-cloud-cutover — checkout is cloud-only
+      // retired internal-ref — checkout is cloud-only
       // (Supabase); do not re-add (offline-rule). This used to be the LEGACY
       // retrieve that fetched the order from the home Mac confirm endpoint
       // (`API + '/orders/confirm/:code/public'`). The public site must never read
@@ -3847,7 +3847,7 @@
       // carries and the only value the door scanner matches. Previously this
       // encoded t.token_id (the row id), so a retrieved ticket's QR could not be
       // scanned at all, and that row id was 48-bit with sibling-predictable
-      // suffixes (find_ms9cx3r0_e9sa). Falls back to token_id only if a stale
+      // suffixes (internal-ref). Falls back to token_id only if a stale
       // pre-011 backend is answering, so the page degrades instead of breaking.
       renderTicketQRs(data.tokens || [], function (t) { return t.token || t.token_id; }, {
         buyerName: '',
@@ -3925,7 +3925,7 @@
   }
 
   /* ══════════════════════════════════════════════════════════
-   * PER-EVENT NOTIFY CAPTURE  (story-lay-tour-notify · EO brief §2/§3)
+   * PER-EVENT NOTIFY CAPTURE  (internal-ref · EO brief §2/§3)
    * Retires the old page-level #notify-zone. A lightweight bottom-sheet —
    * email + consent + honeypot + optional Cloudflare Turnstile — writes the
    * SAME anon Supabase contact_submissions row LAY already uses, with
