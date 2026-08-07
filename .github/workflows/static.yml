@@ -124,7 +124,12 @@ jobs:
           # PUBLISH_EXT is consumed by BOTH this scrub and the verify step below.
           # One list, two consumers, deliberately — a scrub and a verifier that
           # drift apart is how the .csv survived a gate that claimed to catch it.
-          PUBLISH_EXT='html|htm|css|js|mjs|json|map|jpg|jpeg|png|gif|svg|webp|avif|ico|bmp|woff|woff2|ttf|otf|eot|mp3|m4a|aac|wav|ogg|oga|opus|flac|mp4|webm|mov|vtt|srt|pdf|txt|xml|webmanifest'
+          # tpl = the music-player HTML fragment player.html + router.js fetch at
+          # runtime (pages/LAYoungMusicPlayer.tpl). It is a SERVED site asset, not
+          # cruft — the 2026-08-03 allowlist wrongly grouped it with .bak/.docx and
+          # scrubbing it 404'd the player. .tpl carries no data-leak risk (public
+          # HTML markup); AppleDouble ._* copies are gitignored so cannot ship.
+          PUBLISH_EXT='html|htm|tpl|css|js|mjs|json|map|jpg|jpeg|png|gif|svg|webp|avif|ico|bmp|woff|woff2|ttf|otf|eot|mp3|m4a|aac|wav|ogg|oga|opus|flac|mp4|webm|mov|vtt|srt|pdf|txt|xml|webmanifest'
 
           # Case-insensitive: README.MD and DEPLOY.PS1 must not survive on a
           # technicality. Extensionless files are dropped too — nothing the sites
@@ -158,7 +163,12 @@ jobs:
           # Same allowlist the scrub used. If these two ever disagree, the gate is
           # decorative — that is precisely how the .csv shipped past a step named
           # "verify no internal file reached the artifact".
-          PUBLISH_EXT='html|htm|css|js|mjs|json|map|jpg|jpeg|png|gif|svg|webp|avif|ico|bmp|woff|woff2|ttf|otf|eot|mp3|m4a|aac|wav|ogg|oga|opus|flac|mp4|webm|mov|vtt|srt|pdf|txt|xml|webmanifest'
+          # tpl = the music-player HTML fragment player.html + router.js fetch at
+          # runtime (pages/LAYoungMusicPlayer.tpl). It is a SERVED site asset, not
+          # cruft — the 2026-08-03 allowlist wrongly grouped it with .bak/.docx and
+          # scrubbing it 404'd the player. .tpl carries no data-leak risk (public
+          # HTML markup); AppleDouble ._* copies are gitignored so cannot ship.
+          PUBLISH_EXT='html|htm|tpl|css|js|mjs|json|map|jpg|jpeg|png|gif|svg|webp|avif|ico|bmp|woff|woff2|ttf|otf|eot|mp3|m4a|aac|wav|ogg|oga|opus|flac|mp4|webm|mov|vtt|srt|pdf|txt|xml|webmanifest'
           # Re-derive the directory list from the artifact itself so this step cannot
           # drift from the build step's PUBLISH_DIRS.
           PUBLISH_DIRS=()
