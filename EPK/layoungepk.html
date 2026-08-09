@@ -158,9 +158,9 @@
 </a>
 
 <!-- Save as PDF Button (visible when folder is open) -->
-<button class="save-pdf-btn" id="savePdfBtn" onclick="saveAsPdf()" title="Save EPK as PDF">
+<button class="save-pdf-btn" id="savePdfBtn" onclick="saveAsPdf()" title="Print or save the EPK as a PDF">
   <span class="pdf-icon">&#x1F4C4;</span>
-  <span class="pdf-text">Save as PDF</span>
+  <span class="pdf-text">Print / Save PDF</span>
 </button>
 
 <!-- Share EPK Button (visible when folder is open) -->
@@ -553,7 +553,7 @@
           <h3>Ready to Book?</h3>
           <p>Download the press kit or send a booking inquiry directly to management.</p>
           <a href="javascript:void(0)" class="cta-btn btn-gold-retro" onclick="saveAsPdf()">
-            &#x1F4C4; Save as PDF
+            &#x1F4C4; Print / Save PDF
           </a>
           <a href="javascript:void(0)" class="cta-btn btn-outline-retro" onclick="shareEpk()" id="shareEpkCardBtn">
             &#x1F4E4; Share EPK
@@ -691,7 +691,7 @@
 
   /* --- Share EPK --- */
   window.shareEpk = function() {
-    var url = 'https://layoungbandpage.com/EPK/layoungepk.html';
+    var url = 'https://layoungbandpage.com/epk';
     var title = 'L.A. Young — Electronic Press Kit';
     var text = 'Check out the official Electronic Press Kit for L.A. Young — Soul, Jazz, Blues & R&B vocalist.';
     if (navigator.share) {
