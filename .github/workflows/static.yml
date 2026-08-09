@@ -59,6 +59,7 @@ jobs:
           PUBLISH_FILES=(
             CNAME                            # Pages custom domain — required
             index.html                       # SPA shell
+            epk.html                         # clean /epk vanity URL -> EPK/layoungepk.html
             contact.html                     # standalone contact page
             game.html                        # canvas mini-game entry
             player.html                      # standalone PWA player
