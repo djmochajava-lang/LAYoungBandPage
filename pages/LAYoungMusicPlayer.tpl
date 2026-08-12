@@ -182,10 +182,6 @@
 
       <div class="sp-about-stats">
         <div class="sp-about-stat">
-          <!-- "#1 UK FM Radio" / "Top-5 UK Hits" stats REMOVED 2026-07-16 per standing
-               credential-accuracy rule (feedback_credential_accuracy.md): small private
-               DJ chart, not BBC/Official UK Charts — never a headline credential.
-               Mirrors the sanitized LAYoungMusicPlayer.html. Do not restore. -->
           <span class="sp-about-stat-value">100+</span>
           <span class="sp-about-stat-label">Live Shows</span>
         </div>
