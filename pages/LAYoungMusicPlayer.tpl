@@ -72,6 +72,7 @@
 
     <!-- Popular Tracks -->
     <h2 class="sp-section-title">Popular</h2>
+    <p class="sp-section-note" style="margin:-6px 0 14px;font-size:0.85rem;opacity:0.75;line-height:1.5;">Two studio recordings by L.A. Young, alongside her original compositions presented as AI-produced instrumentals &mdash; these are performed live by L.A. Young &amp; Soul Society.</p>
     <ul class="sp-track-list" id="spTrackList">
       <!-- Track 1 -->
       <li class="sp-track-item" data-index="0" data-src="music/IntroductiongroveSoft.mp3">
@@ -80,7 +81,7 @@
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">Introduction Groove</p>
-          <p class="sp-track-artist">L.A. Young &bull; Original</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original composition &bull; AI-produced instrumental</p>
         </div>
         <span class="sp-track-duration sp-dur">--:--</span>
       </li>
@@ -92,7 +93,7 @@
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">No One Can Love You More</p>
-          <p class="sp-track-artist">L.A. Young &bull; Single</p>
+          <p class="sp-track-artist">L.A. Young &bull; Studio recording &bull; Released single</p>
         </div>
         <span class="sp-track-duration sp-dur">--:--</span>
       </li>
@@ -104,7 +105,7 @@
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">Daydreaming In Sound</p>
-          <p class="sp-track-artist">L.A. Young &bull; Original</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original composition &bull; AI-produced instrumental</p>
         </div>
         <span class="sp-track-duration sp-dur">--:--</span>
       </li>
@@ -116,7 +117,7 @@
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">The Woman In Me</p>
-          <p class="sp-track-artist">L.A. Young &bull; with Pieces of A Dream &bull; Written by Robert John Lange &amp; Shania Twain</p>
+          <p class="sp-track-artist">L.A. Young &bull; Studio recording &bull; with Pieces of A Dream &bull; Written by Robert John Lange &amp; Shania Twain</p>
         </div>
         <span class="sp-track-duration sp-dur">--:--</span>
       </li>
@@ -128,7 +129,7 @@
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">Midnight Melody</p>
-          <p class="sp-track-artist">L.A. Young &bull; Original</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original composition &bull; AI-produced instrumental</p>
         </div>
         <span class="sp-track-duration sp-dur">--:--</span>
       </li>
@@ -140,7 +141,7 @@
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">Shopaholic Teaser</p>
-          <p class="sp-track-artist">L.A. Young &bull; Original</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original composition &bull; AI-produced instrumental</p>
         </div>
         <span class="sp-track-duration sp-dur">--:--</span>
       </li>
@@ -164,7 +165,7 @@
       <div class="sp-disco-card">
         <img src="images/artist/Album.png" alt="L.A. Young Collection" class="sp-disco-art" />
         <p class="sp-disco-title">L.A. Young Collection</p>
-        <p class="sp-disco-year">2024 &bull; 5 Tracks</p>
+        <p class="sp-disco-year">2 studio recordings &bull; 4 original instrumentals</p>
       </div>
     </div>
 
