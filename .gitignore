@@ -40,3 +40,5 @@ Thumbs.db
 project-code-dump.txt
 Video/big/
 nul
+# Cover masters are served from isolated storage, not this repo.
+Media/*.mp3
