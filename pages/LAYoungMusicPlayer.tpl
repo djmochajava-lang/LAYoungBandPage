@@ -80,7 +80,7 @@
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">Introduction Groove</p>
-          <p class="sp-track-artist">Instrumental &mdash; site audio</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original</p>
         </div>
         <span class="sp-track-duration sp-dur">--:--</span>
       </li>
@@ -104,7 +104,7 @@
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">Daydreaming In Sound</p>
-          <p class="sp-track-artist">Instrumental &mdash; site audio</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original</p>
         </div>
         <span class="sp-track-duration sp-dur">--:--</span>
       </li>
@@ -128,7 +128,7 @@
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">Midnight Melody</p>
-          <p class="sp-track-artist">Instrumental &mdash; site audio</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original</p>
         </div>
         <span class="sp-track-duration sp-dur">--:--</span>
       </li>
@@ -140,7 +140,7 @@
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">Shopaholic Teaser</p>
-          <p class="sp-track-artist">Instrumental &mdash; site audio</p>
+          <p class="sp-track-artist">L.A. Young &bull; Original</p>
         </div>
         <span class="sp-track-duration sp-dur">--:--</span>
       </li>
