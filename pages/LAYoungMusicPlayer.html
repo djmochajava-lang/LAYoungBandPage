@@ -87,7 +87,7 @@
       </li>
 
       <!-- Track 2 -->
-      <li class="sp-track-item" data-index="1" data-src="Media/no_one_can_love_you_more.mp3">
+      <li class="sp-track-item" data-index="1" data-src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_No-One-Can-Love-You-More.mp3">
         <span class="sp-track-num">2</span>
         <div class="sp-eq-bars"><span class="sp-eq-bar"></span><span class="sp-eq-bar"></span><span class="sp-eq-bar"></span><span class="sp-eq-bar"></span></div>
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
@@ -111,7 +111,7 @@
       </li>
 
       <!-- Track 4 -->
-      <li class="sp-track-item" data-index="3" data-src="Media/The_Woman_In_Me_warm_polish.mp3">
+      <li class="sp-track-item" data-index="3" data-src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_The-Woman-In-Me.mp3">
         <span class="sp-track-num">4</span>
         <div class="sp-eq-bars"><span class="sp-eq-bar"></span><span class="sp-eq-bar"></span><span class="sp-eq-bar"></span><span class="sp-eq-bar"></span></div>
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />

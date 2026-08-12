@@ -22,9 +22,9 @@
   // Paths are relative to the page URL (player.html or index.html, both at root)
   var playlist = [
     { title: 'Introduction Groove', src: 'music/IntroductiongroveSoft.mp3' },
-    { title: 'No One Can Love You More', src: 'Media/no_one_can_love_you_more.mp3' },
+    { title: 'No One Can Love You More', src: 'https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_No-One-Can-Love-You-More.mp3' },
     { title: 'Daydreaming In Sound', src: 'music/DaydreamingInSoundsoft.mp3' },
-    { title: 'The Woman In Me', src: 'Media/The_Woman_In_Me_warm_polish.mp3' },
+    { title: 'The Woman In Me', src: 'https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_The-Woman-In-Me.mp3' },
     { title: 'Midnight Melody', src: 'music/MidnightMelodySoft.mp3' },
     { title: 'Shopaholic Teaser', src: 'music/ShopaholicTeaserSoft.mp3' }
   ];
