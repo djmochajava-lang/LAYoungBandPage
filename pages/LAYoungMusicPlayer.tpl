@@ -116,7 +116,7 @@
         <img src="images/artist/Album.png" alt="" class="sp-track-art" />
         <div class="sp-track-info">
           <p class="sp-track-name">The Woman In Me</p>
-          <p class="sp-track-artist">L.A. Young &bull; Original</p>
+          <p class="sp-track-artist">L.A. Young &bull; with Pieces of A Dream &bull; Written by Robert John Lange &amp; Shania Twain</p>
         </div>
         <span class="sp-track-duration sp-dur">--:--</span>
       </li>
