@@ -10,6 +10,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&family=Special+Elite&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/retro.css?v=2" />
+  <style>
+    /* Inline EPK audio players — swap the <audio> inside .epk-player for a
+       licensed platform embed later without touching surrounding markup.
+       Hidden in print: a native control renders as a dead box in a saved PDF. */
+    .epk-player { margin: 8px 0 4px; }
+    .epk-player .epk-audio { width: 100%; display: block; }
+    @media print { .epk-player { display: none !important; } }
+  </style>
 
   <!-- JSON-LD Structured Data — GEO-08 (FRD-GEO-08) -->
 
@@ -21,7 +29,7 @@
     "@id": "https://layoungbandpage.com/#artist",
     "name": "LA Young",
     "alternateName": ["LA Young Band", "L.A. Young & Soul Society"],
-    "description": "LA Young is a professional contralto soul, jazz, blues, and R&B vocalist and bandleader based in the Washington DC Metropolitan Area. Her voice has been compared to Chaka Khan meeting Phyllis Hyman — a rare blend of raw power and silky emotional depth. Ohio-born and with over twenty years of professional performance experience, LA Young has opened for R&B icon Freddie Jackson and recorded with members of the Grammy-nominated jazz ensemble Pieces of a Dream. She has performed with jazz legend Norman Connors and is currently in the studio, with her forthcoming music produced by Gold Bottom Productions in conjunction with Norman Connors. Her recording of 'No One Can Love You More' — her signature Phyllis Hyman tribute — has earned devoted airplay on independent soul and jazz radio. A 2018 Maryland Music Awards Artist of the Year and a Woman's Basketball Hall of Fame Inductee, LA Young performs regularly with her band as L.A. Young & Soul Society and is celebrated for her acclaimed Phyllis Hyman Experience tribute show. She is available for concerts, festivals, corporate events, galas, fundraisers, and private engagements across the East Coast and nationwide.",
+    "description": "LA Young is a professional contralto soul, jazz, blues, and R&B vocalist and bandleader based in the Washington DC Metropolitan Area. Her voice has been compared to Chaka Khan meeting Phyllis Hyman — a rare blend of raw power and silky emotional depth. Ohio-born and with over twenty years of professional performance experience, LA Young has opened for R&B icon Freddie Jackson and recorded with members of the Grammy-nominated jazz ensemble Pieces of A Dream. She has performed with jazz legend Norman Connors and is currently in the studio, with her forthcoming music produced by Gold Bottom Productions in conjunction with Norman Connors. Her recording of 'No One Can Love You More' — her signature Phyllis Hyman tribute — has earned devoted airplay on independent soul and jazz radio. A 2018 Maryland Music Awards Artist of the Year and a Woman's Basketball Hall of Fame Inductee, LA Young performs regularly with her band as L.A. Young & Soul Society and is celebrated for her acclaimed Phyllis Hyman Experience tribute show. She is available for concerts, festivals, corporate events, galas, fundraisers, and private engagements across the East Coast and nationwide.",
     "url": "https://layoungbandpage.com/EPK/layoungepk.html",
     "image": "https://layoungbandpage.com/images/artist/LAYoungPink.JPG",
     "genre": ["Soul", "Jazz", "Blues", "R&B", "Funk", "Country", "Rock", "Pop", "Contemporary Urban"],
@@ -231,7 +239,7 @@
           </p>
           <p style="margin-top: 12px;">
             Her career spans landmark stages and elite collaborations: opening for R&amp;B icon
-            <strong>Freddie Jackson</strong> and recording with the Grammy-nominated jazz
+            <strong>Freddie Jackson</strong> and recording with members of the Grammy-nominated jazz
             ensemble <strong>Pieces of A Dream</strong>. She has performed with jazz legend
             <strong>Norman Connors</strong> and is currently in the studio, with her
             forthcoming music produced by Gold Bottom Productions in conjunction with Norman Connors.
@@ -286,7 +294,7 @@
         <div class="cred-stamp">Opened for Freddie Jackson</div>
         <div class="cred-stamp">L.A. Young &amp; Soul Society</div>
         <div class="cred-stamp">MD Artist of the Year 2018</div>
-        <div class="cred-stamp">Pieces of A Dream</div>
+        <div class="cred-stamp">Members of Pieces of A Dream</div>
         <div class="cred-stamp">Norman Connors</div>
         <div class="cred-stamp">Jazz Legacy Foundation</div>
         <div class="cred-stamp">Premier DC Venues</div>
@@ -305,8 +313,20 @@
         <div class="album-info">
           <h3>"The Woman In Me"</h3>
           <div class="album-meta">Written by Robert John Lange &amp; Shania Twain</div>
+          <div class="epk-player" data-track="the-woman-in-me">
+            <audio class="epk-audio" controls preload="none" controlslist="nodownload noplaybackrate"
+                   src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_The-Woman-In-Me.mp3">
+              Your browser can't play audio inline &mdash; <a data-gbe-email data-email-href-only data-email-subject="Audio Request" style="color: var(--gold-accent);">email management</a> for a copy.
+            </audio>
+          </div>
           <h3 style="margin-top: 12px;">"No One Can Love You More"</h3>
           <div class="album-meta">Written by Skip Scarborough &bull; Phyllis Hyman tribute</div>
+          <div class="epk-player" data-track="no-one-can-love-you-more">
+            <audio class="epk-audio" controls preload="none" controlslist="nodownload noplaybackrate"
+                   src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_No-One-Can-Love-You-More.mp3">
+              Your browser can't play audio inline &mdash; <a data-gbe-email data-email-href-only data-email-subject="Audio Request" style="color: var(--gold-accent);">email management</a> for a copy.
+            </audio>
+          </div>
           <div class="album-meta" style="margin-top: 10px;">A listener favorite on independent soul and jazz radio, and the centerpiece of her acclaimed tribute production.</div>
         </div>
       </div>
@@ -745,7 +765,7 @@
     'la': {
       name: 'L.A. Young',
       role: 'Vocals / Music Director',
-      bio: 'L.A. Young is a soul, jazz, blues, and R&B vocalist whose voice has been compared to Chaka Khan meeting Phyllis Hyman. A native of Ohio, she became the first female crane operator in the steel industry by age 18. With collaborations spanning Pieces of A Dream and Norman Connors, and a signature Phyllis Hyman tribute that has drawn audiences from across the country, L.A. continues to captivate audiences.'
+      bio: 'L.A. Young is a soul, jazz, blues, and R&B vocalist whose voice has been compared to Chaka Khan meeting Phyllis Hyman. A native of Ohio, she became the first female crane operator in the steel industry by age 18. With collaborations spanning members of Pieces of A Dream and Norman Connors, and a signature Phyllis Hyman tribute that has drawn audiences from across the country, L.A. continues to captivate audiences.'
     },
     'eugene': {
       name: 'Eugene Chapman',

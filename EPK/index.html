@@ -14,6 +14,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/epk.css?v=2" />
+  <style>
+    /* Inline EPK audio players — swap the <audio> inside .epk-player for a
+       licensed platform embed later without touching surrounding markup. */
+    .epk-player { margin: 0.5rem 0 0.25rem; }
+    .epk-player .epk-audio { width: 100%; display: block; }
+    .epk-player-note { font-size: 0.72rem; color: var(--text-muted, #999); margin-top: 0.35rem; }
+  </style>
 </head>
 <body>
 
@@ -108,7 +115,7 @@
         </p>
         <p>
           Her career spans landmark stages and elite collaborations: opening for R&amp;B icon
-          <span class="hl">Freddie Jackson</span> and recording with the Grammy-nominated jazz
+          <span class="hl">Freddie Jackson</span> and recording with members of the Grammy-nominated jazz
           ensemble <span class="hl">Pieces of A Dream</span>. She has performed with jazz legend
           <span class="hl">Norman Connors</span> and is currently in the studio, with her
           forthcoming music produced by Gold Bottom Productions in conjunction with Norman Connors.
@@ -179,8 +186,8 @@
       </div>
       <div class="cred-card">
         <div class="cred-badge">&#x1F3B9;</div>
-        <div class="cred-title">Pieces of A Dream</div>
-        <div class="cred-desc">Recorded with the legendary Grammy-nominated jazz ensemble</div>
+        <div class="cred-title">Members of Pieces of A Dream</div>
+        <div class="cred-desc">Recorded with members of the legendary Grammy-nominated jazz ensemble</div>
       </div>
       <div class="cred-card">
         <div class="cred-badge">&#x1F3A4;</div>
@@ -220,8 +227,20 @@
       <div class="music-info">
         <h3>"The Woman In Me"</h3>
         <div class="music-meta">Written by Robert John Lange &amp; Shania Twain</div>
+        <div class="epk-player" data-track="the-woman-in-me">
+          <audio class="epk-audio" controls preload="none" controlslist="nodownload noplaybackrate"
+                 src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_The-Woman-In-Me.mp3">
+            Your browser can't play audio inline &mdash; <a data-gbe-email data-email-href-only data-email-subject="Audio Request">email management</a> for a copy.
+          </audio>
+        </div>
         <h3 style="margin-top: 1.25rem;">"No One Can Love You More"</h3>
         <div class="music-meta">Written by Skip Scarborough &bull; Phyllis Hyman tribute</div>
+        <div class="epk-player" data-track="no-one-can-love-you-more">
+          <audio class="epk-audio" controls preload="none" controlslist="nodownload noplaybackrate"
+                 src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_No-One-Can-Love-You-More.mp3">
+            Your browser can't play audio inline &mdash; <a data-gbe-email data-email-href-only data-email-subject="Audio Request">email management</a> for a copy.
+          </audio>
+        </div>
         <div class="music-meta" style="margin-top: 1rem;">A listener favorite on independent soul and jazz radio, and the centerpiece of her acclaimed tribute production.</div>
       </div>
     </div>
