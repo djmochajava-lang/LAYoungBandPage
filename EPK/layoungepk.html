@@ -12,11 +12,20 @@
   <link rel="stylesheet" href="css/retro.css?v=2" />
   <style>
     /* Inline EPK audio players — swap the <audio> inside .epk-player for a
-       licensed platform embed later without touching surrounding markup.
-       Hidden in print: a native control renders as a dead box in a saved PDF. */
+       licensed platform embed later without touching surrounding markup. */
     .epk-player { margin: 8px 0 4px; }
     .epk-player .epk-audio { width: 100%; display: block; }
-    @media print { .epk-player { display: none !important; } }
+    /* In the saved PDF, keep the control visible as a cue that audio exists,
+       and add a caption pointing to the live site (some browsers paint the
+       native control blank in print — the caption guarantees the message). */
+    .epk-player-print-note { display: none; }
+    @media print {
+      .epk-player .epk-audio { display: block; }
+      .epk-player-print-note {
+        display: block; font-size: 10px; color: #5a4a2a;
+        margin-top: 3px; font-style: italic;
+      }
+    }
   </style>
 
   <!-- JSON-LD Structured Data — GEO-08 (FRD-GEO-08) -->
@@ -318,6 +327,7 @@
                    src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_The-Woman-In-Me.mp3">
               Your browser can't play audio inline &mdash; <a data-gbe-email data-email-href-only data-email-subject="Audio Request" style="color: var(--gold-accent);">email management</a> for a copy.
             </audio>
+            <div class="epk-player-print-note">&#x25B6; Play this track at layoungbandpage.com/EPK</div>
           </div>
           <h3 style="margin-top: 12px;">"No One Can Love You More"</h3>
           <div class="album-meta">Written by Skip Scarborough &bull; Phyllis Hyman tribute</div>
@@ -326,6 +336,7 @@
                    src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_No-One-Can-Love-You-More.mp3">
               Your browser can't play audio inline &mdash; <a data-gbe-email data-email-href-only data-email-subject="Audio Request" style="color: var(--gold-accent);">email management</a> for a copy.
             </audio>
+            <div class="epk-player-print-note">&#x25B6; Play this track at layoungbandpage.com/EPK</div>
           </div>
           <div class="album-meta" style="margin-top: 10px;">A listener favorite on independent soul and jazz radio, and the centerpiece of her acclaimed tribute production.</div>
         </div>
