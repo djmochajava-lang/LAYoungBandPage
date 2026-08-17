@@ -20,6 +20,19 @@
     .epk-player { margin: 0.5rem 0 0.25rem; }
     .epk-player .epk-audio { width: 100%; display: block; }
     .epk-player-note { font-size: 0.72rem; color: var(--text-muted, #999); margin-top: 0.35rem; }
+    /* Direct song links (?play=...) — highlight the linked track + one-tap play prompt */
+    .epk-player.epk-deeplinked {
+      padding: 8px; border-radius: 10px;
+      box-shadow: 0 0 0 2px var(--gold, #ffd700), 0 0 24px var(--gold-glow, rgba(255,215,0,0.15));
+    }
+    .epk-play-cta {
+      display: block; width: 100%; margin: 0 0 8px; padding: 0.85rem 1.2rem;
+      border: 1px solid var(--gold-dark, #c8a800); border-radius: 8px;
+      background: linear-gradient(135deg, var(--gold, #ffd700), var(--gold-dark, #c8a800));
+      color: #14100a; font-family: inherit; font-weight: 700; font-size: 1rem;
+      cursor: pointer; text-align: center;
+    }
+    .epk-play-cta:active { transform: translateY(1px); }
   </style>
 </head>
 <body>
@@ -181,7 +194,7 @@
       <div class="music-info">
         <h3>"The Woman In Me"</h3>
         <div class="music-meta">Written by Robert John Lange &amp; Shania Twain</div>
-        <div class="epk-player" data-track="the-woman-in-me">
+        <div class="epk-player" data-track="the-woman-in-me" data-title="The Woman In Me">
           <audio class="epk-audio" controls preload="none" controlslist="nodownload noplaybackrate"
                  src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_The-Woman-In-Me.mp3">
             Your browser can't play audio inline &mdash; <a data-gbe-email data-email-href-only data-email-subject="Audio Request">email management</a> for a copy.
@@ -189,7 +202,7 @@
         </div>
         <h3 style="margin-top: 1.25rem;">"No One Can Love You More"</h3>
         <div class="music-meta">Written by Skip Scarborough &bull; Phyllis Hyman tribute</div>
-        <div class="epk-player" data-track="no-one-can-love-you-more">
+        <div class="epk-player" data-track="no-one-can-love-you-more" data-title="No One Can Love You More">
           <audio class="epk-audio" controls preload="none" controlslist="nodownload noplaybackrate"
                  src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_No-One-Can-Love-You-More.mp3">
             Your browser can't play audio inline &mdash; <a data-gbe-email data-email-href-only data-email-subject="Audio Request">email management</a> for a copy.
@@ -575,6 +588,118 @@ document.addEventListener('click', function(e) {
   }
   // If opener is gone (tab closed), let the link navigate normally
 });
+
+// One track at a time — starting either song pauses the other
+// ('play' doesn't bubble, so listen in the capture phase)
+(function () {
+  'use strict';
+  document.addEventListener('play', function (e) {
+    var el = e.target;
+    if (!el || !el.classList || !el.classList.contains('epk-audio')) return;
+    document.querySelectorAll('audio.epk-audio').forEach(function (other) {
+      if (other !== el && !other.paused) other.pause();
+    });
+  }, true);
+})();
+
+// Direct song links — EPK/index.html?play=<track> opens the page at that song
+// and starts it. Where the browser blocks sound autoplay (normal on a first
+// visit, especially iPhone), a one-tap gold play button is shown instead.
+(function () {
+  'use strict';
+  function norm(s) {
+    return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  }
+  var q = new URLSearchParams(window.location.search);
+  var fromHash = /^#play=/.test(location.hash) ? decodeURIComponent(location.hash.slice(6)) : '';
+  var want = norm(q.get('play') || q.get('song') || fromHash);
+  if (!want) return;
+
+  var players = Array.prototype.slice.call(document.querySelectorAll('.epk-player[data-track]'));
+  var hit = null;
+  players.forEach(function (p) {
+    if (!hit && norm(p.getAttribute('data-track')) === want) hit = p;
+  });
+  players.forEach(function (p) {
+    if (!hit && norm(p.getAttribute('data-track')).indexOf(want) !== -1) hit = p;
+  });
+  if (!hit) return;
+
+  var audio = hit.querySelector('audio.epk-audio');
+  if (!audio) return;
+  var title = hit.getAttribute('data-title') || 'this track';
+
+  // A song link owns the scroll position — stop the browser restoring the
+  // previous scroll offset on reload/back, which lands the visitor elsewhere
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+
+  audio.preload = 'auto';
+  hit.classList.add('epk-deeplinked');
+  // Keep the linked song centered while images settle — they resize the page
+  // by thousands of px after first paint, so any one-shot scroll lands wrong.
+  // Ends when layout is stable (or after 6s), or instantly on visitor input.
+  function centerHit() {
+    try {
+      hit.scrollIntoView({ behavior: 'instant', block: 'center' });
+    } catch (err) {
+      hit.scrollIntoView(true);
+    }
+  }
+  var userTookOver = false;
+  var settleRunning = false;
+  ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(function (evt) {
+    window.addEventListener(evt, function () { userTookOver = true; }, { passive: true, once: true });
+  });
+  function startSettle() {
+    if (settleRunning) return;
+    settleRunning = true;
+    var t0 = performance.now();
+    var lastH = -1;
+    var stableSince = t0;
+    (function settle() {
+      if (userTookOver) { settleRunning = false; return; }
+      var now = performance.now();
+      var h = document.body.scrollHeight;
+      if (h !== lastH) { lastH = h; stableSince = now; }
+      centerHit();
+      var elapsed = now - t0;
+      var stableFor = now - stableSince;
+      if (elapsed > 6000 || (elapsed > 800 && stableFor > 500 && document.readyState === 'complete')) {
+        settleRunning = false;
+        return;
+      }
+      requestAnimationFrame(settle);
+    })();
+  }
+  startSettle();
+  // Opened in a background tab (viewport can be zero-sized there) — re-center
+  // when the visitor actually brings the tab into view
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'visible' && !userTookOver) startSettle();
+  });
+
+  function clearCta() {
+    var btn = hit.querySelector('.epk-play-cta');
+    if (btn && btn.parentNode) btn.parentNode.removeChild(btn);
+  }
+  audio.addEventListener('playing', clearCta);
+
+  var attempt = audio.play();
+  if (attempt && typeof attempt.then === 'function') {
+    attempt.catch(function () {
+      if (hit.querySelector('.epk-play-cta')) return;
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'epk-play-cta';
+      btn.innerHTML = '&#x25B6;&#xFE0E;&nbsp; Tap to play “' + title + '”';
+      btn.addEventListener('click', function () {
+        audio.play();
+        clearCta();
+      });
+      hit.insertBefore(btn, hit.firstChild);
+    });
+  }
+})();
 </script>
 
   <!-- Contact Registry (CEO rule 2026-07-22): single-source booking contact + hydration -->

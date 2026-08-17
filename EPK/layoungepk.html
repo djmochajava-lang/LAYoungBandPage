@@ -958,6 +958,19 @@ document.addEventListener('click', function(e) {
   }
   // If opener is gone (tab closed), let the link navigate normally
 });
+
+// One track at a time — starting either song pauses the other
+// ('play' doesn't bubble, so listen in the capture phase)
+(function () {
+  'use strict';
+  document.addEventListener('play', function (e) {
+    var el = e.target;
+    if (!el || !el.classList || !el.classList.contains('epk-audio')) return;
+    document.querySelectorAll('audio.epk-audio').forEach(function (other) {
+      if (other !== el && !other.paused) other.pause();
+    });
+  }, true);
+})();
 </script>
 
   <!-- Contact Registry (CEO rule 2026-07-22): single-source booking contact + hydration -->
