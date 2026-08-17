@@ -26,7 +26,7 @@ Official artist website for **L.A. Young** — a powerhouse soul, jazz, and blue
 
 - **Live URL**: [layoungbandpage.com](https://layoungbandpage.com)
 - **Genre**: Soul, Jazz, R&B, Blues
-- **Key Achievements**: Maryland Artist of the Year (2018), 100+ live performances, recordings with Pieces of A Dream, new material produced with Norman Connors / Gold Bottom Productions. (UK-chart claims removed 2026-07-16 per credential-accuracy rule — never use as credentials.)
+- **Key Achievements**: 3× 2018 Maryland Music Awards nominee (Best Jazz Artist, Best Funk Artist, Music Icon Award — raw-source verified 2026-08-16; the earlier "Artist of the Year WON" claim is RETIRED, never reintroduce it), 100+ live performances, recordings with members of Pieces of A Dream, new material produced with Norman Connors / Gold Bottom Productions. (UK-chart claims removed 2026-07-16 per credential-accuracy rule — never use as credentials.)
 
 ## Tech Stack
 
