@@ -2101,15 +2101,15 @@
 
   /* ── Build capacity badge ───────────────────────────────── */
   function buildBadge(status) {
+    // A buyable state renders no availability claim — the CTA is the message.
     var map = {
-      'on_sale':       { cls: 'tier-badge-available', txt: 'Available' },
       'selling_fast':  { cls: 'tier-badge-selling',   txt: 'Selling Fast' },
       'almost_sold_out':{ cls: 'tier-badge-almost',   txt: 'Almost Gone' },
       'announced':     { cls: 'tier-badge-announced', txt: 'Announced' },
       'sold_out':      { cls: 'tier-badge-sold-out',  txt: 'Sold Out' }
     };
-    var info = map[status] || map['on_sale'];
-    return '<span class="tier-badge ' + info.cls + '">' + info.txt + '</span>';
+    var info = map[status];
+    return info ? '<span class="tier-badge ' + info.cls + '">' + info.txt + '</span>' : '';
   }
 
   /* ══════════════════════════════════════════════════════════

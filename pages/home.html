@@ -357,9 +357,10 @@
  *   - no config / fetch fails / empty readmodel / no upcoming show
  *     => banner stays hidden entirely (no shell, no loading jank);
  *   - upcoming show => name (verbatim from the readmodel), city, local
- *     calendar date, honest admission marker ("Tickets on sale" vs
- *     "Free — no ticket needed"; announced => "Coming Soon", sold out
- *     => "Sold Out"). Never a calendar/grid, never availability counts
+ *     calendar date, honest admission marker ("Free — no ticket needed";
+ *     announced => "Coming Soon", sold out => "Sold Out"; a buyable show
+ *     carries no sale-state chip — the "Get Tickets" CTA is the message).
+ *     Never a calendar/grid, never availability counts
  *     (A1/A2 — this is an announcement card, nothing more).
  * Runs on every SPA injection via PageLoader.executeInlineScripts().
  * ═════════════════════════════════════════════════════════════════ */
@@ -433,8 +434,8 @@
     if (isFree)                        { chip = 'Free — no ticket needed'; cta = 'Show Details'; }
     else if (status === 'sold_out')    { chip = 'Sold Out';                cta = 'Show Details'; }
     else if (status === 'announced')   { chip = 'Coming Soon';             cta = 'Show Details'; }
-    else /* on_sale / selling_fast / almost_sold_out */
-                                       { chip = 'Tickets on sale';         cta = 'Get Tickets'; }
+    else /* buyable states: no sale-state chip — the CTA is the message */
+                                       { chip = '';                        cta = 'Get Tickets'; }
 
     // Meta line: city/state exactly as the readmodel publishes (never an
     // invented venue) + local calendar date + honest count of the rest.
@@ -448,6 +449,8 @@
     setText('show-banner-title', ev.event_name || '');
     setText('show-banner-meta', meta);
     setText('show-banner-chip', chip);
+    var chipEl = document.getElementById('show-banner-chip');
+    if (chipEl) chipEl.style.display = chip ? '' : 'none';
     setText('show-banner-cta', cta + ' →');
 
     // Spec §2c sub-line belongs to the tribute show only — never reuse its
