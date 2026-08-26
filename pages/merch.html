@@ -47,7 +47,7 @@
             <div class="merch-card__footer">
               <span class="merch-card__price merch-card__price--a">$19.99</span>
               <div class="merch-buy-btn" data-product-id="8214998646899" data-product-handle="flagship-gold-wordmark-tee">
-                <button class="btn btn-primary merch-btn--buy" data-shopify-add="8214998646899">Add to Cart</button>
+                <button class="btn btn-primary merch-btn--coming-soon" disabled>Coming Soon</button>
               </div>
             </div>
           </div>
@@ -637,9 +637,7 @@
       }
 
       /* ── Dynamic availability check: query Storefront API for each product ── */
-      /* Products on the Storefront API get inline "Add to Cart" (cart API).     */
-      /* Products only on Online Store get "Shop Now" linking to product page.   */
-      var STORE_URL = 'https://gold-bottom-ent-llc.myshopify.com';
+      /* Products the store positively confirms get inline "Add to Cart".        */
 
       function checkAvailability() {
         var buyBtns = document.querySelectorAll('.merch-buy-btn[data-product-id]');
@@ -658,7 +656,7 @@
         var query = '{' + aliases.join(' ') + '}';
 
         gqlFetch(query).then(function (res) {
-          if (!res.data) { fallbackAll(entries); return; }
+          if (!res.data) return; /* store not answering → products stay Coming Soon */
 
           entries.forEach(function (entry, i) {
             var product = res.data['p' + i];
@@ -677,39 +675,12 @@
                 e.preventDefault();
                 addToCart(entry.id, btn);
               });
-            } else if (entry.handle) {
-              /* ── Not on Storefront API but has a handle → "Shop Now" link ── */
-              activateShopNow(btn, entry.handle);
             }
+            /* No fallback links: unless the store positively confirms a product
+               is buyable, its button stays Coming Soon. */
           });
         }).catch(function () {
-          /* If Storefront API fails entirely, fall back to Shop Now links */
-          fallbackAll(entries);
-        });
-      }
-
-      /* ── Activate a "Shop Now" button linking to the Shopify product page ── */
-      function activateShopNow(btn, handle) {
-        if (btn.hasAttribute('data-shopify-add') || btn.hasAttribute('data-shop-now')) return;
-        btn.className = btn.className
-          .replace('merch-btn--coming-soon', 'merch-btn--shop')
-          .replace('btn-secondary', 'btn-primary');
-        btn.removeAttribute('disabled');
-        btn.setAttribute('data-shop-now', handle);
-        btn.textContent = 'Shop Now';
-        btn.addEventListener('click', function (e) {
-          e.preventDefault();
-          window.open(STORE_URL + '/products/' + handle, '_blank');
-        });
-      }
-
-      /* ── Fallback: activate all products with handles as "Shop Now" ── */
-      function fallbackAll(entries) {
-        entries.forEach(function (entry) {
-          var btn = entry.wrap.querySelector('button');
-          if (btn && entry.handle && !btn.hasAttribute('data-shopify-add')) {
-            activateShopNow(btn, entry.handle);
-          }
+          /* Storefront API unreachable → products stay Coming Soon */
         });
       }
 
