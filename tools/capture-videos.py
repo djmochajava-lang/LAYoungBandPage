@@ -36,11 +36,20 @@ L.A. Young clips. That footage is irreplaceable, so:
     python3 tools/capture-videos.py archive             # download every match
     python3 tools/capture-videos.py archive --match ".*"   # every video on those channels
 
-  - Channels are auto-discovered from each seed video's uploader, plus any
-    URLs (channel / playlist / @handle) listed under "archiveSources" in the
-    manifest — add fan channels there as you find them.
-  - Only titles matching --match are pulled (default: L.A. Young / LA Young /
-    Soul Society / Unusual Suspects, case-insensitive). Use ".*" for all.
+  How it finds "the rest of the videos on those pages":
+  - Seed channels: the uploader of each of the six links. EVERY video and
+    stream on those channels is taken (no title filter — it's the band's own
+    footage even when the title doesn't say "LA Young").
+  - Curated playlists on those channels: often hold other people's uploads.
+  - YouTube search sweep for the band (see DEFAULT_SEARCHES / manifest
+    "archiveSearches") — catches fan and venue uploads we've never seen.
+  - Channel hops: every matching video found above is followed to ITS
+    uploader, and that channel is crawled too (--depth, default 1).
+  - Extra starting points: any channel / playlist / @handle URLs listed under
+    "archiveSources" in the manifest.
+  - Outside the seed channels, only titles matching --match are kept
+    (default: L.A. Young / LA Young / Soul Society / Unusual Suspects /
+    Phyllis Hyman tribute / Gold Bottom, case-insensitive). ".*" keeps all.
   - Files land in Video/archive/<channel>/<youtubeId>.mp4 (gitignored) with a
     sidecar .info.json; Video/archive/index.json (committed) is the catalog.
   - Re-running is safe: yt-dlp's --download-archive skips what you already have.
@@ -98,33 +107,55 @@ def download(url, slug):
 
 ARCHIVE_DIR = os.path.join(ROOT, "Video", "archive")
 ARCHIVE_INDEX = os.path.join(ARCHIVE_DIR, "index.json")
-DEFAULT_MATCH = r"(?i)\bL\.?\s?A\.?\s?Young\b|Soul Society|Unusual Suspects"
+DEFAULT_MATCH = (r"(?i)\bL\.?\s?A\.?\s?Young\b|Soul Society|Unusual Suspects|"
+                 r"Phyllis Hyman (Experience|Tribute)|Gold Bottom")
+DEFAULT_SEARCHES = [
+    '"L.A. Young" singer', '"LA Young" soul', '"LA Young" jazz', '"LA Young" band',
+    '"LA Young" "Soul Society"', '"LA Young" "Unusual Suspects"',
+    '"LA Young" Phyllis Hyman', '"LA Young" Norman Connors', '"LA Young" Baltimore',
+]
+VIDEO_FMT = "bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/best[ext=mp4]/best"
+PRINT_ROW = "%(id)s\t%(title)s\t%(duration)s\t%(upload_date)s\t%(channel)s\t%(channel_url)s"
 
 
-def channel_of(video_url):
-    out = subprocess.run(
-        ["yt-dlp", "--skip-download", "--print", "%(channel_url)s\n%(channel)s", video_url],
-        capture_output=True, text=True, check=True).stdout.strip().split("\n")
-    return (out + ["", ""])[0], (out + ["", ""])[1]
+def _run(args_):
+    return subprocess.run(["yt-dlp"] + args_, capture_output=True, text=True, check=True).stdout
 
 
-def list_source(url):
-    """Flat listing of every video under a channel / playlist / handle URL."""
-    src = url
-    if "youtube.com/@" in src or "/channel/" in src or "/c/" in src or "/user/" in src:
-        if not src.rstrip("/").endswith(("/videos", "/streams", "/shorts")):
-            src = src.rstrip("/") + "/videos"
-    out = subprocess.run(
-        ["yt-dlp", "--flat-playlist", "--print",
-         "%(id)s\t%(title)s\t%(duration)s\t%(upload_date)s\t%(channel)s", src],
-        capture_output=True, text=True, check=True).stdout
+def _rows(out):
     rows = []
     for line in out.splitlines():
-        parts = (line.split("\t") + [""] * 5)[:5]
-        if parts[0]:
+        parts = (line.split("\t") + [""] * 6)[:6]
+        if parts[0] and parts[0] != "NA":
             rows.append(dict(id=parts[0], title=parts[1], duration=iso_duration(parts[2]),
-                             uploadDate=parts[3] if parts[3] != "NA" else "", channel=parts[4]))
+                             uploadDate=parts[3] if parts[3] != "NA" else "",
+                             channel=parts[4] if parts[4] != "NA" else "",
+                             channelUrl=parts[5] if parts[5] != "NA" else ""))
     return rows
+
+
+def video_info(video_id):
+    return _rows(_run(["--skip-download", "--print", PRINT_ROW,
+                       f"https://www.youtube.com/watch?v={video_id}"]))[0]
+
+
+def flat_list(url):
+    """Flat listing of a channel tab / playlist / search URL (no downloads)."""
+    return _rows(_run(["--flat-playlist", "--ignore-errors", "--print", PRINT_ROW, url]))
+
+
+def channel_tabs(channel_url):
+    base = channel_url.rstrip("/")
+    for tab in ("/videos", "/streams"):
+        yield base + tab
+    # Playlists the channel curated — these often hold OTHER people's uploads
+    # of the band (a venue's "Soul Society night", a fan's tribute list).
+    try:
+        for pl in _run(["--flat-playlist", "--ignore-errors", "--print", "%(url)s", base + "/playlists"]).splitlines():
+            if "list=" in pl:
+                yield pl.strip()
+    except subprocess.CalledProcessError:
+        pass
 
 
 def slugify(text):
@@ -132,22 +163,24 @@ def slugify(text):
     return re.sub(r"[^a-z0-9]+", "-", (text or "channel").lower()).strip("-") or "channel"
 
 
+def download_one(video_id, outdir):
+    os.makedirs(outdir, exist_ok=True)
+    subprocess.run([
+        "yt-dlp", "-f", VIDEO_FMT, "--merge-output-format", "mp4",
+        "--write-info-json", "--write-thumbnail", "--convert-thumbnails", "jpg",
+        "--download-archive", os.path.join(ARCHIVE_DIR, "downloaded.txt"),
+        "-o", os.path.join(outdir, "%(id)s.%(ext)s"),
+        f"https://www.youtube.com/watch?v={video_id}"], check=False)
+    path = os.path.join(outdir, f"{video_id}.mp4")
+    return os.path.relpath(path, ROOT) if os.path.exists(path) else ""
+
+
 def archive(args):
-    import re
+    import datetime, re
     with open(MANIFEST, encoding="utf-8") as f:
         manifest = json.load(f)
     pattern = re.compile(args.match or DEFAULT_MATCH)
-
-    sources = {}  # channel_url -> channel name
-    for v in manifest["videos"]:
-        try:
-            curl, cname = channel_of(f"https://www.youtube.com/watch?v={v['youtubeId']}")
-            if curl:
-                sources.setdefault(curl, cname)
-        except subprocess.CalledProcessError as e:
-            print(f"   !! could not resolve channel for {v['youtubeId']}: {e.stderr.strip()[:160]}")
-    for extra in manifest.get("archiveSources", []):
-        sources.setdefault(extra, "")
+    seed_ids = [v["youtubeId"] for v in manifest["videos"]]
 
     index = {"generated": "", "sources": [], "videos": []}
     if os.path.exists(ARCHIVE_INDEX):
@@ -155,53 +188,115 @@ def archive(args):
             index = json.load(f)
     known = {x["id"]: x for x in index.get("videos", [])}
 
-    total_match = 0
-    for url, name in sources.items():
-        print(f"\n== source: {name or url}\n   {url}")
+    # ---- 1. Seed videos + their channels are always in (no title filter) ----
+    channels = {}      # channel_url -> {"name":..., "depth": n}
+    found = {}         # video id -> row + provenance
+    print("== resolving the seed videos")
+    for vid in seed_ids:
         try:
-            rows = list_source(url)
-        except subprocess.CalledProcessError as e:
-            print(f"   !! listing failed: {e.stderr.strip()[:200]}")
+            r = video_info(vid)
+        except (subprocess.CalledProcessError, IndexError) as e:
+            print(f"   !! {vid}: could not resolve ({getattr(e, 'stderr', '')[:120]})")
             continue
-        matches = [r for r in rows if pattern.search(r["title"] or "")]
-        print(f"   {len(rows)} videos on channel, {len(matches)} match")
-        total_match += len(matches)
-        if url not in index["sources"]:
-            index["sources"].append(url)
-        chan_slug = slugify(name or matches[0]["channel"] if matches else name)
-        for r in matches:
-            print(f"   - {r['id']}  {r['title']}  [{r['duration']}]")
-            entry = known.get(r["id"], {})
-            entry.update(r, sourceUrl=url, youtubeUrl=f"https://youtu.be/{r['id']}")
-            entry.setdefault("file", "")
-            known[r["id"]] = entry
-            if args.list:
-                continue
-            outdir = os.path.join(ARCHIVE_DIR, chan_slug)
-            os.makedirs(outdir, exist_ok=True)
-            subprocess.run([
-                "yt-dlp",
-                "-f", "bestvideo[ext=mp4][height<=1080]+bestaudio[ext=m4a]/best[ext=mp4]/best",
-                "--merge-output-format", "mp4",
-                "--write-info-json", "--write-thumbnail", "--convert-thumbnails", "jpg",
-                "--download-archive", os.path.join(ARCHIVE_DIR, "downloaded.txt"),
-                "-o", os.path.join(outdir, "%(id)s.%(ext)s"),
-                f"https://www.youtube.com/watch?v={r['id']}"], check=False)
-            if os.path.exists(os.path.join(outdir, f"{r['id']}.mp4")):
-                entry["file"] = os.path.relpath(os.path.join(outdir, f"{r['id']}.mp4"), ROOT)
+        r["via"] = "seed"
+        r["depth"] = 0
+        found[vid] = r
+        print(f"   {vid}  {r['title']}  — {r['channel']}")
+        if r["channelUrl"]:
+            channels.setdefault(r["channelUrl"], {"name": r["channel"], "depth": 0})
+    for extra in manifest.get("archiveSources", []):
+        channels.setdefault(extra, {"name": "", "depth": 0})
 
-    import datetime
+    def consider(row, via, depth):
+        """Keep a row if it matches the band; return True if it is new."""
+        if row["id"] in found:
+            return False
+        if not pattern.search(row["title"] or ""):
+            return False
+        row["via"] = via
+        row["depth"] = depth
+        found[row["id"]] = row
+        return True
+
+    # ---- 2. YouTube search — catches uploads from channels we don't know ----
+    if not args.no_search:
+        for q in manifest.get("archiveSearches") or DEFAULT_SEARCHES:
+            url = f"ytsearch{args.search_limit}:{q}"
+            try:
+                rows = flat_list(url)
+            except subprocess.CalledProcessError as e:
+                print(f"   !! search failed {q!r}: {e.stderr.strip()[:120]}")
+                continue
+            new = sum(consider(r, f"search:{q}", 0) for r in rows)
+            print(f"== search {q!r}: {len(rows)} results, {new} new matches")
+
+    # ---- 3. Crawl channels: videos + streams + curated playlists; then follow
+    #         every matching video to ITS channel, up to --depth levels out. ----
+    crawled = set()
+    while True:
+        todo = [(u, m) for u, m in channels.items() if u not in crawled and m["depth"] <= args.depth]
+        if not todo:
+            break
+        for curl, meta in todo:
+            crawled.add(curl)
+            print(f"\n== channel: {meta['name'] or curl}  (depth {meta['depth']})\n   {curl}")
+            if curl not in index["sources"]:
+                index["sources"].append(curl)
+            for tab in channel_tabs(curl):
+                try:
+                    rows = flat_list(tab)
+                except subprocess.CalledProcessError as e:
+                    print(f"   !! {tab}: {e.stderr.strip()[:120]}")
+                    continue
+                # A seed channel's own uploads are the band's footage even when
+                # the title doesn't say so; other channels must match by title.
+                own = meta["depth"] == 0 and tab.startswith(curl.rstrip("/") + "/")
+                new = 0
+                for r in rows:
+                    if own and r["id"] not in found:
+                        r["via"] = f"channel:{meta['name'] or curl}"
+                        r["depth"] = meta["depth"]
+                        found[r["id"]] = r
+                        new += 1
+                    else:
+                        new += consider(r, f"channel:{meta['name'] or curl}", meta["depth"])
+                print(f"   {tab.split('youtube.com/')[-1][:70]}: {len(rows)} videos, {new} new")
+        # expand: a matching video's uploader becomes a channel one hop out
+        for r in found.values():
+            cu = r.get("channelUrl")
+            if cu and cu not in channels:
+                channels[cu] = {"name": r.get("channel", ""), "depth": r.get("depth", 0) + 1}
+
+    # ---- 4. Catalog + download ----
+    for vid, r in found.items():
+        entry = known.get(vid, {})
+        entry.update({k: r[k] for k in ("id", "title", "duration", "uploadDate", "channel", "channelUrl", "via")})
+        entry["youtubeUrl"] = f"https://youtu.be/{vid}"
+        entry.setdefault("file", "")
+        known[vid] = entry
+    print(f"\n== {len(found)} band videos found across {len(crawled)} channels")
+    for r in sorted(found.values(), key=lambda x: (x.get("channel") or "", x.get("uploadDate") or "")):
+        print(f"   {r['id']}  {r['uploadDate'] or '????-??-??'}  {r['title'][:60]:60}  {r['channel'][:24]}  [{r['via'].split(':')[0]}]")
+
+    if not args.list:
+        for vid, entry in known.items():
+            if entry.get("file") and os.path.exists(os.path.join(ROOT, entry["file"])):
+                continue
+            outdir = os.path.join(ARCHIVE_DIR, slugify(entry.get("channel")))
+            print(f"\n-- downloading {vid}  {entry['title'][:60]}")
+            entry["file"] = download_one(vid, outdir) or entry.get("file", "")
+
     index["generated"] = datetime.date.today().isoformat()
-    index["videos"] = sorted(known.values(), key=lambda x: (x.get("uploadDate") or "", x["id"]))
+    index["match"] = pattern.pattern
+    index["videos"] = sorted(known.values(), key=lambda x: (x.get("channel") or "", x.get("uploadDate") or "", x["id"]))
     os.makedirs(ARCHIVE_DIR, exist_ok=True)
     with open(ARCHIVE_INDEX, "w", encoding="utf-8") as f:
         json.dump(index, f, indent=2, ensure_ascii=False)
         f.write("\n")
     have = sum(1 for x in index["videos"] if x.get("file"))
-    print(f"\nCatalog: {len(index['videos'])} matching videos across {len(sources)} sources, "
-          f"{have} downloaded -> Video/archive/index.json")
+    print(f"\nCatalog: {len(index['videos'])} videos, {have} downloaded -> Video/archive/index.json")
     if args.list:
-        print("List-only run. Re-run without --list to download.")
+        print("List-only run. Review Video/archive/index.json, then re-run without --list to download.")
 
 
 def main():
@@ -212,6 +307,10 @@ def main():
     ar = sub.add_parser("archive", help="capture every matching video on the source channels")
     ar.add_argument("--list", action="store_true", help="enumerate only, download nothing")
     ar.add_argument("--match", help=f"title regex (default: {DEFAULT_MATCH!r}); use '.*' for all")
+    ar.add_argument("--depth", type=int, default=1,
+                    help="how many channel hops to follow from a matching video (default 1; 0 = seed channels only)")
+    ar.add_argument("--search-limit", type=int, default=100, help="results per YouTube search query (default 100)")
+    ar.add_argument("--no-search", action="store_true", help="skip the YouTube search sweep")
     args = ap.parse_args()
     need("yt-dlp")
     if args.cmd == "archive":

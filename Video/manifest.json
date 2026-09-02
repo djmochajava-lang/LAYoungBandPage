@@ -1,7 +1,18 @@
 {
-  "_readme": "Live-performance video inventory. Seeded by hand from the six YouTube links sent to Cheryl (2026-09-02); tools/capture-videos.py fills title/duration/uploadDate/poster from YouTube metadata and downloads the MP4s to Video/live/ (gitignored). Upload the MP4s to the Supabase 'artist-video' bucket so `src` resolves; until then pages/videos.html falls back to the YouTube embed automatically. ARCHIVE: `python3 tools/capture-videos.py archive --list` enumerates every L.A. Young clip on the channels behind these links (plus any URLs in archiveSources); drop --list to download them all to Video/archive/.",
+  "_readme": "Live-performance video inventory. Seeded by hand from the six YouTube links sent to Cheryl (2026-09-02); tools/capture-videos.py fills title/duration/uploadDate/poster from YouTube metadata and downloads the MP4s to Video/live/ (gitignored). Upload the MP4s to the Supabase 'artist-video' bucket so `src` resolves; until then pages/videos.html falls back to the YouTube embed automatically. ARCHIVE: `python3 tools/capture-videos.py archive --list` enumerates every video on the channels behind these links, their curated playlists, a YouTube search sweep (archiveSearches), and one channel-hop out from every match (plus any URLs in archiveSources); drop --list to download them all to Video/archive/.",
   "baseUrl": "https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-video/",
   "archiveSources": [],
+  "archiveSearches": [
+    "\"L.A. Young\" singer",
+    "\"LA Young\" soul",
+    "\"LA Young\" jazz",
+    "\"LA Young\" band",
+    "\"LA Young\" \"Soul Society\"",
+    "\"LA Young\" \"Unusual Suspects\"",
+    "\"LA Young\" Phyllis Hyman",
+    "\"LA Young\" Norman Connors",
+    "\"LA Young\" Baltimore"
+  ],
   "videos": [
     {
       "slug": "live-01",
