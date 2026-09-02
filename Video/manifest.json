@@ -1,0 +1,61 @@
+{
+  "_readme": "Live-performance video inventory. Seeded by hand from the six YouTube links sent to Cheryl (2026-09-02); tools/capture-videos.py fills title/duration/uploadDate/poster from YouTube metadata and downloads the MP4s to Video/live/ (gitignored). Upload the MP4s to the Supabase 'artist-video' bucket so `src` resolves; until then pages/videos.html falls back to the YouTube embed automatically. ARCHIVE: `python3 tools/capture-videos.py archive --list` enumerates every L.A. Young clip on the channels behind these links (plus any URLs in archiveSources); drop --list to download them all to Video/archive/.",
+  "baseUrl": "https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-video/",
+  "archiveSources": [],
+  "videos": [
+    {
+      "slug": "live-01",
+      "youtubeId": "dpMbuFKV76o",
+      "title": "L.A. Young Live",
+      "duration": "",
+      "uploadDate": "",
+      "poster": "",
+      "src": ""
+    },
+    {
+      "slug": "live-02",
+      "youtubeId": "WTc8AsnGPNs",
+      "title": "L.A. Young Live",
+      "duration": "",
+      "uploadDate": "",
+      "poster": "",
+      "src": ""
+    },
+    {
+      "slug": "live-03",
+      "youtubeId": "ZMbpuznBY3E",
+      "title": "L.A. Young Live",
+      "duration": "",
+      "uploadDate": "",
+      "poster": "",
+      "src": ""
+    },
+    {
+      "slug": "live-04",
+      "youtubeId": "bFXQg1ClGWM",
+      "title": "L.A. Young Live",
+      "duration": "",
+      "uploadDate": "",
+      "poster": "",
+      "src": ""
+    },
+    {
+      "slug": "live-05",
+      "youtubeId": "qTFmBHpmluE",
+      "title": "L.A. Young Live",
+      "duration": "",
+      "uploadDate": "",
+      "poster": "",
+      "src": ""
+    },
+    {
+      "slug": "live-06",
+      "youtubeId": "LUWoG3U4wZU",
+      "title": "L.A. Young Live",
+      "duration": "",
+      "uploadDate": "",
+      "poster": "",
+      "src": ""
+    }
+  ]
+}

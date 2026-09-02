@@ -39,6 +39,10 @@ Thumbs.db
 # Project-specific
 project-code-dump.txt
 Video/big/
+# Captured YouTube masters (tools/capture-videos.py) — hosted on Supabase artist-video, not in git
+Video/live/
+Video/archive/*
+!Video/archive/index.json
 nul
 # Cover masters are served from isolated storage, not this repo.
 Media/*.mp3

@@ -98,8 +98,83 @@
   line-height: 1.5;
 }
 
+/* Live-performance inventory (Video/manifest.json) — self-hosted first,
+   YouTube embed only as the fallback while a file is not uploaded yet. */
+.videos-section .videos-live { margin-top: var(--spacing-xl, 3rem); }
+.videos-section .videos-live h3 {
+  color: var(--color-primary);
+  font-family: var(--font-primary);
+  text-align: center;
+  margin-bottom: 0.4rem;
+}
+.videos-section .videos-live-sub {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.95rem;
+  margin-bottom: var(--spacing-md, 1.5rem);
+}
+.videos-section .videos-live-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-lg, 2rem) var(--spacing-md, 1.5rem);
+  max-width: 900px;
+  margin: 0 auto;
+}
+.videos-section .videos-live-grid .video-item h3 {
+  font-size: 1.05rem;
+  margin: 0.75rem 0 0;
+}
+.videos-section .videos-live-grid .video-meta {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+.videos-section .videos-live-grid .video-frame { aspect-ratio: 16 / 9; }
+.videos-section .videos-live-grid .video-frame .video-player,
+.videos-section .videos-live-grid .video-frame iframe {
+  width: 100%;
+  height: 100%;
+  display: block;
+  border: 0;
+  border-radius: 9px;
+  position: relative;
+  background: #000;
+  object-fit: cover;
+}
+.videos-section .yt-lite {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 9px;
+  background: #000 center / cover no-repeat;
+  cursor: pointer;
+  display: block;
+}
+.videos-section .yt-lite::after {
+  content: '\25B6';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 2.2rem;
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.25);
+  transition: background 0.2s ease;
+}
+.videos-section .yt-lite:hover::after,
+.videos-section .yt-lite:focus-visible::after { background: rgba(0, 0, 0, 0.05); }
+.videos-section .videos-live-status {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  margin-top: var(--spacing-md, 1.5rem);
+}
 @media (max-width: 768px) {
   .videos-section .videos-more-grid { grid-template-columns: 1fr; }
+  .videos-section .videos-live-grid { grid-template-columns: 1fr; }
   .videos-section .video-item--portrait .video-frame { max-width: 340px; }
 }
 </style>
@@ -144,6 +219,16 @@
 
       </div>
 
+      <!-- Live performances — rendered from Video/manifest.json (our own
+           asset inventory; see tools/capture-videos.py). Self-hosted MP4
+           first; YouTube embed is only the fallback until a file lands. -->
+      <div class="videos-live scroll-reveal" id="videos-live">
+        <h3>Live Performances</h3>
+        <p class="videos-live-sub">L.A. Young &amp; Soul Society &mdash; live band, live vocals, no tracks.</p>
+        <div class="videos-live-grid" id="videos-live-grid"></div>
+        <p class="videos-live-status" id="videos-live-status" hidden></p>
+      </div>
+
       <!-- More to watch & hear — cross-links, not duplicate embeds -->
       <div class="videos-more">
         <h3>More to Watch &amp; Hear</h3>
@@ -181,6 +266,97 @@
     </footer>
   </div>
 </section>
+
+<script>
+/**
+ * Live-performance inventory renderer (runs via page-loader executeInlineScripts).
+ * Source of truth: Video/manifest.json. For each entry:
+ *   - src set  -> <video> from our own hosting; if it 404s, fall back to YouTube
+ *   - src empty -> click-to-play YouTube (privacy-enhanced domain), thumbnail only
+ */
+(function () {
+  'use strict';
+  var grid = document.getElementById('videos-live-grid');
+  var status = document.getElementById('videos-live-status');
+  if (!grid || grid.dataset.rendered) return;
+  grid.dataset.rendered = '1';
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text) n.textContent = text;
+    return n;
+  }
+
+  function ytIframe(id, title) {
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0';
+    f.title = title;
+    f.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+    f.allowFullscreen = true;
+    f.loading = 'lazy';
+    return f;
+  }
+
+  function ytLite(v) {
+    var b = el('button', 'yt-lite');
+    b.type = 'button';
+    b.setAttribute('aria-label', 'Play ' + v.title);
+    var thumb = v.poster || ('https://i.ytimg.com/vi/' + v.youtubeId + '/hqdefault.jpg');
+    b.style.backgroundImage = 'url("' + thumb + '")';
+    b.addEventListener('click', function () {
+      b.replaceWith(ytIframe(v.youtubeId, v.title));
+    });
+    return b;
+  }
+
+  function hostedVideo(v) {
+    var vid = document.createElement('video');
+    vid.className = 'video-player';
+    vid.src = v.src;
+    if (v.poster) vid.poster = v.poster;
+    vid.preload = 'metadata';
+    vid.controls = true;
+    vid.setAttribute('playsinline', '');
+    vid.addEventListener('error', function () {
+      // File not uploaded yet (or moved) — keep the pitch working.
+      if (v.youtubeId) vid.replaceWith(ytLite(v));
+    }, { once: true });
+    vid.addEventListener('play', function () {
+      if (window.BackgroundMusic && typeof BackgroundMusic.pause === 'function') BackgroundMusic.pause();
+    });
+    return vid;
+  }
+
+  function card(v) {
+    var item = el('div', 'video-item');
+    var frame = el('div', 'video-frame');
+    frame.appendChild(v.src ? hostedVideo(v) : ytLite(v));
+    item.appendChild(frame);
+    item.appendChild(el('h3', null, v.title || 'L.A. Young Live'));
+    var meta = [];
+    if (v.uploadDate) meta.push(v.uploadDate.slice(0, 4));
+    if (v.duration) meta.push(v.duration.replace('PT', '').replace('H', 'h ').replace('M', 'm ').replace('S', 's'));
+    if (meta.length) item.appendChild(el('p', 'video-meta', meta.join(' · ')));
+    return item;
+  }
+
+  fetch('Video/manifest.json', { cache: 'no-cache' })
+    .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function (m) {
+      var list = (m && m.videos) || [];
+      list.forEach(function (v) { grid.appendChild(card(v)); });
+      var hosted = list.filter(function (v) { return v.src; }).length;
+      console.log('🎬 Videos: ' + list.length + ' live clips, ' + hosted + ' self-hosted');
+      if (!list.length) { status.textContent = 'Live clips coming soon.'; status.hidden = false; }
+    })
+    .catch(function (e) {
+      console.warn('🎬 Videos: manifest unavailable', e);
+      status.textContent = 'Live clips coming soon.';
+      status.hidden = false;
+    });
+})();
+</script>
 
 <!-- JSON-LD Structured Data — VideoObject (idiom: projects.html / GEO-04) -->
 
