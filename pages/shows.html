@@ -1443,7 +1443,7 @@
              confirmation with the venue; no ticket link until their on-sale. -->
         <div class="event-card scroll-reveal">
           <span class="community-ribbon">Tentative</span>
-          <img class="event-card-img" src="images/artist/tribute-stage-textfree-1600x900.jpg" alt="L.A. Young&rsquo;s Phyllis Hyman Tribute" loading="lazy">
+          <img class="event-card-img" src="images/artist/cw-chicago-tribute-nov3-card.jpg" alt="L.A. Young&rsquo;s Phyllis Hyman Tribute" loading="lazy">
           <h3 class="event-card-name">L.A. Young&rsquo;s Phyllis Hyman Tribute</h3>
           <div class="event-card-date">Tuesday, November 3, 2026 &middot; City Winery Chicago <span style="opacity:.75">(date being finalized)</span></div>
           <p class="event-card-desc">The Hyman songbook, sung in the range it was written for &mdash; L.A. Young&rsquo;s acclaimed tribute comes to Chicago. <span style="display:block; margin-top:.5rem; font-size:.72rem; opacity:.65">An independent tribute production, not affiliated with or endorsed by the Estate of Phyllis Hyman.</span></p>
@@ -1454,7 +1454,7 @@
              11/5; venue confirmation in progress; no ticket link until on-sale. -->
         <div class="event-card scroll-reveal">
           <span class="community-ribbon">Tentative</span>
-          <img class="event-card-img" src="images/artist/tribute-stage-textfree-1600x900.jpg" alt="L.A. Young&rsquo;s Phyllis Hyman Tribute" loading="lazy">
+          <img class="event-card-img" src="images/artist/cw-stlouis-tribute-nov5-card.jpg" alt="L.A. Young&rsquo;s Phyllis Hyman Tribute" loading="lazy">
           <h3 class="event-card-name">L.A. Young&rsquo;s Phyllis Hyman Tribute</h3>
           <div class="event-card-date">Thursday, November 5, 2026 &middot; City Winery St. Louis <span style="opacity:.75">(date being finalized)</span></div>
           <p class="event-card-desc">The Hyman songbook, sung in the range it was written for &mdash; one night in St. Louis. <span style="display:block; margin-top:.5rem; font-size:.72rem; opacity:.65">An independent tribute production, not affiliated with or endorsed by the Estate of Phyllis Hyman.</span></p>
@@ -1493,7 +1493,7 @@
              12/20; offer sheet pending; no ticket link until on-sale. -->
         <div class="event-card scroll-reveal">
           <span class="community-ribbon">Tentative</span>
-          <img class="event-card-img" src="images/artist/tribute-stage-textfree-1600x900.jpg" alt="L.A. Young&rsquo;s Phyllis Hyman Tribute" loading="lazy">
+          <img class="event-card-img" src="images/artist/cw-pittsburgh-tribute-dec20-card.jpg" alt="L.A. Young&rsquo;s Phyllis Hyman Tribute" loading="lazy">
           <h3 class="event-card-name">L.A. Young&rsquo;s Phyllis Hyman Tribute</h3>
           <div class="event-card-date">Sunday, December 20, 2026 &middot; City Winery Pittsburgh &middot; Brunch <span style="opacity:.75">&middot; doors 11am, show 12pm</span></div>
           <p class="event-card-desc">A holiday-season brunch edition of the Hyman songbook &mdash; L.A. Young&rsquo;s acclaimed tribute comes to Pittsburgh. <span style="display:block; margin-top:.5rem; font-size:.72rem; opacity:.65">An independent tribute production, not affiliated with or endorsed by the Estate of Phyllis Hyman.</span></p>
@@ -2435,7 +2435,7 @@
    * on re-visit, THEN refresh from the network. A failed refresh keeps the
    * cached cards silently; the "no shows" copy is reserved for a genuine
    * true-zero SUCCESS. */
-  var SHOWS_CACHE_KEY = 'layoung-shows-rows';
+  var SHOWS_CACHE_KEY = 'layoung-shows-rows-v2'; // v2 2026-09-15: orphaned stale caches that replayed the removed demo events
 
   function readCachedRows() {
     try {
@@ -2460,6 +2460,9 @@
     // (source rows to be unpublished from the SoR via the BM dashboard separately).
     var events = (rows || [])
       .filter(function (row) { return !/\(DEMO\b/i.test(row.event_name || ''); })
+      // 2026-09-15: never render non-live statuses — a cancelled/completed/draft
+      // row lingering in the cache is not a show a fan can attend.
+      .filter(function (row) { return ['announced','on_sale','selling_fast','almost_sold_out','sold_out'].indexOf(String(row.status || '')) !== -1; })
       .map(mapReadmodelEvent);
     _events = events;
     if (!events.length) return 0;
