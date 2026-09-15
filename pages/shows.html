@@ -123,6 +123,156 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
+/* ── Community-appearance card (Feast of Sharing, CEO 2026-09-15) ────
+   A donated performance is not a sale: gold-framed, "Giving Back" ribbon,
+   no price, no buttons. Static and DATELESS BY DESIGN — "November 2026"
+   stays truthful until the presenter announces the day; never invent one.
+   Refined 2026-09-15 (Graphic Artist): reads as FAMILY to the ticket cards
+   (.event-card base) but ELEVATED — a tighter photo crop (trims the dead
+   ceiling/floor in the archival shot so the Safeway banner + band dominate),
+   a legacy/scale/generosity stat strip a venue buyer can read in three
+   seconds, and a warmer gold frame. */
+.community-card {
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  box-shadow: 0 0 26px rgba(255, 215, 0, 0.1);
+  background: linear-gradient(180deg, rgba(255, 215, 0, 0.05), rgba(255, 255, 255, 0.035) 45%);
+}
+.community-card:hover { border-color: rgba(255, 215, 0, 0.8); }
+.community-ribbon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.24), rgba(255, 215, 0, 0.1));
+  color: #ffe9a8;
+  border: 1px solid rgba(255, 215, 0, 0.55);
+  border-radius: 20px;
+  padding: 0.22rem 0.7rem 0.22rem 0.6rem;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.community-ribbon::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+/* Photo stage — the credential lives here (the Safeway banner behind the
+   band), so the crop trims the archival phone photo's dead ceiling/floor
+   space and a light unifying grade replaces the flat mixed venue lighting.
+   aspect-ratio + object-fit:cover keeps it honest (tighter frame only, no
+   invented content) at every card width from 320px up. */
+.community-card-media {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 8px;
+  margin-bottom: 1.1rem;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+}
+.community-card-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  object-fit: cover;
+  object-position: 50% 34%;
+  filter: contrast(1.08) saturate(1.05) brightness(0.99);
+}
+.community-card-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 26%, rgba(0,0,0,0) 68%, rgba(0,0,0,0.34) 100%),
+    radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.28) 100%);
+  pointer-events: none;
+}
+.community-card .event-card-kicker { color: rgba(255, 215, 0, 0.65); }
+.community-card .event-card-name { font-size: 1.4rem; letter-spacing: 0.01em; }
+.community-card .event-card-date {
+  text-transform: none;
+  font-size: 0.86rem;
+  letter-spacing: 0.01em;
+}
+/* Fine gold divider between the identity block (title/date) and the stat
+   strip — the "distinguishing flourish" that sets this card apart from the
+   plain ticket cards without adding clutter. */
+.community-flourish {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.85rem 0 1rem;
+}
+.community-flourish::before,
+.community-flourish::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.4), transparent);
+}
+.community-flourish-mark { color: rgba(255, 215, 0, 0.7); font-size: 0.6rem; }
+/* Legacy / scale / generosity — what a venue buyer needs in three seconds,
+   pulled forward from the paragraph below into a skimmable strip. Purely
+   decorative reinforcement (aria-hidden) — the paragraph remains the
+   accessible source of the same facts for assistive tech. */
+.community-stats {
+  display: flex;
+  align-items: stretch;
+  gap: 0.35rem;
+  margin: 0 0 1.1rem;
+}
+/* min-width:0 lets a flex item shrink below its content size — required for
+   overflow-wrap below to actually engage instead of forcing the row wider
+   than the card (the 320px hard floor: a single long word must never push
+   the column past its share and clip/overflow). */
+.community-stat { flex: 1 1 0; min-width: 0; text-align: center; }
+.community-stat-num {
+  display: block;
+  font-family: var(--font-primary, 'Playfair Display', serif);
+  font-size: 1.15rem;
+  line-height: 1.2;
+  color: var(--color-primary, #ffd700);
+  overflow-wrap: anywhere;
+}
+.community-stat-label {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.6rem;
+  line-height: 1.35;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.55);
+  overflow-wrap: anywhere;
+}
+.community-stat-div { width: 1px; align-self: stretch; background: rgba(255, 215, 0, 0.2); flex-shrink: 0; }
+.community-card .event-summary-row { justify-content: center; border-color: rgba(255, 215, 0, 0.22); }
+/* Narrow-phone floor (320px, e.g. iPhone SE): the three-column stat strip
+   has ~56px per column once card padding + dividers are subtracted — shrink
+   type a step further here so it stays comfortably inside each column. */
+@media (max-width: 360px) {
+  .community-stat-num { font-size: 0.88rem; }
+  .community-stat-label { font-size: 0.56rem; letter-spacing: 0.02em; }
+  .community-stats { gap: 0.25rem; }
+}
+.community-note {
+  color: var(--color-primary, #ffd700);
+  font-family: var(--font-primary, 'Playfair Display', serif);
+  font-style: italic;
+  font-size: 0.92rem;
+  text-align: center;
+}
+
 .event-card:hover {
   border-color: var(--color-primary, #ffd700);
   transform: translateY(-2px);
@@ -1271,6 +1421,52 @@
           usually a brief network hiccup, and the shows are still there.
         </p>
         <button type="button" id="ticket-retry" class="btn btn-primary btn-large">Retry</button>
+      </div>
+
+      <!-- Community appearance (STATIC, CEO 2026-09-15): the Feast of Sharing
+           card. Not readmodel-driven — a donated performance has no ticket
+           event. Dateless by design until the presenter announces the day.
+           Photo crop + stat strip refined 2026-09-15 (Graphic Artist) to lead
+           with legacy / scale / generosity — see the .community-* CSS block. -->
+      <div class="ticket-events-grid" id="community-appearances">
+        <!-- Keystone Korner Baltimore — Wed Oct 7, 2026 (STATIC: venue sells the
+             tickets; link goes to the venue. Date is contractual and public.) -->
+        <div class="event-card scroll-reveal">
+          <img class="event-card-img" src="images/artist/keystone-korner-oct7-2026-card.jpg" alt="L.A. Young &amp; Soul Society — Keystone Korner Baltimore, Wednesday October 7, 2026" loading="lazy">
+          <h3 class="event-card-name">L.A. Young &amp; Soul Society</h3>
+          <div class="event-card-date">Wednesday, October 7, 2026 &middot; Keystone Korner Baltimore</div>
+          <p class="event-card-desc">One night in Baltimore&rsquo;s storied listening room &mdash; soul, R&amp;B, jazz and blues, all live, nothing on tape &mdash; as L.A. Young returns to the city she has played since 2007.</p>
+          <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price event-summary-ext">Tickets via Keystone Korner Baltimore</span></div></div>
+          <div class="event-card-actions"><a class="btn btn-primary btn-large" href="https://www.keystonekornerbaltimore.com/" target="_blank" rel="noopener">Get Tickets</a></div>
+        </div>
+        <div class="event-card community-card scroll-reveal">
+          <span class="community-ribbon">Giving Back</span>
+          <div class="community-card-media">
+            <img class="event-card-img" src="images/artist/FeashOfSharing.jpg" alt="L.A. Young &amp; Soul Society performing on the Safeway Feast of Sharing stage at the Walter E. Washington Convention Center" loading="lazy">
+          </div>
+          <div class="event-card-kicker">A Community Appearance</div>
+          <h3 class="event-card-name">27th Annual Safeway Feast of Sharing</h3>
+          <div class="event-card-date">November 2026 &middot; Walter E. Washington Convention Center, Washington, DC</div>
+          <div class="community-flourish" aria-hidden="true"><span class="community-flourish-mark">&#9670;</span></div>
+          <div class="community-stats" aria-hidden="true">
+            <div class="community-stat">
+              <span class="community-stat-num">5</span>
+              <span class="community-stat-label">Live Editions<br>2017&ndash;2023</span>
+            </div>
+            <div class="community-stat-div"></div>
+            <div class="community-stat">
+              <span class="community-stat-num">5,000</span>
+              <span class="community-stat-label">Neighbors Served</span>
+            </div>
+            <div class="community-stat-div"></div>
+            <div class="community-stat">
+              <span class="community-stat-num">Donated</span>
+              <span class="community-stat-label">Full-Band Set</span>
+            </div>
+          </div>
+          <p class="event-card-desc">L.A. Young &amp; Soul Society&trade; return to the Feast &mdash; donating the full band&rsquo;s performance as Safeway and Events DC serve a Thanksgiving meal of hope to 5,000 D.C. neighbors. The band was the Feast&rsquo;s named entertainment for five straight live editions, 2017&ndash;2023.</p>
+          <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price community-note">A donated performance &mdash; free community event, no tickets</span></div></div>
+        </div>
       </div>
 
       <!-- The old page-level #notify-zone is RETIRED (EO brief §3): replaced by
