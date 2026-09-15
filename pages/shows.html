@@ -1437,7 +1437,7 @@
           <div class="event-card-date">Wednesday, October 7, 2026 &middot; Keystone Korner Baltimore</div>
           <p class="event-card-desc">One night in Baltimore&rsquo;s storied listening room &mdash; soul, R&amp;B, jazz and blues, all live, nothing on tape &mdash; as L.A. Young returns to the city she has played since 2007.</p>
           <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price event-summary-ext">Tickets via Keystone Korner Baltimore</span></div></div>
-          <div class="event-card-actions"><a class="btn btn-primary btn-large" href="https://www.keystonekornerbaltimore.com/" target="_blank" rel="noopener">Get Tickets</a></div>
+          <div class="event-card-actions"><a class="btn btn-primary btn-large" href="https://www.keystonekornerbaltimore.com/" target="_blank" rel="noopener">Get Tickets</a><button type="button" class="tier-btn tier-btn-notify lay-notify-btn" data-notify-id="show-keystone-20261007" data-notify-name="L.A. Young &amp; Soul Society — Keystone Korner" data-notify-state="on_sale" data-notify-wants="reminder">Remind Me</button></div>
         </div>
         <!-- City Winery Chicago — TENTATIVE (STATIC, 2026-09-15): date under
              confirmation with the venue; no ticket link until their on-sale. -->
@@ -1448,6 +1448,18 @@
           <div class="event-card-date">Tuesday, November 3, 2026 &middot; City Winery Chicago <span style="opacity:.75">(date being finalized)</span></div>
           <p class="event-card-desc">The Hyman songbook, sung in the range it was written for &mdash; L.A. Young&rsquo;s acclaimed tribute comes to Chicago. <span style="display:block; margin-top:.5rem; font-size:.72rem; opacity:.65">An independent tribute production, not affiliated with or endorsed by the Estate of Phyllis Hyman.</span></p>
           <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price">Tickets on sale soon at City Winery Chicago</span></div></div>
+          <div class="event-card-actions"><button type="button" class="tier-btn tier-btn-notify lay-notify-btn" data-notify-id="show-cwchi-20261103" data-notify-name="L.A. Young&rsquo;s Phyllis Hyman Tribute — City Winery Chicago" data-notify-state="announced" data-notify-wants="onsale">Notify Me</button></div>
+        </div>
+        <!-- City Winery St. Louis — TENTATIVE (STATIC, 2026-09-15): accepted
+             11/5; venue confirmation in progress; no ticket link until on-sale. -->
+        <div class="event-card scroll-reveal">
+          <span class="community-ribbon">Tentative</span>
+          <img class="event-card-img" src="images/artist/tribute-stage-textfree-1600x900.jpg" alt="L.A. Young&rsquo;s Phyllis Hyman Tribute" loading="lazy">
+          <h3 class="event-card-name">L.A. Young&rsquo;s Phyllis Hyman Tribute</h3>
+          <div class="event-card-date">Thursday, November 5, 2026 &middot; City Winery St. Louis <span style="opacity:.75">(date being finalized)</span></div>
+          <p class="event-card-desc">The Hyman songbook, sung in the range it was written for &mdash; one night in St. Louis. <span style="display:block; margin-top:.5rem; font-size:.72rem; opacity:.65">An independent tribute production, not affiliated with or endorsed by the Estate of Phyllis Hyman.</span></p>
+          <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price">Tickets on sale soon at City Winery St. Louis</span></div></div>
+          <div class="event-card-actions"><button type="button" class="tier-btn tier-btn-notify lay-notify-btn" data-notify-id="show-cwstl-20261105" data-notify-name="L.A. Young&rsquo;s Phyllis Hyman Tribute — City Winery St. Louis" data-notify-state="announced" data-notify-wants="onsale">Notify Me</button></div>
         </div>
         <div class="event-card community-card scroll-reveal">
           <span class="community-ribbon">Giving Back</span>
@@ -1476,6 +1488,17 @@
           </div>
           <p class="event-card-desc">L.A. Young &amp; Soul Society&trade; return to the Feast &mdash; donating the full band&rsquo;s performance as Safeway and Events DC serve a Thanksgiving meal of hope to 5,000 D.C. neighbors. The band was the Feast&rsquo;s named entertainment for five straight live editions, 2017&ndash;2023.</p>
           <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price community-note">A donated performance &mdash; free community event, no tickets</span></div></div>
+        </div>
+        <!-- City Winery Pittsburgh — brunch (STATIC, 2026-09-15): CEO picked
+             12/20; offer sheet pending; no ticket link until on-sale. -->
+        <div class="event-card scroll-reveal">
+          <span class="community-ribbon">Tentative</span>
+          <img class="event-card-img" src="images/artist/tribute-stage-textfree-1600x900.jpg" alt="L.A. Young&rsquo;s Phyllis Hyman Tribute" loading="lazy">
+          <h3 class="event-card-name">L.A. Young&rsquo;s Phyllis Hyman Tribute</h3>
+          <div class="event-card-date">Sunday, December 20, 2026 &middot; City Winery Pittsburgh &middot; Brunch <span style="opacity:.75">&middot; doors 11am, show 12pm</span></div>
+          <p class="event-card-desc">A holiday-season brunch edition of the Hyman songbook &mdash; L.A. Young&rsquo;s acclaimed tribute comes to Pittsburgh. <span style="display:block; margin-top:.5rem; font-size:.72rem; opacity:.65">An independent tribute production, not affiliated with or endorsed by the Estate of Phyllis Hyman.</span></p>
+          <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price">Tickets on sale soon at City Winery Pittsburgh</span></div></div>
+          <div class="event-card-actions"><button type="button" class="tier-btn tier-btn-notify lay-notify-btn" data-notify-id="show-cwpgh-20261220" data-notify-name="L.A. Young&rsquo;s Phyllis Hyman Tribute — City Winery Pittsburgh" data-notify-state="announced" data-notify-wants="onsale">Notify Me</button></div>
         </div>
       </div>
 
@@ -4416,6 +4439,10 @@
   function boot() {
     readInviteCode(); // #shows?invite=CODE via the router's hash-query stash
     initRetry();      // wire the transient-trouble Retry control (once)
+    // Static tour cards (Keystone/CW/Feast) carry their own Notify buttons —
+    // wire them once at boot, independent of the readmodel fetch.
+    var staticGrid = $('community-appearances');
+    if (staticGrid) { LayNotify.wire(staticGrid); LayNotify.applyConfirmed(staticGrid); }
     loadEvents();
     initRetrieve();
     wireOverlayControls();
