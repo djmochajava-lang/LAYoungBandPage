@@ -1436,8 +1436,8 @@
           <h3 class="event-card-name">L.A. Young &amp; Soul Society</h3>
           <div class="event-card-date">Wednesday, October 7, 2026 &middot; Keystone Korner Baltimore</div>
           <p class="event-card-desc">One night in Baltimore&rsquo;s storied listening room &mdash; soul, R&amp;B, jazz and blues, all live, nothing on tape &mdash; as L.A. Young returns to the city she has played since 2007.</p>
-          <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price event-summary-ext">Tickets via Keystone Korner Baltimore</span></div></div>
-          <div class="event-card-actions"><a class="btn btn-primary btn-large" href="https://www.keystonekornerbaltimore.com/" target="_blank" rel="noopener">Get Tickets</a><button type="button" class="tier-btn tier-btn-notify lay-notify-btn" data-notify-id="show-keystone-20261007" data-notify-name="L.A. Young &amp; Soul Society — Keystone Korner" data-notify-state="on_sale" data-notify-wants="reminder">Remind Me</button></div>
+          <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price event-summary-ext">Tickets on sale now &middot; Keystone Korner box office</span></div></div>
+          <div class="event-card-actions"><button type="button" class="btn btn-primary btn-large lay-ticketgate-btn" data-notify-id="show-keystone-20261007" data-notify-name="L.A. Young &amp; Soul Society — Keystone Korner" data-ticket-url="https://www.instantseats.com/?fuseaction=home.artist&amp;VenueID=514&amp;artistid=39426">Get Tickets</button></div>
         </div>
         <!-- City Winery Chicago — TENTATIVE (STATIC, 2026-09-15): date under
              confirmation with the venue; no ticket link until their on-sale. -->
@@ -4186,7 +4186,8 @@
       onsale:        { title: 'Get on-sale alerts', body: 'Get notified the moment tickets for this show go on sale.',              cta: 'Notify me' },
       reminder:      { title: 'Set a reminder',     body: 'Remind me before this show — and alert me if tickets start running low.', cta: 'Remind me' },
       waitlist:      { title: 'Join the waitlist',  body: "Join the waitlist — we'll email you if tickets open up for this show.",   cta: 'Join waitlist' },
-      'future-show': { title: 'Be first to know',   body: "We'll email you the moment L.A. Young announces new shows and tickets go on sale.", cta: 'Notify me' }
+      'future-show': { title: 'Be first to know',   body: "We'll email you the moment L.A. Young announces new shows and tickets go on sale.", cta: 'Notify me' },
+      tickets:       { title: 'Get your tickets',   body: "Drop your email and we'll take you straight to the box office — and keep you posted on this show.", cta: 'Continue to tickets' }
     };
 
     var sheet = null, tsWidgetId = null, tsPromise = null;
@@ -4259,7 +4260,11 @@
     function open(ds) {
       if (!ds) return;
       var scopeKey = ds.notifyId || 'future-show';   // generic (§1) has no event id
-      if (isConfirmed(scopeKey)) return;              // already signed up for THIS scope
+      if (isConfirmed(scopeKey)) {
+        // Ticket gate: an already-captured fan goes straight to the box office.
+        if (ds.ticketUrl) { window.location.href = ds.ticketUrl; return; }
+        return;
+      }
       if (sheet) close();                             // one sheet at a time
       var wants = ds.notifyWants || 'onsale';
       var copy  = COPY[wants] || COPY.onsale;
@@ -4284,6 +4289,7 @@
             '<p class="lay-notify-consent">' + escHtml(CONSENT) + '</p>' +
             '<p class="lay-notify-status" role="status" aria-live="polite"></p>' +
             '<button type="submit" class="btn btn-primary lay-notify-submit">' + escHtml(copy.cta) + '</button>' +
+            (ds.ticketUrl ? '<p class="lay-notify-skip"><a href="' + escHtml(ds.ticketUrl) + '" rel="noopener">No thanks — take me straight to tickets &rarr;</a></p>' : '') +
           '</form>' +
         '</div>';
       document.body.appendChild(sheet);
@@ -4373,6 +4379,13 @@
           if (typeof FanPoints !== 'undefined') {
             try { FanPoints.award('activity:email-signup', 20, 'Joined the Fam'); } catch (e) {}
           }
+          if (ds.ticketUrl) {
+            // Two-step ticket gate (owner 2026-09-16): capture first, then hand
+            // the fan to the venue's box office. Same tab — it's a purchase.
+            setStatus(statusEl, "You're set — heading to the box office…", 'ok');
+            setTimeout(function () { window.location.href = ds.ticketUrl; }, 700);
+            return;
+          }
           setStatus(statusEl, "You're all set — we'll email you.", 'ok');
           setTimeout(close, 1100);
         }).catch(function (err) {
@@ -4392,6 +4405,24 @@
         (container || document).querySelectorAll('.lay-notify-btn').forEach(function (btn) {
           var id = btn.getAttribute('data-notify-id');
           if (id && isConfirmed(id)) swapToConfirmed(id);
+        });
+      },
+      // Ticket-gate buttons (owner 2026-09-16): capture-then-redirect. A fan
+      // already captured for this show's scope skips the sheet entirely.
+      wireTicketGates: function (container) {
+        (container || document).querySelectorAll('.lay-ticketgate-btn').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var url = btn.getAttribute('data-ticket-url');
+            var id  = btn.getAttribute('data-notify-id');
+            if (id && isConfirmed(id)) { window.location.href = url; return; }
+            open({
+              notifyId: id,
+              notifyName: btn.getAttribute('data-notify-name') || '',
+              notifyWants: 'tickets',
+              notifyState: 'on_sale',
+              ticketUrl: url
+            });
+          });
         });
       },
       // Attach per-button click handling, scoped to the listing container.
@@ -4445,7 +4476,7 @@
     // Static tour cards (Keystone/CW/Feast) carry their own Notify buttons —
     // wire them once at boot, independent of the readmodel fetch.
     var staticGrid = $('community-appearances');
-    if (staticGrid) { LayNotify.wire(staticGrid); LayNotify.applyConfirmed(staticGrid); }
+    if (staticGrid) { LayNotify.wire(staticGrid); LayNotify.applyConfirmed(staticGrid); LayNotify.wireTicketGates(staticGrid); }
     loadEvents();
     initRetrieve();
     wireOverlayControls();
