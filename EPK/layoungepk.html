@@ -427,31 +427,37 @@
       <p class="section-subtitle">L.A. Young out front with her live band, building every set from soul, jazz, blues, R&amp;B and funk &mdash; the music hand-picked to fit the room, the crowd, and the occasion, from an intimate lounge to a festival main stage. No two nights are the same. The musicians are seasoned professionals; the credits in the profiles below are each one’s individual achievements, earned with other artists — not engagements of L.A. Young &amp; Soul Society.</p>
       <div class="band-grid">
         <div class="band-member" onclick="openBandModal('la')">
+          <div class="band-photo"><img src="../images/band/la-young.jpg" alt="L.A. Young" loading="lazy" onerror="this.parentNode.style.display='none'" /></div>
           <div class="instrument-label">Vocals / Music Director</div>
           <div class="member-name">L.A. Young</div>
           <div class="member-note">Band leader, arranger, recording artist</div>
         </div>
         <div class="band-member" onclick="openBandModal('eugene')">
+          <div class="band-photo"><img src="../images/band/eugene-chapman.jpg" alt="Eugene Chapman" loading="lazy" onerror="this.parentNode.style.display='none'" /></div>
           <div class="instrument-label">Saxophone</div>
           <div class="member-name">Eugene Chapman</div>
           <div class="member-note">Performed with P-Funk &amp; The Temptations</div>
         </div>
         <div class="band-member" onclick="openBandModal('kevin')">
+          <div class="band-photo"><img src="../images/band/kevin-robinson.jpg" alt="Kevin Robinson" loading="lazy" onerror="this.parentNode.style.display='none'" /></div>
           <div class="instrument-label">Lead Guitar</div>
           <div class="member-name">Kevin Robinson</div>
           <div class="member-note">MD Entertainment Hall of Fame 2017</div>
         </div>
         <div class="band-member" onclick="openBandModal('thomas')">
+          <div class="band-photo"><img src="../images/band/thomas-white.jpg" alt="Thomas White" loading="lazy" onerror="this.parentNode.style.display='none'" /></div>
           <div class="instrument-label">Bass</div>
           <div class="member-name">Thomas White</div>
           <div class="member-note">Stages alongside Johnny Gill, Sheila E. &amp; Take 6</div>
         </div>
         <div class="band-member" onclick="openBandModal('ro')">
+          <div class="band-photo"><img src="../images/band/ro.jpg" alt="Ro" loading="lazy" onerror="this.parentNode.style.display='none'" /></div>
           <div class="instrument-label">Keys</div>
           <div class="member-name">Ro</div>
           <div class="member-note">U.S. State Dept., two inaugural balls &amp; Blues Alley</div>
         </div>
         <div class="band-member" onclick="openBandModal('dj')">
+          <div class="band-photo"><img src="../images/band/dj-mocha-java-sq.jpg" alt="DJ Mocha Java" loading="lazy" onerror="this.parentNode.style.display='none'" /></div>
           <div class="instrument-label">MC / DJ</div>
           <div class="member-name">DJ Mocha Java</div>
           <div class="member-note">Tracks, production &amp; rap vocals</div>
@@ -809,31 +815,37 @@
   var bandMembers = {
     'la': {
       name: 'L.A. Young',
+      img: '../images/band/la-young-card.jpg',
       role: 'Vocals / Music Director',
       bio: 'L.A. Young is a soul, jazz, blues, and R&B vocalist whose voice has been compared to Chaka Khan meeting Phyllis Hyman. A native of Ohio, she became the first female crane operator in the steel industry by age 18. With collaborations spanning members of Pieces of A Dream and Norman Connors, and a signature Phyllis Hyman tribute that has drawn audiences from across the country, L.A. continues to captivate audiences.'
     },
     'eugene': {
       name: 'Eugene Chapman',
+      img: '../images/band/eugene-chapman-card.jpg',
       role: 'Saxophone',
       bio: 'Eugene has performed with P-Funk, The Temptations, Deniece Williams, Atlantic Starr, Frank McComb, Tom Browne, Jean Carne, Michael Henderson, Maysa, and Marcus Johnson. He opened for Erykah Badu on her Worldwide Underground tour and Robin Thicke. Chapman has graced stages from L.A. to D.C., including the Viper Room, Whiskey a Go Go, B.B. Kings, Blues Alley, Howard Theatre, and the Warner Theater.'
     },
     'kevin': {
       name: 'Kevin Robinson',
+      img: '../images/band/kevin-robinson-card.jpg',
       role: 'Lead Guitar',
       bio: 'Inducted into The Maryland Entertainment Hall of Fame 2017. Kevin has accompanied Grammy-winning jazz performer Neenna Freelon and worked with The Joe Cooper Project. Commissioned by the Baltimore Museum of Art to compose and perform original music. Released his CD "Fulfillment of A Happy Life" in 2017. Worked as sound and backline technician for Teddy Pendergrass\'s live stage show.'
     },
     'thomas': {
       name: 'Thomas White',
+      img: '../images/band/thomas-white-card.jpg',
       role: 'Bass',
       bio: 'Thomas White began playing bass at 12, building his foundation in gospel in his father\'s group and opening for several prominent gospel quartets before expanding into R&B and Go-Go — a versatile style rooted in gospel, soul, funk, and the pocket. Over the years he has performed on stages alongside and in support of artists including Tramaine Hawkins, The Canton Spirituals, Johnny Gill, Sheila E., Take 6, October London, and Karyn White. He brings a deep groove, strong instincts, and years of live-performance experience to the foundation of Soul Society.'
     },
     'ro': {
       name: 'Ro',
+      img: '../images/band/ro-card.jpg',
       role: 'Keys / Vocals',
       bio: 'One of the premier pianists and vocalists in the District, Maryland, and Virginia, Ro has performed at the U.S. State Department, the inaugural balls of Presidents Bush and Obama, Blues Alley, the British Embassy, and aboard Spirit Entertainment cruises. He has served as musical director and sideman for acts including the Coasters, the Drifters, the Platters, the Temptations, and Mary Wilson, with career highlights that include opening for Al Green, The Whispers, Kool and the Gang, and Chubby Checker. The music runs in the family: his son, Landon Cube, holds two Platinum records.'
     },
     'dj': {
       name: 'DJ Mocha Java',
+      img: '../images/band/dj-mocha-java.jpg',
       role: 'MC / DJ',
       bio: 'DJ Mocha Java brings energy and modern edge to every performance with tracks, production, and rap vocals. His dynamic MC work and curated DJ sets bridge generations \u2014 from classic soul and funk to contemporary R&B and hip hop \u2014 keeping audiences engaged throughout the show.'
     }
@@ -844,6 +856,7 @@
     if (!m) return;
     document.getElementById('bandContent').innerHTML =
       '<div style="text-align: center;">' +
+        (m.img ? '<img src="' + m.img + '" alt="' + m.name + '" style="width: min(300px, 78%); display: block; margin: 0 auto 14px; border: 3px solid #2a2a2a;" />' : '') +
         '<h2 style="font-size: 24px; margin-bottom: 8px;">' + m.name + '</h2>' +
         '<p style="color: #8b6914; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 18px; font-weight: bold;">' + m.role + '</p>' +
         '<p style="font-size: 13px; line-height: 1.7; text-align: left; color: #2a2a2a;">' + m.bio + '</p>' +

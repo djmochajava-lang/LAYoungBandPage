@@ -604,6 +604,16 @@ img {
   text-align: center;
 }
 
+.band-card .member-photo {
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  margin: 0 auto 0.75rem;
+  border: 2px solid rgba(212, 175, 55, 0.4);
+}
+
 .band-name {
   font-size: 0.88rem;
   font-weight: 600;

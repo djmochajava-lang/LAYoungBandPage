@@ -652,6 +652,20 @@ h2.section-title {
   transform: translateY(-4px);
   box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
 }
+.band-photo {
+  width: 104px;
+  height: 104px;
+  margin: 0 auto 10px;
+  border: 2px solid #b6a888;
+  overflow: hidden;
+  background: #eee;
+}
+.band-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 .instrument-label {
   font-size: 8px;
   text-transform: uppercase;
