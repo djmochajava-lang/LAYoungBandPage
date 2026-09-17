@@ -318,6 +318,19 @@
   filter: sepia(0%) contrast(1);
 }
 
+/* Designed member name-cards — shown full, no crop, no sepia */
+.band-bio-photo--card {
+  width: min(340px, 86%);
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.band-bio-photo--card img,
+.band-bio-photo--card:hover img {
+  object-fit: cover;
+  filter: none;
+}
+
 /* Name — dark ink, editorial serif */
 .band-bio-name {
   font-family: var(--font-primary);
