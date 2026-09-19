@@ -50,6 +50,7 @@
       { "@type": "OrganizationRole", "member": { "@type": "Person", "name": "Kevin Robinson", "jobTitle": "Lead Guitar", "description": "Maryland Entertainment Hall of Fame inductee (2017)." } },
       { "@type": "OrganizationRole", "member": { "@type": "Person", "name": "Thomas White", "jobTitle": "Bass", "description": "Gospel-rooted bassist who has performed on stages alongside and in support of Tramaine Hawkins, Johnny Gill, Sheila E., Take 6, and Karyn White." } },
       { "@type": "OrganizationRole", "member": { "@type": "Person", "name": "Ro", "jobTitle": "Keyboards / Piano / Vocals", "description": "DMV pianist and vocalist; performances include the U.S. State Department, two presidential inaugural balls, and Blues Alley; musical director and sideman for the Coasters, the Drifters, the Platters, and the Temptations." } },
+      { "@type": "OrganizationRole", "member": { "@type": "Person", "name": "Nick Halsey", "jobTitle": "Drums" } },
       { "@type": "OrganizationRole", "member": { "@type": "Person", "name": "DJ Mocha Java", "jobTitle": "MC / DJ / Production / Rap Vocals" } }
     ],
     "award": [
@@ -456,6 +457,12 @@
           <div class="member-name">Ro</div>
           <div class="member-note">U.S. State Dept., two inaugural balls &amp; Blues Alley</div>
         </div>
+        <div class="band-member" onclick="openBandModal('nick')">
+          <div class="band-photo"><img src="../images/band/nick-halsey.jpg" alt="Nick Halsey" loading="lazy" onerror="this.parentNode.style.display='none'" /></div>
+          <div class="instrument-label">Drums</div>
+          <div class="member-name">Nick Halsey</div>
+          <div class="member-note">The pulse &mdash; feel, pocket &amp; drive</div>
+        </div>
         <div class="band-member" onclick="openBandModal('dj')">
           <div class="band-photo"><img src="../images/band/dj-mocha-java-sq.jpg" alt="DJ Mocha Java" loading="lazy" onerror="this.parentNode.style.display='none'" /></div>
           <div class="instrument-label">MC / DJ</div>
@@ -463,7 +470,7 @@
           <div class="member-note">Tracks, production &amp; rap vocals</div>
         </div>
       </div>
-      <p class="section-subtitle">Additional musicians (drums, percussion) engaged per show configuration. Full band roster available upon request.</p>
+      <p class="section-subtitle">Additional musicians engaged per show configuration. Full band roster available upon request.</p>
 
       <hr class="sec-divider" />
 
@@ -843,9 +850,15 @@
       role: 'Keys / Vocals',
       bio: 'One of the premier pianists and vocalists in the District, Maryland, and Virginia, Ro has performed at the U.S. State Department, the inaugural balls of Presidents Bush and Obama, Blues Alley, the British Embassy, and aboard Spirit Entertainment cruises. He has served as musical director and sideman for acts including the Coasters, the Drifters, the Platters, the Temptations, and Mary Wilson, with career highlights that include opening for Al Green, The Whispers, Kool and the Gang, and Chubby Checker. The music runs in the family: his son, Landon Cube, holds two Platinum records.'
     },
+    'nick': {
+      name: 'Nick Halsey',
+      img: '../images/band/nick-halsey-card.jpg',
+      role: 'Drums',
+      bio: 'Nick Halsey holds the drum chair for L.A. Young & Soul Society — the pulse of a show that moves between soul, jazz, blues, R&B, and funk inside a single set. Brushes and dynamics under a ballad, a deep pocket for the R&B material, and the drive that lifts a room when the night opens up. Everything is played live — nothing on tape — so the drummer is where the band breathes.'
+    },
     'dj': {
       name: 'DJ Mocha Java',
-      img: '../images/band/dj-mocha-java.jpg',
+      img: '../images/band/dj-mocha-java-card.jpg',
       role: 'MC / DJ',
       bio: 'DJ Mocha Java brings energy and modern edge to every performance with tracks, production, and rap vocals. His dynamic MC work and curated DJ sets bridge generations \u2014 from classic soul and funk to contemporary R&B and hip hop \u2014 keeping audiences engaged throughout the show.'
     }
