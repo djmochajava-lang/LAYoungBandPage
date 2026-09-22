@@ -140,3 +140,30 @@
   src: url(../fonts/caveat-latin.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+
+/* ---------------------------------------------------------------------------
+   Playfair Display — self-hosted 2026-09-22.
+   base.css has declared `--font-primary: 'Playfair Display', 'Didot', serif`
+   since launch and ~11 rules across pages.css / components.css call for it,
+   but the family was NEVER delivered: no @font-face, no file, no Google Fonts
+   link. Every heading silently fell back to Didot on Apple devices and a
+   generic serif everywhere else, so headline typography was device-dependent
+   rather than branded. Files are Playfair Display 1.203 Regular + Italic,
+   SIL Open Font License, full 756-glyph set (verified via the name table).
+   No unicode-range split — these are the complete faces, not Google subsets.
+   --------------------------------------------------------------------------- */
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: normal;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url(../fonts/playfair-display-regular.woff2) format('woff2');
+}
+
+@font-face {
+  font-family: 'Playfair Display';
+  font-style: italic;
+  font-weight: 400 900;
+  font-display: swap;
+  src: url(../fonts/playfair-display-italic.woff2) format('woff2');
+}
