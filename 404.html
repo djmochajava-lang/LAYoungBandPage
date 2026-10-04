@@ -20,7 +20,11 @@
         var m = /^(.*?)%(?:25)?23(.*)$/i.exec(window.location.pathname);
         if (!m) return;
 
-        var prefix = m[1].replace(/\/+$/, '').toLowerCase();
+        var prefix = m[1];
+        while (prefix.length && prefix.charAt(prefix.length - 1) === '/') {
+          prefix = prefix.slice(0, -1);
+        }
+        prefix = prefix.toLowerCase();
         if (prefix !== '' && prefix !== '/index.html') return;
 
         var frag = m[2];
@@ -52,7 +56,12 @@
         collect(hashQuery);
         collect(window.location.search.replace(/^\?/, ''));
 
-        var target = '/' + window.location.search + '#' + route;
+        // Carried codes travel in the hash only, never in the real query string,
+        // so the checkout can clear them from the address bar once they're used.
+        var search = window.location.search.replace(/^\?/, '').split('&').filter(function (pair) {
+          return pair && KEEP.indexOf(pair.split('=')[0]) < 0;
+        }).join('&');
+        var target = '/' + (search ? '?' + search : '') + '#' + route;
         if (kept.length) {
           target += '?' + kept.map(function (p) {
             return p[0] + '=' + encodeURIComponent(p[1]);
@@ -170,7 +179,13 @@
       text-align: center;
       color: rgba(255, 255, 255, 0.8);
     }
-    .rd a { color: #ffd700; }
+    .rd a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 48px;
+      padding: 8px 12px;
+      color: #ffd700;
+    }
     html.redirecting .nf { display: none; }
     html.redirecting .rd { display: block; }
   </style>
