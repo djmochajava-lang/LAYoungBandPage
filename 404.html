@@ -58,9 +58,8 @@
             }
           } catch (e) { frag = ''; }
           var qi = frag.indexOf('?');
-          route = section(qi >= 0 ? frag.slice(0, qi) : frag);
+          route = section(qi >= 0 ? frag.slice(0, qi) : frag) || DEFAULT_SECTION;
           hashQuery = qi >= 0 ? frag.slice(qi + 1) : '';
-          path = m[1];
         }
 
         if (!route) {
