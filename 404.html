@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" style="background:#0a0a0a">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Page not found | L.A. Young &amp; Soul Society™</title>
+  <script>
+    /*
+     * Some apps (Instagram bio links, for one) percent-encode the "#" in a link,
+     * so /index.html#shows arrives here as /index.html%23shows. Turn that back
+     * into the page the visitor meant. Only "/" and "/index.html" are handled,
+     * the route must be a plain word, and only known query keys are carried
+     * over, so the redirect always stays on this site. Anything else falls
+     * through to the "page not found" screen below.
+     */
+    (function () {
+      try {
+        var m = /^(.*?)%(?:25)?23(.*)$/i.exec(window.location.pathname);
+        if (!m) return;
+
+        var prefix = m[1].replace(/\/+$/, '').toLowerCase();
+        if (prefix !== '' && prefix !== '/index.html') return;
+
+        var frag = m[2];
+        for (var i = 0; i < 2 && /%[0-9a-f]{2}/i.test(frag); i++) {
+          frag = decodeURIComponent(frag);
+        }
+
+        var qi = frag.indexOf('?');
+        var route = qi >= 0 ? frag.slice(0, qi) : frag;
+        var hashQuery = qi >= 0 ? frag.slice(qi + 1) : '';
+        if (!/^[A-Za-z0-9_-]{1,64}$/.test(route)) return;
+
+        var KEEP = ['invite', 'resume', 'vco', 'token'];
+        var VALUE = /^[A-Za-z0-9._~-]{1,128}$/;
+        var kept = [];
+        function collect(query) {
+          if (!query) return;
+          query.split('&').forEach(function (pair) {
+            var eq = pair.indexOf('=');
+            if (eq < 1) return;
+            var key = pair.slice(0, eq);
+            var value;
+            try { value = decodeURIComponent(pair.slice(eq + 1)); } catch (e) { return; }
+            if (KEEP.indexOf(key) < 0 || !VALUE.test(value)) return;
+            for (var k = 0; k < kept.length; k++) { if (kept[k][0] === key) return; }
+            kept.push([key, value]);
+          });
+        }
+        collect(hashQuery);
+        collect(window.location.search.replace(/^\?/, ''));
+
+        var target = '/' + window.location.search + '#' + route;
+        if (kept.length) {
+          target += '?' + kept.map(function (p) {
+            return p[0] + '=' + encodeURIComponent(p[1]);
+          }).join('&');
+        }
+
+        document.documentElement.className = 'redirecting';
+        window.location.replace(target);
+      } catch (e) {
+        /* Malformed link: show the "page not found" screen instead. */
+      }
+    })();
+  </script>
+  <style>
+    @font-face {
+      font-family: 'Playfair Display';
+      src: url('/fonts/playfair-display-regular.woff2') format('woff2');
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+    @font-face {
+      font-family: 'Playfair Display';
+      src: url('/fonts/playfair-display-italic.woff2') format('woff2');
+      font-style: italic;
+      font-weight: 400;
+      font-display: swap;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      background: #0a0a0a;
+      color: #ffffff;
+    }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 20px;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 17px;
+      line-height: 1.55;
+    }
+    .nf {
+      width: 100%;
+      max-width: 420px;
+      text-align: center;
+    }
+    .mark {
+      margin: 0;
+      font-family: 'Playfair Display', Didot, Georgia, serif;
+      font-size: 1.6rem;
+      line-height: 1.25;
+      color: #ffd700;
+      letter-spacing: 0.01em;
+    }
+    .tag {
+      margin: 6px 0 0;
+      font-family: 'Playfair Display', Didot, Georgia, serif;
+      font-style: italic;
+      font-size: 1.05rem;
+      color: #ffd700;
+      opacity: 0.85;
+    }
+    .rule {
+      width: 64px;
+      height: 0;
+      margin: 22px auto 26px;
+      border: 0;
+      border-top: 1px solid rgba(255, 215, 0, 0.55);
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-family: 'Playfair Display', Didot, Georgia, serif;
+      font-weight: 400;
+      font-size: 1.45rem;
+      line-height: 1.3;
+    }
+    .sub {
+      margin: 0 0 28px;
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 52px;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-family: Georgia, 'Times New Roman', serif;
+      font-size: 1.05rem;
+      text-decoration: none;
+    }
+    .btn + .btn { margin-top: 14px; }
+    .btn.primary {
+      background: #ffd700;
+      color: #0a0a0a;
+      border: 2px solid #ffd700;
+      font-weight: 700;
+    }
+    .btn.secondary {
+      background: transparent;
+      color: #ffd700;
+      border: 2px solid rgba(255, 215, 0, 0.7);
+    }
+    .btn:focus-visible {
+      outline: 3px solid #ffffff;
+      outline-offset: 3px;
+    }
+    .rd {
+      display: none;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.8);
+    }
+    .rd a { color: #ffd700; }
+    html.redirecting .nf { display: none; }
+    html.redirecting .rd { display: block; }
+  </style>
+</head>
+<body>
+  <main class="nf">
+    <p class="mark">L.A. Young &amp; Soul Society™</p>
+    <p class="tag">Soul in Full Color</p>
+    <hr class="rule" />
+    <h1>We can't find that page.</h1>
+    <p class="sub">The music and the shows are right here.</p>
+    <a class="btn primary" href="/#shows">See upcoming shows</a>
+    <a class="btn secondary" href="/">Home</a>
+  </main>
+  <div class="rd" aria-live="polite">
+    <p>One moment…</p>
+    <p><a href="/">Continue to L.A. Young &amp; Soul Society™</a></p>
+  </div>
+</body>
+</html>
