@@ -4,41 +4,73 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex" />
-  <title>Page not found | L.A. Young &amp; Soul Society™</title>
+  <title>L.A. Young &amp; Soul Society™</title>
   <link rel="icon" href="/images/artist/LAYoungPink.JPG" type="image/jpeg" />
   <script>
     /*
-     * Some apps (Instagram bio links, for one) percent-encode the "#" in a link,
-     * so /index.html#shows arrives here as /index.html%23shows. Turn that back
-     * into the page the visitor meant. Only "/" and "/index.html" are handled,
-     * the route must be a plain word, and only known query keys are carried
-     * over, so the redirect always stays on this site. Anything else falls
-     * through to the "page not found" screen below.
+     * Nobody should hit a dead end on this site. Any address that isn't a real
+     * file lands here, and we send the visitor straight to the right section:
+     *  - Links whose "#" got percent-encoded by another app (Instagram bio links,
+     *    for one): /index.html%23shows becomes /#shows.
+     *  - Guessable addresses: /shows, /tour, /tickets, /music, /bio and so on.
+     *  - Anything else: the show list.
+     * The target is always built on this site ("/" + query + "#section"), the
+     * section is picked from a fixed list, and only known codes are carried
+     * over, so a crafted link can never send anyone elsewhere. The screen below
+     * is only seen with JavaScript turned off.
      */
     (function () {
       try {
-        var m = /^(.*?)%(?:25)?23(.*)$/i.exec(window.location.pathname);
-        if (!m) return;
-
-        var prefix = m[1];
-        while (prefix.length && prefix.charAt(prefix.length - 1) === '/') {
-          prefix = prefix.slice(0, -1);
-        }
-        prefix = prefix.toLowerCase();
-        if (prefix !== '' && prefix !== '/index.html') return;
-
-        var frag = m[2];
-        for (var i = 0; i < 2 && /%[0-9a-f]{2}/i.test(frag); i++) {
-          frag = decodeURIComponent(frag);
-        }
-
-        var qi = frag.indexOf('?');
-        var route = qi >= 0 ? frag.slice(0, qi) : frag;
-        var hashQuery = qi >= 0 ? frag.slice(qi + 1) : '';
-        if (!/^[A-Za-z0-9_-]{1,64}$/.test(route)) return;
-
+        var SECTIONS = {
+          home: 'home', bio: 'bio', music: 'music', projects: 'projects',
+          videos: 'videos', gallery: 'gallery', shows: 'shows',
+          performances: 'performances', merch: 'merch', support: 'support',
+          contact: 'contact', fanwall: 'fanwall', scan: 'scan',
+          layoungmusicplayer: 'LAYoungMusicPlayer',
+          // everyday words people type
+          index: 'home', tour: 'shows', tours: 'shows', tickets: 'shows',
+          ticket: 'shows', events: 'shows', event: 'shows', calendar: 'shows',
+          concerts: 'shows', live: 'shows', dates: 'shows', about: 'bio',
+          artist: 'bio', biography: 'bio', songs: 'music', listen: 'music',
+          player: 'LAYoungMusicPlayer', video: 'videos', photos: 'gallery',
+          pictures: 'gallery', store: 'merch', shop: 'merch', donate: 'support',
+          booking: 'contact', book: 'contact', fans: 'fanwall'
+        };
+        var DEFAULT_SECTION = 'shows';
         var KEEP = ['invite', 'resume', 'vco', 'token'];
         var VALUE = /^[A-Za-z0-9._~-]{1,128}$/;
+
+        function section(word) {
+          var key = String(word || '').toLowerCase();
+          return Object.prototype.hasOwnProperty.call(SECTIONS, key) ? SECTIONS[key] : null;
+        }
+
+        var path = window.location.pathname;
+        var route = null;
+        var hashQuery = '';
+
+        var m = /^(.*?)%(?:25)?23(.*)$/i.exec(path);
+        if (m) {
+          var frag = m[2];
+          try {
+            for (var i = 0; i < 2 && /%[0-9a-f]{2}/i.test(frag); i++) {
+              frag = decodeURIComponent(frag);
+            }
+          } catch (e) { frag = ''; }
+          var qi = frag.indexOf('?');
+          route = section(qi >= 0 ? frag.slice(0, qi) : frag);
+          hashQuery = qi >= 0 ? frag.slice(qi + 1) : '';
+          path = m[1];
+        }
+
+        if (!route) {
+          // Last word of the address, without slashes or ".html".
+          var end = path.length;
+          while (end > 0 && path.charAt(end - 1) === '/') end--;
+          var word = path.slice(path.lastIndexOf('/', end - 1) + 1, end).replace(/\.html?$/i, '');
+          route = section(word) || DEFAULT_SECTION;
+        }
+
         var kept = [];
         function collect(query) {
           if (!query) return;
@@ -71,7 +103,7 @@
         document.documentElement.className = 'redirecting';
         window.location.replace(target);
       } catch (e) {
-        /* Malformed link: show the "page not found" screen instead. */
+        /* If anything goes wrong, the buttons below still work. */
       }
     })();
   </script>
@@ -195,8 +227,8 @@
     <p class="mark">L.A. Young &amp; Soul Society™</p>
     <p class="tag">Soul in Full Color</p>
     <hr class="rule" />
-    <h1>We can't find that page.</h1>
-    <p class="sub">The music and the shows are right here.</p>
+    <h1>Here's what you're looking for.</h1>
+    <p class="sub">Shows, tickets and more — right this way.</p>
     <a class="btn primary" href="/#shows">See upcoming shows</a>
     <a class="btn secondary" href="/">Home</a>
   </main>
