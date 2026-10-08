@@ -203,8 +203,8 @@
         L.A. Young is a soul, jazz, blues, and R&amp;B vocalist whose voice has been
         compared to Chaka Khan meeting Phyllis Hyman &mdash; a rare blend of raw power and
         silky emotional depth. A native of Ohio with deep roots in the steel mill communities
-        of the 1980s, she became the first female crane operator in Ohio's steel industry at
-        age 18 before answering her true calling to the stage. Her career spans landmark
+        of the 1980s, at age 18 she became the first Black woman to operate a crane at her plant since World War II,
+        before answering her true calling to the stage. Her career spans landmark
         stages and elite collaborations: opening for R&amp;B icon Freddie Jackson and
         recording with members of the Grammy-nominated jazz ensemble Pieces of A Dream. She has
         performed with jazz legend Norman Connors and is currently in the studio, with her

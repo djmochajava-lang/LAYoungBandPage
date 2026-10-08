@@ -78,7 +78,7 @@ This plan lays out a complete merch strategy for L.A. Young — from product des
 ### LINE 2: "FORGED IN THE HEAT" — The Heritage Collection
 *L.A. Young's steel mill origin story. Industrial meets soul. Limited seasonal drops.*
 
-This is the merch line NO OTHER ARTIST can copy. L.A. Young was the **first female crane operator in Ohio's steel mills at age 18** before she ever stepped on a stage. This is powerful, unique, and deeply personal.
+This is the merch line NO OTHER ARTIST can copy. L.A. Young was the **first Black woman to operate a crane at her plant since World War II, at age 18** before she ever stepped on a stage. This is powerful, unique, and deeply personal.
 
 #### Product 2A: "Forged in the Heat, Sung from the Heart" Tee
 - **Design:** Bold industrial serif typography. "FORGED IN THE HEAT" large across chest in distressed gold. "sung from the heart" in elegant script below. Subtle steel texture/crosshatch pattern behind text.
