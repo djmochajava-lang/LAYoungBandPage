@@ -1440,16 +1440,6 @@
            Photo crop + stat strip refined 2026-09-15 (Graphic Artist) to lead
            with legacy / scale / generosity — see the .community-* CSS block. -->
       <div class="ticket-events-grid" id="community-appearances">
-        <!-- Keystone Korner Baltimore — Wed Oct 7, 2026 (STATIC: venue sells the
-             tickets; link goes to the venue. Date is contractual and public.) -->
-        <div class="event-card scroll-reveal">
-          <img class="event-card-img" src="images/artist/keystone-korner-oct7-2026-card.jpg" alt="L.A. Young &amp; Soul Society — Keystone Korner Baltimore, Wednesday October 7, 2026" loading="lazy">
-          <h3 class="event-card-name">L.A. Young &amp; Soul Society</h3>
-          <div class="event-card-date">Wednesday, October 7, 2026 &middot; Keystone Korner Baltimore</div>
-          <p class="event-card-desc">One night in Baltimore&rsquo;s storied listening room &mdash; soul, R&amp;B, jazz and blues, all live, nothing on tape &mdash; as L.A. Young returns to the city she has played since 2007.</p>
-          <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price event-summary-ext">Tickets on sale now &middot; Keystone Korner box office</span></div></div>
-          <div class="event-card-actions"><button type="button" class="btn btn-primary btn-large lay-ticketgate-btn" data-notify-id="show-keystone-20261007" data-notify-name="L.A. Young &amp; Soul Society — Keystone Korner" data-ticket-url="https://www.instantseats.com/?fuseaction=home.artist&amp;VenueID=514&amp;artistid=39426">Get Tickets</button></div>
-        </div>
         <!-- City Winery Chicago — CONFIRMED (2026-09-22): dates signed, venue announce
              today 3PM CT, public on-sale Fri 9/25 3PM CT. Uses the venue's own branded asset + a ticket button, exactly the
              Keystone Korner pattern. Ticket URL carries City Winery's artist-website UTM. -->
@@ -1574,6 +1564,7 @@
            performance credit and must never be listed as one. -->
       <div class="venue-list">
         <span class="venue-badge">City Winery DC</span>
+        <span class="venue-badge">Keystone Korner Baltimore</span>
         <span class="venue-badge">Anacostia Playhouse, DC</span>
         <span class="venue-badge">Lexington Market, Baltimore</span>
         <span class="venue-badge">African American Cultural Festival</span>
@@ -1705,6 +1696,32 @@
 
     </div>
 
+
+    <div class="divider"></div>
+
+    <!-- =========================================================
+         PAST PERFORMANCES (owner 2026-10-09): a show that has happened moves
+         here from the upcoming list. No ticket button. Instead, a "notify me
+         when she's back" capture scoped to the VENUE (LayNotify
+         wants:'return-venue', id venue-<slug>), so each venue builds its own
+         list of people who want the next show there. Rows land in Supabase
+         contact_submissions (form_type 'ticket-notify') exactly like the other
+         Notify buttons; the SoR reconciler keys them by show_key = the venue id.
+         ========================================================= -->
+    <h2 class="section-title">Past Performances</h2>
+    <p class="section-subtitle">Missed one? Be the first to know when she returns.</p>
+
+    <div class="ticket-events-grid" id="past-performances">
+      <!-- Keystone Korner Baltimore — Wed Oct 7, 2026 (performed). -->
+      <div class="event-card scroll-reveal">
+        <img class="event-card-img" src="images/artist/keystone-korner-oct7-2026-card.jpg" alt="L.A. Young &amp; Soul Society — Keystone Korner Baltimore, Wednesday October 7, 2026" loading="lazy">
+        <h3 class="event-card-name">L.A. Young &amp; Soul Society&trade;</h3>
+        <div class="event-card-date">Wednesday, October 7, 2026 &middot; Keystone Korner Baltimore</div>
+        <p class="event-card-desc">One night in Baltimore&rsquo;s storied listening room &mdash; soul, R&amp;B, jazz and blues, all live, nothing on tape &mdash; as L.A. Young returned to the city she has played since 2007.</p>
+        <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price event-summary-ext">Performed Wednesday, October 7, 2026</span></div></div>
+        <div class="event-card-actions"><button type="button" class="btn btn-primary btn-large lay-notify-btn" data-notify-id="venue-keystone-korner-baltimore" data-notify-name="Keystone Korner Baltimore" data-notify-state="past" data-notify-wants="return-venue">Notify me when she&rsquo;s back at Keystone</button></div>
+      </div>
+    </div>
 
     <!-- Live Performance Video: MOVED to the "The Night" proof row above the
          ticket zone (S2 §2g — the page's soul now leads, not trails). One
@@ -4201,6 +4218,7 @@
       onsale:        { title: 'Get on-sale alerts', body: 'Get notified the moment tickets for this show go on sale.',              cta: 'Notify me' },
       reminder:      { title: 'Set a reminder',     body: 'Remind me before this show — and alert me if tickets start running low.', cta: 'Remind me' },
       waitlist:      { title: 'Join the waitlist',  body: "Join the waitlist — we'll email you if tickets open up for this show.",   cta: 'Join waitlist' },
+      'return-venue': { title: 'Be first when she returns', body: "We'll email you as soon as L.A. Young's next show here is announced.", cta: 'Notify me' },
       'future-show': { title: 'Be first to know',   body: "We'll email you the moment L.A. Young announces new shows and tickets go on sale.", cta: 'Notify me' },
       tickets:       { title: 'Get your tickets',   body: "Drop your email and we'll take you straight to the box office — and keep you posted on this show.", cta: 'Continue to tickets' }
     };
@@ -4492,6 +4510,9 @@
     // wire them once at boot, independent of the readmodel fetch.
     var staticGrid = $('community-appearances');
     if (staticGrid) { LayNotify.wire(staticGrid); LayNotify.applyConfirmed(staticGrid); LayNotify.wireTicketGates(staticGrid); }
+    // Past Performances (owner 2026-10-09): venue-scoped "notify me when she's back" buttons.
+    var pastGrid = $('past-performances');
+    if (pastGrid) { LayNotify.wire(pastGrid); LayNotify.applyConfirmed(pastGrid); }
     loadEvents();
     initRetrieve();
     wireOverlayControls();
