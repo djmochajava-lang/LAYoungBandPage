@@ -352,7 +352,12 @@
       "@type": "EventSeries",
       "@id": "https://layoungbandpage.com/#live-shows",
       "name": "L.A. Young — Live Shows & Performances",
-      "description": "L.A. Young & Soul Society perform regularly across the Washington DC, Maryland, and Virginia area. Visit the official site for the latest upcoming show dates, venues, and ticket availability — updated daily.",
+      "description": "L.A. Young & Soul Society™ perform across the DMV and on tour, with fall 2026 dates at City Winery Chicago (November 3), City Winery St. Louis (November 5) and City Winery Pittsburgh (December 20). Visit the official site for upcoming show dates, venues, and ticket availability.",
+      "subEvent": [
+        { "@id": "https://layoungbandpage.com/#show-2026-11-03-chicago" },
+        { "@id": "https://layoungbandpage.com/#show-2026-11-05-st-louis" },
+        { "@id": "https://layoungbandpage.com/#show-2026-12-20-pittsburgh" }
+      ],
       "url": "https://layoungbandpage.com/#shows",
       "performer": { "@id": "https://layoungbandpage.com/#artist" },
       "organizer": {
@@ -385,6 +390,93 @@
         "dateModified": "2026-04-02",
         "isPartOf": { "@id": "https://layoungbandpage.com/#website" }
       }
+    }
+    </script>
+
+    <!-- Block 6b: MusicEvent — dated upcoming shows (story-lay-show-event-markup-2026-10-13).
+         Facts (address, start time, prices) come from each City Winery event page; offers.url = the
+         artist-UTM ticket links on pages/shows.html. When a show passes, delete its entry here and
+         its subEvent line in Block 6 (past shows must not read as upcoming). -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "MusicEvent",
+          "@id": "https://layoungbandpage.com/#show-2026-11-03-chicago",
+          "name": "The Phyllis Hyman Songbook: L.A. Young & Soul Society™ at City Winery Chicago",
+          "alternateName": "LA Young's Phyllis Hyman Tribute",
+          "description": "L.A. Young & Soul Society™ perform the songs of Phyllis Hyman live: soul, jazz and R&B with a six-piece band. Doors 6:00 PM, show 7:30 PM.",
+          "startDate": "2026-11-03T19:30:00-06:00",
+          "doorTime": "2026-11-03T18:00:00-06:00",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "image": "https://layoungbandpage.com/images/artist/cw-venue-chicago-nov3-social.jpg",
+          "location": {
+            "@type": "MusicVenue",
+            "name": "City Winery Chicago",
+            "address": { "@type": "PostalAddress", "streetAddress": "1200 W. Randolph St", "addressLocality": "Chicago", "addressRegion": "IL", "postalCode": "60607", "addressCountry": "US" }
+          },
+          "performer": { "@id": "https://layoungbandpage.com/#artist" },
+          "organizer": { "@type": "Organization", "name": "City Winery Chicago", "url": "https://citywinery.com/pages/locations/chicago" },
+          "offers": {
+            "@type": "AggregateOffer",
+            "url": "https://tickets.citywinery.com/event/la-youngs-phyllis-hyman-tribute-q7ndww?utm_source=artist&utm_medium=referral&utm_campaign=chi-la-youngs-phyllis-hyman-tribute_11-03-26-artistwebsite",
+            "lowPrice": "35", "highPrice": "75", "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+          }
+        },
+        {
+          "@type": "MusicEvent",
+          "@id": "https://layoungbandpage.com/#show-2026-11-05-st-louis",
+          "name": "The Phyllis Hyman Songbook: L.A. Young & Soul Society™ at City Winery St. Louis",
+          "alternateName": "LA Young's Phyllis Hyman Tribute",
+          "description": "L.A. Young & Soul Society™ perform the songs of Phyllis Hyman live: soul, jazz and R&B with a six-piece band, at City Foundry in Midtown St. Louis. Doors 6:00 PM, show 7:30 PM.",
+          "startDate": "2026-11-05T19:30:00-06:00",
+          "doorTime": "2026-11-05T18:00:00-06:00",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "image": "https://layoungbandpage.com/images/artist/cw-venue-stlouis-nov5-social.jpg",
+          "location": {
+            "@type": "MusicVenue",
+            "name": "City Winery St. Louis",
+            "address": { "@type": "PostalAddress", "streetAddress": "3730 Foundry Way, Suite 158 (City Foundry)", "addressLocality": "St. Louis", "addressRegion": "MO", "postalCode": "63110", "addressCountry": "US" }
+          },
+          "performer": { "@id": "https://layoungbandpage.com/#artist" },
+          "organizer": { "@type": "Organization", "name": "City Winery St. Louis", "url": "https://citywinery.com/pages/locations/st-louis" },
+          "offers": {
+            "@type": "AggregateOffer",
+            "url": "https://tickets.citywinery.com/event/la-youngs-phyllis-hyman-tribute-7vosq0?utm_source=artist&utm_medium=referral&utm_campaign=stl-la-youngs-phyllis-hyman-tribute_11-05-26-artistwebsite",
+            "lowPrice": "35", "highPrice": "48", "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+          }
+        },
+        {
+          "@type": "MusicEvent",
+          "@id": "https://layoungbandpage.com/#show-2026-12-20-pittsburgh",
+          "name": "The Phyllis Hyman Songbook Brunch: L.A. Young & Soul Society™ at City Winery Pittsburgh",
+          "alternateName": "LA Young's Phyllis Hyman Tribute Brunch",
+          "description": "A Sunday brunch with L.A. Young & Soul Society™ performing the songs of Phyllis Hyman live: soul, jazz and R&B. Doors 11:00 AM, show 12:00 PM.",
+          "startDate": "2026-12-20T12:00:00-05:00",
+          "doorTime": "2026-12-20T11:00:00-05:00",
+          "eventStatus": "https://schema.org/EventScheduled",
+          "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+          "image": "https://layoungbandpage.com/images/artist/cw-venue-pittsburgh-dec20-social.jpg",
+          "location": {
+            "@type": "MusicVenue",
+            "name": "City Winery Pittsburgh",
+            "address": { "@type": "PostalAddress", "streetAddress": "1627 Smallman Street", "addressLocality": "Pittsburgh", "addressRegion": "PA", "postalCode": "15222", "addressCountry": "US" }
+          },
+          "performer": { "@id": "https://layoungbandpage.com/#artist" },
+          "organizer": { "@type": "Organization", "name": "City Winery Pittsburgh", "url": "https://citywinery.com/pages/locations/pittsburgh" },
+          "offers": {
+            "@type": "AggregateOffer",
+            "url": "https://tickets.citywinery.com/event/la-youngs-phyllis-hyman-tribute-brunch-afvfxb?utm_source=artist&utm_medium=referral&utm_campaign=pgh-la-youngs-phyllis-hyman-tribute-brunch_12-20-26-artistwebsite",
+            "lowPrice": "30", "highPrice": "42", "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+          }
+        }
+      ]
     }
     </script>
 
