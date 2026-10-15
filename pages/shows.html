@@ -1312,73 +1312,6 @@
     <p class="section-subtitle">See L.A. Young Live</p>
 
     <!-- =========================================================
-         "THE NIGHT" — sell the night before selling the ticket
-         (internal-ref · spec §2g · S2)
-         Emotion first, tickets second. The dynamic event cards below
-         remain the transactional truth; this block sells the show.
-         ========================================================= -->
-    <div class="night-hero scroll-reveal">
-      <img class="night-hero-art"
-           src="images/artist/PhyllisHymanExperence.jpg"
-           alt="The Phyllis Hyman Experience — L.A. Young &amp; Soul Society"
-           loading="lazy">
-      <h2 class="night-hero-title">The Phyllis Hyman Experience</h2>
-      <p class="night-hero-sub">For one night, her music is alive again.</p>
-
-      <!-- The promise (fan voice — what the night feels like, no logistics) -->
-      <p class="night-promise">
-        There are songs that don&rsquo;t age &mdash; they wait.
-        <em>Somewhere in My Lifetime. You Know How to Love Me. Living All
-        Alone.</em> For one night, a live band brings them back to the room
-        where they belong, sung full-voice by a woman who has spent twenty
-        years earning the right to sing them. Candlelight and contralto, the
-        songs that raised us &mdash; and the hush right before the first note.
-      </p>
-
-      <!-- Proof of concept: real quote, real footage, real recording -->
-      <div class="night-proof">
-        <blockquote class="night-quote">
-          &ldquo;&hellip;made you believe, for just one night, that the Queen
-          was alive and among us.&rdquo;
-          <cite>&mdash; Tony &ldquo;Doc&rdquo; Hardy, Jazz and Soul on Ice &bull; WPKN 89.5 FM</cite>
-        </blockquote>
-
-        <div class="night-video">
-          <div class="video-frame" style="position: relative;">
-            <video preload="metadata" playsinline muted controls
-                   src="Video/LAYoungWinery.mp4"
-                   poster="images/artist/LAYoung-CityWinery-cover.jpg"
-                   class="video-player"
-                   style="aspect-ratio: 800/700; object-fit: cover; object-position: center 59%; background: #000;">
-            </video>
-            <!-- Black gradient overlay to hide yellow tribute text below "Call for booking..." -->
-            <div style="position: absolute; bottom: 3px; left: 3px; right: 3px; height: 35px; background: linear-gradient(to bottom, transparent 0%, black 40%); border-radius: 0 0 9px 9px; pointer-events: none; z-index: 2;"></div>
-          </div>
-          <p class="night-media-caption">L.A. Young performing her Phyllis Hyman tribute at City Winery DC</p>
-        </div>
-
-        <div class="night-audio">
-          <audio controls preload="none" src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_No-One-Can-Love-You-More.mp3"></audio>
-          <p class="night-media-caption">L.A. Young &mdash; &ldquo;No One Can Love You More&rdquo; (Skip Scarborough) &mdash; her signature Phyllis Hyman tribute recording</p>
-        </div>
-      </div>
-
-      <!-- ONE CTA — variant chosen by the listing state (render-every-state):
-           shows listed → smooth-scroll to the ticket cards below;
-           none/unreachable → FAN capture (§1): "be the first to know" opens the
-           same notify sheet the cards use, but generic (wants:'future-show',
-           no eventId). The old venue "Bring this show to your city" booking CTA
-           is retired here — this is a FAN page; the small footer crosslink below
-           stays for the promoter who scrolls all the way down. -->
-      <div class="night-cta-row">
-        <!-- Hero "Get Tickets" button removed (owner 07-23): redundant on the Tour page —
-             the fan is already here and every show card carries its own ticket button.
-             This row now holds only the empty-state notify (shown when no shows are on sale). -->
-        <button id="night-cta-notify" class="btn btn-primary btn-large" hidden>No shows on sale yet &mdash; be the first to know</button>
-      </div>
-    </div>
-
-    <!-- =========================================================
          TICKET SALES ZONE
          ========================================================= -->
     <div id="ticket-zone" class="ticket-zone">
@@ -1513,6 +1446,76 @@
 
     </div><!-- /ticket-zone -->
 
+    <!-- Intro moved BELOW the current shows (owner 2026-10-14): on a phone the
+         show cards must be the first thing a fan sees, never a screen of
+         introduction that makes it look like there are no shows. -->
+    <!-- =========================================================
+         "THE NIGHT" — sell the night before selling the ticket
+         (internal-ref · spec §2g · S2)
+         Emotion first, tickets second. The dynamic event cards below
+         remain the transactional truth; this block sells the show.
+         ========================================================= -->
+    <div class="night-hero scroll-reveal">
+      <img class="night-hero-art"
+           src="images/artist/PhyllisHymanExperence.jpg"
+           alt="The Phyllis Hyman Experience — L.A. Young &amp; Soul Society"
+           loading="lazy">
+      <h2 class="night-hero-title">The Phyllis Hyman Experience</h2>
+      <p class="night-hero-sub">For one night, her music is alive again.</p>
+
+      <!-- The promise (fan voice — what the night feels like, no logistics) -->
+      <p class="night-promise">
+        There are songs that don&rsquo;t age &mdash; they wait.
+        <em>Somewhere in My Lifetime. You Know How to Love Me. Living All
+        Alone.</em> For one night, a live band brings them back to the room
+        where they belong, sung full-voice by a woman who has spent twenty
+        years earning the right to sing them. Candlelight and contralto, the
+        songs that raised us &mdash; and the hush right before the first note.
+      </p>
+
+      <!-- Proof of concept: real quote, real footage, real recording -->
+      <div class="night-proof">
+        <blockquote class="night-quote">
+          &ldquo;&hellip;made you believe, for just one night, that the Queen
+          was alive and among us.&rdquo;
+          <cite>&mdash; Tony &ldquo;Doc&rdquo; Hardy, Jazz and Soul on Ice &bull; WPKN 89.5 FM</cite>
+        </blockquote>
+
+        <div class="night-video">
+          <div class="video-frame" style="position: relative;">
+            <video preload="metadata" playsinline muted controls
+                   src="Video/LAYoungWinery.mp4"
+                   poster="images/artist/LAYoung-CityWinery-cover.jpg"
+                   class="video-player"
+                   style="aspect-ratio: 800/700; object-fit: cover; object-position: center 59%; background: #000;">
+            </video>
+            <!-- Black gradient overlay to hide yellow tribute text below "Call for booking..." -->
+            <div style="position: absolute; bottom: 3px; left: 3px; right: 3px; height: 35px; background: linear-gradient(to bottom, transparent 0%, black 40%); border-radius: 0 0 9px 9px; pointer-events: none; z-index: 2;"></div>
+          </div>
+          <p class="night-media-caption">L.A. Young performing her Phyllis Hyman tribute at City Winery DC</p>
+        </div>
+
+        <div class="night-audio">
+          <audio controls preload="none" src="https://rklvvuzedmadydmohouu.supabase.co/storage/v1/object/public/artist-audio/LA-Young_No-One-Can-Love-You-More.mp3"></audio>
+          <p class="night-media-caption">L.A. Young &mdash; &ldquo;No One Can Love You More&rdquo; (Skip Scarborough) &mdash; her signature Phyllis Hyman tribute recording</p>
+        </div>
+      </div>
+
+      <!-- ONE CTA — variant chosen by the listing state (render-every-state):
+           shows listed → smooth-scroll to the ticket cards below;
+           none/unreachable → FAN capture (§1): "be the first to know" opens the
+           same notify sheet the cards use, but generic (wants:'future-show',
+           no eventId). The old venue "Bring this show to your city" booking CTA
+           is retired here — this is a FAN page; the small footer crosslink below
+           stays for the promoter who scrolls all the way down. -->
+      <div class="night-cta-row">
+        <!-- Hero "Get Tickets" button removed (owner 07-23): redundant on the Tour page —
+             the fan is already here and every show card carries its own ticket button.
+             This row now holds only the empty-state notify (shown when no shows are on sale). -->
+        <button id="night-cta-notify" class="btn btn-primary btn-large" hidden>No shows on sale yet &mdash; be the first to know</button>
+      </div>
+    </div>
+
     <!-- Retrieve Ticket -->
     <div class="retrieve-zone scroll-reveal">
       <h3>Already Have a Ticket?</h3>
@@ -1556,28 +1559,6 @@
     <!-- =========================================================
          EXISTING CONTENT BELOW — unchanged
          ========================================================= -->
-
-    <!-- Past Venues -->
-    <div class="past-venues scroll-reveal delay-1">
-      <h3>Past Venues Include:</h3>
-      <!-- Booked engagements only. A guest appearance as another artist's guest is not a
-           performance credit and must never be listed as one. -->
-      <div class="venue-list">
-        <span class="venue-badge">City Winery DC</span>
-        <span class="venue-badge">Keystone Korner Baltimore</span>
-        <span class="venue-badge">Anacostia Playhouse, DC</span>
-        <span class="venue-badge">Lexington Market, Baltimore</span>
-        <span class="venue-badge">African American Cultural Festival</span>
-        <span class="venue-badge">Jazz Legacy Foundation Gala, Hampton</span>
-        <span class="venue-badge">Safeway Feast of Sharing</span>
-        <span class="venue-badge">Washington National Harbor</span>
-        <span class="venue-badge">DC Spy Museum</span>
-        <span class="venue-badge">DC Convention Center</span>
-        <span class="venue-badge">DC Rotary Gala</span>
-      </div>
-    </div>
-
-    <div class="divider"></div>
 
     <h2 class="section-title">What to Expect Live</h2>
     <p class="section-subtitle">Every show is a different experience</p>
@@ -1697,7 +1678,10 @@
     </div>
 
 
-    <div class="divider"></div>
+    <!-- HARD RULE (owner 2026-10-14): a solid line separates everything current
+         (on-sale shows, What to Expect Live) from everything past. Below it:
+         Past Performances first, then Past Venues at the very bottom. -->
+    <hr class="past-rule" aria-hidden="true" style="border:0;height:2px;background:var(--color-primary,#d4af37);width:100%;max-width:960px;margin:3.5rem auto 2.5rem;opacity:0.85;">
 
     <!-- =========================================================
          PAST PERFORMANCES (owner 2026-10-09): a show that has happened moves
@@ -1720,6 +1704,26 @@
         <p class="event-card-desc">One night in Baltimore&rsquo;s storied listening room &mdash; soul, R&amp;B, jazz and blues, all live, nothing on tape &mdash; as L.A. Young returned to the city she has played since 2007.</p>
         <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price event-summary-ext">Performed Wednesday, October 7, 2026</span></div></div>
         <div class="event-card-actions"><button type="button" class="btn btn-primary btn-large lay-notify-btn" data-notify-id="venue-keystone-korner-baltimore" data-notify-name="Keystone Korner Baltimore" data-notify-state="past" data-notify-wants="return-venue">Notify me when she&rsquo;s back at Keystone</button></div>
+      </div>
+    </div>
+
+    <!-- Past Venues — always the LAST section on the page (owner 2026-10-14) -->
+    <div class="past-venues scroll-reveal delay-1" style="margin-top:3rem;">
+      <h3>Past Venues Include:</h3>
+      <!-- Booked engagements only. A guest appearance as another artist's guest is not a
+           performance credit and must never be listed as one. -->
+      <div class="venue-list">
+        <span class="venue-badge">City Winery DC</span>
+        <span class="venue-badge">Keystone Korner Baltimore</span>
+        <span class="venue-badge">Anacostia Playhouse, DC</span>
+        <span class="venue-badge">Lexington Market, Baltimore</span>
+        <span class="venue-badge">African American Cultural Festival</span>
+        <span class="venue-badge">Jazz Legacy Foundation Gala, Hampton</span>
+        <span class="venue-badge">Safeway Feast of Sharing</span>
+        <span class="venue-badge">Washington National Harbor</span>
+        <span class="venue-badge">DC Spy Museum</span>
+        <span class="venue-badge">DC Convention Center</span>
+        <span class="venue-badge">DC Rotary Gala</span>
       </div>
     </div>
 
