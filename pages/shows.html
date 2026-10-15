@@ -1557,6 +1557,37 @@
     <!-- Hidden print container (populated before window.print()) -->
     <div id="print-tickets"></div>
 
+
+    <!-- HARD RULE (owner 2026-10-14/15): a solid line separates the current shows
+         (cards, intro, ticket lookup) from the past. Below it, in this order:
+         Past Performances, then What to Expect Live, then Past Venues at the
+         very bottom. -->
+    <hr class="past-rule" aria-hidden="true" style="border:0;height:2px;background:var(--color-primary,#d4af37);width:100%;max-width:960px;margin:3.5rem auto 2.5rem;opacity:0.85;">
+
+    <!-- =========================================================
+         PAST PERFORMANCES (owner 2026-10-09): a show that has happened moves
+         here from the upcoming list. No ticket button. Instead, a "notify me
+         when she's back" capture scoped to the VENUE (LayNotify
+         wants:'return-venue', id venue-<slug>), so each venue builds its own
+         list of people who want the next show there. Rows land in Supabase
+         contact_submissions (form_type 'ticket-notify') exactly like the other
+         Notify buttons; the SoR reconciler keys them by show_key = the venue id.
+         ========================================================= -->
+    <h2 class="section-title">Past Performances</h2>
+    <p class="section-subtitle">Missed one? Be the first to know when she returns.</p>
+
+    <div class="ticket-events-grid" id="past-performances">
+      <!-- Keystone Korner Baltimore — Wed Oct 7, 2026 (performed). -->
+      <div class="event-card scroll-reveal">
+        <img class="event-card-img" src="images/artist/keystone-korner-oct7-2026-card.jpg" alt="L.A. Young &amp; Soul Society — Keystone Korner Baltimore, Wednesday October 7, 2026" loading="lazy">
+        <h3 class="event-card-name">L.A. Young &amp; Soul Society&trade;</h3>
+        <div class="event-card-date">Wednesday, October 7, 2026 &middot; Keystone Korner Baltimore</div>
+        <p class="event-card-desc">One night in Baltimore&rsquo;s storied listening room &mdash; soul, R&amp;B, jazz and blues, all live, nothing on tape &mdash; as L.A. Young returned to the city she has played since 2007.</p>
+        <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price event-summary-ext">Performed Wednesday, October 7, 2026</span></div></div>
+        <div class="event-card-actions"><button type="button" class="btn btn-primary btn-large lay-notify-btn" data-notify-id="venue-keystone-korner-baltimore" data-notify-name="Keystone Korner Baltimore" data-notify-state="past" data-notify-wants="return-venue">Notify me when she&rsquo;s back at Keystone</button></div>
+      </div>
+    </div>
+
     <div class="divider"></div>
 
     <!-- =========================================================
@@ -1680,35 +1711,7 @@
 
     </div>
 
-
-    <!-- HARD RULE (owner 2026-10-14): a solid line separates everything current
-         (on-sale shows, What to Expect Live) from everything past. Below it:
-         Past Performances first, then Past Venues at the very bottom. -->
-    <hr class="past-rule" aria-hidden="true" style="border:0;height:2px;background:var(--color-primary,#d4af37);width:100%;max-width:960px;margin:3.5rem auto 2.5rem;opacity:0.85;">
-
-    <!-- =========================================================
-         PAST PERFORMANCES (owner 2026-10-09): a show that has happened moves
-         here from the upcoming list. No ticket button. Instead, a "notify me
-         when she's back" capture scoped to the VENUE (LayNotify
-         wants:'return-venue', id venue-<slug>), so each venue builds its own
-         list of people who want the next show there. Rows land in Supabase
-         contact_submissions (form_type 'ticket-notify') exactly like the other
-         Notify buttons; the SoR reconciler keys them by show_key = the venue id.
-         ========================================================= -->
-    <h2 class="section-title">Past Performances</h2>
-    <p class="section-subtitle">Missed one? Be the first to know when she returns.</p>
-
-    <div class="ticket-events-grid" id="past-performances">
-      <!-- Keystone Korner Baltimore — Wed Oct 7, 2026 (performed). -->
-      <div class="event-card scroll-reveal">
-        <img class="event-card-img" src="images/artist/keystone-korner-oct7-2026-card.jpg" alt="L.A. Young &amp; Soul Society — Keystone Korner Baltimore, Wednesday October 7, 2026" loading="lazy">
-        <h3 class="event-card-name">L.A. Young &amp; Soul Society&trade;</h3>
-        <div class="event-card-date">Wednesday, October 7, 2026 &middot; Keystone Korner Baltimore</div>
-        <p class="event-card-desc">One night in Baltimore&rsquo;s storied listening room &mdash; soul, R&amp;B, jazz and blues, all live, nothing on tape &mdash; as L.A. Young returned to the city she has played since 2007.</p>
-        <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price event-summary-ext">Performed Wednesday, October 7, 2026</span></div></div>
-        <div class="event-card-actions"><button type="button" class="btn btn-primary btn-large lay-notify-btn" data-notify-id="venue-keystone-korner-baltimore" data-notify-name="Keystone Korner Baltimore" data-notify-state="past" data-notify-wants="return-venue">Notify me when she&rsquo;s back at Keystone</button></div>
-      </div>
-    </div>
+    <div class="divider"></div>
 
     <!-- Past Venues — always the LAST section on the page (owner 2026-10-14) -->
     <div class="past-venues scroll-reveal delay-1" style="margin-top:3rem;">
