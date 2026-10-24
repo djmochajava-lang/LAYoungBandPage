@@ -288,10 +288,12 @@
 /* Venue's own branded asset — sits below our presenter card and above the
    ticket button. Owner ruling 2026-09-22: our card leads with our information,
    the venue card sits at the bottom with the button directly beneath it. */
-.ba-showtimes { display: grid; grid-template-columns: 1fr; gap: 0.6rem; }
-.ba-ticket-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem; width: 100%; padding-top: 0.7rem; padding-bottom: 0.7rem; line-height: 1.1; }
-.ba-ticket-main { display: block; }
-.ba-ticket-time { display: block; font-size: 0.78em; letter-spacing: 0.08em; opacity: 0.92; text-transform: none; }
+.ba-showtimes { display: grid; gap: 0.6rem; }
+.ba-showtime { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.6rem 0.75rem 0.6rem 1rem; border: 1px solid rgba(255,215,0,0.22); border-radius: 10px; background: rgba(0,0,0,0.35); }
+.ba-showtime-when { display: flex; flex-direction: column; line-height: 1.15; min-width: 0; }
+.ba-showtime-time { font-family: var(--font-primary); font-size: 1.35rem; color: #ffd700; letter-spacing: 0.02em; white-space: nowrap; }
+.ba-showtime-doors { font-size: 0.72rem; opacity: 0.75; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+.ba-showtime .btn { flex: 0 0 auto; white-space: nowrap; padding: 0.6rem 1rem; font-size: 0.82rem; letter-spacing: 0.06em; }
 .event-card-venuecard {
   display: block;
   width: 100%;
@@ -1416,7 +1418,7 @@
           <p class="event-card-desc">Phyllis Hyman herself performed at Blues Alley, and on November 19 her songs return to that stage &mdash; sung in the range they were written for, as L.A. Young &amp; Soul Society&trade; bring the songbook home to the DMV for two shows in one night in Georgetown. <span style="display:block; margin-top:.5rem; font-size:.72rem; opacity:.65">An independent production, not affiliated with or endorsed by the Estate of Phyllis Hyman.</span></p>
           <div class="event-summary-row"><div class="event-summary-info"><span class="event-summary-price event-summary-ext">On sale now &middot; $35 + fees &middot; pick your show</span></div></div>
           <img class="event-card-venuecard" src="images/artist/blues-alley-songbook-nov19-poster.jpg" alt="Poster: The Phyllis Hyman Songbook at Blues Alley, performed live by L.A. Young &amp; Soul Society&trade;, Thursday, November 19, 7:00 PM and 9:30 PM" loading="lazy">
-          <div class="ba-showtimes"><button type="button" class="btn btn-primary btn-large lay-ticketgate-btn ba-ticket-btn" data-notify-id="show-bluesalley-20261119-7pm" data-notify-name="The Phyllis Hyman Songbook &mdash; Blues Alley, 7:00 PM" data-ticket-url="https://www.instantseats.com/index.cfm?fuseaction=buy.event&amp;eventID=EBD98D6E-E9FF-7398-86B4838C25F9D6BE"><span class="ba-ticket-main">Get Tickets</span><span class="ba-ticket-time">7:00 PM &middot; Doors 6:00</span></button><button type="button" class="btn btn-primary btn-large lay-ticketgate-btn ba-ticket-btn" data-notify-id="show-bluesalley-20261119-930pm" data-notify-name="The Phyllis Hyman Songbook &mdash; Blues Alley, 9:30 PM" data-ticket-url="https://www.instantseats.com/index.cfm?fuseaction=buy.event&amp;eventID=EBD98E90-0DF4-5253-9B833007986B88EB"><span class="ba-ticket-main">Get Tickets</span><span class="ba-ticket-time">9:30 PM &middot; Doors 8:45</span></button></div>
+          <div class="ba-showtimes"><div class="ba-showtime"><div class="ba-showtime-when"><span class="ba-showtime-time">7:00 PM</span><span class="ba-showtime-doors">Doors 6:00 PM</span></div><button type="button" class="btn btn-primary lay-ticketgate-btn" data-notify-id="show-bluesalley-20261119-7pm" data-notify-name="The Phyllis Hyman Songbook &mdash; Blues Alley, 7:00 PM" data-ticket-url="https://www.instantseats.com/index.cfm?fuseaction=buy.event&amp;eventID=EBD98D6E-E9FF-7398-86B4838C25F9D6BE">Get Tickets</button></div><div class="ba-showtime"><div class="ba-showtime-when"><span class="ba-showtime-time">9:30 PM</span><span class="ba-showtime-doors">Doors 8:45 PM</span></div><button type="button" class="btn btn-primary lay-ticketgate-btn" data-notify-id="show-bluesalley-20261119-930pm" data-notify-name="The Phyllis Hyman Songbook &mdash; Blues Alley, 9:30 PM" data-ticket-url="https://www.instantseats.com/index.cfm?fuseaction=buy.event&amp;eventID=EBD98E90-0DF4-5253-9B833007986B88EB">Get Tickets</button></div></div>
         </div>
         <div class="event-card community-card scroll-reveal">
           <span class="community-ribbon">Giving Back</span>
