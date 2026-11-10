@@ -154,6 +154,25 @@
        force a horizontal scrollbar once the content column began clipping.
        Let badge text wrap inside its pill on the home hero. */
     .hero#home .hero-credential-badge { white-space: normal; }
+    /* ── Blues Alley, Thu Nov 19 (owner 2026-11-10: fill both rooms, push the 9:30 PM SHOW).
+       Static card; its inline script hides it after the show. Each show has its own
+       line and button (never "7:00 · 9:30" on one line). */
+    .hero-ba {
+      margin: 0 auto 1.25rem;
+      padding: 1rem 1.25rem 1.1rem;
+      max-width: min(92vw, 520px);
+      border: 1px solid rgba(255, 215, 0, 0.55);
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(10, 10, 10, 0.72), rgba(26, 26, 46, 0.72));
+      text-align: center;
+    }
+    .hero-ba-kicker { margin: 0 0 0.2rem; font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; color: #ffd700; }
+    .hero-ba-title { margin: 0 0 0.15rem; font-family: var(--font-primary, 'Playfair Display', serif); font-size: clamp(1.25rem, 4.6vw, 1.6rem); color: #fff; }
+    .hero-ba-date { margin: 0 0 0.8rem; font-size: 0.95rem; color: rgba(255, 255, 255, 0.85); }
+    .hero-ba-buttons { display: flex; flex-direction: column; gap: 0.55rem; align-items: stretch; }
+    .hero-ba-buttons .btn { width: 100%; text-align: center; }
+    .hero-ba-note { margin: 0.7rem 0 0; font-size: 0.8rem; color: rgba(255, 255, 255, 0.7); }
+
     /* ── Show announcement banner (sizzle S3, spec §2c) ─────────────
        Gold-bordered pill under the tagline; readmodel-driven. Hidden
        (display:none, zero footprint) until the readmodel confirms at
@@ -329,6 +348,21 @@
         <span class="show-banner-cta" id="show-banner-cta"></span>
       </span>
     </a>
+
+    <!-- Blues Alley, Thu Nov 19 (owner 2026-11-10). Hides itself after the show. -->
+    <div class="hero-ba" id="hero-ba">
+      <p class="hero-ba-kicker">Coming home · Thursday, November 19</p>
+      <p class="hero-ba-title">The Phyllis Hyman Songbook</p>
+      <p class="hero-ba-date">Blues Alley, Georgetown · TWO SHOWS</p>
+      <div class="hero-ba-buttons">
+        <a class="btn btn-primary btn-large" href="https://www.instantseats.com/index.cfm?fuseaction=buy.event&amp;eventID=EBD98E90-0DF4-5253-9B833007986B88EB" target="_blank" rel="noopener">9:30 PM SHOW · Get Tickets</a>
+        <a class="btn btn-secondary btn-large" href="https://www.instantseats.com/index.cfm?fuseaction=buy.event&amp;eventID=EBD98D6E-E9FF-7398-86B4838C25F9D6BE" target="_blank" rel="noopener">7:00 PM SHOW · Get Tickets</a>
+      </div>
+      <p class="hero-ba-note">Small room · Tickets $35 + fees</p>
+    </div>
+    <script>
+      (function () { var el = document.getElementById('hero-ba'); if (el && new Date() >= new Date(2026, 10, 20)) el.hidden = true; })();
+    </script>
 
     <div class="divider"></div>
 
