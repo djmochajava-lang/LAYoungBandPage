@@ -61,6 +61,7 @@ jobs:
             index.html                       # SPA shell
             404.html                         # repairs %23-encoded hash links; branded not-found page
             epk.html                        # clean /epk vanity URL -> EPK/layoungepk.html
+            930.html                        # clean /930 deep link -> Blues Alley 9:30 PM SHOW event page (Nov 19, 2026)
             contact.html                     # standalone contact page
             game.html                        # canvas mini-game entry
             player.html                      # standalone PWA player
